@@ -1,0 +1,4 @@
+# Registration integrity: every file is stored and checked out byte-exact.
+# The SHA-256 hashes in README.md and the tag message are of these bytes;
+# EOL conversion on checkout would silently break hash verification.
+* -text
