@@ -215,6 +215,8 @@ Recorded because a pre-registration showing no reversals is one nobody stress-te
 11. *(1 Aug 2026)* Three of v20's announced fixes were never in the file. They were applied as silent string substitutions that did not match, and spot-checking a few of them passed. **An edit that reports nothing when it fails is indistinguishable from an edit that worked**, and a change log written from intent rather than from the file will confidently describe fixes that do not exist. Every edit now asserts its match count, and the change log is written from a diff of the file.
 10. *(1 Aug 2026)* A subtraction leaves residue, and the residue is operative rather than cosmetic: after v19 removed the statistical regime, the configuration list still serialized its routing policy and noise-floor parameters, the Phase 1 gate still demanded the deleted capability matrix, and the fixture gate forbade only *primary* findings on clean sources — so the tool's own classifier could exempt its own false positives. **Deleting a mechanism means sweeping every clause that could still instruct an implementer to build it**, not only the clauses that describe it.
 8. *(31 Jul 2026)* §0.2.1 was written to justify stopping the revision loop, and its first draft granted a permission no pre-registration can carry: rewrite any locked rule that a measurement contradicts, transparently, and call it registered. **The section arguing that it is time to stop is exactly where a self-serving rule will appear**, and it took a reviewer to say so. The rewrite splits mechanical facts and locked-procedure parameters, which Phase 1 may resolve, from semantic changes, which need an amended registration tag before the affected detector exists.
+12. *(12 Aug 2026)* An archive-wide survey for the two aggressor columns reported 37 files; a filesystem walk over the same root found 119. The search tool honours the archive's `.gitignore`, which excludes `/PC2_TRANSFER_v4/scripts/` and `/results/` to keep parquet out of git — and with them two mirrored code trees, including the archive's only copy of the Phase 7 simulator, where a confirmed aggregation defect was later found. **A survey that inherits a search tool's default exclusions measures the ignore list, not the archive.** Archive-wide counts now come from a filesystem walk that reports how many files it scanned. Dated by the day recorded, not the day worked — the convention this list follows from here.
+13. *(12 Aug 2026)* A cross-reference in `DESIGN.md` §9 named the review-lesson list as `H-L1 through H-L11`. Appending H-L12 left the range stale; appending H-L13 (this lesson) would have left it stale again. Two prior instances of the same shape — an obligation that names its target by enumerated index into a growing list — were recorded as Z2 in earlier review rounds and each was fixed by bumping the index in the same edit that changed the thing indexed. **Three instances is a structural defect, not bad luck: enumerated ranges in cross-references are fragile by construction, because the obligation to re-bump lives outside the edit that grows the target.** The `DESIGN.md` reference now names the series (`the H-L review-lesson series`, open range) rather than its current tail, so appending a lesson cannot desynchronize a registered document. The same shape — an index that must be re-bumped in a separate edit — is looked for in any future cross-reference whose target grows.
 
 ### H-30 — from `PREREG.md` §6.6
 
@@ -257,6 +259,37 @@ The clause conflated two jobs. **Acceptance** asks whether the method separates 
 ### H-33 — from `PREREG.md` §7.7
 
 *(v23 gated on a **completed-case false-alarm rate**, which excluded exactly the cases where a finding fired and the schedule later failed — a finding that would reach a user, omitted from the number that decides whether the detector ships experimental. That concept and that name are removed everywhere, not renamed; the active metric is the clean-case finding rate over execution-eligible cases. A global rename in v26 rewrote the old name inside this note, leaving it appearing to retract the metric it was explaining.)*
+
+
+### H-34 — from `PREREG.md` §10.1 (kill-gate sign-off, prior art)
+
+---
+KILL-GATE SIGN-OFF — PREREG.md §10.1 (prior art)
+Date: 12 August 2026
+Author: Theo Johann Howard
+
+I personally conducted a prior-art search on 12 August 2026, searching PyPI, GitHub (repository search and topic browsing), and general web search, using three term families: "data leakage detection" / "data leakage detector"; leakage combined with "python" and "ML pipeline"; and "lookahead bias" / "point-in-time". I did not search Google Scholar. An assistant-conducted sweep of 8–9 August 2026 (its agent prompts are self-dated 2026-08-08; an earlier draft of this entry mis-stated it as 12 August, the date of my own search) did not search Google Scholar either, on its own recorded search log — so that surface is unsearched by both sweeps and is recorded here as a gap rather than as covered. I reviewed the sweep's findings as an input, not as a substitute. Per-candidate verification detail is recorded in `PRIOR_ART_VERIFICATION.md` (sha256 `b97a28044edcff7612d6deba5a8ae9cc5f6c14b99b1d11a6414f5ba9a0e733bb`).
+
+Equivalence test applied: does the tool probe a user-supplied callable at runtime against a declared per-cell availability model?
+
+Candidates and verdicts:
+
+- `leak-detect` (Pawar, 2020, v0.0.1, MIT): source read by author. Black-box runtime perturbation of a user-supplied `data_creation_func` — the runtime-probe idea is genuine prior art and is NOT claimed as novel by this project. Not equivalent: the corruption region is one scalar row index (`check_row_number`, `base.py:39`, default `int(len(data)/2)`) applied as a row-block × column-list rectangle (`base.py:73`); no per-row decision time and no per-cell availability representation in the API; detection signal is NaN-count propagation (`base.py:60/91`). Broken on NumPy >= 1.24 (`np.complex` at `base.py:76` and `base.py:209`).
+- `leakage-buster` (PyPI v1.0.2, 13 Sep 2025): broadest coverage found (~6 of 8 families) but no user-callable parameter; time check is split-granular. Assessed at interface level. Surfaced by the author's search; missed by the assistant sweep.
+- `Leakly`: runtime label permutation against chance performance; no availability model; CV-split and sample-position based.
+- `LeakageDetector` 1.0 / 2.0: static analysis (PyCharm plugin / Jupyter extension); overlap, preprocessing and multi-test leakage.
+- `leakr` (CRAN, Nov 2025): statistical audit; temporal check is split-granular (train period plus lookahead window); executes no user callable.
+- `bioLeak` (CRAN; v0.3.8, 21 May 2026 — an earlier draft of this entry dated it Dec 2025, which would have placed it outside §10.1 criterion 5's twelve-month window; it is in fact ACTIVE within that window): permutation-based statistical diagnostics; no per-cell availability. Criterion 5 is therefore satisfied for this candidate and the verdict rests on criterion 1, which it fails.
+- `deepchecks`: overlapping detector rows; no runtime availability probe. Licence AGPL-3.0, constraining the Phase 6 wrap decision.
+- `mlinspect`: runtime instrumentation for data-distribution and provenance debugging; different question.
+- Feature stores (Feast, Tecton, Databricks): enforce point-in-time correctness at retrieval; do not audit arbitrary user feature code.
+
+Judgment: §10.1 does NOT fire. No existing tool probes a user-supplied callable at runtime against a declared per-cell availability model. The runtime black-box probe is prior art (`leak-detect`) and is not claimed; the per-cell availability model is the novel element and no candidate implements it. The project proceeds.
+
+Re-fire condition: if a tool implementing runtime probing against a per-cell availability model surfaces before Phase 2 completes, this gate re-triggers and this sign-off is void.
+
+Recorded limitation: two independent sweeps each missed candidates, and their coverage was complementary rather than identical. Phase 0's sweep did not surface `bioLeak` or `Leakly`. It DID surface `leakr` (with CRAN vignette detail) and `LeakageDetector` 2.0 (extensively, by two of its four agents) — an earlier draft of this entry claimed otherwise, and that claim was wrong; `LeakageDetector` 2.0 is in any case named in `PREREG.md` §1.1. The assistant sweep of 8–9 Aug 2026 covered PyPI, GitHub, CRAN and general web search — not Google Scholar, on its own recorded log — and missed `leakage-buster`. The author's search covered PyPI, GitHub and general web but not Google Scholar, and found `leakage-buster`. Neither omission changes the verdict. Both are recorded as calibration facts, and together they are the reason the re-fire condition above is operative rather than decorative.
+---
 
 
 ### H-B addendum — firings v18 through v30
