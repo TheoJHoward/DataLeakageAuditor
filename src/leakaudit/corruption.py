@@ -49,15 +49,38 @@ def promotion_of(strategy_id: str, series: pd.Series) -> PromotionStatus:
     PREREG.md §3.2: `noise`, `nan` and `constant` preserve on some frames and
     promote on others, so promotion is per strategy per frame and is resolved
     against the actual column rather than declared once for the strategy.
-    `nan` in an already-float column promotes nothing.
+
+    PROMOTION IS A DTYPE CHANGE, AND ONLY A DTYPE CHANGE. `nan` promotes exactly
+    where the column cannot hold a null in its own dtype -- integer and boolean.
+    A float column already holds NaN; a datetime column holds NaT; an object
+    column holds None. None of those changes dtype, so none of them promotes.
+
+    An earlier version asked "is this float?" and called everything else
+    promoted. That was right for integers by accident and wrong for datetimes,
+    where it drove the caller to build a "promoted frame" by casting to float64
+    -- which raises. The question is not whether the column is float; it is
+    whether inserting a null would change its dtype.
     """
     if strategy_id in (SHUFFLE, SENTINEL):
         return PromotionStatus.PRESERVING
     if strategy_id == NAN:
-        if pd.api.types.is_float_dtype(series.dtype):
-            return PromotionStatus.PRESERVING
-        return PromotionStatus.PROMOTED
+        if _is_integer(series.dtype) or pd.api.types.is_bool_dtype(series.dtype):
+            return PromotionStatus.PROMOTED
+        return PromotionStatus.PRESERVING
     raise ValueError("unknown strategy %r" % strategy_id)
+
+
+def promote(series: pd.Series) -> pd.Series:
+    """The series in the dtype `nan` would promote it to.
+
+    Exposed so a caller building a promoted execution frame does not hardcode a
+    cast. §6.10 requires each promoted alignment family to carry its own
+    determinism guard, so the caller needs the promoted frame -- and the only
+    correct way to produce it is to ask the strategy what promotion means here.
+    """
+    if promotion_of(NAN, series) is PromotionStatus.PRESERVING:
+        return series.copy()
+    return series.astype("float64")
 
 
 def _sentinel_value(series: pd.Series):
@@ -86,7 +109,13 @@ def _sentinel_value(series: pd.Series):
         # than silently promoted to object.
         return None
     if pd.api.types.is_datetime64_any_dtype(dt):
-        return pd.Timestamp("2262-04-11")  # near the ns-resolution ceiling
+        # Near the ns-resolution ceiling. THE TIMEZONE MUST MATCH: a tz-naive
+        # Timestamp assigned into a tz-aware column raises, and the fixture's
+        # trades frame carries a UTC-aware stamp. An out-of-range value that
+        # cannot be assigned is not an out-of-range value.
+        ts = pd.Timestamp("2262-04-11")
+        tz = getattr(dt, "tz", None)
+        return ts.tz_localize(tz) if tz is not None else ts
     return None
 
 
@@ -130,9 +159,9 @@ def corrupt(series: pd.Series, strategy_id: str, mask=None, seed: int = 0) -> pd
         return out
 
     if strategy_id == NAN:
-        if _is_integer(series.dtype) or pd.api.types.is_bool_dtype(series.dtype):
-            out = out.astype("float64")   # the promotion, made explicit
-        out.loc[mask] = np.nan
+        out = promote(out)                # a no-op where nothing promotes
+        out.loc[mask] = (pd.NaT if pd.api.types.is_datetime64_any_dtype(out.dtype)
+                         else np.nan)
         return out
 
     raise ValueError("unknown strategy %r" % strategy_id)

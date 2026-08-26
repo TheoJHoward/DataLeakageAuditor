@@ -55,7 +55,8 @@ from protocol.runtime_reference import (               # noqa: E402
 
 import pandas as pd                                    # noqa: E402
 
-from leakaudit.corruption import Unsupportable, corrupt  # noqa: E402
+from leakaudit.corruption import (  # noqa: E402
+    Unsupportable, corrupt, promote)
 from leakaudit.determinism import check_frame, frames_equal  # noqa: E402
 
 OUT = pathlib.Path(os.environ.get(
@@ -114,6 +115,9 @@ def run_one(frames, base, fname, col, strat, cid, status):
     except Unsupportable:
         return [ExecutionRecord(DETECTOR_ID, CASE, strat, status, cid, True, False,
                                 failure_reason=FailureReason.COMPATIBILITY)], set()
+    except Exception:                                       # noqa: BLE001
+        return [ExecutionRecord(DETECTOR_ID, CASE, strat, status, cid, True, False,
+                                failure_reason=FailureReason.COMPATIBILITY)], set()
     if bad.equals(series):
         return [ExecutionRecord(DETECTOR_ID, CASE, strat, status, cid, True, False,
                                 failure_reason=FailureReason.CONTROL_ARTIFACT)], set()
@@ -169,7 +173,7 @@ for n, (fname, col) in enumerate(targets, 1):
 
     if promotion_of(NAN, series) is PromotionStatus.PROMOTED:
         prom_cohorts.append(cid)
-        pf = sub(raw, fname, col, series.astype("float64"))
+        pf = sub(raw, fname, col, promote(series))
         g = check_frame(build, pf, "promoted:" + cid)
         det["promoted:" + cid] = g.detail or "ok"
         if not g.deterministic:
