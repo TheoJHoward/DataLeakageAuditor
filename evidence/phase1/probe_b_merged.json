@@ -1,0 +1,381 @@
+{
+ "case": "fixture_corrected_zc_2025-01",
+ "detector": "columndep",
+ "baseline_sha256": "d8712f163cf9dcb60e8224eaa36a5bab8f9566a689bda56dd063fafb226baa1d",
+ "shards": 4,
+ "threads_pinned": 1,
+ "domain": "Probed: every source column of every supplied frame, under `shuffle`, `sentinel` in the preserving combination and `nan` in the promoted combination. NOT probed: `nan` is not applied to float columns, because it preserves there rather than promoting and is configured only in the promoted combination -- so a feature reading a float column ONLY through its null mask is outside this probe's domain, and its silence here is not evidence about it.",
+ "not_probed": [
+  "other:zc_mbo_2025-01.parquet"
+ ],
+ "cohorts": 47,
+ "dependency_map": {
+  "col:magg.ask_adds": [
+   "ask_add_rate_10s",
+   "ask_add_rate_5s",
+   "ask_adds"
+  ],
+  "col:magg.ask_cancels": [
+   "ask_cancel_rate_10s",
+   "ask_cancel_rate_5s",
+   "ask_cancels",
+   "cancel_ratio_asymmetry"
+  ],
+  "col:magg.bid_adds": [
+   "bid_add_rate_10s",
+   "bid_add_rate_5s",
+   "bid_adds"
+  ],
+  "col:magg.bid_cancels": [
+   "bid_cancel_rate_10s",
+   "bid_cancel_rate_5s",
+   "bid_cancels",
+   "cancel_ratio_asymmetry"
+  ],
+  "col:magg.total_events": [
+   "event_rate_10s",
+   "order_flow_accel",
+   "total_events"
+  ],
+  "col:magg.ts_floor": [
+   "ask_add_rate_10s",
+   "ask_add_rate_5s",
+   "ask_adds",
+   "ask_cancel_rate_10s",
+   "ask_cancel_rate_5s",
+   "ask_cancels",
+   "bid_add_rate_10s",
+   "bid_add_rate_5s",
+   "bid_adds",
+   "bid_cancel_rate_10s",
+   "bid_cancel_rate_5s",
+   "bid_cancels",
+   "cancel_ratio_asymmetry",
+   "event_rate_10s",
+   "order_flow_accel",
+   "total_events"
+  ],
+  "col:snap.ask_price_1": [
+   "ask_price_1"
+  ],
+  "col:snap.ask_price_2": [
+   "ask_price_2"
+  ],
+  "col:snap.ask_price_3": [
+   "ask_price_3"
+  ],
+  "col:snap.ask_price_4": [
+   "ask_price_4"
+  ],
+  "col:snap.ask_price_5": [
+   "ask_price_5"
+  ],
+  "col:snap.ask_size_1": [
+   "ask_size_1",
+   "book_slope_ask",
+   "depth_change_1s",
+   "depth_change_30s",
+   "depth_change_5s",
+   "depth_imbalance",
+   "depth_pctile_300s",
+   "depth_pctile_60s",
+   "l1_imbalance",
+   "total_ask_depth"
+  ],
+  "col:snap.ask_size_2": [
+   "ask_size_2",
+   "depth_change_1s",
+   "depth_change_30s",
+   "depth_change_5s",
+   "depth_imbalance",
+   "depth_pctile_300s",
+   "depth_pctile_60s",
+   "total_ask_depth"
+  ],
+  "col:snap.ask_size_3": [
+   "ask_size_3",
+   "depth_change_1s",
+   "depth_change_30s",
+   "depth_change_5s",
+   "depth_imbalance",
+   "depth_pctile_300s",
+   "depth_pctile_60s",
+   "total_ask_depth"
+  ],
+  "col:snap.ask_size_4": [
+   "ask_size_4",
+   "depth_change_1s",
+   "depth_change_30s",
+   "depth_change_5s",
+   "depth_imbalance",
+   "depth_pctile_300s",
+   "depth_pctile_60s",
+   "total_ask_depth"
+  ],
+  "col:snap.ask_size_5": [
+   "ask_size_5",
+   "book_slope_ask",
+   "depth_change_1s",
+   "depth_change_30s",
+   "depth_change_5s",
+   "depth_imbalance",
+   "depth_pctile_300s",
+   "depth_pctile_60s",
+   "total_ask_depth"
+  ],
+  "col:snap.bid_price_1": [
+   "bid_price_1"
+  ],
+  "col:snap.bid_price_2": [
+   "bid_price_2"
+  ],
+  "col:snap.bid_price_3": [
+   "bid_price_3"
+  ],
+  "col:snap.bid_price_4": [
+   "bid_price_4"
+  ],
+  "col:snap.bid_price_5": [
+   "bid_price_5"
+  ],
+  "col:snap.bid_size_1": [
+   "bid_size_1",
+   "book_slope_bid",
+   "depth_change_1s",
+   "depth_change_30s",
+   "depth_change_5s",
+   "depth_imbalance",
+   "depth_pctile_300s",
+   "depth_pctile_60s",
+   "l1_imbalance",
+   "total_bid_depth"
+  ],
+  "col:snap.bid_size_2": [
+   "bid_size_2",
+   "depth_change_1s",
+   "depth_change_30s",
+   "depth_change_5s",
+   "depth_imbalance",
+   "depth_pctile_300s",
+   "depth_pctile_60s",
+   "total_bid_depth"
+  ],
+  "col:snap.bid_size_3": [
+   "bid_size_3",
+   "depth_change_1s",
+   "depth_change_30s",
+   "depth_change_5s",
+   "depth_imbalance",
+   "depth_pctile_300s",
+   "depth_pctile_60s",
+   "total_bid_depth"
+  ],
+  "col:snap.bid_size_4": [
+   "bid_size_4",
+   "depth_change_1s",
+   "depth_change_30s",
+   "depth_change_5s",
+   "depth_imbalance",
+   "depth_pctile_300s",
+   "depth_pctile_60s",
+   "total_bid_depth"
+  ],
+  "col:snap.bid_size_5": [
+   "bid_size_5",
+   "book_slope_bid",
+   "depth_change_1s",
+   "depth_change_30s",
+   "depth_change_5s",
+   "depth_imbalance",
+   "depth_pctile_300s",
+   "depth_pctile_60s",
+   "total_bid_depth"
+  ],
+  "col:snap.book_imbalance": [
+   "book_imbalance"
+  ],
+  "col:snap.mid_price": [
+   "fwd_move_ticks_10s",
+   "fwd_move_ticks_30s",
+   "fwd_move_ticks_5s",
+   "fwd_move_ticks_60s",
+   "mid_price",
+   "mid_return_10s",
+   "mid_return_1s",
+   "mid_return_300s",
+   "mid_return_30s",
+   "mid_return_5s",
+   "mid_return_60s",
+   "range_300s",
+   "range_60s",
+   "volatility_300s",
+   "volatility_30s",
+   "vwap_distance"
+  ],
+  "col:snap.spread": [
+   "spread",
+   "spread_ticks"
+  ],
+  "col:snap.timestamp": [
+   "ask_price_1",
+   "ask_price_2",
+   "ask_price_3",
+   "ask_price_4",
+   "ask_price_5",
+   "ask_size_1",
+   "ask_size_2",
+   "ask_size_3",
+   "ask_size_4",
+   "ask_size_5",
+   "bid_price_1",
+   "bid_price_2",
+   "bid_price_3",
+   "bid_price_4",
+   "bid_price_5",
+   "bid_size_1",
+   "bid_size_2",
+   "bid_size_3",
+   "bid_size_4",
+   "bid_size_5",
+   "book_imbalance",
+   "book_slope_ask",
+   "book_slope_bid",
+   "depth_change_1s",
+   "depth_change_30s",
+   "depth_change_5s",
+   "depth_imbalance",
+   "depth_pctile_300s",
+   "depth_pctile_60s",
+   "fwd_move_ticks_10s",
+   "fwd_move_ticks_30s",
+   "fwd_move_ticks_5s",
+   "fwd_move_ticks_60s",
+   "l1_imbalance",
+   "mid_price",
+   "mid_return_10s",
+   "mid_return_1s",
+   "mid_return_300s",
+   "mid_return_30s",
+   "mid_return_5s",
+   "mid_return_60s",
+   "range_300s",
+   "range_60s",
+   "spread",
+   "spread_ticks",
+   "total_ask_depth",
+   "total_bid_depth",
+   "volatility_300s",
+   "volatility_30s",
+   "vwap_distance"
+  ],
+  "col:trades.price": [
+   "vwap",
+   "vwap_distance"
+  ],
+  "col:trades.size": [
+   "large_trade_count",
+   "large_trade_count_10s",
+   "net_delta",
+   "net_delta_10s",
+   "net_delta_1s",
+   "net_delta_30s",
+   "net_delta_5s",
+   "net_delta_60s",
+   "sell_volume",
+   "sell_volume_10s",
+   "trade_count",
+   "trade_count_10s",
+   "trade_volume",
+   "vwap",
+   "vwap_distance"
+  ],
+  "col:trades.ts_event": [
+   "large_trade_count",
+   "large_trade_count_10s",
+   "net_delta",
+   "net_delta_10s",
+   "net_delta_1s",
+   "net_delta_30s",
+   "net_delta_5s",
+   "net_delta_60s",
+   "sell_volume",
+   "sell_volume_10s",
+   "trade_count",
+   "trade_count_10s",
+   "trade_volume",
+   "vwap",
+   "vwap_distance"
+  ]
+ },
+ "determinism": {
+  "original": "ok",
+  "promoted:col:trades.instrument_id": "ok",
+  "promoted:col:trades.size": "ok",
+  "promoted:col:trades.ts_in_delta": "ok",
+  "promoted:col:trades.is_buy_aggressor": "ok",
+  "promoted:col:magg.bid_cancels": "ok",
+  "promoted:col:snap.bid_size_1": "ok",
+  "promoted:col:snap.bid_size_3": "ok",
+  "promoted:col:snap.bid_size_5": "ok",
+  "promoted:col:snap.ask_size_2": "ok",
+  "promoted:col:snap.ask_size_4": "ok",
+  "promoted:col:trades.channel_id": "ok",
+  "promoted:col:trades.sequence": "ok",
+  "promoted:col:magg.ask_cancels": "ok",
+  "promoted:col:trades.rtype": "ok",
+  "promoted:col:trades.order_id": "ok",
+  "promoted:col:magg.bid_adds": "ok",
+  "promoted:col:magg.total_events": "ok",
+  "promoted:col:snap.bid_size_2": "ok",
+  "promoted:col:snap.bid_size_4": "ok",
+  "promoted:col:snap.ask_size_1": "ok",
+  "promoted:col:snap.ask_size_3": "ok",
+  "promoted:col:snap.ask_size_5": "ok",
+  "promoted:col:trades.publisher_id": "ok",
+  "promoted:col:trades.flags": "ok",
+  "promoted:col:magg.ask_adds": "ok"
+ },
+ "traces": {
+  "preserving": {
+   "schedule_state": "incomplete",
+   "reason": "compatibility",
+   "evidence_outcome": "finding",
+   "cohorts": 47,
+   "strategies": [
+    "shuffle",
+    "sentinel"
+   ],
+   "records": 433,
+   "valid_records": 422
+  },
+  "promoted": {
+   "schedule_state": "completed",
+   "reason": null,
+   "evidence_outcome": "finding",
+   "cohorts": 25,
+   "strategies": [
+    "nan"
+   ],
+   "records": 127,
+   "valid_records": 127
+  }
+ },
+ "evidence_events": 346,
+ "events_licensing_proven": 228,
+ "silent_cohorts": [
+  "col:trades.action",
+  "col:trades.aggressor_side",
+  "col:trades.channel_id",
+  "col:trades.flags",
+  "col:trades.instrument_id",
+  "col:trades.is_buy_aggressor",
+  "col:trades.order_id",
+  "col:trades.publisher_id",
+  "col:trades.rtype",
+  "col:trades.sequence",
+  "col:trades.side",
+  "col:trades.symbol",
+  "col:trades.ts_in_delta",
+  "col:trades.ts_recv"
+ ]
+}

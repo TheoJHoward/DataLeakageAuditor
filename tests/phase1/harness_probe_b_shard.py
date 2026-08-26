@@ -64,8 +64,15 @@ ap.add_argument("--month", default="2025-01")
 ap.add_argument("--side", default="corrected")
 args = ap.parse_args()
 
-OUT = ROOT / "evidence" / "phase1" / ("probe_b_shard_%d_of_%d.json"
-                                      % (args.shard, args.of))
+# Shards are PER-RUN INTERMEDIATES and stay OUT of evidence/. Every file
+# under evidence/ needs a manifest line, and a file that is rewritten on
+# every run would force a manifest resync per run -- churn in an attested
+# tree, for an artifact the merge reconstructs. Only the MERGED result is
+# evidence. Override with LEAKAUDIT_B8_SHARD_DIR.
+OUT = pathlib.Path(os.environ.get(
+    "LEAKAUDIT_B8_SHARD_DIR",
+    str(pathlib.Path.home() / ".leakaudit_b8"))) / (
+    "probe_b_shard_%d_of_%d.json" % (args.shard, args.of))
 CASE = "fixture_%s_%s_%s" % (args.side, args.sym, args.month)
 T0 = time.time()
 
