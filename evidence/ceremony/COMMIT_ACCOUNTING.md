@@ -91,6 +91,16 @@ the one value in the check that is safe to state.
   turn by the commit this accounting ships in, which grows the tag's enumeration from six paths
   to the twenty `PREREG.md` §11 item 8 defines.
 
+- `account: d39643e` — **The tag message's enumeration grown from six paths to the twenty
+  `PREREG.md` §11 item 8 defines.** Carries §D.2's rewrite onto item 8's basis, §D.5's named open
+  obligations, §D.6's five deployed disclosures, §D.1's repository path for the pinned producing
+  code, `phase7_l2_sim.py` itself, H-L25, and the checker's exemptions rekeyed from line numbers
+  to anchors. **It was the tag target and is not**: the tree it attests carries the declaration's
+  own status header reading *"Nothing in this file is a registered declaration"*, which conflicts
+  with SC-7(a) and SC-8(f). Belongs in the tagged tree because the commit that corrects that header
+  builds on it, and rewriting history to remove it would be a worse record than keeping it with the
+  reason it was superseded named.
+
 ---
 
 ## The baseline rule, and why a commit is never asked to account for itself

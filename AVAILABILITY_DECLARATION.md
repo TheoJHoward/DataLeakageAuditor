@@ -26,12 +26,38 @@ which is the one thing the record exists to preserve. Where this file quotes reg
 quotes it verbatim beside the line number, so a reader can verify the quotation against the tag
 without needing the number to resolve in the current file.
 
-## DRAFT — AUTHOR REVIEW REQUIRED
+## STATUS — REGISTERED, AND OPERATIVE AT THE `prereg-v30a` TAG
 
-Status: DRAFT. Nothing in this file is a registered declaration. Every element below is a
-reconstruction from archive evidence, assembled by item F4 of "Phase 0 addendum 2: fixture
-verification for v30a". Elements marked AMBIGUOUS-PENDING-AUTHOR are genuinely ambiguous on
-the evidence and are NOT resolved here.
+**This file is the availability declaration `PREREG.md` §6.2 requires, and it is registered.**
+Its SHA-256 is enumerated in the `prereg-v30a` tag message, §D.1's list freezes at that tag, and
+`PREREG.md` SC-7(a) names its **declared elements** as one of the two things a detector receives
+at gate time. SC-8(f) names it the file that **carries the scoring key**.
+
+**What its earlier status said, and why it is corrected rather than retained.** Until the v30a
+amendment was assembled this file read *"Status: DRAFT. Nothing in this file is a registered
+declaration."* That was true when written: the file was then a reconstruction awaiting review,
+and no tag enumerated it. **It stopped being true when the amendment made this file a hashed,
+frozen object that registered clauses read from, and it was not updated.** A status marker is a
+claim about the file's standing, so a stale one is a false statement inside the signed object —
+not a stale description of something else. Correcting it is the only disposition available:
+a disclosure elsewhere cannot repair a claim the tag itself attests.
+
+**Every element below is still a reconstruction from archive evidence**, assembled by item F4 of
+"Phase 0 addendum 2: fixture verification for v30a". Registered and reconstructed are not
+opposites: what is registered is that these are the declared elements, with the provenance each
+one states.
+
+**Section-level markers are NOT claims about this file's standing, and are deliberately left as
+they are.** Part I's `AMBIGUOUS-PENDING-AUTHOR` entries record elements the measurement genuinely
+did not resolve; where a working resolution later resolved one — `ties`, Part I section 6, carried
+in Part II §12 and frozen at §D.1 item 1 — **the resolution governs and Part I stands as the
+measurement record.** The Phase-7-added-columns block (T2) and the working-resolution record at
+the file tail are **frozen byte-identical** (l.89-93). Rewriting a dated record to look current
+falsifies what was known when, which is the one thing those records exist to preserve.
+
+**`PROVISIONAL until the prereg-v30a tag is signed` is a different marker and is untouched.** It
+is a forward-looking condition, true as written, and discharged by the signing itself rather than
+by an edit.
 
 Assembly status (item D1, "Phase 0 addendum 3: pre-amendment closure checks", 2026-08-11):
 this file is now the complete v30a declaration DRAFT. **Part I is NOT unchanged, and the
@@ -588,7 +614,7 @@ PREREG.md lives in the prereg repo `C:\Users\ttbea\OneDrive\Desktop\MBO_2025(4mo
 
 # Part II — v30a declaration assembly (item D1)
 
-## DRAFT — AUTHOR REVIEW REQUIRED (v30a assembly)
+## PART II — THE v30a ASSEMBLY (registered; see STATUS above)
 
 Assembled by item D1 of "Phase 0 addendum 3: pre-amendment closure checks"; carried forward by
 item P2 (2026-08-12) under working resolutions R6-R9, and corrected by the X-round pass
