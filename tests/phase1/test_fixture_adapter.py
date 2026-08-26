@@ -6,20 +6,49 @@ ran it would not run anywhere else and would not be run here either. The tests
 that need it are opt-in via `LEAKAUDIT_FIXTURE=1`; everything checkable without
 it runs always.
 
-**A skipped known-positive is not a known-positive.** The opt-in tests were run
-and their results are recorded in the round report; the skip marker keeps them
-runnable, it does not stand in for having run them.
+**A skipped known-positive is not a known-positive**, and "they were run" is not
+checkable from a clone. `fixture_run_record.json` beside this file records when
+they last ran, on what, and with what result; `test_every_opt_in_test_has_a_
+recorded_result` asserts the record covers every opt-in test here, so a test
+that has never been recorded fails the always-on suite rather than passing
+silently as a skip. The skip marker keeps them runnable; the record is the part
+a reader can check.
 """
 import os
+
+import json
+import re
 
 import pandas as pd
 import pytest
 
 from leakaudit import fixture_adapter as fa
 
+RECORD = os.path.join(os.path.dirname(__file__), "fixture_run_record.json")
 FIXTURE = os.environ.get("LEAKAUDIT_FIXTURE") == "1"
-needs_fixture = pytest.mark.skipif(
-    not FIXTURE, reason="set LEAKAUDIT_FIXTURE=1 to run against the acceptance fixture")
+
+
+def _why_skipped():
+    """Name what is actually missing, and how to supply it.
+
+    "set an env var" is not a reason a stranger can act on: the var only opts
+    in, and the thing that is really absent is the fixture's code and its
+    inputs. Which of the two is missing changes what they should do.
+    """
+    if not fa.F2_DIR.exists():
+        return ("the acceptance fixture's producing code is not at %s. It is a "
+                "session scratchpad and is not part of this repository; without it "
+                "these tests cannot run anywhere. See %s for what they proved when "
+                "they last ran." % (fa.F2_DIR, os.path.basename(RECORD)))
+    if not FIXTURE:
+        return ("opt in with LEAKAUDIT_FIXTURE=1. The fixture's code IS present "
+                "here, so these will run: about three minutes, four builds at "
+                "~25s plus a ~29s input capture. Last recorded results are in %s."
+                % os.path.basename(RECORD))
+    return ""
+
+
+needs_fixture = pytest.mark.skipif(bool(_why_skipped()), reason=_why_skipped())
 
 
 # --------------------------------------------------------------------------
@@ -126,3 +155,39 @@ def test_serving_does_not_let_one_run_alter_the_next(captured):
     build(captured.raw)
     for k, v in before.items():
         pd.testing.assert_frame_equal(captured.raw[k], v)
+
+
+# --------------------------------------------------------------------------
+# Always-on: the skipped tests must have a recorded result, and it must cover
+# ALL of them. A skip that has never been recorded is a claim nobody can check.
+# --------------------------------------------------------------------------
+
+def test_every_opt_in_test_has_a_recorded_result():
+    with open(RECORD, encoding="utf-8") as fh:
+        rec = json.load(fh)
+    recorded = {r["test"]: r["result"] for r in rec["last_run"]["results"]}
+
+    # Line-anchored: this file CONTAINS the decorator's name as a string, so a
+    # naive split matches this test's own source and invents a test that does
+    # not exist. The instrument's population must exclude the instrument.
+    src = open(__file__, encoding="utf-8").read()
+    opt_in = set(re.findall(r"^@needs_fixture\s*\ndef\s+(\w+)", src, re.M))
+    assert opt_in, "no opt-in tests found; the extractor is broken, not the record"
+
+    missing = opt_in - set(recorded)
+    assert not missing, (
+        "opt-in test(s) with no recorded result: %s. A skipped test with no "
+        "record is a claim a reader cannot check." % sorted(missing))
+    stale = {t for t, r in recorded.items() if r != "PASS"}
+    assert not stale, "recorded non-passing result(s): %s" % sorted(stale)
+    assert rec["last_run"]["date"]
+    assert rec["how_to_run_them_yourself"]["3_command"]
+
+
+def test_the_skip_reason_names_what_is_missing():
+    """Whatever the local state, the reason must be actionable rather than a
+    restatement of the marker."""
+    why = _why_skipped()
+    if why:
+        assert ("producing code is not at" in why) or ("LEAKAUDIT_FIXTURE=1" in why)
+        assert "fixture_run_record.json" in why
