@@ -259,8 +259,8 @@ hashes in the tag message, external timestamp receipt committed, repository
 publicly reachable at lock."
 
 - Signed tag: `prereg-v30a`, «CEREMONY-FILL: tag date»
-- Tag message hash block: **SIX** SHA-256 lines — `PREREG.md`, `DESIGN.md`,
-  `HISTORY.md`, `tools/check_registration.py`, `protocol/runtime_reference.py`,
+- Tag message hash block: the set `PREREG.md` §11 item 8 defines, enumerated at
+  `CEREMONY_COMMANDS.md` §3.2's `FILES` line, whose count is read from that line —
   `AVAILABILITY_DECLARATION.md` — computed at tag time from the files as
   committed, in one operation. The values are not reproduced in this entry:
   «CEREMONY-FILL: paste the six-line block exactly as it appears in the signed

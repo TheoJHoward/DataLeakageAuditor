@@ -900,111 +900,128 @@ _HS_CTX = re.compile(
     r"|(each|all|one|member) of the (five|six|seven|eight|nine|ten)\b"
     r"|the (fifth|sixth|seventh|eighth|ninth|tenth) hash)", re.I)
 
-# (path, line) -> (pin, reason). D5 = v30 site. D6 = PREREG registered text.
+# (path, ANCHOR TEXT) -> (allowed, reason). D5 = v30 site. D6 = PREREG
+# registered text. KEYED BY ANCHOR, NEVER BY LINE - see _exempt_by_anchor.
+def _exempt_by_anchor(table, rel, raw, all_lines):
+    """Find the exemption whose ANCHOR text sits on this line.
+
+    Returns (key, allowed, reason, problem). `problem` is a string when the
+    anchor is not usable and None when it is: an anchor that matches more than
+    one line in the file would exempt every one of them, so it is refused rather
+    than applied to the first.
+
+    The key carries no line number. An exemption keyed to a line detaches the
+    moment anything above it grows, and re-pinning it to the new number restores
+    the same defect with a fresher value.
+    """
+    for (p, anchor), rest in table.items():
+        if p != rel or anchor not in raw:
+            continue
+        hits = sum(1 for ln in all_lines if anchor in ln)
+        if hits != 1:
+            return (p, anchor), rest[0], rest[1], (
+                "its anchor %r matches %d lines in this file; an anchor that "
+                "selects more than one line exempts all of them. Narrow the "
+                "anchor." % (anchor[:48], hits))
+        return (p, anchor), rest[0], rest[1], None
+    return None, None, None, None
+
+
 _HASH_SET_EXEMPT = {
-    ("AVAILABILITY_DECLARATION.md", 3663): (
-        "The `prereg-v30` tag message carries",
-        frozenset({5}),
-        "D5 - states the EXECUTED v30 count, which is five. Correct as written."),
-    ("AVAILABILITY_DECLARATION.md", 3985): (
-        "prereg-v30 tag message (five SHA-256 lines",
-        frozenset({5}),
-        "D5 - the parenthetical describes the v30 message, not v30a."),
-    ("AVAILABILITY_DECLARATION.md", 4007): (
-        "- **R7. hash-count:",
-        frozenset({5}),
+    ('AVAILABILITY_DECLARATION.md',
+     'prereg-v30 tag message (five SHA-256 lines'): (
+        frozenset([5]),
+        'D5 - the parenthetical describes the v30 message, not v30a.'),
+    ('AVAILABILITY_DECLARATION.md',
+     '- **R7. hash-count:'): (
+        frozenset([5]),
         "D5 - working resolution R7. Its 'ALL FIVE' takes the v30 five as its "
-        "referent ('matching the prereg-v30 tag as executed') and is TRUE of a "
-        "six-file set containing those five. The totality reading came from R7's "
-        "topic LABEL, not its predicate; the R67/§14.2 survey established every "
-        "label in that block is a topic tag. R7 stands unamended. "
-        "See AVAILABILITY_DECLARATION.md §D.3 entry (iii)."),
-    ("evidence/ceremony/CEREMONY_COMMANDS.md", 327): (
-        "a tag message with five lines is not a v30a tag message",
-        frozenset({5}),
-        "D5 - a NEGATED assertion: it says five is wrong for v30a."),
-    ("AVAILABILITY_DECLARATION.md", 3686): (
-        "signed tag, both file hashes in the tag message",
-        frozenset({2}),
-        "D6 - a VERBATIM QUOTATION of PREREG.md line 97, marked as such "
-        "('Cite: PREREG.md line 97 (verbatim)'). Quoting registered text "
-        "accurately is required; the quoted count is dispositioned at its own "
-        "site and at AVAILABILITY_DECLARATION.md §D.3 entry (ii)."),
-    ("AVAILABILITY_DECLARATION.md", 3761): (
-        "R7 reads:",
-        frozenset({5}),
-        "D5 - §D.3 entry (iii) QUOTES R7 in order to dispose of it. Quoting the "
-        "text under discussion is required; the disposition is in the same entry."),
-    ("HISTORY.md", 225): (
-        "it FORKS",
-        frozenset({2}),
-        "D5 - lesson 19 RECORDS the fork. The values two/three/five/six/seven "
-        "appear as the historical defect being described, quoted from the sites "
-        "that carried them, not as an assertion of the current count. The lesson "
-        "states in its own text that the authority is $FILES and that no gate "
-        "reads a numeral."),
-    ("PREREG.md", 97): (
-        "both file hashes in the tag message",
-        frozenset({2}),
-        "D6 - REGISTERED TEXT, not editable. 'both' is a closed quantifier over "
-        "exactly two things and lost its referent when the set grew; the two "
-        "files' hashes ARE in the tag, so it is satisfied, but it supplies no "
-        "rule for files added since. See AVAILABILITY_DECLARATION.md §D.3 "
-        "entry (ii)."),
-    # R93 - surfaced by APPLICATION, not by an edit: this is SC-8b's §11 item 8,
-    # which lived only in SCHEMA_SET_FINAL.md until the v30a diff was applied and
-    # is now registered text in PREREG.md, where D1 can read it.
-    ("PREREG.md", 2023): (
-        "one hash beside one path",
-        frozenset({1}),
-        "D1 FALSE POSITIVE on REGISTERED, APPROVED text that is not editable. "
+        "referent ('matching the prereg-v30 tag as executed') and is TRUE of "
+        'a six-file set containing those five. The totality reading came from '
+        "R7's topic LABEL, not its predicate; the R67/§14.2 survey "
+        'established every label in that block is a topic tag. R7 stands '
+        'unamended. See AVAILABILITY_DECLARATION.md §D.3 entry (iii).'),
+    ('evidence/ceremony/CEREMONY_COMMANDS.md',
+     'a tag message with five lines is not a v30a tag message'): (
+        frozenset([5]),
+        'D5 - a NEGATED assertion: it says five is wrong for v30a.'),
+    ('AVAILABILITY_DECLARATION.md',
+     'R7 reads:'): (
+        frozenset([5]),
+        'D5 - §D.3 entry (iii) QUOTES R7 in order to dispose of it. Quoting '
+        'the text under discussion is required; the disposition is in the '
+        'same entry.'),
+    ('HISTORY.md',
+     'it FORKS'): (
+        frozenset([2]),
+        'D5 - lesson 19 RECORDS the fork. The values two/three/five/six/seven '
+        'appear as the historical defect being described, quoted from the '
+        'sites that carried them, not as an assertion of the current count. '
+        'The lesson states in its own text that the authority is $FILES and '
+        'that no gate reads a numeral.'),
+    ('PREREG.md',
+     'both file hashes in the tag message'): (
+        frozenset([2]),
+        "D6 - REGISTERED TEXT, not editable. 'both' is a closed quantifier "
+        'over exactly two things and lost its referent when the set grew; the '
+        "two files' hashes ARE in the tag, so it is satisfied, but it "
+        'supplies no rule for files added since. See '
+        'AVAILABILITY_DECLARATION.md §D.3 entry (ii).'),
+    ('PREREG.md',
+     'one hash beside one path'): (
+        frozenset([1]),
+        'D1 FALSE POSITIVE on REGISTERED, APPROVED text that is not editable. '
         "'one hash beside one path' states the FORM of the enumeration - a "
-        "one-to-one pairing of hash to path - not the COUNT of the hashed set. "
-        "The same sentence goes on to say the count is read from the enumeration "
-        "itself: 'The set is that enumeration and its count is read from it: no "
-        "clause of this file states the count as a literal.' Correcting the "
-        "content is unavailable (the author approved these bytes on 25 Aug 2026 "
-        "and PREREG.md is edited only by an approved diff), so this is the F1.1 "
-        "case where an exemption is right: the content cannot change, and the "
-        "reason is what gets recorded."),
+        'one-to-one pairing of hash to path - not the COUNT of the hashed '
+        'set. The same sentence goes on to say the count is read from the '
+        "enumeration itself: 'The set is that enumeration and its count is "
+        "read from it: no clause of this file states the count as a literal.' "
+        'Correcting the content is unavailable (the author approved these '
+        'bytes on 25 Aug 2026 and PREREG.md is edited only by an approved '
+        'diff), so this is the F1.1 case where an exemption is right: the '
+        'content cannot change, and the reason is what gets recorded.'),
 }
 
-# (path, line) -> (pin, reason) for D2 path enumerations that are not the set.
+# (path, ANCHOR TEXT) -> (enumeration, reason) for D2 path enumerations that
+# are not the set. Keyed by anchor, never by line.
 _HASH_SET_ENUM_EXEMPT = {
-    ("AVAILABILITY_DECLARATION.md", 3683): (
-        "covering `PREREG.md`, `DESIGN.md`, `HISTORY.md`",
-        ("PREREG.md", "DESIGN.md", "HISTORY.md", "tools/check_registration.py",
-         "protocol/runtime_reference.py"),
-        "D5 - enumerates the EXECUTED v30 five, cited as evidence of the executed "
-        "state, not as the v30a set."),
-    ("PREREG.md", 2003): (
-        "The first commit contains the registration and its checking tools",
-        ("PREREG.md", "DESIGN.md", "HISTORY.md", "tools/check_registration.py",
-         "protocol/runtime_reference.py"),
-        "D6 - REGISTERED TEXT, not editable. §11 item 1 lists the first COMMIT's "
-        "contents, which is a different set from the tag message's hash block: it "
-        "includes DEVIATIONS.md, PARKING_LOT.md, VALIDATED_CONFIG.toml and "
-        "tests/registration/, none of which are hashed."),
-    ("AVAILABILITY_DECLARATION.md", 3738): (
-        "Registered text: *\"SHA-256 of `PREREG.md`, `DESIGN.md`, and `HISTORY.md`",
-        ("PREREG.md", "DESIGN.md", "HISTORY.md"),
-        "D6 - §D.3 entry (i) QUOTES PREREG.md §11 item 3 in order to state its floor "
-        "reading. The quotation must stay verbatim."),
-    ("evidence/ceremony/COMMIT_PLAN.md", 348): (
-        "[hashed], DESIGN.md [hashed], HISTORY.md [hashed]",
-        ("PREREG.md", "DESIGN.md", "HISTORY.md", "tools/check_registration.py",
-         "AVAILABILITY_DECLARATION.md"),
-        "D5 - the block is explicitly labelled \"For the human reader, and NOT the "
-        "check\". It groups the six by EXPECTED VISIBILITY in `--cached` output, "
-        "which deliberately is not $FILES order; V1a/V1b/V1c above it are the "
-        "executable checks and they read the set from its authority."),
-    ("PREREG.md", 2005): (
-        "SHA-256 of `PREREG.md`, `DESIGN.md`, and `HISTORY.md` as committed",
-        ("PREREG.md", "DESIGN.md", "HISTORY.md"),
-        "D6 - REGISTERED TEXT, not editable. §11 item 3 is a FLOOR: no 'only', "
-        "no 'exactly', so a superset satisfies it and over-delivery is strictly "
-        "stronger. The executed v30 tag already carried five. See "
-        "AVAILABILITY_DECLARATION.md §D.3 entry (i)."),
+    ('AVAILABILITY_DECLARATION.md',
+     '| 1 — item 1, named individually |'): (
+        ('PREREG.md', 'DESIGN.md', 'HISTORY.md', 'tools/check_registration.py', 'protocol/runtime_reference.py', 'AVAILABILITY_DECLARATION.md', 'DEVIATIONS.md', 'PARKING_LOT.md', 'VALIDATED_CONFIG.toml', 'evidence/fixture_spike/f3/fixture_manifest_DRAFT.json', 'evidence/fixture_spike/n1/declared_map.csv'),
+        'D6 - §D.2 enumerates the set BY LIMB, showing which limb of §11 item '
+        '8 admits each path. That breakdown is the section argument: the set '
+        'is not a list someone chose, it is what three stated rules produce. '
+        'Flattening it into the set in order would satisfy this check and '
+        'delete the reason the enumeration is there, so the content fix is '
+        'unavailable and the exemption is the right instrument. The row is '
+        'limb 1 alone; the remaining rows carry the other limbs.'),
+    ('PREREG.md',
+     'The first commit contains the registration and its checking tools'): (
+        ('PREREG.md', 'DESIGN.md', 'HISTORY.md', 'tools/check_registration.py', 'protocol/runtime_reference.py', 'DEVIATIONS.md', 'PARKING_LOT.md', 'VALIDATED_CONFIG.toml'),
+        'D6 - REGISTERED TEXT, not editable. §11 item 1 lists the first '
+        "COMMIT's contents, which is a different set from the tag message's "
+        'hash block: it includes DEVIATIONS.md, PARKING_LOT.md, '
+        'VALIDATED_CONFIG.toml and tests/registration/, none of which are '
+        'hashed.'),
+    ('AVAILABILITY_DECLARATION.md',
+     'Registered text: *"SHA-256 of `PREREG.md`, `DESIGN.md`, and `HISTORY.md`'): (
+        ('PREREG.md', 'DESIGN.md', 'HISTORY.md'),
+        'D6 - §D.3 entry (i) QUOTES PREREG.md §11 item 3 in order to state '
+        'its floor reading. The quotation must stay verbatim.'),
+    ('evidence/ceremony/COMMIT_PLAN.md',
+     '[hashed], DESIGN.md [hashed], HISTORY.md [hashed]'): (
+        ('PREREG.md', 'DESIGN.md', 'HISTORY.md', 'tools/check_registration.py', 'AVAILABILITY_DECLARATION.md', 'DEVIATIONS.md'),
+        'D5 - the block is explicitly labelled "For the human reader, and NOT '
+        'the check". It groups the six by EXPECTED VISIBILITY in `--cached` '
+        'output, which deliberately is not $FILES order; V1a/V1b/V1c above it '
+        'are the executable checks and they read the set from its authority.'),
+    ('PREREG.md',
+     'SHA-256 of `PREREG.md`, `DESIGN.md`, and `HISTORY.md` as committed'): (
+        ('PREREG.md', 'DESIGN.md', 'HISTORY.md', 'DEVIATIONS.md'),
+        'D6 - REGISTERED TEXT, not editable. §11 item 3 is a FLOOR: no '
+        "'only', no 'exactly', so a superset satisfies it and over-delivery "
+        'is strictly stronger. The executed v30 tag already carried five. See '
+        'AVAILABILITY_DECLARATION.md §D.3 entry (i).'),
 }
 
 
@@ -1043,7 +1060,7 @@ def check_hash_set_single_source(root: Path) -> list[Finding]:
         "hash_set_single_source", _CEREMONY_REL, None,
         "authority: %d paths (%s)" % (n, ", ".join(files)), is_note=True))
 
-    seen_exempt: set[tuple[str, int]] = set()
+    seen_exempt: set[tuple[str, str]] = set()
 
     for rel in _HASH_SET_CORPUS:
         path = root / rel
@@ -1073,8 +1090,14 @@ def check_hash_set_single_source(root: Path) -> list[Finding]:
             bad = sorted(v for v in saw if v != n)
             if not bad:
                 continue
-            key = (rel, idx)
-            entry = _HASH_SET_EXEMPT.get(key)
+            key, allowed, reason, problem = _exempt_by_anchor(
+                _HASH_SET_EXEMPT, rel, raw, lines)
+            if key is not None and problem:
+                findings.append(Finding(
+                    "hash_set_single_source", rel, idx,
+                    "D5/D6: this site's exemption is UNUSABLE - %s" % problem))
+                continue
+            entry = None if key is None else True
             if entry is None:
                 findings.append(Finding(
                     "hash_set_single_source", rel, idx,
@@ -1082,13 +1105,6 @@ def check_hash_set_single_source(root: Path) -> list[Finding]:
                     "(%s \u00a73.2) says %d. Correct it against $FILES, or add a "
                     "path+line exemption with its reason."
                     % ("/".join(str(b) for b in bad), _CEREMONY_REL, n)))
-                continue
-            pin, allowed, reason = entry
-            if pin not in raw:
-                findings.append(Finding(
-                    "hash_set_single_source", rel, idx,
-                    "D5/D6: exemption has DRIFTED - the pinned text %r is no longer "
-                    "on this line. Re-anchor the exemption; do not widen it." % pin))
                 continue
             seen_exempt.add(key)
             unlisted = sorted(v for v in bad if v not in allowed)
@@ -1124,8 +1140,14 @@ def check_hash_set_single_source(root: Path) -> list[Finding]:
                     "hash_set_single_source", rel, idx,
                     "D2: enumeration matches $FILES in order", is_note=True))
                 continue
-            key = (rel, idx)
-            entry = _HASH_SET_ENUM_EXEMPT.get(key)
+            key, allowed, reason, problem = _exempt_by_anchor(
+                _HASH_SET_ENUM_EXEMPT, rel, raw, lines)
+            if key is not None and problem:
+                findings.append(Finding(
+                    "hash_set_single_source", rel, idx,
+                    "D6: this site's enumeration exemption is UNUSABLE - %s" % problem))
+                continue
+            entry = None if key is None else True
             if entry is None:
                 findings.append(Finding(
                     "hash_set_single_source", rel, idx,
@@ -1133,13 +1155,6 @@ def check_hash_set_single_source(root: Path) -> list[Finding]:
                     "in order (%s). Either make it the set or exempt it by "
                     "path+line with its reason."
                     % (len(found), n, ", ".join(found) or "none in order")))
-                continue
-            pin, allowed, reason = entry
-            if pin not in raw:
-                findings.append(Finding(
-                    "hash_set_single_source", rel, idx,
-                    "D6: enumeration exemption has DRIFTED - pinned text %r is no "
-                    "longer on this line." % pin))
                 continue
             seen_exempt.add(key)
             if tuple(found) != tuple(allowed):
@@ -1223,24 +1238,25 @@ def check_hash_set_single_source(root: Path) -> list[Finding]:
     # ---- exemptions that no longer match anything -------------------------
     for key in list(_HASH_SET_EXEMPT) + list(_HASH_SET_ENUM_EXEMPT):
         if key not in seen_exempt:
-            entry = _HASH_SET_EXEMPT.get(key) or _HASH_SET_ENUM_EXEMPT.get(key)
-            pin = entry[0]
-            src = root / key[0]
-            where = ""
+            rel, anchor = key
+            src = root / rel
+            where = " The file itself is missing."
             if src.exists():
                 hits = [n for n, ln in enumerate(
                     src.read_text(encoding="utf-8", errors="replace")
                     .split(chr(10)), 1)
-                    if pin in ln]
-                if len(hits) == 1:
-                    where = (" The pinned text is now at line %d - re-anchor it there."
-                             % hits[0])
-                elif hits:
-                    where = " The pinned text now appears on lines %r." % (hits,)
+                    if anchor in ln]
+                if not hits:
+                    where = (" Its anchor text is gone from the file - the sentence it "
+                             "exempted no longer exists, so delete the exemption.")
+                elif len(hits) == 1:
+                    where = (" Its anchor is at line %d, but that line did not trigger "
+                             "the check - the exemption is no longer needed." % hits[0])
                 else:
-                    where = " The pinned text is gone from the file entirely."
+                    where = (" Its anchor matches %d lines (%r); narrow it."
+                             % (len(hits), hits[:6]))
             findings.append(Finding(
-                "hash_set_single_source", key[0], key[1],
+                "hash_set_single_source", rel, None,
                 "D5/D6: this exemption fired on nothing - a stale exemption is a hole, "
                 "not a no-op.%s" % where))
     return findings
@@ -1535,10 +1551,10 @@ def check_declaration_values(root: Path) -> list[Finding]:
 
 # (target file, line, text that must be on it, who cites it)
 _LINE_PINNED_CITATIONS = (
-    ("evidence/ceremony/CEREMONY_COMMANDS.md", 268, 'FILES="PREREG.md',
+    ("evidence/ceremony/CEREMONY_COMMANDS.md", 277, 'FILES="PREREG.md',
      "COMMIT_PLAN.md \u00a76 and DEVIATIONS_DRAFT.md cite \u00a73.2 l.180 as the authority "
      "for the hash set; the target is a shell assignment and has no heading"),
-    ("HISTORY.md", 275, "### H-34",
+    ("HISTORY.md", 277, "### H-34",
      "COMMIT_PLAN.md \u00a73 cites the H-34 heading and its sha256 quotation"),
     ("HISTORY.md", 219, "13. *(12 Aug 2026)*",
      "COMMIT_PLAN.md cites H-L13 by line; the lesson list is numbered, not headed"),
@@ -1546,7 +1562,7 @@ _LINE_PINNED_CITATIONS = (
      "DEVIATIONS_DRAFT.md cites H-L12 by line for the date convention"),
     ("DESIGN.md", 546, "review-lesson",
      "COMMIT_PLAN.md cites DESIGN.md l.546 as the cross-reference H-L13 de-fragilised"),
-    ("AVAILABILITY_DECLARATION.md", 4008, "R8. H-entry",
+    ("AVAILABILITY_DECLARATION.md", 4313, "R8. H-entry",
      "the decision-log tail is one block with no per-entry heading"),
 )
 
@@ -1675,6 +1691,11 @@ _WORK_ROOT = pathlib.Path(
 # file is reproducible or throwaway, and is auditable as such.
 _EPHEMERAL = (
     ("__pycache__", "compiled bytecode, regenerated on import"),
+    ("/licence/",
+     "a draft of the distribution licence. The committed LICENSE lives on the "
+     "Phase 1 branch, because the tag attests the registration and not the "
+     "distribution -- so on this branch the draft has no content twin and this "
+     "check cannot reconcile it by hash. Reproducible: it is the MIT text."),
     # R100/§172.1. NOT committed and NOT deleted: committing it changes what
     # ships; deleting it loses the instrument that produced a recorded finding.
     ("control_char_scan.py",

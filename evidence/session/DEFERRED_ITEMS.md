@@ -53,11 +53,14 @@ nothing. Neither half is a caveat — both are checks the tool ships.
 
 ## §180.4 — bring `phase7_l2_sim.py` into the repository (post-tag, RECOMMENDED)
 
-**The file:** `phase7_l2_sim.py`, sha256 `c659d3ac167a13afb52651d4521ecc9fd5c8fabd59fd2d712eb4afa5b4669665`, **949 lines, 41,745 bytes (~41 KB)**, currently
-resident only in the archive at `results\pc2_all_phases\_scripts\scripts\`.
+**The file:** `phase7_l2_sim.py`, sha256 `c659d3ac167a13afb52651d4521ecc9fd5c8fabd59fd2d712eb4afa5b4669665`, **949 lines, 41,745 bytes (~41 KB)**.
+**DISCHARGED 26 August 2026: it is in the repository** at `evidence/fixture_spike/f3/phase7_l2_sim.py`,
+hashed in the `prereg-v30a` tag message and attested in the evidence manifest. It was copied
+from the archive at `results\pc2_all_phases\_scripts\scripts\` and verified at the
+destination against the pin, which was not re-taken from the copy.
 
-**Why it is post-tag.** Bringing it in **changes what ships**, and its absence makes
-**nothing in the signed object false** — §D.1 pins its bytes, and D-ARCHIVE discloses that a
+**Why it was carried as post-tag, and why that changed.** Bringing it in **changes what
+ships**, and its absence made **nothing in the signed object false** — §D.1 pins its bytes, and D-ARCHIVE discloses that a
 repository-only reader cannot re-derive the classifications. Disclosed truthfully is not the
 same as unavailable, and §71.3's line falls between them.
 
@@ -145,3 +148,40 @@ timestamping, and asserts no executed procedure whose evidence a reader would ha
 | §168.3 LICENSE | **post-tag**, **not executed**, author's choice | R99 |
 | §173 fourth direction | **post-tag**, **not executed**; spec recorded, known positive available | R100 |
 | §180.4 phase7_l2_sim.py | **post-tag**, **not executed**, **RECOMMENDED** — ~41 KB makes the manifest independently verifiable | R102 |
+
+---
+
+## FIRST POST-TAG ITEM — the round-reconciliation check fails silent
+
+**The defect.** The check's population is a pinned absolute path to one session's
+scratchpad. Work is performed in a different directory, so the population it walks
+is not the population it claims. It reports `every working file is in the
+repository or declared ephemeral` and prints the same green whether the pinned
+directory holds the work, holds stale files, or does not exist at all.
+
+**Why it is disclosed rather than repaired before the tag.** Repairing it turns
+the gate red immediately, which forces a re-pin to the current session — and that
+re-pin detaches again at the next session, which is the same defect with a fresher
+value. It also puts a second edit into a hashed tool immediately before the hash
+set is derived. The disclosure is the one-way door: the declaration freezes at the
+tag, and a tool can be corrected in any later version.
+
+**The end state, stated so it is not re-derived later.**
+
+1. **Derive the population, never pin it.** The working directory is discoverable
+   at run time; an absolute path written once is a carried-forward value and goes
+   stale the way every other carried-forward value in this ceremony went stale.
+2. **Exit non-zero when the population is empty or its root is absent.** A check
+   that prints over nothing is not a check, and its silence is indistinguishable
+   from a pass. This is the fail-loud half and it is the part that matters: had it
+   been present, the pinned path would have announced itself the first time it
+   pointed at a directory that no longer held the work.
+3. **State the population with the result**, as the sweep discipline already
+   requires elsewhere — the count of files walked and the root walked, printed
+   beside the verdict, so a domain that has moved is visible in the output rather
+   than only in the source.
+
+**Known-positive required before the repair is believed:** point the check at a
+directory that does not exist, and at one that exists but is empty. It must exit
+non-zero for both. A check that has only ever run against a populated directory
+has not been shown to detect an unpopulated one.

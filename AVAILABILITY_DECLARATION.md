@@ -1,6 +1,6 @@
 # AvailabilityModel declaration — fixture reconstruction
 
-## LINE REFERENCES IN THIS FILE — WHICH REGISTRATION VERSION THEY MEAN (R95/§146.2)
+## LINE REFERENCES IN THIS FILE AND IN THE TAG MESSAGE — WHICH REGISTRATION VERSION THEY MEAN (R95/§146.2)
 
 **Unqualified `PREREG.md` line numbers in records predating 25 August 2026 are v30 line numbers.**
 A line reference written before the v30a amendment was applied refers to the registration version
@@ -8,6 +8,18 @@ current at that record's date, and is **correct as history**. The v30a amendment
 after `PREREG.md` line 99, so **every v30 line number above 99 differs from its v30a position** —
 `git show prereg-v30:PREREG.md` recovers the registered v30 text byte-exact and is where such a
 reference resolves.
+
+**THIS FRAME REACHES THE `prereg-v30a` TAG MESSAGE, and says so here because the tag message
+cannot say it itself.** The tag message's own summary line cites `PREREG.md` §6.2 by line —
+reference AUC at l.445, the contamination availability class recording locus at l.450, the sliced CI
+variant at l.451, criterion 3 at l.461. **Those are v30 line numbers.** In the amended file they land
+on a table rule, a blank line, and prose about something else, so a reader who resolves them against
+the file the tag ships is reading the wrong lines and gets no warning.
+
+The tag message's format is fixed by the ceremony and is not edited to carry a caveat, so the frame
+is stated here instead — in a file the same tag hashes, which is what makes this statement as
+firmly attested as the message it qualifies. **`git show prereg-v30:PREREG.md` is where those four
+references resolve.**
 
 **They are deliberately NOT renumbered.** Renumbering a dated record falsifies what was cited when,
 which is the one thing the record exists to preserve. Where this file quotes registered text, it
@@ -1005,7 +1017,7 @@ instance. This file is hashed in the `prereg-v30a` tag message (§D.2) and froze
    neighbouring case). The registered wording assumed one artifact where this fixture
    has two: a measurement manifest and a declaration.
 2. **The substitute binds harder than the original.** The manifest is hashed in no tag message.
-   This declaration is hashed in the v30a tag message (§D.2's sixth hash) and its contents are
+   This declaration is hashed in the v30a tag message (§D.2 enumerates the set) and its contents are
    frozen by §D.1, so moving the class after the tag is itself a class C amendment. Recording
    the class here therefore subjects it to a stronger integrity chain than line 450 asked for —
    "an amendment weaker than the thing it amends is not one" (PREREG.md line 97) is satisfied
@@ -3595,11 +3607,30 @@ registration under PREREG.md line 95:**
    `0da59d53982188712073c9b7f5addcd66221babcd8555efabbbd0c3d3f208a1d`, 27,284 bytes.
 
    **And the code the manifest's meaning depends on, pinned with it (R102/§180.1):**
-   `phase7_l2_sim.py`, sha256 `c659d3ac167a13afb52651d4521ecc9fd5c8fabd59fd2d712eb4afa5b4669665`, **949 lines, 41,745 bytes**, resident in the archive at
-   `results\pc2_all_phases\_scripts\scripts\` and **NOT in the repository**. §D.1 pinned
-   the manifest's bytes; the manifest's **meaning** - what each class asserts about what a
-   column reads - rests entirely on that file, and nothing pinned it. A frozen manifest
-   whose semantics can move underneath it is not frozen.
+   `evidence/fixture_spike/f3/phase7_l2_sim.py`, sha256
+   `c659d3ac167a13afb52651d4521ecc9fd5c8fabd59fd2d712eb4afa5b4669665`, **949 lines, 41,745 bytes**.
+   §D.1 pinned the manifest's bytes; the manifest's **meaning** - what each class asserts about what
+   a column reads - rests entirely on that file, and nothing pinned it. A frozen manifest whose
+   semantics can move underneath it is not frozen.
+
+   **THE FILE IS NOW IN THE REPOSITORY, and the hash above is unchanged by the move.** It was
+   copied byte-for-byte from the archive at `results\pc2_all_phases\_scripts\scripts\`, and the
+   sha256 was verified at the destination against the value already pinned here — the pin was not
+   re-taken from the copy. It is hashed in the tag message with everything else the freeze ranges
+   over.
+
+   **Why it is filed under `f3/` and not under a producer's directory.** Producing code brought into
+   the tree was filed with the artifacts it produced. **This file produced none of the spike
+   groups**, so that pattern does not reach it, and a reader should not infer one. Placement follows
+   this section's own stated relation instead: it is the code the F3 manifest's meaning depends on,
+   and `evidence/ceremony/F3_MANIFEST_VERIFICATION.md` — the verification the author's sign-off was
+   given over — is wholly about F3 and quotes this file throughout. `t4`'s claim on it is
+   **consumption**, not production, and filing a file under a consumer becomes arbitrary the moment
+   a second consumer appears.
+
+   **`PREREG.md` SC-4(k2) does not read this file.** SC-4(k2) reads the fixture manifest's named
+   list of columns classed as leaking sources. This file is what gives that list its meaning; it is
+   not itself a gate input, and `phase7_l2_sim` appears nowhere in `PREREG.md`.
 
    **Why the manifest is in this list at all (R99/§167.1).** `PREREG.md` SC-4(k2) reads its **named
    list of columns classed as leaking sources** and says so in terms: *"Because the gate now reads
@@ -3658,45 +3689,68 @@ place — it goes through PREREG.md line 99's route: recorded, amended registrat
 the affected benchmark regenerated as a new version under §6.4 with the superseded results
 published alongside.
 
-### D.2 — The v30a tag message carries SIX hashes
+### D.2 — The v30a tag message's hash enumeration
 
-The `prereg-v30` tag message carries **five** SHA-256 lines — read this pass from the repository
-(`git tag -l -n50 prereg-v30`), verbatim block:
+**The enumeration is derived from `PREREG.md` §11 item 8, and from nothing else.** Item 8 is the
+v30a clause that defines the set; it is cited here by anchor rather than by line, because this file
+is living and a line reference into it drifts.
 
-```
-f0a8f00164c217a40f87a4dc9fee6193ee7e4e125c68e3ecc84863fd6e2c7cc6  PREREG.md
-039240e3c57497cc8eda65fbfcdc3d1120f1d7a12ad0f41b48d71c98ef063428  DESIGN.md
-e8cf5bbbc42762838318e2ffc8cf85b6f44ed701c3ee88f8e93a6e734fc43e0d  HISTORY.md
-72ffc7c69899844644ff79a9f6a12b083bbbe2c1160aca8d90dbe9415a0322e2  tools/check_registration.py
-215194c15ab89f208198ce6bc3f8dd726d652fa6bee3d7bd868d1234c9bec31a  protocol/runtime_reference.py
-```
+**Item 8's three limbs, and what each contributes:**
 
-**DECLARED: the `prereg-v30a` tag message carries SIX hashes — those five, inherited and
-recomputed at their v30a state, PLUS the SHA-256 of this availability-declaration file itself.**
+1. **"every registered document and every registration tool — the registration and its checking
+   tools as item 1 names them."** §11 item 1 names nine paths. Eight are files; the ninth,
+   `tests/registration/`, is a directory, and a directory name does not pin content — item 8's
+   closing sentence speaks of a registered **file**, so the directory is enumerated as the files it
+   contains.
+2. **"every document an amendment registers under §0.2.1 (the availability declaration included)."**
+   That is this file.
+3. **"every file SC-8(f) requires hashed."** SC-8(f) reaches every file the freeze ranges over.
+   Two of those are separate committed files rather than elements inside this one: the F3 fixture
+   manifest, which SC-4(k2) reads and §D.1 pins, and the declared ground-truth map, which is the
+   scoring key.
 
-Basis, cited rather than asserted (the two assertions of working resolution R7):
+**DECLARED: the `prereg-v30a` tag message carries TWENTY SHA-256 lines.** The count is read from the
+enumeration and is not an independent assertion about it; the enumeration is produced by the
+ceremony's C2 step, whose output `v30a.hashes.txt` is the single authority for any `prereg-v30a`
+hash value.
 
-- **The five-hash inheritance.** R7 records that the v30a tag carries all five hashes, "matching
-  the prereg-v30 tag as executed", and that §0.2.1's "both" is a stale count predating
-  `HISTORY.md` and the tooling files joining the block. **Cite for the executed state:** the tag
-  message block quoted verbatim above, read from the repository this pass — five SHA-256 lines
-  covering `PREREG.md`, `DESIGN.md`, `HISTORY.md`, `tools/check_registration.py`,
-  `protocol/runtime_reference.py`.
-- **The governing clause.** **Cite: PREREG.md line 97** (verbatim): "**An amendment inherits
-  §11's integrity chain in full:** signed tag, both file hashes in the tag message, external
-  timestamp receipt committed, repository publicly reachable at lock. An amendment weaker than
-  the thing it amends is not one." R7's reading — that "both" is the stale count and the
-  executed five govern — follows from that final sentence, and is recorded by R7 as a class A
-  mechanical fact requiring no locked-file edit.
+| limb | paths |
+|---|---|
+| 1 — item 1, named individually | `PREREG.md`, `DESIGN.md`, `HISTORY.md`, `DEVIATIONS.md`, `PARKING_LOT.md`, `VALIDATED_CONFIG.toml`, `tools/check_registration.py`, `protocol/runtime_reference.py` |
+| 1 — `tests/registration/`, expanded | `EXPECTED_OUTPUTS.md`, `conftest.py`, `generate_expected_outputs.py`, `test_checker.py`, `test_expected_outputs.py`, `test_invariants.py`, `test_traces.py`, `traces.py` |
+| 2 — §0.2.1 | `AVAILABILITY_DECLARATION.md` |
+| 3 — SC-8(f) | `evidence/fixture_spike/f3/fixture_manifest_DRAFT.json`, `evidence/fixture_spike/n1/declared_map.csv` |
+| §D.1's pinned producing code | `evidence/fixture_spike/f3/phase7_l2_sim.py` |
 
-**Why the sixth.** This file is the reconstructed availability declaration PREREG.md line 447
-requires, and under the amended criterion 3 it carries the ground-truth map the gate scores
-against. A tag that hashes the specification but not the declaration the specification is
-evaluated under would be an integrity chain with a hole exactly where the amendment lives — and
-"an amendment weaker than the thing it amends is not one". The sixth hash closes it.
+**WHY THE EARLIER SIX IS SUPERSEDED, recorded rather than quietly replaced.** This section previously
+declared SIX and derived that number from a pair of sources: working resolution R7, which records
+the set the `prereg-v30` tag actually carried, and `PREREG.md` §0.2.1 line 97's quantifier over the
+files hashed at the time that line was written. **Neither is quoted here with its count**, because a
+count restated outside its own site is a second assertion about the set and drifts from it; both are
+dispositioned at their own sites.
 
-**Lock-time obligations arising elsewhere in this file — BOTH DISCHARGED this pass, recorded so
-the change is auditable rather than silent:**
+**Item 8 names both of those in terms and supersedes them as the set:** *"where an earlier clause
+names the hashed files or their number — item 3's three names, §0.2.1 line 97's 'both' — it records
+the set at the time of its writing, stands as that record, and is superseded as the set by this
+item."* The earlier derivation rested on the very clause item 8 retires, and it did not cite item 8.
+Both earlier statements stand as the record of what was true when they were written; neither states
+the set now.
+
+**PRIOR_ART_VERIFICATION.md is not named by item 1, is not registered under §0.2.1, and is not
+within the range SC-8(f) ranges over; it is outside the enumeration by rule.**
+
+That file was the declined seventh candidate, closed as SIX at `COMMIT_PLAN.md` §6. **Growing the
+set reopens that closure, so it is decided again here rather than inherited:** the earlier decision
+turned on a judgement about what belonged, and this one turns on the rule item 8 states. The
+outcome is the same and the ground is different, which is why it is restated rather than cited.
+
+**Why the declaration is in the set at all.** This file carries the scoring key and the declared
+elements the gate consumes. A tag that hashes the specification but not the declaration the
+specification is evaluated under is an integrity chain with a hole exactly where the amendment
+lives, and **an amendment weaker than the thing it amends is not one** (§0.2.1 line 97).
+
+**Lock-time obligations arising elsewhere in this file — BOTH DISCHARGED, recorded so the change is
+auditable rather than silent:**
 
 - **(i) "Add the contamination availability class as a named field to the governing manifest"
   (§A.3) — DISCHARGED by amendment, not by doing it.** The recording locus is amended to this
@@ -3707,9 +3761,9 @@ the change is auditable rather than silent:**
   obligation with its scoring rule declared ex ante. It is not due at lock; it is due at the
   first CI run that exercises the padded slicer, and it is frozen by §D.1 item 5.
 
-**No lock-time obligation remains outstanding in this file.** One obligation is carried FORWARD
-rather than discharged — §A.4's Phase 1 CI obligation — and it is named here so a later reader
-does not mistake "nothing due at lock" for "nothing due".
+**No lock-time obligation remains outstanding in this file.** Obligations carried FORWARD rather
+than discharged are named at §D.5, so a later reader does not mistake "nothing due at lock" for
+"nothing due".
 
 ### D.3 — Interpretation rule for decision-log entries
 
@@ -3829,6 +3883,257 @@ registration names — **they do not prove who holds that key.** Key-to-person b
 established by any repository-local check, because an attacker who could rewrite the tag could
 rewrite all three legs. **That binding rests entirely on the key's publication outside this
 repository, and §12's disclosure states where.**
+
+### D.5 — Named open obligations
+
+**Recorded under SC-9(c); neither is waived.** SC-9(c) holds that a locked obligation is discharged
+only by being met or by being amended, and may not be discharged by a working resolution or by being
+carried forward silently. These two are carried forward, and this section is what makes that
+carrying explicit rather than silent.
+
+**SC-2(e) is not engaged.** SC-2(e) governs moving an element between phases. Neither element moved:
+both remain Phase 0 elements gated by §10.1. What a working resolution fixed was the **due event**,
+not the phase.
+
+**(i) §9.2 cross-tool comparison — Phase 0 element, gated by §10.1.**
+
+- **DUE:** before any Phase 1 result is published. Not a condition on Phase 1 work commencing —
+  §10.0 step 0 is the only such condition.
+- **DISCHARGE:** each named comparator has been run against the acceptance fixture with its own
+  positive control (W2b) and its findings recorded per tool. A comparator that cannot run is
+  recorded could-not-run with the reason and counts as covered-with-exclusion, never as a pass.
+  **Zero comparators run is not a pass** (SC-11a).
+
+**(ii) Licence check — Phase 0 element, gated by §10.1.**
+
+- **DUE:** before any third-party code enters the shipped distribution, and in any case before
+  Phase 1 ship.
+- **DISCHARGE:** every dependency in the shipped distribution has its licence recorded, and no
+  copyleft licence appears in the vendored set. `deepchecks` is AGPL-3.0 and is named.
+  Interoperation by optional import or separate process is not vendoring; the distinction is
+  recorded with the determination.
+
+**The shape of both entries is §D.2(ii)'s:** a named due event plus a discharge rule, with the rule
+**cited rather than restated** where a registered clause already states it.
+
+---
+
+### D.6 — Disclosures at the tag
+
+**What this section is.** Five disclosures accrued during the amendment. Each was written as it
+should appear and none had been deployed into a registered file, so each existed only in a drafting
+record. **A disclosure that lives only in a drafting record discloses nothing to a reader of the
+tag**, and this file freezes at the tag. They are landed here for that reason.
+
+**One of them was already load-bearing while absent.** §A's conformance walk states that `PREREG.md`
+line 478 "is handled instead by **specific disclosure at D-STALE**, by line and by quotation" — a
+registered pointer into a disclosure that did not exist. The pointer now resolves.
+
+---
+
+**D-KEY — the attestation boundary.**
+
+> **What the ceremony verifies about the signing key, and what it does not.** Step C1b verifies
+> three things and halts if any disagrees: the signature is good (`[GNUPG:] GOODSIG`); the primary
+> key fingerprint gpg reports for the signature (`[GNUPG:] VALIDSIG`, last field) equals the
+> fingerprint the signed tag message asserts; and both equal the fingerprint declared at §D.4, which
+> is inside the tag's hash enumeration and therefore covered by the OpenTimestamps receipt over the
+> commit.
+>
+> **All three legs are internal to this repository.** Together they establish that the tag was
+> signed by the key this registration names, and that the naming was fixed before the timestamp.
+> **They do not establish who holds that key.** Key-to-person binding cannot be established by any
+> repository-local check: an actor able to rewrite the tag could rewrite all three legs together.
+>
+> **That binding rests on publication outside this repository.** The only external location this
+> repository names is the GitHub remote `https://github.com/TheoJHoward/DataLeakageAuditor.git`.
+> **No keyserver is referenced anywhere in the repository.** If the public key is published, the only
+> location consistent with the repository's own contents is the author's GitHub account settings —
+> **which is mutable, carries no date a reader can see, and can be removed or replaced without
+> leaving a record.** For a pre-registration, whose whole value is that a claim was fixed at a
+> knowable time, that is a weak external anchor, and it is disclosed as such rather than left to be
+> discovered.
+>
+> **What shipping the key material fixes, and what it does not.** `prereg-signing-key.asc` at the
+> repository root is the ASCII-armored public key, so the tagged tree carries the key material
+> itself and a reader in ten years can verify the signature without a keyserver that may no longer
+> exist. **This closes the availability problem, not the binding problem** — a key shipped inside
+> the repository it signs proves internal consistency only, exactly as above. The uid on the shipped
+> key reads `Theo Johann Howard <theojhoward1@gmail.com>`; it is recorded here because the key
+> material ships and the uid ships with it.
+>
+> **A remedy available and NOT taken, stated so the choice is visible:** publishing the key to
+> `keys.openpgp.org` and citing that URL in the README would give a dated, third-party, append-only
+> anchor. It is an author action requiring control of the key and the email address; no ceremony
+> step can perform it.
+
+---
+
+**D-ADVISORY — the five deferred advisory steps.**
+
+> **Five ceremony steps emit output for a human to compare and assert nothing.** They are `C5`
+> (2 items), `C2b` (6), `C3c` (3), `C3d` (2) and `V2` (2). Each is honest advisory — it claims no
+> verdict — but a reader should know that at these five points the ceremony's correctness rested on
+> a person reading output, not on an exit status. The ten steps whose printed verdict contradicted
+> their exit status were converted and each carries a fired negative test; **these five were
+> deferred, and this line is the record that they were deferred rather than overlooked.**
+
+---
+
+**D-STALE — the stale-description class, stated as a FLOOR.**
+
+> **A class of stale descriptions is disclosed rather than fixed, and its extent is not known.**
+>
+> After the R9, R11, Y1, R1, R2, R16, SC-13 and Z1 amendments, a sweep was run for passages that
+> still describe the amended objects as they were before. **The sweep found approximately
+> seventy-six distinct sites and returned zero of ten amendments clean.** Of those, the
+> ship-critical subset was fixed. **What is disclosed here is a different quantity from what the
+> sweep found, and the two must not be read as one:** the sweep's finding is the seventy-six above;
+> what remains uncorrected is **approximately thirteen sites in four classes** — the declared map's
+> class set (Y1), what counts as a violation at equal timestamps (R1), a per-side criterion
+> enumeration that omits criterion 1, and SC-13's description.
+>
+> **The number seventy-six is a FLOOR, not an extent.** The sweep's population was never measured.
+> It was an agent-driven read over ten amendments, not a mechanically bounded scan, and no proof
+> exists that it covered every passage describing every amended object. **The true size of this
+> class is unknown and may be larger than the sweep found.** Nothing here should be read as bounding
+> the class by seventy-six, or by thirteen.
+>
+> **The instrument's own limits, quoted verbatim rather than paraphrased:** its actual domain was
+> *"ten amendments, agent-driven read"*; its gap was *"not mechanically bounded; no population
+> proof"*; and its boundary test was *"none — this is the weakest instrument in the set, and its
+> output is cited as evidence rather than relied on as coverage."*
+>
+> **WHICH INSTRUMENT PRODUCED THESE FIGURES — stated so the two are never conflated.** Both figures
+> above are the **agent-driven description sweep's**. **Neither comes from any script.** In
+> particular neither comes from `_K1_enumerate.py`, the K1 step-1 population enumerator, which
+> shares the K1 label and nothing else: it enumerates blockquote runs in `SCHEMA_SET_FINAL.md` for
+> the block manifest and has never counted a stale description. `_K1_enumerate.py` carries a defect
+> — a literal BACKSPACE in its `MARK` regex, so the marker split it guards never runs — and **that
+> defect does not touch these figures or anything else cited anywhere**: the script is superseded by
+> `_K1_enumerate2.py`, and its own output is cited in no document. A later reader finding the K1
+> defect should not go looking for its effect here, because there is none.
+>
+> **ONE STALE SENTENCE, NAMED BY LINE, NOT LEFT TO THE CLASS.** The class above is disclosed as a
+> floor. **This sentence is disclosed individually, because it is known to be false and it was left
+> in the registered text deliberately.**
+>
+> **Where:** `PREREG.md` **line 478 as registered at `prereg-v30`; line 948 in the amended file.**
+>
+> **Verbatim:** *"**This is a rebalance, not a tightening.** The two gates are incomparable: a
+> fixture detected only at `dtype_promoted` with nothing on clean or corrected fails the old and
+> passes the new; a fixture detected at PROVEN throughout but with one REVIEW finding on a clean
+> source passes the old and fails the new. The trade is deliberate — drop the irrelevant requirement
+> that acceptance detections be proofs, add the relevant requirement that **nothing shipped appears
+> on clean or corrected material**."*
+>
+> **Why it is now false.** Its closing clause states criterion 3's purpose as a pure silence test on
+> the corrected side. **SC-3 retired that premise.** Under the amendment the corrected side is
+> scored against the declared ground-truth map: findings the map predicts are **required**, and a
+> tool silent where the map declares a violation **fails**. The sentence describes a gate the
+> registration no longer has.
+>
+> **The operative text is correct and is not affected.** The criterion itself — `PREREG.md` line 461
+> as registered — **was replaced by SC-3**, and the replacement is what the gate reads. The applied
+> text registers that *"the criteria of §6.2 as amended are the whole gate"*; line 948 is not a
+> criterion, sits in §6.2's framing prose, is inside no clause block, and **no tool in the
+> repository reads it** — verified by search, not assumed. **It is rationale, not operative.**
+>
+> **Why it was not amended.** Re-amending rationale prose would open a second approval cycle over a
+> sentence that binds nothing, and line 97's rule — *"An amendment weaker than the thing it amends
+> is not one"* — is not engaged, because **nothing is weakened by leaving it**: the operative
+> criterion is strictly harder than the one this sentence describes. **The trade is accuracy of
+> rationale against the cost of the tag, and it was taken knowingly.**
+>
+> **It was known false at tag time and left in place. That is the disclosure.** A reader who takes
+> this sentence as a statement of what criterion 3 requires will be wrong, and should read SC-3.
+>
+> **Why the class was not measured before the tag.** Measuring the population means enumerating
+> every passage in every corpus that describes every amended object, and judging each against what
+> the object now is. That is larger than the amendment it would qualify, and it was ruled out of
+> scope rather than attempted and abandoned. **The consequence is stated rather than mitigated: a
+> reader relying on any description in these documents of an object amended by R9, R11, Y1, R1, R2,
+> R16, SC-13 or Z1 should verify it against the registered text, because this registration does not
+> warrant that such descriptions were all found.**
+
+---
+
+**D-INSTRUMENT — gaps in the verification apparatus itself.**
+
+> **The checks that verify this ceremony have measured domains, and the gaps are disclosed.** Six
+> remain open at the tag:
+>
+> 1. **`sha256sum -c` is one-directional.** It verifies listed→disk and cannot see a file on disk
+>    that no manifest line covers. Two instruments outside it now assert the reverse direction (a
+>    registration-checker scan of the tree, and a ceremony step against the index), but neither can
+>    see a file added between the last check and `git commit`; the clean-tree assertion after commit
+>    is the backstop.
+> 2. **The line-citation check covers 6 of 395 citations.** The other 389 rest on classification,
+>    and **71 of them could not be attributed to a target file at all** — a defect in the
+>    classifier, recorded as such and not as coverage.
+> 3. **The stale-description sweep has no measured population** (see D-STALE).
+> 4. **The hash-count check cannot read informal quantifiers, Roman numerals, or the `six (6)`
+>    form, and reads a range as its first value.**
+> 5. **The staging check cannot see staging performed by any means other than a literal `git add`
+>    line** — a wildcard, a variable or a loop is invisible to it.
+> 6. **The round-reconciliation check reports that every working file is either in the
+>    repository or declared ephemeral. Its population is a pinned scratchpad path, and that
+>    path does not track the directory in which work is performed.** Its pass is therefore
+>    evidence about the pinned directory alone, and is not evidence about files created
+>    outside it. The files created during this amendment were placed in the repository or
+>    declared ephemeral **by procedure, not by this check**. This states what the check does
+>    not reach; it does not enumerate what it missed.
+>
+> **These are published because a verification apparatus that claims more than it delivers is the
+> defect this project exists to detect in other people's pipelines**, and a pre-registration that
+> exempted its own instruments from that standard would be making the claim it warns against.
+
+---
+
+**D-ARCHIVE — the external-input dependency.**
+
+> **The fixture's inputs are not in this repository, and this is disclosed rather than resolved.**
+>
+> **The classifications were produced by `phase7_l2_sim.py`, committed in this repository and hashed
+> in the tag message. The inputs it consumed are external to the repository, so a repository-only
+> reader can audit the derivation but cannot re-execute it.**
+>
+> **THE FIGURES FOR THIS DISCLOSURE LIVE IN ONE ARTIFACT, AND THIS DISCLOSURE DOES NOT RESTATE
+> THEM.** That artifact is `evidence/LARGE_ARTIFACTS_RECORD.md`, attested by its line in
+> `evidence/MANIFEST.sha256`. Every per-file size, every count, and the archive's own total are
+> there, measured and sourced. **A figure quoted in two places is a figure that will eventually
+> disagree with itself.**
+>
+> **What is missing.** The producers read market data from a local archive outside the repository.
+> The producing code is committed; the inputs are not. A reader holding this repository and nothing
+> else **cannot regenerate the fixture from source** — they can verify every committed hash, re-run
+> every check, and read every result, but the bytes the fixture was built from are not theirs to
+> re-read. The position is: **(a) producing code in the repository — YES; (b) inputs in the
+> repository — NO; (c) pipeline deterministic — YES, demonstrated twice over.**
+>
+> **MAGNITUDE.** The archive runs to **several hundred gigabytes**. What the producers actually read
+> — traced through their own source rather than estimated — is **a few hundred megabytes across a
+> bounded, enumerated set of files: a small fraction of one percent of the archive.** The inputs are
+> **ZC 2025-01 and 2025-08 only**. The gap between what the archive holds and what the fixture needs
+> is **roughly four orders of magnitude**, and that gap is the disclosable fact: the dependency
+> looked like an archive-sized problem and is not one.
+>
+> **A NEGATIVE RESULT, REPORTED AS A POSITIVE FINDING.** The question *"what else does the fixture
+> read?"* was put to the producers' own source, and the answer is **NONE**. The archive's other
+> large trees — `processed/`, `pc2_transfer/`, `raw_data/`, each of them hundreds of gigabytes — are
+> read by none of the producers. **The dependency is bounded, and it is bounded by reading the code
+> rather than by asserting a scope.** A NONE that was looked for and not found is evidence; a NONE
+> that was assumed is not — which is why the method is stated beside the result.
+>
+> **A second measured fact, disclosed because it changes what "durable" means.** The archive is
+> **not synced to any cloud location, and neither is anything else**: the sync engine's database and
+> the account file were both last written nearly three years before the tag. **Every copy of every
+> artifact this registration depends on is on one machine, on one disk.**
+>
+> **Why the disclosure is not deleted now that the producing code ships.** Deleting it would claim a
+> self-sufficiency the repository does not have. Bringing the file in closes the code half only.
+
+---
 
 ## §E. Gate protocol input surface — what a detector receives, and what it never receives
 
@@ -3982,7 +4287,7 @@ assembly elements; lettered SECTIONS are **§0 and §A-§F**.
 | h | As-built defects, INHERITED, R4 split, **C5-DECIDED-WRAPPED** | 15 | c2\aggregation_comparison.md; R2_consolidated_report.md C1/C2/C5; c5\env_records.md; t1\violation_table.csv note; t1\t1_final_output.txt 61-67; results\phase5_fixed\gpu_track2_log.txt |
 | i | Documented-unverifiable assumptions (cite for item 2 CORRECTED) | 16 | f3\fixture_manifest_DRAFT.json (via Part I cross-check); c2\aggregation_comparison.md construct row 20; R2_consolidated_report.md C2 "Blockers (carried)" and C1 residual paragraph |
 | j | T4 35-column projection results | 17 | t4\fixture_manifest_35col_DRAFT.json; t4\t4_verification_report.json |
-| — | **Lock language: freeze, six hashes, interpretation rule** | **§D** | prereg-v30 tag message (five SHA-256 lines, read this pass); PREREG.md 97, 95, 99, 480; n1\declared_map.csv |
+| — | **Lock language: freeze, the hash enumeration, interpretation rule** | **§D** | prereg-v30 tag message (five SHA-256 lines, read this pass); PREREG.md 97, 95, 99, 480; n1\declared_map.csv |
 | — | **Gate protocol input surface** | **§E** | this declaration's declared elements; n1\declared_map.csv named as withheld |
 | — | **Method notes: Grep undercount; numbers discipline; §F.3's ALL-ZERO CONTROL — every zero/all-clean aggregate must be cross-checked against its source artifact and a mismatch RAISES, with the R17(iii) near-miss recorded as its provenance (S4)** | **§F**, incl. **§F.3** | c1\tagger_survey_capture.txt line 17 (119 by os.walk) vs 37 by default-excluded search, measured this pass; n2\provenance_notes.md (228-file walk); §13(i)'s R17(iii) paragraph (the false result the control exists to catch) |
 | k | Working-resolution record **R1-R9 and R11-R13** (no R10), verbatim | file tail | this file (frozen byte-identical; the tail heading occurs exactly once, and the tail runs unbroken to EOF) |

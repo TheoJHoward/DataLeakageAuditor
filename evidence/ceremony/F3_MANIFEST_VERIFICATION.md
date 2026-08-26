@@ -16,6 +16,22 @@ shows; the judgement rests with the author.
 | producing code | `phase7_l2_sim.py`, **949 lines**, sha256 `c659d3ac167a13af…` |
 | where that code lives | `MBO_2025\results\pc2_all_phases\_scripts\scripts\` — **the archive, NOT the repository** |
 
+**SUPERSEDED IN PART, 26 August 2026 — the producing code is now in the repository.**
+`phase7_l2_sim.py` was copied to `evidence/fixture_spike/f3/`, verified at the destination
+against the sha256 for `phase7_l2_sim.py` already pinned at `AVAILABILITY_DECLARATION.md` §D.1 — that
+file's hash, `c659d3ac167a13af…`,
+41,745 bytes, 949 lines), and is hashed in the `prereg-v30a` tag message. **The warning
+below was true on its date and is retained unedited**; what follows it about reading from
+the archive copy records how this verification was actually performed, which does not
+change.
+
+**A scope collision this supersession also closes.** The `D-ARCHIVE` disclosure draft read
+*"The producing code IS committed"* while the warning below read *"THE PRODUCING CODE IS
+NOT IN THE REPOSITORY"*. **Both were true — of different sets:** the first of the three
+spike producers brought in earlier, the second of `phase7_l2_sim.py`, which was not among
+them. Nothing anywhere said they were speaking about different sets, so the pair read as a
+contradiction. It was not one, and it is no longer live either way.
+
 > **⚠ THE PRODUCING CODE IS NOT IN THE REPOSITORY.** All 35 columns cite `phase7_l2_sim.py` as
 > their `construction_source`, and that file is absent from the repo. It is present in the
 > read-only archive, inside the **118-file / 2.6 MB `results/pc2_all_phases/_scripts` reference**

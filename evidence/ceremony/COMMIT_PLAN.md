@@ -261,9 +261,18 @@ git add AVAILABILITY_DECLARATION.md
 #     unchanged one is a no-op and is named anyway, because the set is the
 #     authority — not which members happen to be dirty this pass.
 git add tools/check_registration.py protocol/runtime_reference.py
+git add PARKING_LOT.md VALIDATED_CONFIG.toml
+git add tests/registration/EXPECTED_OUTPUTS.md tests/registration/conftest.py tests/registration/generate_expected_outputs.py tests/registration/test_checker.py tests/registration/test_expected_outputs.py tests/registration/test_invariants.py tests/registration/test_traces.py tests/registration/traces.py
 
 # (4) the evidence tree — currently untracked
 git add evidence
+# The three evidence paths the tag message hashes, named explicitly: `git add
+# evidence` already stages them, but the staging plan is also the record of
+# WHICH paths the tag attests, and a path covered only by a directory sweep is
+# not named anywhere a reader can check it against the hash set.
+git add evidence/fixture_spike/f3/fixture_manifest_DRAFT.json
+git add evidence/fixture_spike/n1/declared_map.csv
+git add evidence/fixture_spike/f3/phase7_l2_sim.py
 
 # (5) PRIOR_ART_VERIFICATION.md — NOW STAGED. R110 CHANGED IT.
 #     Until R110 this file was tracked and CLEAN since `ffa6d94`, so the commit
@@ -456,7 +465,18 @@ R15's no-carry-forward rule binds the manifest exactly as it binds the six tag h
 tree moves. The `# COUNTS.` comment block at the head of `MANIFEST.sha256` is human-readable and
 unhashed; regenerate it in the same pass so it does not describe a tree that no longer exists.
 
-## 6. CLOSED — the tag message carries SIX hashes (R67/§14.1, blocker item 8)
+## 6. SUPERSEDED — the tag message's hash enumeration
+
+**This section recorded the set as SIX, and that closure is superseded by `PREREG.md` §11
+item 8, which defines the set by rule rather than by decision.** The record below stands as
+what was decided and why; it no longer states the set. The set is `CEREMONY_COMMANDS.md`
+§3.2's `FILES` line, and its count is read from that line.
+
+**`PRIOR_ART_VERIFICATION.md` remains outside the enumeration**, and now by rule rather than
+by the judgement recorded here: item 1 does not name it, §0.2.1 does not register it, and
+SC-8(f) does not reach it.
+
+### The superseded closure, retained
 
 **DECIDED: SIX.** The set is `$FILES` at `CEREMONY_COMMANDS.md` §3.2 l.180, which is the single
 authority; this section records the decision, not the set.

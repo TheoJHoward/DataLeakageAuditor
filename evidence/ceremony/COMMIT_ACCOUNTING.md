@@ -78,6 +78,19 @@ the one value in the check that is safe to state.
   says the fix is the accounting, not the check. Belongs because the tag is cut over a tree whose
   own first gate must be able to terminate.
 
+- `account: 32dd31b` — **Superseded ceremony commit.** Carried a README asserting
+  `e82daa51…` for `tools/check_registration.py` while the commit itself carried
+  `070c336a…`. The mismatch was printed by the README cross-check and the commit ran anyway;
+  it was found and corrected in the same session by re-deriving the block from the hash
+  authority and re-running the ceremony from its first gate. **It belongs in the tagged tree
+  because it is an ancestor of the tag's commit and rewriting history to remove it would be a
+  worse record than keeping it with its defect named.** Nothing downstream reads it.
+
+- `account: 3257f07` — **Ceremony commit produced by that re-run.** The state this closeout
+  began from: gate green, hash set derived, README consistent with the commit. Superseded in
+  turn by the commit this accounting ships in, which grows the tag's enumeration from six paths
+  to the twenty `PREREG.md` §11 item 8 defines.
+
 ---
 
 ## The baseline rule, and why a commit is never asked to account for itself
