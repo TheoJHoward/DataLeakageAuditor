@@ -137,12 +137,23 @@ correct, and it names a mechanism.
 `trades.side` is silent for a different reason in the same sentence: the
 `aggressor_side` branch is taken, so `side` is never read at all.
 
-**Independent corroboration, arrived at from the other direction.**
-`AVAILABILITY_DECLARATION.md` §D.1 item 2 freezes `buy_volume_10s` as one of two
-**UNSCORED** columns, described as a *"degenerate constant"*. The declaration
-recorded the **symptom** by measuring the fixture; this probe recovered the
-**mechanism** by perturbing it, without being given the declaration. Two
-independent routes to the same column is the strongest form this evidence takes.
+**Independent corroboration — and a correction to how this section first put it
+(R134).** `AVAILABILITY_DECLARATION.md` §D.1 item 2 freezes `buy_volume_10s` as
+one of two **UNSCORED** columns, a *"degenerate constant"*. This section first
+said the declaration recorded the **symptom** while the probe recovered the
+**mechanism**. That undercredits the declaration, which records both: §A's
+defect record states in terms that *"every aggressor-tagging writer that ever
+existed in the archive emits only `BUY_AGGRESSOR`/`SELL_AGGRESSOR`/`UNKNOWN`, so
+`isin(["B","Buy","buy"])` could never have matched any pipeline product"*, and it
+names the **seven** affected fixture columns — the five `net_delta_*`,
+`buy_volume_10s` and `sell_volume_10s`.
+
+**What the probe actually adds, which is the load-bearing half, is
+independence.** The tool was never given the declaration — `PREREG.md` SC-7(c)
+keeps it out of the input surface — and reached the same mechanism from
+perturbation alone. **A finding that two blind routes agree on is stronger than
+either route; a finding one route claims the other missed is weaker than both,
+and this section briefly claimed the second.**
 
 **This is a Layer 1 dependency fact, and it is left there.** Whether a constant
 `buy_volume_10s` is a leak, a defect, or neither is a Layer 2 question about the
