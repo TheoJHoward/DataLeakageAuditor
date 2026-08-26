@@ -614,13 +614,49 @@ echo "C2g OK — the commit carries exactly what was hashed"
 # bare `git status --porcelain` until R68, AFTER the diff above — so the block's exit
 # status was git status's, always 0, and C2g's real verdict was discarded by the line
 # following it. It is now an assertion, and it runs after the diff has already halted.
-unexpected=$(git status --porcelain | grep -vE '^\?\? (\.claude/|tagmsg\.txt|v30a\.hashes\.txt)$' || true)
-if [ -n "$unexpected" ]; then
-  echo "C2g FAILED — unexpected working-tree state:"; printf '%s\n' "$unexpected"; exit 1
-fi
-echo "C2g OK — only the three expected untracked paths"
-# EXPECT only untracked: .claude/  tagmsg.txt  v30a.hashes.txt
-# Any ` M ` line means a hashed file moved after staging. HALT.
+# C2g working-tree assertion — A DERIVATION, NOT A LIST (R113/NODE A).
+#
+# This was a hardcoded list of three paths and it went stale the moment LICENSE
+# and tools/control_char_scan.py entered the tree — both RECORDED, neither in the
+# list. A pinned expectation with no derivation is a carried-forward value
+# (H-L24), and this is the second time that class has stopped a ceremony.
+#
+# Every untracked path must now be ONE of three things, each derived from a file
+# that is itself under the gate:
+#   (1) a ceremony artifact  — tagmsg.txt, v30a.hashes.txt, .claude/
+#   (2) on D10's ephemeral list in tools/check_registration.py
+#   (3) recorded in evidence/session/DEFERRED_ITEMS.md
+# Anything else fails, and the failure names the path and all three tests.
+#
+# ` M ` or any staged-but-modified line still means a hashed file moved after
+# staging. That remains a HALT and is checked separately below.
+python - <<'C2G_EOF'
+import json, re, subprocess, sys, pathlib
+REPO = pathlib.Path(".")
+un = [l[3:] for l in subprocess.run(["git","status","--porcelain"],capture_output=True,
+      text=True,check=True).stdout.split("\n") if l.startswith("?? ")]
+CEREMONY = {"tagmsg.txt", "v30a.hashes.txt", ".claude/"}
+eph = re.findall(r'\(\s*"([^"]+)"\s*,\s*\n?\s*"', (REPO/"tools/check_registration.py")
+                 .read_text(encoding="utf-8").split("_EPHEMERAL = (")[1].split("\n)")[0])
+deferred = (REPO/"evidence/session/DEFERRED_ITEMS.md").read_text(encoding="utf-8")
+bad = []
+for p in un:
+    base = p.rstrip("/").split("/")[-1]
+    why = []
+    if p in CEREMONY or base in {c.rstrip("/") for c in CEREMONY}: why.append("ceremony artifact")
+    if any(tok in p or p.endswith(tok) for tok in eph): why.append("D10 ephemeral list")
+    if base in deferred or p in deferred: why.append("recorded in DEFERRED_ITEMS.md")
+    if why:
+        print("C2g  accounted   %-34s (%s)" % (p, "; ".join(why)))
+    else:
+        bad.append(p)
+        print("C2g  UNACCOUNTED %-34s not a ceremony artifact, not on D10's "
+              "ephemeral list, not in DEFERRED_ITEMS.md" % p)
+if bad:
+    print("C2g FAILED — %d untracked path(s) accounted for by none of the three." % len(bad))
+    sys.exit(1)
+print("C2g OK — every untracked path is accounted for by derivation")
+C2G_EOF
 ```
 
 **No `--amend`.** Hashing from the index removes the reason the v30-era plan needed one. If an
