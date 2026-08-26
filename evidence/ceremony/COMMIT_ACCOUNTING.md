@@ -69,6 +69,15 @@ the one value in the check that is safe to state.
   is the tree the re-run verified end to end — C2g green on both legs, all six hashes byte-identical
   to `v30a.hashes.txt`.
 
+- `account: 4bae848` — **Ceremony: C5b takes a baseline; commits made by the ceremony are exempt
+  from accounting.** C5b required every commit between `prereg-v30` and HEAD to be accounted, which
+  could not terminate once the ceremony itself commits. It now records HEAD at ceremony start as a
+  **baseline**: commits up to it are inherited and must be accounted; commits after it are the
+  ceremony's own. Its failure message was also rewritten — it said *"Do NOT widen this check"*,
+  which would have warned the next reader off a correct fix, and now states the baseline rule and
+  says the fix is the accounting, not the check. Belongs because the tag is cut over a tree whose
+  own first gate must be able to terminate.
+
 ---
 
 ## The baseline rule, and why a commit is never asked to account for itself

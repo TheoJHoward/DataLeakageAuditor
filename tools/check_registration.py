@@ -919,7 +919,7 @@ _HASH_SET_EXEMPT = {
         "topic LABEL, not its predicate; the R67/§14.2 survey established every "
         "label in that block is a topic tag. R7 stands unamended. "
         "See AVAILABILITY_DECLARATION.md §D.3 entry (iii)."),
-    ("evidence/ceremony/CEREMONY_COMMANDS.md", 301): (
+    ("evidence/ceremony/CEREMONY_COMMANDS.md", 327): (
         "a tag message with five lines is not a v30a tag message",
         frozenset({5}),
         "D5 - a NEGATED assertion: it says five is wrong for v30a."),
@@ -1535,7 +1535,7 @@ def check_declaration_values(root: Path) -> list[Finding]:
 
 # (target file, line, text that must be on it, who cites it)
 _LINE_PINNED_CITATIONS = (
-    ("evidence/ceremony/CEREMONY_COMMANDS.md", 242, 'FILES="PREREG.md',
+    ("evidence/ceremony/CEREMONY_COMMANDS.md", 268, 'FILES="PREREG.md',
      "COMMIT_PLAN.md \u00a76 and DEVIATIONS_DRAFT.md cite \u00a73.2 l.180 as the authority "
      "for the hash set; the target is a shell assignment and has no heading"),
     ("HISTORY.md", 275, "### H-34",
