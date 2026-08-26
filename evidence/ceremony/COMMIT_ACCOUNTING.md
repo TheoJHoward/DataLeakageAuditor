@@ -43,6 +43,26 @@ the one value in the check that is safe to state.
   H-34's verdict is what discharges the tag's side of §10.1. **A tag based on `ffa6d94` would
   exclude the record its own routing depends on.**
 
+- `account: 0acab4e` — **Pre-registration v30a: §6.2 reference AUC, contamination-class locus,
+  sliced CI variant, and criterion 3 — class C amendment (PREREG §0.2.1).** The amendment commit
+  itself: the applied `PREREG.md`, the declaration carrying the F3 manifest's sign-off, the README's
+  v30a hash block, and the evidence tree. Belongs because it **is** the thing the `prereg-v30a` tag
+  is cut over.
+
+- `account: 945433f` — **Ceremony: C2g's working-tree assertion becomes a derivation; Phase 1
+  brief.** C2g's assertion was a hardcoded list of three untracked paths and it went stale the moment
+  `LICENSE` and `tools/control_char_scan.py` entered the tree — both recorded, neither in the list.
+  It now **derives**: every untracked path must be a ceremony artifact, on D10's ephemeral list, or
+  recorded in `DEFERRED_ITEMS.md`, and it names the path and all three tests when it fails. Also
+  carries `evidence/session/PHASE1_BRIEF.md`. Belongs because the tag is cut over a tree whose own
+  verification step must not fail on recorded, accounted-for files — **a gate that cannot pass on a
+  correct tree is not a gate**, and this is the second time a pinned expectation stopped this
+  ceremony (H-L24).
+
+  *A commit cannot account for its own hash, so the accounting for `945433f` lands in the commit
+  after it — the same shape as the OpenTimestamps receipt, which cannot be inside the commit it
+  attests.*
+
 ---
 
 ## Why the accounting is by short hash
