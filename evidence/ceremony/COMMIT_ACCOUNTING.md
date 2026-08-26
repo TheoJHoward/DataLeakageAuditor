@@ -63,6 +63,27 @@ the one value in the check that is safe to state.
   after it — the same shape as the OpenTimestamps receipt, which cannot be inside the commit it
   attests.*
 
+- `account: b3ed6f6` — **Pre-registration v30a … class C amendment (PREREG §0.2.1).** The ceremony
+  commit produced by the R113 re-run: identical hashed content to `0acab4e`, carrying in addition
+  the accounting for `0acab4e` and `945433f` and the updated evidence manifest. Belongs because it
+  is the tree the re-run verified end to end — C2g green on both legs, all six hashes byte-identical
+  to `v30a.hashes.txt`.
+
+---
+
+## The baseline rule, and why a commit is never asked to account for itself
+
+**C5b takes a BASELINE**: HEAD at ceremony start, recorded once per run in `v30a.baseline.txt`.
+Every commit from `prereg-v30` up to and including the baseline is **inherited** and must carry an
+`account:` line here. **Commits after the baseline are the ceremony's own, and the ceremony is their
+account.**
+
+Without that rule the check could not terminate. The accounting lives *inside* the commit, so a
+commit can never account for its own hash — the same reason the OpenTimestamps receipt needs a
+follow-up commit — and accounting each new commit merely creates another unaccounted one. **An
+inherited unaccounted commit still halts**, which is the point, and C5b's known-positive removes a
+real accounting line to prove it.
+
 ---
 
 ## Why the accounting is by short hash

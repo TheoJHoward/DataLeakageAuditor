@@ -173,13 +173,32 @@ replaced by a derivation plus an accounting.
 ```sh
 # C5b — (a) HEAD descends from the tag; (b) enumerate; (c) each accounted for;
 #       (d) unaccounted = HALT, newly accounted = fine.
+# THE BASELINE (R114/NODE A). C5b's question is about commits the ceremony
+# INHERITS, not about the ones it is in the middle of making. Without a baseline
+# the check cannot terminate: the accounting lives inside the commit, so a commit
+# can never account for its own hash — the same reason the OpenTimestamps receipt
+# needs a follow-up commit, and accounting each new commit only creates another.
+#
+# So: HEAD at ceremony start is recorded as the baseline, every commit in
+# prereg-v30..baseline must be accounted, and commits after the baseline are the
+# ceremony's own — THE CEREMONY IS THEIR ACCOUNT. An inherited unaccounted commit
+# still halts, which is the whole point and is covered by C5b's known-positive.
 base=$(git rev-list -n 1 prereg-v30)
 git merge-base --is-ancestor "$base" HEAD || {
   echo "C5b FAILED — HEAD does not descend from prereg-v30. HALT."; exit 1; }
 
+# Written once per ceremony run, at C5b, before any ceremony commit exists.
+[ -f v30a.baseline.txt ] || git rev-parse HEAD > v30a.baseline.txt
+baseline=$(cat v30a.baseline.txt)
+git merge-base --is-ancestor "$baseline" HEAD || {
+  echo "C5b FAILED — the recorded baseline is not an ancestor of HEAD. A stale"
+  echo "             v30a.baseline.txt from an abandoned run. Delete it and re-run"
+  echo "             the ceremony FROM C5. HALT."; exit 1; }
+echo "C5b  baseline    $(git rev-parse --short=7 "$baseline")  $(git log -1 --format=%s "$baseline")"
+
 acct=evidence/ceremony/COMMIT_ACCOUNTING.md
 unaccounted=0
-for c in $(git rev-list "$base"..HEAD); do
+for c in $(git rev-list "$base".."$baseline"); do
   short=$(git rev-parse --short=7 "$c")
   if grep -q "account: $short" "$acct"; then
     printf 'C5b  accounted   %s  %s\n' "$short" "$(git log -1 --format=%s "$c")"
@@ -188,11 +207,18 @@ for c in $(git rev-list "$base"..HEAD); do
     unaccounted=1
   fi
 done
+for c in $(git rev-list "$baseline"..HEAD); do
+  printf 'C5b  ceremony    %s  %s\n' "$(git rev-parse --short=7 "$c")" "$(git log -1 --format=%s "$c")"
+done
 [ "$unaccounted" -eq 0 ] || {
-  echo "C5b FAILED — a commit between prereg-v30 and HEAD is not accounted for in $acct."
+  echo "C5b FAILED — a commit INHERITED by this ceremony is not accounted for in $acct."
   echo "             Account for it there, or establish that it does not belong in the"
-  echo "             tagged tree. Do NOT widen this check. HALT."; exit 1; }
-echo "C5b OK — HEAD descends from prereg-v30 and every commit since is accounted for"
+  echo "             tagged tree."
+  echo "             THE FIX IS THE ACCOUNTING, NOT THE CHECK. Commits made BY this"
+  echo "             ceremony are already exempt via the baseline; if one of those is"
+  echo "             being reported, the baseline is wrong, not this rule. HALT."; exit 1; }
+echo "C5b OK — every commit inherited from prereg-v30 to the baseline is accounted for;"
+echo "         commits after the baseline are this ceremony's own and need no account"
 ```
 
 **Why this shape.** A pinned expectation goes stale on legitimate work and says nothing about what
@@ -635,7 +661,7 @@ import json, re, subprocess, sys, pathlib
 REPO = pathlib.Path(".")
 un = [l[3:] for l in subprocess.run(["git","status","--porcelain"],capture_output=True,
       text=True,check=True).stdout.split("\n") if l.startswith("?? ")]
-CEREMONY = {"tagmsg.txt", "v30a.hashes.txt", ".claude/"}
+CEREMONY = {"tagmsg.txt", "v30a.hashes.txt", "v30a.baseline.txt", ".claude/"}
 eph = re.findall(r'\(\s*"([^"]+)"\s*,\s*\n?\s*"', (REPO/"tools/check_registration.py")
                  .read_text(encoding="utf-8").split("_EPHEMERAL = (")[1].split("\n)")[0])
 deferred = (REPO/"evidence/session/DEFERRED_ITEMS.md").read_text(encoding="utf-8")
