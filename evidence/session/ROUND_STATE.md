@@ -749,3 +749,103 @@ unchanged.
 
 **Suite, with its domain attached:** `tests/phase1` **113 passed, 4 skipped**; the whole suite
 `tests/` **250 passed, 4 skipped**.
+
+---
+
+## B9 — DECISION, THE TWO DETECTORS, AND A SEED THAT WAS NOT REPRODUCIBLE
+
+### DECISION B9 → the first branch, settled by registered text
+
+`PREREG.md` §6.6 **l.1080**, verbatim: *"a combination is execution-eligible for a case when **at
+least one configured strategy resolves to that promotion status on that case** and has all required
+inputs. **This is per case rather than per configuration because `noise`, `nan`, and `constant`
+preserve on some frames and promote on others (§3.2).**"*
+
+The clause names `nan` in terms. A combination whose eligible cohorts are a dtype-defined subset is
+not merely permitted — it is the case §6.6 was written for, and the null detector is that sentence
+built into a detector.
+
+**l.1084** closes the remaining question: *"`not_applicable` — no configured strategy resolves to
+this promotion status on this case, **or no eligible cohort was selected for it**. The second clause
+covers a combination with resolved strategies, available inputs, and nothing to do."* So the third
+branch — an empty promoted combination is legal — is **also** true, and it is exercised as a test
+rather than taken as a licence to drop the out-of-dtype sentinel. Dropping it would have removed the
+promoted side's whole content.
+
+### The two detectors
+
+| detector | combination | strategies | eligible cohorts |
+|---|---|---|---|
+| `valueread` | preserving | `shuffle`, in-dtype `sentinel` | every column |
+| `valueread` | promoted | `sentinel_ood` | columns for which a **wider dtype exists**: integer → `float64`, boolean → `int64` |
+| `nullread` | preserving | `nan` | columns that already hold a null **in their own dtype** — float, datetime, object |
+| `nullread` | promoted | `nan` | columns that do not — integer, boolean |
+
+**The split is derived, not asserted, and it was derived from B8's own record.** `probe_b_merged.json`
+names the cohorts that took a promoted frame under `nan`: **25 promote, 22 preserve, 25 + 22 = 47.**
+`nullread`'s two combinations therefore partition the fixture's columns exactly, and the partition is
+asserted at run time in both the detector's tests and the sweep's merge — a property nothing checks
+is one that quietly stops holding.
+
+**`nullread` closes the gap `columndep` published.** There, `nan` sat only in the promoted
+combination, so a float column never received a null and a feature reading one only through
+`isna()` was reported silent. **`columndep`'s domain statement is UPDATED, not deleted** (R134's
+instruction, and there is a test that both halves survive): the gap sentence stays, because a reader
+of an *earlier* `columndep` result needs to know the gap was open when that result was produced, and
+a sentence naming `nullread` is added beside it.
+
+**What the out-of-dtype sentinel buys, demonstrated rather than argued.** On a column pinned at its
+dtype's maximum, *both* preserving strategies degenerate: a permutation of identical values is the
+identity, and the in-dtype sentinel is capped by the dtype, so at the ceiling the cap **is** the
+column's value. Both record `control_artifact`, the combination resolves `× none`, and the
+out-of-dtype sentinel is the only strategy that can perturb the column at all — at the cost of
+promotion. That trade is the promoted combination's entire content, and it is a test.
+
+**What `nullread` still cannot see, stated because §39 requires the domain with the silence:**
+introducing a null tests whether nulls are read, never whether an **existing** null pattern is read,
+and a column with no nulls to begin with cannot answer the second question.
+
+### B9-F1 — THE PERTURBATION SEED WAS NOT REPRODUCIBLE. Found reading the instrument, not running it.
+
+All three call sites computed `abs(hash((frame, column, strategy))) % 2**31`. **CPython salts
+`hash()` for `str` with `PYTHONHASHSEED`, which is random per process unless pinned, and nothing in
+this repository pins it.** Demonstrated, not reasoned: the same expression in three processes gave
+`1115184579`, `226073761`, `588577123`.
+
+**Nothing it produced was invalid.** Any permutation is a legitimate shuffle, and the identity case
+is caught explicitly as `control_artifact`. What it lacked is **reproducibility**: B8.3's sweep
+cannot be re-run to the same trace, and the four workers each drew from a different salt. A shuffle
+that moves nothing on one draw and something on the next turns `observed_silence` into a coin toss,
+and an evidence record nobody can re-run to the same answer is a measurement nobody can check.
+
+Replaced with a SHA-256-derived seed at all three sites. The regression test **spawns three
+processes**, because that is the only place the defect lived — calling `seed_for` twice inside one
+process would have passed against the old implementation too, which is the shape of guard that
+proves nothing.
+
+**The B8 sweep is re-running under the fixed seed**, four workers, into a separate shard directory
+so the recorded result is not clobbered. The comparison against `probe_b_merged.json` is the point
+of the re-run and is not yet in hand.
+
+### The controls, and one that could not fire
+
+Every detector has a positive **and** a negative control. The first draft of the value control could
+not fire: the string column held `"a0"`/`"a1"`/`"a2"`, all length 2, so `map(len)` was constant and
+no permutation could move it. The detector reported silence, correctly, and the control proved
+nothing. **That is the `aggressor_side` class reproduced by accident inside the test written to
+demonstrate the instrument** — which is worth more as a record than as a quietly-fixed line, so the
+reason is in the test file.
+
+A second draft asserted the out-of-dtype sentinel would "get past a clamp". That was wrong on its
+face — a clamp means the output is insensitive to anything above the bound, so nothing should move —
+and the test failed for the right reason before it could become a claim.
+
+### Banked
+
+| commit | what |
+|---|---|
+| `34f9ab4` | the R134 round record: A19″ derived and halted, RE-1/RE-2, §AC mapped, `net_delta` reported |
+| `66063da` | the two detectors, the seed fix, 13 new tests |
+| `560ec2a` | the sharded B9 sweep and its merge — apparatus only, not yet run |
+
+`tests/phase1` **134 passed, 4 skipped**; gate **PASS 23**.
