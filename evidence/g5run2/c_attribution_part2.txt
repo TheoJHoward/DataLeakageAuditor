@@ -1,0 +1,62 @@
+=== 5. ATTRIBUTION OF EACH FINDING TO ITS DETECTOR ===
+    AVAILABILITY_DECLARATION.md:974  RULE#12 H3-ADDED
+    AVAILABILITY_DECLARATION.md:1035  RULE#11 H3-ADDED
+    AVAILABILITY_DECLARATION.md:1052  RULE#9 H3-ADDED
+    AVAILABILITY_DECLARATION.md:1054  RULE#9 H3-ADDED
+    AVAILABILITY_DECLARATION.md:1056  RULE#9 H3-ADDED
+    AVAILABILITY_DECLARATION.md:1228  RULE#10 H3-ADDED
+    AVAILABILITY_DECLARATION.md:1546  DEFINITIONAL H3-ADDED
+    AVAILABILITY_DECLARATION.md:1551  RULE#10 H3-ADDED
+    AVAILABILITY_DECLARATION.md:1580  RULE#10 H3-ADDED
+    AVAILABILITY_DECLARATION.md:1580  RULE#12 H3-ADDED
+    AVAILABILITY_DECLARATION.md:2213  RULE#10 H3-ADDED
+    AVAILABILITY_DECLARATION.md:2712  RULE#10 H3-ADDED
+    AVAILABILITY_DECLARATION.md:2754  RULE#10 H3-ADDED
+    AVAILABILITY_DECLARATION.md:3677  RULE#11 H3-ADDED
+
+    TOTAL findings: 14
+    by detector: {'RULE#12 H3-ADDED': 2, 'RULE#11 H3-ADDED': 2, 'RULE#9 H3-ADDED': 3, 'RULE#10 H3-ADDED': 6, 'DEFINITIONAL H3-ADDED': 1}
+    by file: {'AVAILABILITY_DECLARATION.md': 14}
+    from PRE-H3 detectors: 0
+    from H3-ADDED detectors: 14
+
+=== 6. QUOTE EXEMPTION ACTIVITY ===
+    EXEMPT AVAILABILITY_DECLARATION.md:761 'accounting gaps** | The measurement reveals a needed *new* branch, unit, denomin'
+    EXEMPT AVAILABILITY_DECLARATION.md:762 'state, tier licence, or acceptance criterion | **not resolve under this registra'
+    EXEMPT AVAILABILITY_DECLARATION.md:764 'an amended registration**, committed and externally timestamped **before the aff'
+    EXEMPT AVAILABILITY_DECLARATION.md:765 'is implemented or evaluated** — a `prereg-v30a` tag, not a restart, and not a `D'
+    EXEMPT AVAILABILITY_DECLARATION.md:778 '> **Reference AUC:** 0.957 and 0.675, **acceptance interval ±0.010 absolute**. T'
+    EXEMPT AVAILABILITY_DECLARATION.md:826 '> **Ground-truth column DAG** in the manifest: leaking sources, descendants, cle'
+    EXEMPT AVAILABILITY_DECLARATION.md:886 '> **Contamination availability class** recorded in the manifest.'
+    EXEMPT AVAILABILITY_DECLARATION.md:942 '> **Sliced variant** for CI, from the same padded slicer as user-facing slice au'
+    EXEMPT AVAILABILITY_DECLARATION.md:992 '> **The availability declaration is reconstructed, not chosen** — from the origi'
+    EXEMPT AVAILABILITY_DECLARATION.md:1001 '> **Reconstruction happens in Phase 0, before the cross-tool comparison** (§9.2)'
+    EXEMPT AVAILABILITY_DECLARATION.md:1007 '> **If the original work did not document prediction timing, the fixture is reco'
+    EXEMPT AVAILABILITY_DECLARATION.md:1024 '> 1. **Every** ground-truth leaking source column receives at least one **primar'
+    EXEMPT AVAILABILITY_DECLARATION.md:1028 '> Secondary findings on **manifest-listed descendants** of a true leaking source'
+    EXEMPT AVAILABILITY_DECLARATION.md:1032 '> Top-k presence does not satisfy criterion 1. An alias satisfies it only if rec'
+    EXEMPT AVAILABILITY_DECLARATION.md:1396 '> 2. No **manifest-clean** source column receives **any runtime finding of any t'
+    EXEMPT AVAILABILITY_DECLARATION.md:1411 '> 3. **No runtime finding of any tier, primary or secondary**, appears on `fixtu'
+    EXEMPT AVAILABILITY_DECLARATION.md:1442 '> 4. Silent under the identity control on both.'
+    EXEMPT AVAILABILITY_DECLARATION.md:1533 '> The replacement may be stricter than the floor and may not be weaker: non-zero'
+    EXEMPT AVAILABILITY_DECLARATION.md:1537 '> On a Phase 0 finding of ambiguity: **record it, pause runtime development, com'
+    EXEMPT AVAILABILITY_DECLARATION.md:2765 '> column receives **any runtime finding of any tier, primary or secondary**, on'
+    EXEMPT AVAILABILITY_DECLARATION.md:3445 "§11's integrity chain in full:** signed tag, both file hashes in the tag message"
+    EXEMPT AVAILABILITY_DECLARATION.md:3446 'timestamp receipt committed, repository publicly reachable at lock. An amendment'
+    verbatim-attributed-quote exemptions applied: 22
+
+=== 7. _REFERENCE_NOT_RESTATEMENT activity (definitional escape hatch) ===
+    REF DESIGN.md:78 'The comparator and its default are `PREREG.md` §2.3 and are not restated here; this f'
+    REF DESIGN.md:111 'Tier is resolved by `PREREG.md` §3.1 and is not restated here. This file specifies wh'
+    REF DESIGN.md:168 '**`complex` is borrowed from `leak-detect` and is the strongest single strategy** — a'
+    REF DESIGN.md:422 '**`EvidenceEvent`** and **`ReportedFinding`** are the scoring and display records. Th'
+    REF DESIGN.md:490 '- report the descriptive fixture proof count defined by `PREREG.md` §6.2, serialized '
+    REF DESIGN.md:518 '**Three state layers are stored** — detector-case coverage, the combination pair, and'
+    REF DESIGN.md:522 '| values defined by `PREREG.md` §7.7 | values defined by `PREREG.md` §7.5 |'
+    lines matching reference-not-restatement: 7
+
+=== 8. NEW-DETECTOR CALIBRATION: do they fire on any file OTHER than the declaration? ===
+    DESIGN.md: 0
+    DEVIATIONS.md: 0
+    PRIOR_ART_VERIFICATION.md: 0
+    README.md: 0

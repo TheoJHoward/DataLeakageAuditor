@@ -1,0 +1,542 @@
+[
+  {
+    "tool": "temporalcv",
+    "version": "2.3.0",
+    "case": "C1",
+    "side": "contaminated",
+    "config": {
+      "gates": [
+        "gate_signal_verification",
+        "gate_temporal_boundary",
+        "gate_suspicious_improvement"
+      ],
+      "model": "RandomForestClassifier(n_estimators=50, random_state=0)",
+      "n_shuffles": 50,
+      "random_state": 0,
+      "note": "adapter: a model is fitted per case per side; the gates take a fitted model + X/y"
+    },
+    "status": "ran",
+    "fired_labels": [
+      "gate_signal_verification"
+    ],
+    "detail": {
+      "gate_signal_verification": {
+        "status": "HALT",
+        "message": "Permutation test: p=0.0196 < \u03b1=0.05 (model has signal)",
+        "metric": 0.0196078431372549
+      },
+      "gate_suspicious_improvement": {
+        "status": "PASS",
+        "message": "Improvement -97.0% is reasonable",
+        "model": 1.0,
+        "baseline": 0.5075000000000001
+      }
+    }
+  },
+  {
+    "tool": "temporalcv",
+    "version": "2.3.0",
+    "case": "C1",
+    "side": "clean",
+    "config": {
+      "gates": [
+        "gate_signal_verification",
+        "gate_temporal_boundary",
+        "gate_suspicious_improvement"
+      ],
+      "model": "RandomForestClassifier(n_estimators=50, random_state=0)",
+      "n_shuffles": 50,
+      "random_state": 0,
+      "note": "adapter: a model is fitted per case per side; the gates take a fitted model + X/y"
+    },
+    "status": "ran",
+    "fired_labels": [
+      "gate_signal_verification"
+    ],
+    "detail": {
+      "gate_signal_verification": {
+        "status": "HALT",
+        "message": "Permutation test: p=0.0196 < \u03b1=0.05 (model has signal)",
+        "metric": 0.0196078431372549
+      },
+      "gate_suspicious_improvement": {
+        "status": "PASS",
+        "message": "Improvement -97.0% is reasonable",
+        "model": 1.0,
+        "baseline": 0.5075000000000001
+      }
+    }
+  },
+  {
+    "tool": "temporalcv",
+    "version": "2.3.0",
+    "case": "C2",
+    "side": "contaminated",
+    "config": {
+      "gates": [
+        "gate_signal_verification",
+        "gate_temporal_boundary",
+        "gate_suspicious_improvement"
+      ],
+      "model": "RandomForestClassifier(n_estimators=50, random_state=0)",
+      "n_shuffles": 50,
+      "random_state": 0,
+      "note": "adapter: a model is fitted per case per side; the gates take a fitted model + X/y"
+    },
+    "status": "ran",
+    "fired_labels": [
+      "gate_signal_verification"
+    ],
+    "detail": {
+      "gate_signal_verification": {
+        "status": "HALT",
+        "message": "Permutation test: p=0.0196 < \u03b1=0.05 (model has signal)",
+        "metric": 0.0196078431372549
+      },
+      "gate_suspicious_improvement": {
+        "status": "PASS",
+        "message": "Improvement -96.1% is reasonable",
+        "model": 1.0,
+        "baseline": 0.51
+      }
+    }
+  },
+  {
+    "tool": "temporalcv",
+    "version": "2.3.0",
+    "case": "C2",
+    "side": "clean",
+    "config": {
+      "gates": [
+        "gate_signal_verification",
+        "gate_temporal_boundary",
+        "gate_suspicious_improvement"
+      ],
+      "model": "RandomForestClassifier(n_estimators=50, random_state=0)",
+      "n_shuffles": 50,
+      "random_state": 0,
+      "note": "adapter: a model is fitted per case per side; the gates take a fitted model + X/y"
+    },
+    "status": "ran",
+    "fired_labels": [
+      "gate_signal_verification"
+    ],
+    "detail": {
+      "gate_signal_verification": {
+        "status": "HALT",
+        "message": "Permutation test: p=0.0196 < \u03b1=0.05 (model has signal)",
+        "metric": 0.0196078431372549
+      },
+      "gate_suspicious_improvement": {
+        "status": "PASS",
+        "message": "Improvement -96.1% is reasonable",
+        "model": 1.0,
+        "baseline": 0.51
+      }
+    }
+  },
+  {
+    "tool": "temporalcv",
+    "version": "2.3.0",
+    "case": "C3",
+    "side": "contaminated",
+    "config": {
+      "gates": [
+        "gate_signal_verification",
+        "gate_temporal_boundary",
+        "gate_suspicious_improvement"
+      ],
+      "model": "RandomForestClassifier(n_estimators=50, random_state=0)",
+      "n_shuffles": 50,
+      "random_state": 0,
+      "note": "adapter: a model is fitted per case per side; the gates take a fitted model + X/y"
+    },
+    "status": "ran",
+    "fired_labels": [
+      "gate_signal_verification"
+    ],
+    "detail": {
+      "gate_signal_verification": {
+        "status": "HALT",
+        "message": "Permutation test: p=0.0392 < \u03b1=0.05 (model has signal)",
+        "metric": 0.0392156862745098
+      },
+      "gate_suspicious_improvement": {
+        "status": "PASS",
+        "message": "Improvement -90.5% is reasonable",
+        "model": 1.0,
+        "baseline": 0.525
+      }
+    }
+  },
+  {
+    "tool": "temporalcv",
+    "version": "2.3.0",
+    "case": "C3",
+    "side": "clean",
+    "config": {
+      "gates": [
+        "gate_signal_verification",
+        "gate_temporal_boundary",
+        "gate_suspicious_improvement"
+      ],
+      "model": "RandomForestClassifier(n_estimators=50, random_state=0)",
+      "n_shuffles": 50,
+      "random_state": 0,
+      "note": "adapter: a model is fitted per case per side; the gates take a fitted model + X/y"
+    },
+    "status": "ran",
+    "fired_labels": [
+      "gate_signal_verification"
+    ],
+    "detail": {
+      "gate_signal_verification": {
+        "status": "HALT",
+        "message": "Permutation test: p=0.0196 < \u03b1=0.05 (model has signal)",
+        "metric": 0.0196078431372549
+      },
+      "gate_suspicious_improvement": {
+        "status": "PASS",
+        "message": "Improvement -90.5% is reasonable",
+        "model": 1.0,
+        "baseline": 0.525
+      }
+    }
+  },
+  {
+    "tool": "temporalcv",
+    "version": "2.3.0",
+    "case": "C4",
+    "side": "contaminated",
+    "config": {
+      "gates": [
+        "gate_signal_verification",
+        "gate_temporal_boundary",
+        "gate_suspicious_improvement"
+      ],
+      "model": "RandomForestClassifier(n_estimators=50, random_state=0)",
+      "n_shuffles": 50,
+      "random_state": 0,
+      "note": "adapter: a model is fitted per case per side; the gates take a fitted model + X/y"
+    },
+    "status": "ran",
+    "fired_labels": [
+      "gate_signal_verification"
+    ],
+    "detail": {
+      "gate_signal_verification": {
+        "status": "HALT",
+        "message": "Permutation test: p=0.0196 < \u03b1=0.05 (model has signal)",
+        "metric": 0.0196078431372549
+      },
+      "gate_suspicious_improvement": {
+        "status": "PASS",
+        "message": "Improvement -89.0% is reasonable",
+        "model": 0.9925,
+        "baseline": 0.525
+      }
+    }
+  },
+  {
+    "tool": "temporalcv",
+    "version": "2.3.0",
+    "case": "C4",
+    "side": "clean",
+    "config": {
+      "gates": [
+        "gate_signal_verification",
+        "gate_temporal_boundary",
+        "gate_suspicious_improvement"
+      ],
+      "model": "RandomForestClassifier(n_estimators=50, random_state=0)",
+      "n_shuffles": 50,
+      "random_state": 0,
+      "note": "adapter: a model is fitted per case per side; the gates take a fitted model + X/y"
+    },
+    "status": "ran",
+    "fired_labels": [
+      "gate_signal_verification"
+    ],
+    "detail": {
+      "gate_signal_verification": {
+        "status": "HALT",
+        "message": "Permutation test: p=0.0196 < \u03b1=0.05 (model has signal)",
+        "metric": 0.0196078431372549
+      },
+      "gate_suspicious_improvement": {
+        "status": "PASS",
+        "message": "Improvement -86.4% is reasonable",
+        "model": 0.9925,
+        "baseline": 0.5325
+      }
+    }
+  },
+  {
+    "tool": "temporalcv",
+    "version": "2.3.0",
+    "case": "C5",
+    "side": "contaminated",
+    "config": {
+      "gates": [
+        "gate_signal_verification",
+        "gate_temporal_boundary",
+        "gate_suspicious_improvement"
+      ],
+      "model": "RandomForestClassifier(n_estimators=50, random_state=0)",
+      "n_shuffles": 50,
+      "random_state": 0,
+      "note": "adapter: a model is fitted per case per side; the gates take a fitted model + X/y"
+    },
+    "status": "ran",
+    "fired_labels": [
+      "gate_signal_verification"
+    ],
+    "detail": {
+      "gate_signal_verification": {
+        "status": "HALT",
+        "message": "Permutation test: p=0.0196 < \u03b1=0.05 (model has signal)",
+        "metric": 0.0196078431372549
+      },
+      "gate_suspicious_improvement": {
+        "status": "PASS",
+        "message": "Improvement -96.1% is reasonable",
+        "model": 1.0,
+        "baseline": 0.51
+      }
+    }
+  },
+  {
+    "tool": "temporalcv",
+    "version": "2.3.0",
+    "case": "C5",
+    "side": "clean",
+    "config": {
+      "gates": [
+        "gate_signal_verification",
+        "gate_temporal_boundary",
+        "gate_suspicious_improvement"
+      ],
+      "model": "RandomForestClassifier(n_estimators=50, random_state=0)",
+      "n_shuffles": 50,
+      "random_state": 0,
+      "note": "adapter: a model is fitted per case per side; the gates take a fitted model + X/y"
+    },
+    "status": "ran",
+    "fired_labels": [
+      "gate_signal_verification"
+    ],
+    "detail": {
+      "gate_signal_verification": {
+        "status": "HALT",
+        "message": "Permutation test: p=0.0196 < \u03b1=0.05 (model has signal)",
+        "metric": 0.0196078431372549
+      },
+      "gate_suspicious_improvement": {
+        "status": "PASS",
+        "message": "Improvement -96.1% is reasonable",
+        "model": 1.0,
+        "baseline": 0.51
+      }
+    }
+  },
+  {
+    "tool": "temporalcv",
+    "version": "2.3.0",
+    "case": "C6",
+    "side": "contaminated",
+    "config": {
+      "gates": [
+        "gate_signal_verification",
+        "gate_temporal_boundary",
+        "gate_suspicious_improvement"
+      ],
+      "model": "RandomForestClassifier(n_estimators=50, random_state=0)",
+      "n_shuffles": 50,
+      "random_state": 0,
+      "note": "adapter: a model is fitted per case per side; the gates take a fitted model + X/y"
+    },
+    "status": "ran",
+    "fired_labels": [],
+    "detail": {
+      "gate_signal_verification": {
+        "status": "PASS",
+        "message": "Permutation test: p=0.1176 >= \u03b1=0.05 (no significant signal)",
+        "metric": 0.11764705882352941
+      },
+      "gate_suspicious_improvement": {
+        "status": "PASS",
+        "message": "Improvement -92.2% is reasonable",
+        "model": 0.9949494949494949,
+        "baseline": 0.5176767676767677
+      }
+    }
+  },
+  {
+    "tool": "temporalcv",
+    "version": "2.3.0",
+    "case": "C6",
+    "side": "clean",
+    "config": {
+      "gates": [
+        "gate_signal_verification",
+        "gate_temporal_boundary",
+        "gate_suspicious_improvement"
+      ],
+      "model": "RandomForestClassifier(n_estimators=50, random_state=0)",
+      "n_shuffles": 50,
+      "random_state": 0,
+      "note": "adapter: a model is fitted per case per side; the gates take a fitted model + X/y"
+    },
+    "status": "ran",
+    "fired_labels": [],
+    "detail": {
+      "gate_signal_verification": {
+        "status": "PASS",
+        "message": "Permutation test: p=0.4510 >= \u03b1=0.05 (no significant signal)",
+        "metric": 0.45098039215686275
+      },
+      "gate_suspicious_improvement": {
+        "status": "PASS",
+        "message": "Improvement -92.2% is reasonable",
+        "model": 0.9974683544303797,
+        "baseline": 0.5189873417721519
+      }
+    }
+  },
+  {
+    "tool": "temporalcv",
+    "version": "2.3.0",
+    "case": "C7",
+    "side": "contaminated",
+    "config": {
+      "gates": [
+        "gate_signal_verification",
+        "gate_temporal_boundary",
+        "gate_suspicious_improvement"
+      ],
+      "model": "RandomForestClassifier(n_estimators=50, random_state=0)",
+      "n_shuffles": 50,
+      "random_state": 0,
+      "note": "adapter: a model is fitted per case per side; the gates take a fitted model + X/y"
+    },
+    "status": "ran",
+    "fired_labels": [
+      "gate_signal_verification"
+    ],
+    "detail": {
+      "gate_signal_verification": {
+        "status": "HALT",
+        "message": "Permutation test: p=0.0196 < \u03b1=0.05 (model has signal)",
+        "metric": 0.0196078431372549
+      },
+      "gate_suspicious_improvement": {
+        "status": "PASS",
+        "message": "Improvement -63.4% is reasonable",
+        "model": 0.9925,
+        "baseline": 0.6075
+      }
+    }
+  },
+  {
+    "tool": "temporalcv",
+    "version": "2.3.0",
+    "case": "C7",
+    "side": "clean",
+    "config": {
+      "gates": [
+        "gate_signal_verification",
+        "gate_temporal_boundary",
+        "gate_suspicious_improvement"
+      ],
+      "model": "RandomForestClassifier(n_estimators=50, random_state=0)",
+      "n_shuffles": 50,
+      "random_state": 0,
+      "note": "adapter: a model is fitted per case per side; the gates take a fitted model + X/y"
+    },
+    "status": "ran",
+    "fired_labels": [
+      "gate_signal_verification"
+    ],
+    "detail": {
+      "gate_signal_verification": {
+        "status": "HALT",
+        "message": "Permutation test: p=0.0196 < \u03b1=0.05 (model has signal)",
+        "metric": 0.0196078431372549
+      },
+      "gate_suspicious_improvement": {
+        "status": "PASS",
+        "message": "Improvement -63.4% is reasonable",
+        "model": 0.9925,
+        "baseline": 0.6075
+      }
+    }
+  },
+  {
+    "tool": "temporalcv",
+    "version": "2.3.0",
+    "case": "C8",
+    "side": "contaminated",
+    "config": {
+      "gates": [
+        "gate_signal_verification",
+        "gate_temporal_boundary",
+        "gate_suspicious_improvement"
+      ],
+      "model": "RandomForestClassifier(n_estimators=50, random_state=0)",
+      "n_shuffles": 50,
+      "random_state": 0,
+      "note": "adapter: a model is fitted per case per side; the gates take a fitted model + X/y"
+    },
+    "status": "ran",
+    "fired_labels": [
+      "gate_signal_verification"
+    ],
+    "detail": {
+      "gate_signal_verification": {
+        "status": "HALT",
+        "message": "Permutation test: p=0.0196 < \u03b1=0.05 (model has signal)",
+        "metric": 0.0196078431372549
+      },
+      "gate_suspicious_improvement": {
+        "status": "PASS",
+        "message": "Improvement -37.6% is reasonable",
+        "model": 0.9975,
+        "baseline": 0.725
+      }
+    }
+  },
+  {
+    "tool": "temporalcv",
+    "version": "2.3.0",
+    "case": "C8",
+    "side": "clean",
+    "config": {
+      "gates": [
+        "gate_signal_verification",
+        "gate_temporal_boundary",
+        "gate_suspicious_improvement"
+      ],
+      "model": "RandomForestClassifier(n_estimators=50, random_state=0)",
+      "n_shuffles": 50,
+      "random_state": 0,
+      "note": "adapter: a model is fitted per case per side; the gates take a fitted model + X/y"
+    },
+    "status": "ran",
+    "fired_labels": [
+      "gate_signal_verification"
+    ],
+    "detail": {
+      "gate_signal_verification": {
+        "status": "HALT",
+        "message": "Permutation test: p=0.0196 < \u03b1=0.05 (model has signal)",
+        "metric": 0.0196078431372549
+      },
+      "gate_suspicious_improvement": {
+        "status": "PASS",
+        "message": "Improvement -95.1% is reasonable",
+        "model": 0.995,
+        "baseline": 0.51
+      }
+    }
+  }
+]

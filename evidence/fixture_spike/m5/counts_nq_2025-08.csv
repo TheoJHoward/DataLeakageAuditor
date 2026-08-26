@@ -1,0 +1,13 @@
+instrument,month,class,side,boundary,strict,equal,rows,gap_strict,gap_equal
+nq,2025-08,trades_all,corrected,decision_T,0,0,540530,0,0
+nq,2025-08,trades_all,corrected,prev_row_B,470095,0,540530,,
+nq,2025-08,trades_buy,corrected,decision_T,0,0,540530,0,0
+nq,2025-08,trades_buy,corrected,prev_row_B,0,0,540530,,
+nq,2025-08,trades_sell,corrected,decision_T,0,0,540530,0,0
+nq,2025-08,trades_sell,corrected,prev_row_B,470095,0,540530,,
+nq,2025-08,trades_large,corrected,decision_T,0,0,540530,0,0
+nq,2025-08,trades_large,corrected,prev_row_B,9234,0,540530,,
+nq,2025-08,trades_all,contaminated,decision_T,470095,0,540531,,
+nq,2025-08,trades_buy,contaminated,decision_T,0,0,540531,,
+nq,2025-08,trades_sell,contaminated,decision_T,470095,0,540531,,
+nq,2025-08,trades_large,contaminated,decision_T,9234,0,540531,,

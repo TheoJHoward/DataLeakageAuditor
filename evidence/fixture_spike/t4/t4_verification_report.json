@@ -1,0 +1,87 @@
+{
+  "r3_line": "R3. 35-column: accepted as a documented-unverifiable assumption (basis: F3 manifest 9/9 agreement). T4 is unblocked by this.",
+  "projection": {
+    "contaminated_run1": {
+      "rows": 338159,
+      "cols": 28,
+      "sha256_canonical_csv": "32edf4389d9ca9435cc7923a19e0730bf409023d460b378f7acdc3cba11d719a",
+      "canonical_csv_bytes": 52979654,
+      "csv_path": "C:\\Users\\ttbea\\AppData\\Local\\Temp\\claude\\C--Users-ttbea-OneDrive-Desktop-MBO-2025-4mon--2026-01\\8b1d67a4-ce4f-4c55-b09d-1c72e7b6b5e1\\scratchpad\\fixture_spike\\t4\\proj28_contaminated_run1.csv",
+      "lag_exempt_source_columns_in_projection": []
+    },
+    "contaminated_run2": {
+      "rows": 338159,
+      "cols": 28,
+      "sha256_canonical_csv": "32edf4389d9ca9435cc7923a19e0730bf409023d460b378f7acdc3cba11d719a",
+      "canonical_csv_bytes": 52979654,
+      "csv_path": "C:\\Users\\ttbea\\AppData\\Local\\Temp\\claude\\C--Users-ttbea-OneDrive-Desktop-MBO-2025-4mon--2026-01\\8b1d67a4-ce4f-4c55-b09d-1c72e7b6b5e1\\scratchpad\\fixture_spike\\t4\\proj28_contaminated_run2.csv",
+      "lag_exempt_source_columns_in_projection": []
+    },
+    "corrected_run1": {
+      "rows": 338159,
+      "cols": 28,
+      "sha256_canonical_csv": "db4193aa1ad88fa052599bf6714f2ba401bd99f52008a938a5f475280dc66245",
+      "canonical_csv_bytes": 52979540,
+      "csv_path": "C:\\Users\\ttbea\\AppData\\Local\\Temp\\claude\\C--Users-ttbea-OneDrive-Desktop-MBO-2025-4mon--2026-01\\8b1d67a4-ce4f-4c55-b09d-1c72e7b6b5e1\\scratchpad\\fixture_spike\\t4\\proj28_corrected_run1.csv",
+      "lag_exempt_source_columns_in_projection": []
+    },
+    "corrected_run2": {
+      "rows": 338159,
+      "cols": 28,
+      "sha256_canonical_csv": "db4193aa1ad88fa052599bf6714f2ba401bd99f52008a938a5f475280dc66245",
+      "canonical_csv_bytes": 52979540,
+      "csv_path": "C:\\Users\\ttbea\\AppData\\Local\\Temp\\claude\\C--Users-ttbea-OneDrive-Desktop-MBO-2025-4mon--2026-01\\8b1d67a4-ce4f-4c55-b09d-1c72e7b6b5e1\\scratchpad\\fixture_spike\\t4\\proj28_corrected_run2.csv",
+      "lag_exempt_source_columns_in_projection": []
+    }
+  },
+  "determinism": {
+    "contaminated": {
+      "run1": "32edf4389d9ca9435cc7923a19e0730bf409023d460b378f7acdc3cba11d719a",
+      "run2": "32edf4389d9ca9435cc7923a19e0730bf409023d460b378f7acdc3cba11d719a",
+      "equal": true
+    },
+    "corrected": {
+      "run1": "db4193aa1ad88fa052599bf6714f2ba401bd99f52008a938a5f475280dc66245",
+      "run2": "db4193aa1ad88fa052599bf6714f2ba401bd99f52008a938a5f475280dc66245",
+      "equal": true
+    }
+  },
+  "self_consistency": {
+    "run1": {
+      "n_projected_cols_checked": 28,
+      "all_projected_cols_lagged": true,
+      "exempt_projected_cols": [],
+      "max_abs_diff": 0.0,
+      "worst_col": null,
+      "nan_placement_mismatches_total": 0,
+      "value_mismatches_total": 0,
+      "corrected_row0_non_nan": [],
+      "per_col_anomalies": {}
+    },
+    "run2": {
+      "n_projected_cols_checked": 28,
+      "all_projected_cols_lagged": true,
+      "exempt_projected_cols": [],
+      "max_abs_diff": 0.0,
+      "worst_col": null,
+      "nan_placement_mismatches_total": 0,
+      "value_mismatches_total": 0,
+      "corrected_row0_non_nan": [],
+      "per_col_anomalies": {}
+    }
+  },
+  "aux": {
+    "nan_counts_contaminated_run1": {
+      "mid_return_1s": 1,
+      "mid_return_5s": 5,
+      "mid_return_10s": 10,
+      "mid_return_30s": 30,
+      "vwap_distance": 243000,
+      "depth_change_1s": 1,
+      "depth_change_5s": 5,
+      "depth_change_30s": 30
+    },
+    "rows_bid1_plus_ask1_eq_0_contaminated_run1": 0,
+    "rows_total_depth_eq_0_contaminated_run1": 0
+  }
+}

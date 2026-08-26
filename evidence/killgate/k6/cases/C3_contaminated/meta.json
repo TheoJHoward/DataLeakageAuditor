@@ -1,0 +1,21 @@
+{
+  "features": [
+    "f0",
+    "f20",
+    "f2",
+    "f8",
+    "f3"
+  ],
+  "target": "target",
+  "group": null,
+  "time": null,
+  "truth": "univariate feature selection scored on pooled train+test",
+  "case": "C3",
+  "side": "contaminated",
+  "type": "T3",
+  "detector_row": "L1.3",
+  "n_rows": 400,
+  "n_train": 200,
+  "n_test": 200,
+  "n_index_overlap": 0
+}

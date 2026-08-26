@@ -1,0 +1,27 @@
+=== POSITIVE CONTROL: same rules applied to PREREG.md (formulas live there) ===
+
+PREREG.md: 1090 normative lines, 11 single-source rule hits
+       8  measurement formula (÷) outside PREREG.md; owned by PREREG §7.2/§7.2.1
+       2  comparison-regime definition restated; owned by PREREG §6.9/§6.10
+       1  valid-finding rule restated; owned by PREREG §2.6
+
+DESIGN.md: 546 normative lines, 0 single-source rule hits
+
+AVAILABILITY_DECLARATION.md: 3684 normative lines, 0 single-source rule hits
+
+=== raw token presence in AVAILABILITY_DECLARATION.md (no normative filtering) ===
+  '÷'                            count=0
+  'not_applicable'               count=0
+  'unsupported'                  count=1
+  'completed'                    count=0
+  'incomplete'                   count=0
+  'short_circuited'              count=0
+  'promotion_status'             count=0
+  'Reach is **the latest'        count=0
+  'Silence is recorded only'     count=0
+  'superseded'                   count=10
+  'select_fixture_branch'        count=0
+
+=== banned-vocabulary terms present in the declaration? ===
+  banned list has 6 terms: ['capability matrix', 'noise floor', 'routing policy', 'comparison_mode', 'statistical mode', 'substituted gate']
+  banned terms appearing in AVAILABILITY_DECLARATION.md: NONE

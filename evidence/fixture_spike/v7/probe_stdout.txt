@@ -1,0 +1,17 @@
+es: {'lattice': 'v4_load_snapshots', 'inst': 'es', 'month': 'ALL12_SORTED', 'n_rows': 21094473, 'adj_same_second_pairs': 250, 'adj_exact_dup_ts': 0, 'min_gap_ns': 11686000, 'median_gap_ns': 1000000000, 'n_gap_lt_1s': 250, 'file': 'AGG', 'path': 'C:\\Users\\ttbea\\OneDrive\\Desktop\\MBO_2025\\processed\\es\\v4_morning_chunk'}  [182.4s]
+nq: {'lattice': 'v4_load_snapshots', 'inst': 'nq', 'month': 'ALL12_SORTED', 'n_rows': 21093391, 'adj_same_second_pairs': 249, 'adj_exact_dup_ts': 0, 'min_gap_ns': 14404000, 'median_gap_ns': 1000000000, 'n_gap_lt_1s': 250, 'file': 'AGG', 'path': 'C:\\Users\\ttbea\\OneDrive\\Desktop\\MBO_2025\\processed\\nq\\v4_gapfill'}  [170.4s]
+cl: {'lattice': 'v4_load_snapshots', 'inst': 'cl', 'month': 'ALL12_SORTED', 'n_rows': 21094993, 'adj_same_second_pairs': 233, 'adj_exact_dup_ts': 0, 'min_gap_ns': 15344000, 'median_gap_ns': 1000000000, 'n_gap_lt_1s': 250, 'file': 'AGG', 'path': 'C:\\Users\\ttbea\\OneDrive\\Desktop\\MBO_2025\\processed\\cl\\v4_gapfill'}  [175.9s]
+gc: {'lattice': 'v4_load_snapshots', 'inst': 'gc', 'month': 'ALL12_SORTED', 'n_rows': 21095855, 'adj_same_second_pairs': 247, 'adj_exact_dup_ts': 0, 'min_gap_ns': 252000, 'median_gap_ns': 1000000000, 'n_gap_lt_1s': 250, 'file': 'AGG', 'path': 'C:\\Users\\ttbea\\OneDrive\\Desktop\\MBO_2025\\processed\\gc\\v4_gapfill'}  [168.1s]
+zc: {'lattice': 'v4_load_snapshots', 'inst': 'zc', 'month': 'ALL12_SORTED', 'n_rows': 19106953, 'adj_same_second_pairs': 237, 'adj_exact_dup_ts': 0, 'min_gap_ns': 3375000, 'median_gap_ns': 1000000000, 'n_gap_lt_1s': 250, 'file': 'AGG', 'path': 'C:\\Users\\ttbea\\OneDrive\\Desktop\\MBO_2025\\processed\\zc\\v4_gapfill'}  [150.2s]
+zs: {'lattice': 'v4_load_snapshots', 'inst': 'zs', 'month': 'ALL12_SORTED', 'n_rows': 19107618, 'adj_same_second_pairs': 229, 'adj_exact_dup_ts': 0, 'min_gap_ns': 998000, 'median_gap_ns': 1000000000, 'n_gap_lt_1s': 250, 'file': 'AGG', 'path': 'C:\\Users\\ttbea\\OneDrive\\Desktop\\MBO_2025\\processed\\zs\\v4_gapfill'}  [151.4s]
+he: {'lattice': 'v4_load_snapshots', 'inst': 'he', 'month': 'ALL12_SORTED', 'n_rows': 4131656, 'adj_same_second_pairs': 166, 'adj_exact_dup_ts': 1, 'min_gap_ns': 0, 'median_gap_ns': 1000000000, 'n_gap_lt_1s': 251, 'file': 'AGG', 'path': 'C:\\Users\\ttbea\\OneDrive\\Desktop\\MBO_2025\\processed\\he'}  [33.0s]
+le: {'lattice': 'v4_load_snapshots', 'inst': 'le', 'month': 'ALL12_SORTED', 'n_rows': 4131877, 'adj_same_second_pairs': 149, 'adj_exact_dup_ts': 1, 'min_gap_ns': 0, 'median_gap_ns': 1000000000, 'n_gap_lt_1s': 251, 'file': 'AGG', 'path': 'C:\\Users\\ttbea\\OneDrive\\Desktop\\MBO_2025\\processed\\le'}  [32.8s]
+phase5 zc: [('2025-01', 1262191, 20), ('2025-08', 1666968, 20), ('ALL12_SORTED', 2929159, 297426)]
+phase5 zs: [('2025-01', 1275375, 16), ('2025-08', 1597846, 17), ('ALL12_SORTED', 2873221, 200437)]
+phase5 gc: [('2025-01', 1884670, 20), ('2025-08', 1851278, 19), ('ALL12_SORTED', 3735948, 172496)]
+phase5 cl: [('2025-01', 1939381, 18), ('2025-08', 1809537, 15), ('ALL12_SORTED', 3748918, 177786)]
+phase5 es: [('2025-01', 1811402, 30), ('2025-08', 1757598, 25), ('ALL12_SORTED', 3569000, 55)]
+phase5 he: [('2025-01', 343499, 15), ('2025-08', 346496, 15), ('ALL12_SORTED', 689995, 30)]
+phase5 le: [('2025-01', 343507, 14), ('2025-08', 346498, 13), ('ALL12_SORTED', 690005, 27)]
+
+wrote C:\Users\ttbea\AppData\Local\Temp\claude\C--Users-ttbea-OneDrive-Desktop-MBO-2025-4mon--2026-01\8b1d67a4-ce4f-4c55-b09d-1c72e7b6b5e1\scratchpad\fixture_spike\v7\lattice_same_second_probe.csv  total 1208.6s

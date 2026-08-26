@@ -1,0 +1,20 @@
+{
+  "features": [
+    "f0",
+    "f1",
+    "f2",
+    "f3"
+  ],
+  "target": "target",
+  "group": null,
+  "time": null,
+  "truth": "20 declared-test indices are also declared-train (set overlap)",
+  "case": "C1",
+  "side": "contaminated",
+  "type": "T1",
+  "detector_row": "L1.1",
+  "n_rows": 400,
+  "n_train": 200,
+  "n_test": 220,
+  "n_index_overlap": 20
+}

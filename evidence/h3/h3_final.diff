@@ -1,0 +1,300 @@
+diff --git a/tools/check_registration.py b/tools/check_registration.py
+index 15174a5..0c08f9f 100644
+--- a/tools/check_registration.py
++++ b/tools/check_registration.py
+@@ -9,6 +9,12 @@ affirmative reason grounded in PREREG.md. The exemptions below are the ones
+ PREREG §6.8 itself declares (the banned-list block, PREREG §0.4, the
+ parenthetical ledger notes / HISTORY.md markers, PARKING_LOT.md), and
+ HISTORY.md is out of scan scope because it declares itself non-normative.
++
++The banned-vocabulary and deletion-certificate scans read PREREG.md and
++DESIGN.md. The single-source scan (PREREG §0.2.1) reads every markdown file in
++the repository except the ones named, with reasons, in
++SINGLE_SOURCE_EXCLUDED_* below — see the comment block above those constants
++for why it is scope-by-exclusion rather than a fixed file list.
+ """
+ 
+ from __future__ import annotations
+@@ -425,9 +431,172 @@ def check_deletion_certificate(root: Path) -> list[Finding]:
+     return findings
+ 
+ 
++# ---------------------------------------------------------------------------
++# Single-source scan scope (PREREG §0.2.1)
++# ---------------------------------------------------------------------------
++#
++# WHY THIS SCAN READS MORE THAN DESIGN.md
++# ---------------------------------------
++# Until this change check_single_source opened exactly one file:
++#
++#     path = root / "DESIGN.md"
++#
++# so a measurement rule restated in any OTHER non-PREREG file passed CI in
++# silence. The hole was found during the G1 review of the v30a amendment form:
++# form (ii) would have placed normative measurement semantics in
++# AVAILABILITY_DECLARATION.md, and this checker would have printed PASS.
++#
++# The rule being enforced does not mention DESIGN.md. PREREG §0.2.1's locked
++# "Single normative source" clause fails the CI script on any measurement
++# formula, state enumeration, or denominator definition "appearing outside this
++# file" — outside PREREG.md, wherever it lives. §6.8's later summary sentence
++# says "appears in DESIGN.md" because DESIGN.md was the only companion document
++# in existence when it was written; the implementation had inherited that
++# wording as though it were the rule. It is not. A rule restated outside
++# PREREG.md is a §0.2.1 protocol failure wherever it lives, and a scan that
++# only knows one filename is a scan the next new document walks past.
++#
++# So the scan is scope-BY-EXCLUSION, not a fixed file list: every markdown file
++# in the repository is scanned unless named below with a reason. This is
++# fail-closed — a markdown file added later is scanned by default, and removing
++# it from scope costs a visible diff carrying a written reason. That is the
++# standard PREREG §6.8 already sets for the banned-list exemptions ("an
++# exemption that cannot be audited is not one"), applied to scan scope.
++#
++# Each decision below is deliberate; none of them was made to help a current
++# file pass.
++
++# Directories excluded wholesale, with the reason for each.
++SINGLE_SOURCE_EXCLUDED_DIRS: tuple[tuple[str, str], ...] = (
++    # Dated capture and record material: measurement logs, CSV/JSON captures,
++    # working notes, and _snapshots/ holding superseded drafts BY DESIGN. It is
++    # the evidence attachment set behind AVAILABILITY_DECLARATION.md — instances
++    # of what was observed, not rules. The document that speaks FOR this
++    # evidence, the declaration itself, is scanned; that is where a rule would
++    # have to surface to acquire any normative effect.
++    ("evidence", "dated evidence records and superseded-draft snapshots; the "
++                 "declaration that speaks for them is scanned instead"),
++    (".git", "version-control internals, not repository documents"),
++    (".pytest_cache", "tool cache, gitignored"),
++    ("__pycache__", "tool cache, gitignored"),
++)
++
++# Individual files excluded, with the reason for each. Every OTHER markdown file
++# — AVAILABILITY_DECLARATION.md, README.md, PRIOR_ART_VERIFICATION.md,
++# DEVIATIONS.md, DESIGN.md, and anything added later — is scanned.
++SINGLE_SOURCE_EXCLUDED_FILES: tuple[tuple[str, str], ...] = (
++    # The source itself. §0.2.1 bans restatement "outside this file"; inside it
++    # is where the rules are supposed to be.
++    ("PREREG.md", "the single normative source (PREREG §0.2.1)"),
++    # Declares itself non-normative in its own first line — "Not a normative
++    # file. Nothing here instructs an implementer." — and PREREG §6.8 names it
++    # as the file that carries the historical record precisely so that normative
++    # and historical prose stop being told apart linguistically. Scanning it
++    # would flag the recounting of deleted machinery that is its entire purpose.
++    # This exclusion predates this change and is preserved unchanged.
++    ("HISTORY.md", "self-declared non-normative ledger (PREREG §6.8)"),
++    # PREREG §6.8 declares it an exempt region for the banned scan, and §11 item
++    # 1 constrains it to the single §13.9 pointer entry — which check_parking_lot
++    # enforces over EVERY line, not just bullets. A rule cannot hide in a file
++    # whose second entry is already a failure.
++    ("PARKING_LOT.md", "exempt region per PREREG §6.8; §11 item 1 permits "
++                       "exactly one entry, enforced by check_parking_lot"),
++    # Generated artifact: regenerated from traces.py by
++    # generate_expected_outputs.py and machine-pinned to the reducer by
++    # test_expected_outputs.py, while the reducer is itself anchored to PREREG.md
++    # by check_legality_table, check_unit_grammar and check_suppression_anchor.
++    # It is not an implementer's input and it cannot drift silently — a drifted
++    # value fails the suite. Scanning it would flag generated state tables that
++    # regeneration would immediately reproduce, which is how a check gets turned
++    # off. Residual risk, recorded rather than hidden: its hand-written
++    # "Interpretation notes" paraphrase denominators, and PREREG §6.6.1's
++    # required human read owns that text, not this scan.
++    ("tests/registration/EXPECTED_OUTPUTS.md",
++     "generated test artifact, pinned to the reducer by test_expected_outputs.py"),
++)
++# DEVIATIONS.md is deliberately NOT excluded, though it is an append-only
++# record. §0.2.1's class machinery is the reason: class A branches and class B
++# parameters are recorded there, but a class C change — a new branch, unit,
++# denominator, coverage state, tier licence, or acceptance criterion — may NOT
++# be, because it requires an amended registration first (PREREG lines 136,
++# 1009, 1033: "No DEVIATIONS.md-only criterion"). A rule-shaped line in
++# DEVIATIONS.md is therefore, by construction, a class C change recorded in the
++# one place §0.2.1 forbids. Scanning it enforces that boundary.
++
++
++def single_source_scan_set(root: Path) -> list[Path]:
++    """Every markdown file in scope for the single-source scan, sorted.
++
++    Scope by exclusion (see the comment block above): everything except the
++    named directories and files. New markdown is scanned by default."""
++    skip_dirs = {name for name, _reason in SINGLE_SOURCE_EXCLUDED_DIRS}
++    skip_files = {rel for rel, _reason in SINGLE_SOURCE_EXCLUDED_FILES}
++    out: list[Path] = []
++    for path in sorted(root.rglob("*.md")):
++        rel_parts = path.relative_to(root).parts
++        if any(part in skip_dirs for part in rel_parts[:-1]):
++            continue
++        if path.relative_to(root).as_posix() in skip_files:
++            continue
++        out.append(path)
++    return out
++
++
++# Quotation, distinguished from restatement. PREREG §0.2.1 permits referencing a
++# rule by its section and bans restating it; a companion document that quotes the
++# registered text VERBATIM UNDER AN ATTRIBUTION is doing neither. Two conditions,
++# both required:
++#
++#   1. VERBATIM. Unlike a paraphrase, a verbatim copy cannot drift in silence,
++#      because the exemption is re-derived from PREREG.md on every run — edit
++#      either side and the match evaporates and the line is flagged again. A
++#      paraphrase gets no exemption; that is the restatement §0.2.1 bans.
++#   2. ATTRIBUTED. The quoted line, or one of the six lines above it (enough to
++#      reach the head of a wrapped quote block), must name PREREG.md. A bare
++#      unattributed copy reads to a later implementer as this document's own
++#      rule, which is the "two copies, no canonical source" shape §0.2.1 names
++#      as the generator of the whole residue class. It stays flagged.
++#
++# The length floor keeps short fragments from matching PREREG prose by accident.
++_QUOTE_MIN_CHARS = 40
++_QUOTE_ATTRIBUTION_WINDOW = 6
++_PREREG_ATTRIBUTION = re.compile(r"PREREG\.md")
++
++
++def _quote_normalize(s: str) -> str:
++    s = re.sub(r"^\s*>+\s*", "", s.strip()).replace("**", "").replace("`", "")
++    return re.sub(r"\s+", " ", s).strip()
++
++
++def _prereg_quote_blob(root: Path) -> str:
++    prereg = root / "PREREG.md"
++    if not prereg.exists():
++        return ""
++    return " ".join(_quote_normalize(ln)
++                    for ln in prereg.read_text(encoding="utf-8").splitlines())
++
++
++def _is_attributed_quote(line: str, raw_lines: list[str], lineno: int,
++                         blob: str) -> bool:
++    normed = _quote_normalize(line)
++    if len(normed) < _QUOTE_MIN_CHARS or not blob or normed not in blob:
++        return False
++    start = max(0, lineno - 1 - _QUOTE_ATTRIBUTION_WINDOW)
++    return any(_PREREG_ATTRIBUTION.search(ln) for ln in raw_lines[start:lineno])
++
++
++# Attribution, also not restatement: "…are defined by `PREREG.md` §7.2 and are
++# not restated here" is the form §0.2.1 asks companion documents to use, and
++# DESIGN.md uses it. Only the definitional detectors consult this; it cannot
++# exempt a formula, a state enumeration, or a denominator constitution, so
++# naming a section does not buy a licence to restate one.
++_REFERENCE_NOT_RESTATEMENT = re.compile(
++    r"(?:defined|specified|owned|governed|resolved|stated)\s+(?:by|in)\s+"
++    r"`?PREREG\.md`?|not restated here")
++
+ # Curated detectors for the single-source rule (PREREG §0.2.1): measurement
+-# formulas, state enumerations, and denominator definitions may not appear in
+-# DESIGN.md. Rules name the owning PREREG section.
++# formulas, state enumerations, and denominator definitions may not appear
++# outside PREREG.md. Rules name the owning PREREG section.
+ _SINGLE_SOURCE_RULES: tuple[tuple[str, str], ...] = (
+     (r"unavailable\s*=\s*a\s*>=?\s*d",
+      "ties comparator restated; owned by PREREG §2.3"),
+@@ -445,28 +614,94 @@ _SINGLE_SOURCE_RULES: tuple[tuple[str, str], ...] = (
+      "metric formula restated; owned by PREREG §7.2/§7.2.1"),
+     (r"bitwise equality under a passing determinism guard",
+      "comparison-regime definition restated; owned by PREREG §6.9/§6.10"),
++    # --- added with the scope extension -----------------------------------
++    # The eight detectors above were written against the restatements that had
++    # actually appeared in DESIGN.md, so they are DESIGN.md-shaped: widening the
++    # file list alone finds nothing in AVAILABILITY_DECLARATION.md, whose
++    # rule-shaped text takes different forms. These five catch those forms. Each
++    # is file-agnostic, each names the PREREG section that owns the semantics,
++    # and each was calibrated to fire on no other scanned file — the point is to
++    # catch rules stated outside PREREG.md, not to editorialise about prose.
++    #
++    # A classification rule stated as a biconditional: "**REQUIRED** iff …" is
++    # a rule for assigning a state, which §0.2.1 reserves ("units, states,
++    # denominators, gates"). Deriving THIS fixture's per-column enumeration is
++    # an instance; stating the rule that yields it is not.
++    (r"\*\*[A-Z][A-Z][A-Z _-]*\*\*\s+iff\b",
++     "state-classification rule stated as a biconditional; a rule for assigning "
++     "a state is owned by PREREG §6.6/§7.0, not by a companion document"),
++    # Denominator membership: what enters, and what is excluded from, a
++    # denominator is named in §0.2.1's own list of reserved semantics.
++    (r"(?:enter(?:s|ing)?|excluded from|included in|removed from|member of)\s+"
++     r"(?:the\s+|any\s+|every\s+|a\s+|no\s+)?[\w' -]{0,24}denominator",
++     "denominator membership stated outside PREREG.md; owned by PREREG "
++     "§7.2/§7.4/§7.7"),
++    # Denominator constitution — what the denominator is drawn FROM. Restricted
++    # to constitution verbs so that instance-level prose about a denominator
++    # ("adopting this family is class C") is not swept in with it.
++    (r"\bdenominator\s+(?:derives|comprises|consists|is constituted|is drawn|"
++     r"is the set)\b",
++     "denominator constitution defined outside PREREG.md; owned by PREREG "
++     "§7.2/§7.4"),
++    # What a published number means — the fourth item in §0.2.1's reserved list,
++    # and the one a companion document is most tempted to settle in passing.
++    (r"\bnever (?:reported|counted|scored) as\b|"
++     r"\b(?:may|can|shall) (?:not|never) be (?:reported|published|counted) as\b",
++     "rule about what may be reported/published stated outside PREREG.md; what "
++     "a published number means is owned by PREREG §7.2/§8.3/§10.2"),
++)
++
++# Definitional detectors, held separately because these — and only these —
++# honour _REFERENCE_NOT_RESTATEMENT. A companion document saying a term "is
++# defined by PREREG.md §7.2 and is not restated here" is doing the referencing
++# §0.2.1 explicitly permits; a document that opens its own defining clause is
++# doing the thing it bans. The distinction is only coherent for definitions, so
++# the exemption is confined to them.
++_SINGLE_SOURCE_DEFINITIONAL_RULES: tuple[tuple[str, str], ...] = (
++    (r"\*\*DEFINITION\b|\bDEFINITION,\s+declared\b|\bdefined here\b|"
++     r"\b(?:is|are)\s+defined\s+as\s+follows\b|\bwe define\b|"
++     r"\b(?:is|are)\s+hereby\s+defined\b",
++     "a defining clause for a term used normatively by PREREG.md is opened "
++     "here; what a term means is owned by PREREG.md (§0.2.1)"),
+ )
+ 
+ 
+ def check_single_source(root: Path) -> list[Finding]:
+-    path = root / "DESIGN.md"
+-    if not path.exists():
+-        return [Finding("single_source", "DESIGN.md", None, "missing")]
++    """PREREG §0.2.1: no measurement formula, state enumeration, or denominator
++    definition outside PREREG.md — in ANY companion document, not just
++    DESIGN.md. See the scope comment block above SINGLE_SOURCE_EXCLUDED_DIRS."""
+     f: list[Finding] = []
+-    for lineno, line in normative_lines(path, path.read_text(encoding="utf-8")):
+-        for pattern, message in _SINGLE_SOURCE_RULES:
+-            if re.search(pattern, line):
+-                f.append(Finding("single_source", "DESIGN.md", lineno,
+-                                 f"{message}: {line.strip()[:110]!r}"))
++    if not (root / "DESIGN.md").exists():
++        # Preserved from the single-file implementation. It no longer returns
++        # early: a missing DESIGN.md is already a structure failure, and it must
++        # not take every other document out of scan scope on its way out.
++        f.append(Finding("single_source", "DESIGN.md", None, "missing"))
++    quote_blob = _prereg_quote_blob(root)
+     # State-set enumerations: three or more schedule/coverage state values on
+     # one line is an enumeration, not a mention.
+     state_tokens = ("not_applicable", "unsupported", "completed", "incomplete",
+                     "short_circuited")
+-    for lineno, line in normative_lines(path, path.read_text(encoding="utf-8")):
+-        hits = [t for t in state_tokens if t in line]
+-        if len(hits) >= 3:
+-            f.append(Finding("single_source", "DESIGN.md", lineno,
+-                             f"state enumeration ({', '.join(hits)}); owned by PREREG §6.6"))
++    for path in single_source_scan_set(root):
++        name = path.relative_to(root).as_posix()
++        text = path.read_text(encoding="utf-8")
++        raw_lines = text.splitlines()
++        for lineno, line in normative_lines(path, text):
++            if _is_attributed_quote(line, raw_lines, lineno, quote_blob):
++                continue  # verbatim registered text, re-verified every run
++            for pattern, message in _SINGLE_SOURCE_RULES:
++                if re.search(pattern, line):
++                    f.append(Finding("single_source", name, lineno,
++                                     f"{message}: {line.strip()[:110]!r}"))
++            if not _REFERENCE_NOT_RESTATEMENT.search(line):
++                for pattern, message in _SINGLE_SOURCE_DEFINITIONAL_RULES:
++                    if re.search(pattern, line):
++                        f.append(Finding("single_source", name, lineno,
++                                         f"{message}: {line.strip()[:110]!r}"))
++            hits = [t for t in state_tokens if t in line]
++            if len(hits) >= 3:
++                f.append(Finding(
++                    "single_source", name, lineno,
++                    f"state enumeration ({', '.join(hits)}); owned by PREREG §6.6"))
+     return f
+ 
+ 

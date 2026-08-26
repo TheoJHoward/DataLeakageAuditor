@@ -1,0 +1,17 @@
+{
+  "features": [
+    "win5"
+  ],
+  "target": "target",
+  "group": null,
+  "time": "t",
+  "truth": "trailing 5-bar mean ends at t-1; every cell read is available at decision time",
+  "case": "C6",
+  "side": "clean",
+  "type": "T6",
+  "detector_row": "L3.1",
+  "n_rows": 400,
+  "n_train": 200,
+  "n_test": 200,
+  "n_index_overlap": 0
+}

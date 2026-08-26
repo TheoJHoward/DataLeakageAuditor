@@ -1,0 +1,1737 @@
+C1 (c) supplement - distinct tagging RULES among writer sources
+run_utc: 2026-08-12T00:14:01.469716+00:00
+
+==============================================================================
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\pipeline\process_zc.py
+  file md5: 4e3b74ea74c75323240f3e7c54c59d33
+  writer lines: 92, 95, 99, 100
+
+  --- def tag_aggressor()  lines 89-102  block_md5=86cde33692589fc0595e0386f6c66a82
+        89 | def tag_aggressor(df: pd.DataFrame) -> pd.DataFrame:
+        90 |     """Tag trades using the side field on action=T messages."""
+        91 |     trades = df.loc[df["action"] == "T"].copy()
+        92 |     trades["aggressor_side"] = trades["side"].map(
+        93 |         {"B": "BUY_AGGRESSOR", "A": "SELL_AGGRESSOR"}
+        94 |     )
+        95 |     trades["is_buy_aggressor"] = trades["side"] == "B"
+        96 | 
+        97 |     still_na = trades["aggressor_side"].isna()
+        98 |     if still_na.any():
+        99 |         trades.loc[still_na, "aggressor_side"] = "UNKNOWN"
+       100 |         trades.loc[still_na, "is_buy_aggressor"] = False
+       101 | 
+       102 |     return trades
+
+==============================================================================
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\pipeline\process_mbo.py
+  file md5: f944893bdfd34ffad2278653ebd4192e
+  writer lines: 549, 552, 555, 556
+
+  --- def process_month()  lines 383-651  block_md5=3dc0437f2d7278fa36e25af263c19c32
+       383 | def process_month(cfg: InstrumentConfig, month: str, skip_recon: bool = False):
+       384 |     """Full pipeline for one month of any instrument."""
+       385 |     import pyarrow as pa
+       386 |     import pyarrow.parquet as pq
+       387 | 
+       388 |     sym = cfg.symbol.upper()
+       389 |     sym_lc = cfg.symbol.lower()
+       390 | 
+       391 |     raw_dir = PROJECT / "raw_data" / sym_lc
+       392 |     proc_dir = PROJECT / "processed" / sym_lc
+       393 |     proc_dir.mkdir(parents=True, exist_ok=True)
+       394 | 
+       395 |     print(f"\n{'='*70}")
+       396 |     print(f"PROCESSING {sym} {month}")
+       397 |     print(f"{'='*70}")
+       398 |     t_month = time.time()
+       399 | 
+       400 |     # Resolve directory names
+       401 |     ov_base = raw_dir / cfg.ov_dir_name
+       402 |     day_base = raw_dir / cfg.day_dir_name
+       403 | 
+       404 |     # Find month subdirectory — try configured format first, then auto-detect
+       405 |     month_tag = cfg.month_tag_fmt.format(month=month)
+       406 |     ov_dir = ov_base / month_tag
+       407 |     day_dir = day_base / month_tag
+       408 | 
+       409 |     # Fallback: try without _15m suffix or other variations
+       410 |     if not ov_dir.exists() and not day_dir.exists():
+       411 |         # Try with _15m suffix (ES format)
+       412 |         for suffix in ["_15m", ""]:
+       413 |             test_ov = ov_base / f"{month_tag}{suffix}"
+       414 |             test_day = day_base / f"{month_tag}{suffix}"
+       415 |             if test_ov.exists() or test_day.exists():
+       416 |                 ov_dir = test_ov
+       417 |                 day_dir = test_day
+       418 |                 break
+       419 | 
+       420 |     all_dates = get_month_dates(ov_dir, day_dir)
+       421 |     if not all_dates:
+       422 |         print(f"  No data found for {month}")
+       423 |         print(f"    Checked: {ov_dir}")
+       424 |         print(f"    Checked: {day_dir}")
+       425 |         return None
+       426 | 
+       427 |     print(f"  Dates: {len(all_dates)} ({all_dates[0]} to {all_dates[-1]})")
+       428 | 
+       429 |     # ── Process day by day ──
+       430 |     print(f"\n  Loading and merging day by day...")
+       431 |     tmp_dir = proc_dir / f"_tmp_{month}"
+       432 |     tmp_dir.mkdir(parents=True, exist_ok=True)
+       433 | 
+       434 |     total_ov = 0
+       435 |     total_day = 0
+       436 |     total_merged = 0
+       437 |     total_dupes = 0
+       438 |     sample_prices = []
+       439 | 
+       440 |     for i, date_str in enumerate(all_dates):
+       441 |         t0 = time.time()
+       442 | 
+       443 |         # Load overnight files for this date
+       444 |         ov_files = find_files_for_date(ov_dir, date_str)
+       445 |         ov_dfs = [load_dbn_file(f) for f in ov_files]
+       446 |         ov = pd.concat(ov_dfs, ignore_index=True) if ov_dfs else pd.DataFrame()
+       447 |         n_ov = len(ov)
+       448 |         del ov_dfs
+       449 | 
+       450 |         # Load day session files for this date
+       451 |         d_files = find_files_for_date(day_dir, date_str)
+       452 |         d_dfs = [load_dbn_file(f) for f in d_files]
+       453 |         day = pd.concat(d_dfs, ignore_index=True) if d_dfs else pd.DataFrame()
+       454 |         n_day = len(day)
+       455 |         del d_dfs
+       456 | 
+       457 |         # Collect sample prices
+       458 |         if len(sample_prices) < 5:
+       459 |             for df_tmp in [ov, day]:
+       460 |                 if len(df_tmp) > 0:
+       461 |                     trades_tmp = df_tmp[df_tmp["action"] == "T"]
+       462 |                     if len(trades_tmp) > 0:
+       463 |                         sample_prices.extend(trades_tmp["price"].head(5).tolist())
+       464 | 
+       465 |         # Merge
+       466 |         parts = [df for df in [ov, day] if len(df) > 0]
+       467 |         del ov, day
+       468 | 
+       469 |         if not parts:
+       470 |             continue
+       471 | 
+       472 |         day_merged = pd.concat(parts, ignore_index=True)
+       473 |         del parts
+       474 | 
+       475 |         day_merged.sort_values("ts_event", kind="mergesort", inplace=True)
+       476 |         n_before = len(day_merged)
+       477 |         day_merged.drop_duplicates(subset=["ts_event", "order_id", "action"],
+       478 |                                     keep="first", inplace=True)
+       479 |         day_merged.reset_index(drop=True, inplace=True)
+       480 |         n_dupes = n_before - len(day_merged)
+       481 | 
+       482 |         # Save per-day parquet
+       483 |         day_path = tmp_dir / f"day_{date_str}.parquet"
+       484 |         day_merged.to_parquet(day_path, index=False, engine="pyarrow")
+       485 | 
+       486 |         # Reconstruct book inline (fresh book per day)
+       487 |         snap_info = ""
+       488 |         if not skip_recon:
+       489 |             front = filter_front_month(day_merged) if cfg.has_multi_contract else day_merged
+       490 |             snaps = reconstruct_day(front, date_str,
+       491 |                                      interval=SNAP_INTERVAL, levels=SNAP_LEVELS)
+       492 |             if len(snaps) > 0:
+       493 |                 snap_path = tmp_dir / f"snap_{date_str}.parquet"
+       494 |                 snaps.to_parquet(snap_path, index=False, engine="pyarrow")
+       495 |                 avg_spr = snaps["spread"].dropna().mean()
+       496 |                 snap_info = f"  snaps={len(snaps):>6,} spread={avg_spr/cfg.tick_size:.1f}T"
+       497 |             if cfg.has_multi_contract:
+       498 |                 del front
+       499 |             del snaps
+       500 | 
+       501 |         total_ov += n_ov
+       502 |         total_day += n_day
+       503 |         total_merged += len(day_merged)
+       504 |         total_dupes += n_dupes
+       505 | 
+       506 |         elapsed = time.time() - t0
+       507 |         print(f"    {i+1:>2}/{len(all_dates)} {date_str}: "
+       508 |               f"ov={n_ov:>9,} day={n_day:>9,} "
+       509 |               f"merged={len(day_merged):>10,} dupes={n_dupes:>6,} "
+       510 |               f"{elapsed:>5.1f}s{snap_info}")
+       511 | 
+       512 |         del day_merged
+       513 |         gc_collect.collect()
+       514 | 
+       515 |     # ── Merge all per-day parquets into master ──
+       516 |     print(f"\n  Merging {len(all_dates)} daily parquets...")
+       517 |     day_files = sorted(tmp_dir.glob("day_*.parquet"))
+       518 | 
+       519 |     out_path = proc_dir / f"{sym_lc}_mbo_{month}.parquet"
+       520 |     writer = None
+       521 |     total_rows_written = 0
+       522 | 
+       523 |     for f in day_files:
+       524 |         table = pq.read_table(str(f))
+       525 |         if writer is None:
+       526 |             writer = pq.ParquetWriter(str(out_path), table.schema)
+       527 |         writer.write_table(table)
+       528 |         total_rows_written += table.num_rows
+       529 |         del table
+       530 | 
+       531 |     if writer is not None:
+       532 |         writer.close()
+       533 | 
+       534 |     fsize = out_path.stat().st_size
+       535 |     print(f"    Saved: {out_path.name} ({fmt(fsize)})")
+       536 |     print(f"    Total rows: {total_rows_written:,}")
+       537 | 
+       538 |     # Clean up day parquets (keep snap files)
+       539 |     for f in day_files:
+       540 |         f.unlink()
+       541 | 
+       542 |     # ── Tag aggressors ──
+       543 |     print(f"\n  Tagging aggressors...")
+       544 |     t0 = time.time()
+       545 |     trades_table = pq.read_table(str(out_path), filters=[("action", "=", "T")])
+       546 |     trades_df = trades_table.to_pandas()
+       547 |     del trades_table
+       548 | 
+       549 |     trades_df["aggressor_side"] = trades_df["side"].map(
+       550 |         {"B": "BUY_AGGRESSOR", "A": "SELL_AGGRESSOR"}
+       551 |     )
+       552 |     trades_df["is_buy_aggressor"] = trades_df["side"] == "B"
+       553 |     still_na = trades_df["aggressor_side"].isna()
+       554 |     if still_na.any():
+       555 |         trades_df.loc[still_na, "aggressor_side"] = "UNKNOWN"
+       556 |         trades_df.loc[still_na, "is_buy_aggressor"] = False
+       557 | 
+       558 |     n_trades = len(trades_df)
+       559 |     n_buy = int(trades_df["is_buy_aggressor"].sum())
+       560 |     trades_path = proc_dir / f"{sym_lc}_trades_tagged_{month}.parquet"
+       561 |     trades_df.to_parquet(trades_path, index=False, engine="pyarrow")
+       562 |     print(f"    Trades: {n_trades:,} (buy={n_buy:,} sell={n_trades-n_buy:,}) "
+       563 |           f"in {time.time()-t0:.1f}s")
+       564 |     print(f"    Saved: {trades_path.name} ({fmt(trades_path.stat().st_size)})")
+       565 | 
+       566 |     # Zero-size events (use pyarrow compute to avoid loading all values)
+       567 |     import pyarrow.compute as pc
+       568 |     tbl = pq.read_table(str(out_path), columns=["size"])
+       569 |     n_zero_size = pc.sum(pc.equal(tbl.column("size"), 0)).as_py()
+       570 |     zero_pct = n_zero_size / total_rows_written * 100 if total_rows_written > 0 else 0
+       571 |     del tbl
+       572 | 
+       573 |     del trades_df
+       574 |     gc_collect.collect()
+       575 | 
+       576 |     # ── Merge per-day snapshots ──
+       577 |     if skip_recon:
+       578 |         print(f"\n  Book reconstruction: SKIPPED (--load-only)")
+       579 |         all_snap_rows = 0
+       580 |         avg_spread_ticks = float("nan")
+       581 |         avg_depth = float("nan")
+       582 |     else:
+       583 |         print(f"\n  Merging daily snapshots...")
+       584 |         snap_files = sorted(tmp_dir.glob("snap_*.parquet"))
+       585 | 
+       586 |         if snap_files:
+       587 |             snap_tables = [pq.read_table(str(f)) for f in snap_files]
+       588 |             master_snap = pa.concat_tables(snap_tables)
+       589 |             snap_path = proc_dir / f"{sym_lc}_snapshots_{month}.parquet"
+       590 |             pq.write_table(master_snap, str(snap_path))
+       591 | 
+       592 |             snap_df = master_snap.to_pandas()
+       593 |             spreads = snap_df["spread"].dropna()
+       594 |             avg_spread_ticks = spreads.mean() / cfg.tick_size if len(spreads) > 0 else float("nan")
+       595 | 
+       596 |             bid_cols = [f"bid_size_{i}" for i in range(1, SNAP_LEVELS + 1)]
+       597 |             ask_cols = [f"ask_size_{i}" for i in range(1, SNAP_LEVELS + 1)]
+       598 |             avg_bid_depth = snap_df[bid_cols].sum(axis=1).mean()
+       599 |             avg_ask_depth = snap_df[ask_cols].sum(axis=1).mean()
+       600 |             avg_depth = (avg_bid_depth + avg_ask_depth) / 2
+       601 | 
+       602 |             all_snap_rows = len(snap_df)
+       603 | 
+       604 |             print(f"    Saved: {snap_path.name} ({fmt(snap_path.stat().st_size)})")
+       605 |             print(f"    Total snapshots: {all_snap_rows:,}")
+       606 | 
+       607 |             del snap_df, master_snap, snap_tables
+       608 |         else:
+       609 |             all_snap_rows = 0
+       610 |             avg_spread_ticks = float("nan")
+       611 |             avg_depth = float("nan")
+       612 | 
+       613 |     # Clean up remaining temp files
+       614 |     if tmp_dir.exists():
+       615 |         for f in tmp_dir.glob("*.parquet"):
+       616 |             f.unlink()
+       617 |         tmp_dir.rmdir()
+       618 | 
+       619 |     # ── Print summary stats ──
+       620 |     elapsed_total = time.time() - t_month
+       621 |     n_days = len(all_dates)
+       622 | 
+       623 |     print(f"\n  {'─'*50}")
+       624 |     print(f"  {sym} {month} SUMMARY")
+       625 |     print(f"  {'─'*50}")
+       626 |     print(f"    Total MBO events:     {total_rows_written:,}")
+       627 |     print(f"    Total trades:         {n_trades:,}")
+       628 |     print(f"    Zero-size events:     {n_zero_size:,} ({zero_pct:.1f}%)")
+       629 |     print(f"    Trading days:         {n_days}")
+       630 |     print(f"    Sample prices:        {sample_prices[:5]}")
+       631 |     print(f"    Avg spread (ticks):   {avg_spread_ticks:.2f}")
+       632 |     print(f"    Avg book depth/side:  {avg_depth:.1f}")
+       633 |     print(f"    Trades/day avg:       {n_trades // max(n_days, 1):,}")
+       634 |     print(f"    Overnight events:     {total_ov:,}")
+       635 |     print(f"    Day session events:   {total_day:,}")
+       636 |     print(f"    Duplicates removed:   {total_dupes:,}")
+       637 |     print(f"    Elapsed:              {elapsed_total:.1f}s ({elapsed_total/60:.1f} min)")
+       638 |     print(f"  {'─'*50}")
+       639 | 
+       640 |     gc_collect.collect()
+       641 | 
+       642 |     return {
+       643 |         "month": month,
+       644 |         "total_rows": total_rows_written,
+       645 |         "trades": n_trades,
+       646 |         "days": n_days,
+       647 |         "overnight": total_ov,
+       648 |         "day_session": total_day,
+       649 |         "dupes": total_dupes,
+       650 |         "elapsed_min": round(elapsed_total / 60, 1),
+       651 |     }
+
+==============================================================================
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\pc2_transfer\scripts\pipeline\process_mbo.py
+  file md5: 167ddc0876de043f77d88576dba1afe1
+  writer lines: 549, 552, 555, 556
+
+  --- def process_month()  lines 383-651  block_md5=3dc0437f2d7278fa36e25af263c19c32
+       383 | def process_month(cfg: InstrumentConfig, month: str, skip_recon: bool = False):
+       384 |     """Full pipeline for one month of any instrument."""
+       385 |     import pyarrow as pa
+       386 |     import pyarrow.parquet as pq
+       387 | 
+       388 |     sym = cfg.symbol.upper()
+       389 |     sym_lc = cfg.symbol.lower()
+       390 | 
+       391 |     raw_dir = PROJECT / "raw_data" / sym_lc
+       392 |     proc_dir = PROJECT / "processed" / sym_lc
+       393 |     proc_dir.mkdir(parents=True, exist_ok=True)
+       394 | 
+       395 |     print(f"\n{'='*70}")
+       396 |     print(f"PROCESSING {sym} {month}")
+       397 |     print(f"{'='*70}")
+       398 |     t_month = time.time()
+       399 | 
+       400 |     # Resolve directory names
+       401 |     ov_base = raw_dir / cfg.ov_dir_name
+       402 |     day_base = raw_dir / cfg.day_dir_name
+       403 | 
+       404 |     # Find month subdirectory — try configured format first, then auto-detect
+       405 |     month_tag = cfg.month_tag_fmt.format(month=month)
+       406 |     ov_dir = ov_base / month_tag
+       407 |     day_dir = day_base / month_tag
+       408 | 
+       409 |     # Fallback: try without _15m suffix or other variations
+       410 |     if not ov_dir.exists() and not day_dir.exists():
+       411 |         # Try with _15m suffix (ES format)
+       412 |         for suffix in ["_15m", ""]:
+       413 |             test_ov = ov_base / f"{month_tag}{suffix}"
+       414 |             test_day = day_base / f"{month_tag}{suffix}"
+       415 |             if test_ov.exists() or test_day.exists():
+       416 |                 ov_dir = test_ov
+       417 |                 day_dir = test_day
+       418 |                 break
+       419 | 
+       420 |     all_dates = get_month_dates(ov_dir, day_dir)
+       421 |     if not all_dates:
+       422 |         print(f"  No data found for {month}")
+       423 |         print(f"    Checked: {ov_dir}")
+       424 |         print(f"    Checked: {day_dir}")
+       425 |         return None
+       426 | 
+       427 |     print(f"  Dates: {len(all_dates)} ({all_dates[0]} to {all_dates[-1]})")
+       428 | 
+       429 |     # ── Process day by day ──
+       430 |     print(f"\n  Loading and merging day by day...")
+       431 |     tmp_dir = proc_dir / f"_tmp_{month}"
+       432 |     tmp_dir.mkdir(parents=True, exist_ok=True)
+       433 | 
+       434 |     total_ov = 0
+       435 |     total_day = 0
+       436 |     total_merged = 0
+       437 |     total_dupes = 0
+       438 |     sample_prices = []
+       439 | 
+       440 |     for i, date_str in enumerate(all_dates):
+       441 |         t0 = time.time()
+       442 | 
+       443 |         # Load overnight files for this date
+       444 |         ov_files = find_files_for_date(ov_dir, date_str)
+       445 |         ov_dfs = [load_dbn_file(f) for f in ov_files]
+       446 |         ov = pd.concat(ov_dfs, ignore_index=True) if ov_dfs else pd.DataFrame()
+       447 |         n_ov = len(ov)
+       448 |         del ov_dfs
+       449 | 
+       450 |         # Load day session files for this date
+       451 |         d_files = find_files_for_date(day_dir, date_str)
+       452 |         d_dfs = [load_dbn_file(f) for f in d_files]
+       453 |         day = pd.concat(d_dfs, ignore_index=True) if d_dfs else pd.DataFrame()
+       454 |         n_day = len(day)
+       455 |         del d_dfs
+       456 | 
+       457 |         # Collect sample prices
+       458 |         if len(sample_prices) < 5:
+       459 |             for df_tmp in [ov, day]:
+       460 |                 if len(df_tmp) > 0:
+       461 |                     trades_tmp = df_tmp[df_tmp["action"] == "T"]
+       462 |                     if len(trades_tmp) > 0:
+       463 |                         sample_prices.extend(trades_tmp["price"].head(5).tolist())
+       464 | 
+       465 |         # Merge
+       466 |         parts = [df for df in [ov, day] if len(df) > 0]
+       467 |         del ov, day
+       468 | 
+       469 |         if not parts:
+       470 |             continue
+       471 | 
+       472 |         day_merged = pd.concat(parts, ignore_index=True)
+       473 |         del parts
+       474 | 
+       475 |         day_merged.sort_values("ts_event", kind="mergesort", inplace=True)
+       476 |         n_before = len(day_merged)
+       477 |         day_merged.drop_duplicates(subset=["ts_event", "order_id", "action"],
+       478 |                                     keep="first", inplace=True)
+       479 |         day_merged.reset_index(drop=True, inplace=True)
+       480 |         n_dupes = n_before - len(day_merged)
+       481 | 
+       482 |         # Save per-day parquet
+       483 |         day_path = tmp_dir / f"day_{date_str}.parquet"
+       484 |         day_merged.to_parquet(day_path, index=False, engine="pyarrow")
+       485 | 
+       486 |         # Reconstruct book inline (fresh book per day)
+       487 |         snap_info = ""
+       488 |         if not skip_recon:
+       489 |             front = filter_front_month(day_merged) if cfg.has_multi_contract else day_merged
+       490 |             snaps = reconstruct_day(front, date_str,
+       491 |                                      interval=SNAP_INTERVAL, levels=SNAP_LEVELS)
+       492 |             if len(snaps) > 0:
+       493 |                 snap_path = tmp_dir / f"snap_{date_str}.parquet"
+       494 |                 snaps.to_parquet(snap_path, index=False, engine="pyarrow")
+       495 |                 avg_spr = snaps["spread"].dropna().mean()
+       496 |                 snap_info = f"  snaps={len(snaps):>6,} spread={avg_spr/cfg.tick_size:.1f}T"
+       497 |             if cfg.has_multi_contract:
+       498 |                 del front
+       499 |             del snaps
+       500 | 
+       501 |         total_ov += n_ov
+       502 |         total_day += n_day
+       503 |         total_merged += len(day_merged)
+       504 |         total_dupes += n_dupes
+       505 | 
+       506 |         elapsed = time.time() - t0
+       507 |         print(f"    {i+1:>2}/{len(all_dates)} {date_str}: "
+       508 |               f"ov={n_ov:>9,} day={n_day:>9,} "
+       509 |               f"merged={len(day_merged):>10,} dupes={n_dupes:>6,} "
+       510 |               f"{elapsed:>5.1f}s{snap_info}")
+       511 | 
+       512 |         del day_merged
+       513 |         gc_collect.collect()
+       514 | 
+       515 |     # ── Merge all per-day parquets into master ──
+       516 |     print(f"\n  Merging {len(all_dates)} daily parquets...")
+       517 |     day_files = sorted(tmp_dir.glob("day_*.parquet"))
+       518 | 
+       519 |     out_path = proc_dir / f"{sym_lc}_mbo_{month}.parquet"
+       520 |     writer = None
+       521 |     total_rows_written = 0
+       522 | 
+       523 |     for f in day_files:
+       524 |         table = pq.read_table(str(f))
+       525 |         if writer is None:
+       526 |             writer = pq.ParquetWriter(str(out_path), table.schema)
+       527 |         writer.write_table(table)
+       528 |         total_rows_written += table.num_rows
+       529 |         del table
+       530 | 
+       531 |     if writer is not None:
+       532 |         writer.close()
+       533 | 
+       534 |     fsize = out_path.stat().st_size
+       535 |     print(f"    Saved: {out_path.name} ({fmt(fsize)})")
+       536 |     print(f"    Total rows: {total_rows_written:,}")
+       537 | 
+       538 |     # Clean up day parquets (keep snap files)
+       539 |     for f in day_files:
+       540 |         f.unlink()
+       541 | 
+       542 |     # ── Tag aggressors ──
+       543 |     print(f"\n  Tagging aggressors...")
+       544 |     t0 = time.time()
+       545 |     trades_table = pq.read_table(str(out_path), filters=[("action", "=", "T")])
+       546 |     trades_df = trades_table.to_pandas()
+       547 |     del trades_table
+       548 | 
+       549 |     trades_df["aggressor_side"] = trades_df["side"].map(
+       550 |         {"B": "BUY_AGGRESSOR", "A": "SELL_AGGRESSOR"}
+       551 |     )
+       552 |     trades_df["is_buy_aggressor"] = trades_df["side"] == "B"
+       553 |     still_na = trades_df["aggressor_side"].isna()
+       554 |     if still_na.any():
+       555 |         trades_df.loc[still_na, "aggressor_side"] = "UNKNOWN"
+       556 |         trades_df.loc[still_na, "is_buy_aggressor"] = False
+       557 | 
+       558 |     n_trades = len(trades_df)
+       559 |     n_buy = int(trades_df["is_buy_aggressor"].sum())
+       560 |     trades_path = proc_dir / f"{sym_lc}_trades_tagged_{month}.parquet"
+       561 |     trades_df.to_parquet(trades_path, index=False, engine="pyarrow")
+       562 |     print(f"    Trades: {n_trades:,} (buy={n_buy:,} sell={n_trades-n_buy:,}) "
+       563 |           f"in {time.time()-t0:.1f}s")
+       564 |     print(f"    Saved: {trades_path.name} ({fmt(trades_path.stat().st_size)})")
+       565 | 
+       566 |     # Zero-size events (use pyarrow compute to avoid loading all values)
+       567 |     import pyarrow.compute as pc
+       568 |     tbl = pq.read_table(str(out_path), columns=["size"])
+       569 |     n_zero_size = pc.sum(pc.equal(tbl.column("size"), 0)).as_py()
+       570 |     zero_pct = n_zero_size / total_rows_written * 100 if total_rows_written > 0 else 0
+       571 |     del tbl
+       572 | 
+       573 |     del trades_df
+       574 |     gc_collect.collect()
+       575 | 
+       576 |     # ── Merge per-day snapshots ──
+       577 |     if skip_recon:
+       578 |         print(f"\n  Book reconstruction: SKIPPED (--load-only)")
+       579 |         all_snap_rows = 0
+       580 |         avg_spread_ticks = float("nan")
+       581 |         avg_depth = float("nan")
+       582 |     else:
+       583 |         print(f"\n  Merging daily snapshots...")
+       584 |         snap_files = sorted(tmp_dir.glob("snap_*.parquet"))
+       585 | 
+       586 |         if snap_files:
+       587 |             snap_tables = [pq.read_table(str(f)) for f in snap_files]
+       588 |             master_snap = pa.concat_tables(snap_tables)
+       589 |             snap_path = proc_dir / f"{sym_lc}_snapshots_{month}.parquet"
+       590 |             pq.write_table(master_snap, str(snap_path))
+       591 | 
+       592 |             snap_df = master_snap.to_pandas()
+       593 |             spreads = snap_df["spread"].dropna()
+       594 |             avg_spread_ticks = spreads.mean() / cfg.tick_size if len(spreads) > 0 else float("nan")
+       595 | 
+       596 |             bid_cols = [f"bid_size_{i}" for i in range(1, SNAP_LEVELS + 1)]
+       597 |             ask_cols = [f"ask_size_{i}" for i in range(1, SNAP_LEVELS + 1)]
+       598 |             avg_bid_depth = snap_df[bid_cols].sum(axis=1).mean()
+       599 |             avg_ask_depth = snap_df[ask_cols].sum(axis=1).mean()
+       600 |             avg_depth = (avg_bid_depth + avg_ask_depth) / 2
+       601 | 
+       602 |             all_snap_rows = len(snap_df)
+       603 | 
+       604 |             print(f"    Saved: {snap_path.name} ({fmt(snap_path.stat().st_size)})")
+       605 |             print(f"    Total snapshots: {all_snap_rows:,}")
+       606 | 
+       607 |             del snap_df, master_snap, snap_tables
+       608 |         else:
+       609 |             all_snap_rows = 0
+       610 |             avg_spread_ticks = float("nan")
+       611 |             avg_depth = float("nan")
+       612 | 
+       613 |     # Clean up remaining temp files
+       614 |     if tmp_dir.exists():
+       615 |         for f in tmp_dir.glob("*.parquet"):
+       616 |             f.unlink()
+       617 |         tmp_dir.rmdir()
+       618 | 
+       619 |     # ── Print summary stats ──
+       620 |     elapsed_total = time.time() - t_month
+       621 |     n_days = len(all_dates)
+       622 | 
+       623 |     print(f"\n  {'─'*50}")
+       624 |     print(f"  {sym} {month} SUMMARY")
+       625 |     print(f"  {'─'*50}")
+       626 |     print(f"    Total MBO events:     {total_rows_written:,}")
+       627 |     print(f"    Total trades:         {n_trades:,}")
+       628 |     print(f"    Zero-size events:     {n_zero_size:,} ({zero_pct:.1f}%)")
+       629 |     print(f"    Trading days:         {n_days}")
+       630 |     print(f"    Sample prices:        {sample_prices[:5]}")
+       631 |     print(f"    Avg spread (ticks):   {avg_spread_ticks:.2f}")
+       632 |     print(f"    Avg book depth/side:  {avg_depth:.1f}")
+       633 |     print(f"    Trades/day avg:       {n_trades // max(n_days, 1):,}")
+       634 |     print(f"    Overnight events:     {total_ov:,}")
+       635 |     print(f"    Day session events:   {total_day:,}")
+       636 |     print(f"    Duplicates removed:   {total_dupes:,}")
+       637 |     print(f"    Elapsed:              {elapsed_total:.1f}s ({elapsed_total/60:.1f} min)")
+       638 |     print(f"  {'─'*50}")
+       639 | 
+       640 |     gc_collect.collect()
+       641 | 
+       642 |     return {
+       643 |         "month": month,
+       644 |         "total_rows": total_rows_written,
+       645 |         "trades": n_trades,
+       646 |         "days": n_days,
+       647 |         "overnight": total_ov,
+       648 |         "day_session": total_day,
+       649 |         "dupes": total_dupes,
+       650 |         "elapsed_min": round(elapsed_total / 60, 1),
+       651 |     }
+
+==============================================================================
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\pipeline\process_gc.py
+  file md5: edd57fefdf5e5d6af899c77cc108d1c6
+  writer lines: 454, 457, 460, 461
+
+  --- def process_month()  lines 310-559  block_md5=3e14daf416af9710cbe92faca331b0d9
+       310 | def process_month(month: str, skip_recon: bool = False):
+       311 |     """Full pipeline for one GC month: load, merge, tag, reconstruct."""
+       312 |     import pyarrow as pa
+       313 |     import pyarrow.parquet as pq
+       314 | 
+       315 |     print(f"\n{'='*70}")
+       316 |     print(f"PROCESSING GC {month}")
+       317 |     print(f"{'='*70}")
+       318 |     t_month = time.time()
+       319 | 
+       320 |     month_tag = f"gc_{month}_mbo"
+       321 |     ov_dir = OV_DIR / month_tag
+       322 |     day_dir = DAY_DIR / month_tag
+       323 | 
+       324 |     all_dates = get_month_dates(ov_dir, day_dir)
+       325 |     if not all_dates:
+       326 |         print(f"  No data found for {month}, skipping")
+       327 |         return None
+       328 | 
+       329 |     print(f"  Dates: {len(all_dates)} ({all_dates[0]} to {all_dates[-1]})")
+       330 | 
+       331 |     # ── Process day by day ──
+       332 |     print(f"\n  Loading and merging day by day...")
+       333 |     tmp_dir = PROC_GC / f"_tmp_{month}"
+       334 |     tmp_dir.mkdir(parents=True, exist_ok=True)
+       335 | 
+       336 |     total_ov = 0
+       337 |     total_day = 0
+       338 |     total_merged = 0
+       339 |     total_dupes = 0
+       340 |     sample_prices = []
+       341 | 
+       342 |     for i, date_str in enumerate(all_dates):
+       343 |         t0 = time.time()
+       344 | 
+       345 |         # Load overnight files for this date
+       346 |         ov_files = find_files_for_date(ov_dir, date_str)
+       347 |         ov_dfs = [load_dbn_file(f) for f in ov_files]
+       348 |         ov = pd.concat(ov_dfs, ignore_index=True) if ov_dfs else pd.DataFrame()
+       349 |         n_ov = len(ov)
+       350 |         del ov_dfs
+       351 | 
+       352 |         # Load day session files for this date
+       353 |         day_files = find_files_for_date(day_dir, date_str)
+       354 |         day_dfs = [load_dbn_file(f) for f in day_files]
+       355 |         day = pd.concat(day_dfs, ignore_index=True) if day_dfs else pd.DataFrame()
+       356 |         n_day = len(day)
+       357 |         del day_dfs
+       358 | 
+       359 |         # Collect sample prices from early dates
+       360 |         if len(sample_prices) < 5:
+       361 |             for df_tmp in [ov, day]:
+       362 |                 if len(df_tmp) > 0:
+       363 |                     trades_tmp = df_tmp[df_tmp["action"] == "T"]
+       364 |                     if len(trades_tmp) > 0:
+       365 |                         sample_prices.extend(trades_tmp["price"].head(5).tolist())
+       366 | 
+       367 |         # Merge overnight + day for this date
+       368 |         parts = [df for df in [ov, day] if len(df) > 0]
+       369 |         del ov, day
+       370 | 
+       371 |         if not parts:
+       372 |             continue
+       373 | 
+       374 |         day_merged = pd.concat(parts, ignore_index=True)
+       375 |         del parts
+       376 | 
+       377 |         day_merged.sort_values("ts_event", kind="mergesort", inplace=True)
+       378 |         n_before = len(day_merged)
+       379 |         day_merged.drop_duplicates(subset=["ts_event", "order_id", "action"],
+       380 |                                     keep="first", inplace=True)
+       381 |         day_merged.reset_index(drop=True, inplace=True)
+       382 |         n_dupes = n_before - len(day_merged)
+       383 | 
+       384 |         # Save per-day parquet
+       385 |         day_path = tmp_dir / f"day_{date_str}.parquet"
+       386 |         day_merged.to_parquet(day_path, index=False, engine="pyarrow")
+       387 | 
+       388 |         # Reconstruct book inline (fresh book per day, no cross-day bleed)
+       389 |         snap_df = None
+       390 |         if not skip_recon:
+       391 |             front = filter_front_month(day_merged)
+       392 |             snaps = reconstruct_day(front, date_str,
+       393 |                                      interval=SNAP_INTERVAL, levels=SNAP_LEVELS)
+       394 |             if len(snaps) > 0:
+       395 |                 snap_path = tmp_dir / f"snap_{date_str}.parquet"
+       396 |                 snaps.to_parquet(snap_path, index=False, engine="pyarrow")
+       397 |                 avg_spr = snaps["spread"].dropna().mean()
+       398 |                 snap_info = f"snaps={len(snaps):>6,} spread=${avg_spr:.2f}"
+       399 |             else:
+       400 |                 snap_info = "snaps=0"
+       401 |             del front, snaps
+       402 |         else:
+       403 |             snap_info = ""
+       404 | 
+       405 |         total_ov += n_ov
+       406 |         total_day += n_day
+       407 |         total_merged += len(day_merged)
+       408 |         total_dupes += n_dupes
+       409 | 
+       410 |         elapsed = time.time() - t0
+       411 |         recon_str = f"  {snap_info}" if snap_info else ""
+       412 |         print(f"    {i+1:>2}/{len(all_dates)} {date_str}: "
+       413 |               f"ov={n_ov:>8,} day={n_day:>8,} "
+       414 |               f"merged={len(day_merged):>9,} dupes={n_dupes:>5,} "
+       415 |               f"{elapsed:.1f}s{recon_str}")
+       416 | 
+       417 |         del day_merged
+       418 |         gc_collect.collect()
+       419 | 
+       420 |     # ── Merge all per-day parquets into master ──
+       421 |     print(f"\n  Merging {len(all_dates)} daily parquets...")
+       422 |     day_files = sorted(tmp_dir.glob("day_*.parquet"))
+       423 | 
+       424 |     existing_path = PROC_GC / f"gc_mbo_{month}.parquet"
+       425 |     writer = None
+       426 |     total_rows_written = 0
+       427 | 
+       428 |     for f in day_files:
+       429 |         table = pq.read_table(str(f))
+       430 |         if writer is None:
+       431 |             writer = pq.ParquetWriter(str(existing_path), table.schema)
+       432 |         writer.write_table(table)
+       433 |         total_rows_written += table.num_rows
+       434 |         del table
+       435 | 
+       436 |     if writer is not None:
+       437 |         writer.close()
+       438 | 
+       439 |     fsize = existing_path.stat().st_size
+       440 |     print(f"    Saved: {existing_path.name} ({fmt(fsize)})")
+       441 |     print(f"    Total rows: {total_rows_written:,}")
+       442 | 
+       443 |     # Clean up day parquets (keep snap files for merging later)
+       444 |     for f in day_files:
+       445 |         f.unlink()
+       446 | 
+       447 |     # ── Tag aggressors ──
+       448 |     print(f"\n  Tagging aggressors...")
+       449 |     t0 = time.time()
+       450 |     trades_table = pq.read_table(str(existing_path), filters=[("action", "=", "T")])
+       451 |     trades_df = trades_table.to_pandas()
+       452 |     del trades_table
+       453 | 
+       454 |     trades_df["aggressor_side"] = trades_df["side"].map(
+       455 |         {"B": "BUY_AGGRESSOR", "A": "SELL_AGGRESSOR"}
+       456 |     )
+       457 |     trades_df["is_buy_aggressor"] = trades_df["side"] == "B"
+       458 |     still_na = trades_df["aggressor_side"].isna()
+       459 |     if still_na.any():
+       460 |         trades_df.loc[still_na, "aggressor_side"] = "UNKNOWN"
+       461 |         trades_df.loc[still_na, "is_buy_aggressor"] = False
+       462 | 
+       463 |     n_trades = len(trades_df)
+       464 |     n_buy = int(trades_df["is_buy_aggressor"].sum())
+       465 |     trades_path = PROC_GC / f"gc_trades_tagged_{month}.parquet"
+       466 |     trades_df.to_parquet(trades_path, index=False, engine="pyarrow")
+       467 |     print(f"    Trades: {n_trades:,} (buy={n_buy:,} sell={n_trades-n_buy:,}) "
+       468 |           f"in {time.time()-t0:.1f}s")
+       469 |     print(f"    Saved: {trades_path.name} ({fmt(trades_path.stat().st_size)})")
+       470 | 
+       471 |     # Zero-size events
+       472 |     n_zero_size = 0
+       473 |     for f_path in sorted((PROC_GC / f"gc_mbo_{month}.parquet",)):
+       474 |         tbl = pq.read_table(str(f_path), columns=["size"])
+       475 |         sizes = tbl.column("size").to_pylist()
+       476 |         n_zero_size = sum(1 for s in sizes if s == 0)
+       477 |         del tbl, sizes
+       478 |     zero_pct = n_zero_size / total_rows_written * 100 if total_rows_written > 0 else 0
+       479 | 
+       480 |     del trades_df
+       481 |     gc_collect.collect()
+       482 | 
+       483 |     # ── Merge per-day snapshots (already built inline above) ──
+       484 |     if skip_recon:
+       485 |         print(f"\n  Book reconstruction: SKIPPED (--load-only)")
+       486 |         all_snap_rows = 0
+       487 |         avg_spread_ticks = float("nan")
+       488 |         avg_depth = float("nan")
+       489 |     else:
+       490 |         print(f"\n  Merging daily snapshots...")
+       491 |         snap_files = sorted(tmp_dir.glob("snap_*.parquet"))
+       492 | 
+       493 |         if snap_files:
+       494 |             snap_tables = [pq.read_table(str(f)) for f in snap_files]
+       495 |             master_snap = pa.concat_tables(snap_tables)
+       496 |             snap_path = PROC_GC / f"gc_snapshots_{month}.parquet"
+       497 |             pq.write_table(master_snap, str(snap_path))
+       498 | 
+       499 |             # Compute stats
+       500 |             snap_df = master_snap.to_pandas()
+       501 |             spreads = snap_df["spread"].dropna()
+       502 |             avg_spread_ticks = spreads.mean() / GC_TICK if len(spreads) > 0 else float("nan")
+       503 | 
+       504 |             bid_cols = [f"bid_size_{i}" for i in range(1, SNAP_LEVELS + 1)]
+       505 |             ask_cols = [f"ask_size_{i}" for i in range(1, SNAP_LEVELS + 1)]
+       506 |             avg_bid_depth = snap_df[bid_cols].sum(axis=1).mean()
+       507 |             avg_ask_depth = snap_df[ask_cols].sum(axis=1).mean()
+       508 |             avg_depth = (avg_bid_depth + avg_ask_depth) / 2
+       509 | 
+       510 |             all_snap_rows = len(snap_df)
+       511 | 
+       512 |             print(f"    Saved: {snap_path.name} ({fmt(snap_path.stat().st_size)})")
+       513 |             print(f"    Total snapshots: {all_snap_rows:,}")
+       514 | 
+       515 |             del snap_df, master_snap, snap_tables
+       516 |         else:
+       517 |             all_snap_rows = 0
+       518 |             avg_spread_ticks = float("nan")
+       519 |             avg_depth = float("nan")
+       520 | 
+       521 |     # Clean up remaining temp files
+       522 |     if tmp_dir.exists():
+       523 |         for f in tmp_dir.glob("*.parquet"):
+       524 |             f.unlink()
+       525 |         tmp_dir.rmdir()
+       526 | 
+       527 |     # ── Print summary stats ──
+       528 |     elapsed_total = time.time() - t_month
+       529 |     n_days = len(all_dates)
+       530 | 
+       531 |     print(f"\n  {'─'*50}")
+       532 |     print(f"  GC {month} SUMMARY")
+       533 |     print(f"  {'─'*50}")
+       534 |     print(f"    Total MBO events:     {total_rows_written:,}")
+       535 |     print(f"    Total trades:         {n_trades:,}")
+       536 |     print(f"    Zero-size events:     {n_zero_size:,} ({zero_pct:.1f}%)")
+       537 |     print(f"    Trading days:         {n_days}")
+       538 |     print(f"    Sample prices:        {sample_prices[:5]}")
+       539 |     print(f"    Avg spread (ticks):   {avg_spread_ticks:.2f}")
+       540 |     print(f"    Avg book depth/side:  {avg_depth:.1f}")
+       541 |     print(f"    Trades/day avg:       {n_trades // max(n_days, 1):,}")
+       542 |     print(f"    Overnight events:     {total_ov:,}")
+       543 |     print(f"    Day session events:   {total_day:,}")
+       544 |     print(f"    Duplicates removed:   {total_dupes:,}")
+       545 |     print(f"    Elapsed:              {elapsed_total:.1f}s ({elapsed_total/60:.1f} min)")
+       546 |     print(f"  {'─'*50}")
+       547 | 
+       548 |     gc_collect.collect()
+       549 | 
+       550 |     return {
+       551 |         "month": month,
+       552 |         "total_rows": total_rows_written,
+       553 |         "trades": n_trades,
+       554 |         "days": n_days,
+       555 |         "overnight": total_ov,
+       556 |         "day_session": total_day,
+       557 |         "dupes": total_dupes,
+       558 |         "elapsed_min": round(elapsed_total / 60, 1),
+       559 |     }
+
+==============================================================================
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\pipeline\process_gapfill.py
+  file md5: 423a8c0413f313b37e721dc185a2463b
+  writer lines: 88, 91, 94, 95, 470, 473, 476, 477
+
+  --- def tag_aggressor()  lines 85-96  block_md5=86cde33692589fc0595e0386f6c66a82
+        85 | def tag_aggressor(df: pd.DataFrame) -> pd.DataFrame:
+        86 |     """Tag trades using the side field on action=T messages."""
+        87 |     trades = df.loc[df["action"] == "T"].copy()
+        88 |     trades["aggressor_side"] = trades["side"].map(
+        89 |         {"B": "BUY_AGGRESSOR", "A": "SELL_AGGRESSOR"}
+        90 |     )
+        91 |     trades["is_buy_aggressor"] = trades["side"] == "B"
+        92 |     still_na = trades["aggressor_side"].isna()
+        93 |     if still_na.any():
+        94 |         trades.loc[still_na, "aggressor_side"] = "UNKNOWN"
+        95 |         trades.loc[still_na, "is_buy_aggressor"] = False
+        96 |     return trades
+
+  --- def process_month()  lines 285-573  block_md5=a47a08895ea4d3d6f47a153054083c7f
+       285 | def process_month(month: str, skip_recon: bool = False):
+       286 |     """Full pipeline for one month: day-by-day merge to avoid OOM.
+       287 | 
+       288 |     For each trading day:
+       289 |       - Load overnight .dbn.zst file(s) for that date (~3-5M rows)
+       290 |       - Read existing parquet filtered to that date (~5-6M rows)
+       291 |       - Load midday .dbn.zst file(s) for that date (~5-13M rows)
+       292 |       - Concat, dedup, write per-day parquet
+       293 |     Then merge all per-day parquets into the master month parquet.
+       294 |     """
+       295 |     import pyarrow as pa
+       296 |     import pyarrow.parquet as pq
+       297 | 
+       298 |     print(f"\n{'='*70}")
+       299 |     print(f"PROCESSING {month}")
+       300 |     print(f"{'='*70}")
+       301 |     t_month = time.time()
+       302 | 
+       303 |     month_tag = f"es_{month}_mbo_15m"
+       304 |     ov_dir = OV_DIR / month_tag
+       305 |     md_dir = MD_DIR / month_tag
+       306 | 
+       307 |     # Collect all unique dates from overnight + midday directories
+       308 |     all_dates = get_dates_from_dir(ov_dir) | get_dates_from_dir(md_dir)
+       309 |     if not all_dates:
+       310 |         print(f"  No gap-fill data found for {month}, skipping")
+       311 |         return None
+       312 | 
+       313 |     all_dates = sorted(all_dates)
+       314 |     print(f"  Dates with gap-fill data: {len(all_dates)}")
+       315 |     print(f"    {all_dates[0]} to {all_dates[-1]}")
+       316 | 
+       317 |     # Load existing parquet (read metadata first to check if it exists)
+       318 |     existing_path = PROC_ES / f"es_mbo_{month}.parquet"
+       319 |     has_existing = existing_path.exists()
+       320 |     n_existing = 0
+       321 |     if has_existing:
+       322 |         # Read just the metadata to report size without loading everything
+       323 |         pf = pq.ParquetFile(str(existing_path))
+       324 |         n_existing = pf.metadata.num_rows
+       325 |         print(f"  Existing parquet: {n_existing:,} rows")
+       326 |         del pf
+       327 | 
+       328 |     # ── Process day by day ──
+       329 |     print(f"\n  Processing day by day...")
+       330 |     tmp_dir = PROC_ES / f"_tmp_{month}"
+       331 |     tmp_dir.mkdir(parents=True, exist_ok=True)
+       332 | 
+       333 |     total_ov = 0
+       334 |     total_md = 0
+       335 |     total_ex = 0
+       336 |     total_merged = 0
+       337 |     total_dupes = 0
+       338 | 
+       339 |     for i, date_str in enumerate(all_dates):
+       340 |         t0 = time.time()
+       341 | 
+       342 |         # Load overnight files for this date
+       343 |         ov_files = find_files_for_date(ov_dir, date_str)
+       344 |         ov_dfs = []
+       345 |         for f in ov_files:
+       346 |             ov_dfs.append(load_dbn_file(f))
+       347 |         ov = pd.concat(ov_dfs, ignore_index=True) if ov_dfs else pd.DataFrame()
+       348 |         n_ov = len(ov)
+       349 |         del ov_dfs
+       350 | 
+       351 |         # Load midday files for this date
+       352 |         md_files = find_files_for_date(md_dir, date_str)
+       353 |         md_dfs = []
+       354 |         for f in md_files:
+       355 |             md_dfs.append(load_dbn_file(f))
+       356 |         md = pd.concat(md_dfs, ignore_index=True) if md_dfs else pd.DataFrame()
+       357 |         n_md = len(md)
+       358 |         del md_dfs
+       359 | 
+       360 |         # Read existing data for this date (filtered read — only rows for this day)
+       361 |         ex = pd.DataFrame()
+       362 |         n_ex = 0
+       363 |         if has_existing:
+       364 |             # Overnight spans midnight, so include previous evening (18:00 UTC-5)
+       365 |             day_start = pd.Timestamp(date_str, tz="UTC").normalize()
+       366 |             prev_start = day_start - pd.Timedelta(hours=6)
+       367 |             day_end = day_start + pd.Timedelta(days=1)
+       368 | 
+       369 |             # Use pyarrow for filtered read to save memory
+       370 |             table = pq.read_table(
+       371 |                 str(existing_path),
+       372 |                 filters=[
+       373 |                     ("ts_event", ">=", prev_start),
+       374 |                     ("ts_event", "<", day_end),
+       375 |                 ],
+       376 |             )
+       377 |             ex = table.to_pandas()
+       378 |             n_ex = len(ex)
+       379 |             del table
+       380 | 
+       381 |         # Merge parts for this day
+       382 |         parts = []
+       383 |         for df in [ov, ex, md]:
+       384 |             if len(df) > 0:
+       385 |                 if "ts_recv" not in df.columns and df.index.name == "ts_recv":
+       386 |                     df = df.reset_index()
+       387 |                 parts.append(df)
+       388 | 
+       389 |         del ov, ex, md
+       390 | 
+       391 |         if not parts:
+       392 |             continue
+       393 | 
+       394 |         day_merged = pd.concat(parts, ignore_index=True)
+       395 |         del parts
+       396 | 
+       397 |         day_merged.sort_values("ts_event", kind="mergesort", inplace=True)
+       398 |         n_before = len(day_merged)
+       399 |         day_merged.drop_duplicates(subset=["ts_event", "order_id", "action"],
+       400 |                                     keep="first", inplace=True)
+       401 |         day_merged.reset_index(drop=True, inplace=True)
+       402 |         n_dupes = n_before - len(day_merged)
+       403 | 
+       404 |         # Save per-day parquet
+       405 |         day_path = tmp_dir / f"day_{date_str}.parquet"
+       406 |         day_merged.to_parquet(day_path, index=False, engine="pyarrow")
+       407 | 
+       408 |         total_ov += n_ov
+       409 |         total_md += n_md
+       410 |         total_ex += n_ex
+       411 |         total_merged += len(day_merged)
+       412 |         total_dupes += n_dupes
+       413 | 
+       414 |         elapsed = time.time() - t0
+       415 |         print(f"    {i+1:>2}/{len(all_dates)} {date_str}: "
+       416 |               f"ov={n_ov:>8,} ex={n_ex:>8,} md={n_md:>8,} "
+       417 |               f"merged={len(day_merged):>10,} dupes={n_dupes:>6,} "
+       418 |               f"{elapsed:.1f}s")
+       419 | 
+       420 |         del day_merged
+       421 |         gc.collect()
+       422 | 
+       423 |     # ── Merge all per-day parquets into master (via pyarrow, no pandas) ──
+       424 |     print(f"\n  Merging {len(all_dates)} daily parquets...")
+       425 |     day_files = sorted(tmp_dir.glob("day_*.parquet"))
+       426 | 
+       427 |     # Write merged parquet directly using pyarrow ParquetWriter (streaming)
+       428 |     # Each daily parquet is already sorted and deduped internally.
+       429 |     # Cross-day dupes are rare (boundary overlaps only).
+       430 |     writer = None
+       431 |     total_rows_written = 0
+       432 | 
+       433 |     for f in day_files:
+       434 |         table = pq.read_table(str(f))
+       435 |         if writer is None:
+       436 |             writer = pq.ParquetWriter(str(existing_path), table.schema)
+       437 |         writer.write_table(table)
+       438 |         total_rows_written += table.num_rows
+       439 |         del table
+       440 | 
+       441 |     if writer is not None:
+       442 |         writer.close()
+       443 | 
+       444 |     n_after = total_rows_written
+       445 |     fsize = existing_path.stat().st_size
+       446 | 
+       447 |     print(f"    Total rows:     {n_after:,}")
+       448 |     print(f"    Overnight: {total_ov:,}, Existing: {total_ex:,}, Midday: {total_md:,}")
+       449 |     print(f"    Growth: {n_after/max(n_existing,1):.1f}x vs existing")
+       450 |     print(f"    Saved: {existing_path.name} ({fmt(fsize)})")
+       451 | 
+       452 |     # Clean up temp directory
+       453 |     for f in day_files:
+       454 |         f.unlink()
+       455 |     tmp_dir.rmdir()
+       456 | 
+       457 |     gc.collect()
+       458 | 
+       459 |     # ── Tag aggressors (read only action=T rows) ──
+       460 |     print(f"\n  Tagging aggressors...")
+       461 |     t0 = time.time()
+       462 |     # Read only trade rows from the merged parquet to save memory
+       463 |     trades_table = pq.read_table(
+       464 |         str(existing_path),
+       465 |         filters=[("action", "=", "T")],
+       466 |     )
+       467 |     trades_df = trades_table.to_pandas()
+       468 |     del trades_table
+       469 | 
+       470 |     trades_df["aggressor_side"] = trades_df["side"].map(
+       471 |         {"B": "BUY_AGGRESSOR", "A": "SELL_AGGRESSOR"}
+       472 |     )
+       473 |     trades_df["is_buy_aggressor"] = trades_df["side"] == "B"
+       474 |     still_na = trades_df["aggressor_side"].isna()
+       475 |     if still_na.any():
+       476 |         trades_df.loc[still_na, "aggressor_side"] = "UNKNOWN"
+       477 |         trades_df.loc[still_na, "is_buy_aggressor"] = False
+       478 | 
+       479 |     n_trades = len(trades_df)
+       480 |     n_buy = int(trades_df["is_buy_aggressor"].sum())
+       481 |     trades_path = PROC_ES / f"es_trades_tagged_{month}.parquet"
+       482 |     trades_df.to_parquet(trades_path, index=False, engine="pyarrow")
+       483 |     print(f"    Trades: {n_trades:,} (buy={n_buy:,} sell={n_trades-n_buy:,}) "
+       484 |           f"in {time.time()-t0:.1f}s")
+       485 |     print(f"    Saved: {trades_path.name} ({fmt(trades_path.stat().st_size)})")
+       486 |     del trades_df
+       487 | 
+       488 |     # ── Reconstruct order books ──
+       489 |     if skip_recon:
+       490 |         print(f"\n  Book reconstruction: SKIPPED (--load-only)")
+       491 |     else:
+       492 |         print(f"\n  Reconstructing order books (day by day from parquet)...")
+       493 |         snap_dir = PROC_ES / f"book_snapshots_{month}"
+       494 |         snap_dir.mkdir(parents=True, exist_ok=True)
+       495 |         t_recon = time.time()
+       496 | 
+       497 |         # Read unique dates from parquet metadata
+       498 |         ts_col = pq.read_table(str(existing_path), columns=["ts_event"])
+       499 |         dates_arr = ts_col.column("ts_event").to_pandas().dt.date.unique()
+       500 |         dates = sorted(dates_arr)
+       501 |         del ts_col, dates_arr
+       502 |         gc.collect()
+       503 | 
+       504 |         n_days = len(dates)
+       505 |         print(f"    {n_days} trading days")
+       506 | 
+       507 |         all_snap_files = []
+       508 |         for i, date_val in enumerate(dates):
+       509 |             date_str = str(date_val)
+       510 |             day_start = pd.Timestamp(date_str, tz="UTC").normalize()
+       511 |             day_end = day_start + pd.Timedelta(days=1)
+       512 | 
+       513 |             day_table = pq.read_table(
+       514 |                 str(existing_path),
+       515 |                 filters=[
+       516 |                     ("ts_event", ">=", day_start),
+       517 |                     ("ts_event", "<", day_end),
+       518 |                 ],
+       519 |             )
+       520 |             day_df = day_table.to_pandas()
+       521 |             del day_table
+       522 | 
+       523 |             if len(day_df) == 0:
+       524 |                 continue
+       525 | 
+       526 |             t0 = time.time()
+       527 |             snaps = reconstruct_day(day_df, date_str,
+       528 |                                      interval=SNAP_INTERVAL, levels=SNAP_LEVELS)
+       529 |             elapsed = time.time() - t0
+       530 | 
+       531 |             if len(snaps) > 0:
+       532 |                 tag = date_str.replace("-", "")
+       533 |                 out = snap_dir / f"snapshots_{tag}.parquet"
+       534 |                 snaps.to_parquet(out, index=False, engine="pyarrow")
+       535 |                 all_snap_files.append(out)
+       536 | 
+       537 |                 avg_spr = snaps["spread"].dropna().mean()
+       538 |                 print(f"      {i+1:>2}/{n_days} {date_str}  "
+       539 |                       f"events={len(day_df):>10,}  snaps={len(snaps):>7,}  "
+       540 |                       f"{elapsed:>6.1f}s  spread={avg_spr:.4f}")
+       541 | 
+       542 |             del day_df, snaps
+       543 |             gc.collect()
+       544 | 
+       545 |         if all_snap_files:
+       546 |             # Merge daily snapshots
+       547 |             snap_tables = [pq.read_table(str(f)) for f in all_snap_files]
+       548 |             master_snap = pa.concat_tables(snap_tables)
+       549 |             master_snap_path = snap_dir / f"all_snapshots_{month}.parquet"
+       550 |             pq.write_table(master_snap, str(master_snap_path))
+       551 |             print(f"    Master snapshots: {master_snap_path.name} "
+       552 |                   f"({fmt(master_snap_path.stat().st_size)})")
+       553 |             print(f"    Reconstruction: {time.time()-t_recon:.1f}s total")
+       554 |             del master_snap, snap_tables
+       555 | 
+       556 |     # ── Verify completeness ──
+       557 |     print(f"\n  Verifying completeness...")
+       558 |     verify_month_from_parquet(existing_path, month)
+       559 | 
+       560 |     elapsed = time.time() - t_month
+       561 |     print(f"\n  Month {month} complete in {elapsed:.1f}s ({elapsed/60:.1f} min)")
+       562 | 
+       563 |     gc.collect()
+       564 | 
+       565 |     return {
+       566 |         "month": month,
+       567 |         "total_rows": n_after,
+       568 |         "existing_rows": n_existing,
+       569 |         "overnight_rows": total_ov,
+       570 |         "midday_rows": total_md,
+       571 |         "duplicates": total_dupes,
+       572 |         "elapsed_min": round(elapsed / 60, 1),
+       573 |     }
+
+==============================================================================
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\pc2_transfer\scripts\pipeline\process_gapfill.py
+  file md5: c4deb9fc5823765c29c8c08303d7f3ea
+  writer lines: 88, 91, 94, 95, 470, 473, 476, 477
+
+  --- def tag_aggressor()  lines 85-96  block_md5=86cde33692589fc0595e0386f6c66a82
+        85 | def tag_aggressor(df: pd.DataFrame) -> pd.DataFrame:
+        86 |     """Tag trades using the side field on action=T messages."""
+        87 |     trades = df.loc[df["action"] == "T"].copy()
+        88 |     trades["aggressor_side"] = trades["side"].map(
+        89 |         {"B": "BUY_AGGRESSOR", "A": "SELL_AGGRESSOR"}
+        90 |     )
+        91 |     trades["is_buy_aggressor"] = trades["side"] == "B"
+        92 |     still_na = trades["aggressor_side"].isna()
+        93 |     if still_na.any():
+        94 |         trades.loc[still_na, "aggressor_side"] = "UNKNOWN"
+        95 |         trades.loc[still_na, "is_buy_aggressor"] = False
+        96 |     return trades
+
+  --- def process_month()  lines 285-573  block_md5=a47a08895ea4d3d6f47a153054083c7f
+       285 | def process_month(month: str, skip_recon: bool = False):
+       286 |     """Full pipeline for one month: day-by-day merge to avoid OOM.
+       287 | 
+       288 |     For each trading day:
+       289 |       - Load overnight .dbn.zst file(s) for that date (~3-5M rows)
+       290 |       - Read existing parquet filtered to that date (~5-6M rows)
+       291 |       - Load midday .dbn.zst file(s) for that date (~5-13M rows)
+       292 |       - Concat, dedup, write per-day parquet
+       293 |     Then merge all per-day parquets into the master month parquet.
+       294 |     """
+       295 |     import pyarrow as pa
+       296 |     import pyarrow.parquet as pq
+       297 | 
+       298 |     print(f"\n{'='*70}")
+       299 |     print(f"PROCESSING {month}")
+       300 |     print(f"{'='*70}")
+       301 |     t_month = time.time()
+       302 | 
+       303 |     month_tag = f"es_{month}_mbo_15m"
+       304 |     ov_dir = OV_DIR / month_tag
+       305 |     md_dir = MD_DIR / month_tag
+       306 | 
+       307 |     # Collect all unique dates from overnight + midday directories
+       308 |     all_dates = get_dates_from_dir(ov_dir) | get_dates_from_dir(md_dir)
+       309 |     if not all_dates:
+       310 |         print(f"  No gap-fill data found for {month}, skipping")
+       311 |         return None
+       312 | 
+       313 |     all_dates = sorted(all_dates)
+       314 |     print(f"  Dates with gap-fill data: {len(all_dates)}")
+       315 |     print(f"    {all_dates[0]} to {all_dates[-1]}")
+       316 | 
+       317 |     # Load existing parquet (read metadata first to check if it exists)
+       318 |     existing_path = PROC_ES / f"es_mbo_{month}.parquet"
+       319 |     has_existing = existing_path.exists()
+       320 |     n_existing = 0
+       321 |     if has_existing:
+       322 |         # Read just the metadata to report size without loading everything
+       323 |         pf = pq.ParquetFile(str(existing_path))
+       324 |         n_existing = pf.metadata.num_rows
+       325 |         print(f"  Existing parquet: {n_existing:,} rows")
+       326 |         del pf
+       327 | 
+       328 |     # ── Process day by day ──
+       329 |     print(f"\n  Processing day by day...")
+       330 |     tmp_dir = PROC_ES / f"_tmp_{month}"
+       331 |     tmp_dir.mkdir(parents=True, exist_ok=True)
+       332 | 
+       333 |     total_ov = 0
+       334 |     total_md = 0
+       335 |     total_ex = 0
+       336 |     total_merged = 0
+       337 |     total_dupes = 0
+       338 | 
+       339 |     for i, date_str in enumerate(all_dates):
+       340 |         t0 = time.time()
+       341 | 
+       342 |         # Load overnight files for this date
+       343 |         ov_files = find_files_for_date(ov_dir, date_str)
+       344 |         ov_dfs = []
+       345 |         for f in ov_files:
+       346 |             ov_dfs.append(load_dbn_file(f))
+       347 |         ov = pd.concat(ov_dfs, ignore_index=True) if ov_dfs else pd.DataFrame()
+       348 |         n_ov = len(ov)
+       349 |         del ov_dfs
+       350 | 
+       351 |         # Load midday files for this date
+       352 |         md_files = find_files_for_date(md_dir, date_str)
+       353 |         md_dfs = []
+       354 |         for f in md_files:
+       355 |             md_dfs.append(load_dbn_file(f))
+       356 |         md = pd.concat(md_dfs, ignore_index=True) if md_dfs else pd.DataFrame()
+       357 |         n_md = len(md)
+       358 |         del md_dfs
+       359 | 
+       360 |         # Read existing data for this date (filtered read — only rows for this day)
+       361 |         ex = pd.DataFrame()
+       362 |         n_ex = 0
+       363 |         if has_existing:
+       364 |             # Overnight spans midnight, so include previous evening (18:00 UTC-5)
+       365 |             day_start = pd.Timestamp(date_str, tz="UTC").normalize()
+       366 |             prev_start = day_start - pd.Timedelta(hours=6)
+       367 |             day_end = day_start + pd.Timedelta(days=1)
+       368 | 
+       369 |             # Use pyarrow for filtered read to save memory
+       370 |             table = pq.read_table(
+       371 |                 str(existing_path),
+       372 |                 filters=[
+       373 |                     ("ts_event", ">=", prev_start),
+       374 |                     ("ts_event", "<", day_end),
+       375 |                 ],
+       376 |             )
+       377 |             ex = table.to_pandas()
+       378 |             n_ex = len(ex)
+       379 |             del table
+       380 | 
+       381 |         # Merge parts for this day
+       382 |         parts = []
+       383 |         for df in [ov, ex, md]:
+       384 |             if len(df) > 0:
+       385 |                 if "ts_recv" not in df.columns and df.index.name == "ts_recv":
+       386 |                     df = df.reset_index()
+       387 |                 parts.append(df)
+       388 | 
+       389 |         del ov, ex, md
+       390 | 
+       391 |         if not parts:
+       392 |             continue
+       393 | 
+       394 |         day_merged = pd.concat(parts, ignore_index=True)
+       395 |         del parts
+       396 | 
+       397 |         day_merged.sort_values("ts_event", kind="mergesort", inplace=True)
+       398 |         n_before = len(day_merged)
+       399 |         day_merged.drop_duplicates(subset=["ts_event", "order_id", "action"],
+       400 |                                     keep="first", inplace=True)
+       401 |         day_merged.reset_index(drop=True, inplace=True)
+       402 |         n_dupes = n_before - len(day_merged)
+       403 | 
+       404 |         # Save per-day parquet
+       405 |         day_path = tmp_dir / f"day_{date_str}.parquet"
+       406 |         day_merged.to_parquet(day_path, index=False, engine="pyarrow")
+       407 | 
+       408 |         total_ov += n_ov
+       409 |         total_md += n_md
+       410 |         total_ex += n_ex
+       411 |         total_merged += len(day_merged)
+       412 |         total_dupes += n_dupes
+       413 | 
+       414 |         elapsed = time.time() - t0
+       415 |         print(f"    {i+1:>2}/{len(all_dates)} {date_str}: "
+       416 |               f"ov={n_ov:>8,} ex={n_ex:>8,} md={n_md:>8,} "
+       417 |               f"merged={len(day_merged):>10,} dupes={n_dupes:>6,} "
+       418 |               f"{elapsed:.1f}s")
+       419 | 
+       420 |         del day_merged
+       421 |         gc.collect()
+       422 | 
+       423 |     # ── Merge all per-day parquets into master (via pyarrow, no pandas) ──
+       424 |     print(f"\n  Merging {len(all_dates)} daily parquets...")
+       425 |     day_files = sorted(tmp_dir.glob("day_*.parquet"))
+       426 | 
+       427 |     # Write merged parquet directly using pyarrow ParquetWriter (streaming)
+       428 |     # Each daily parquet is already sorted and deduped internally.
+       429 |     # Cross-day dupes are rare (boundary overlaps only).
+       430 |     writer = None
+       431 |     total_rows_written = 0
+       432 | 
+       433 |     for f in day_files:
+       434 |         table = pq.read_table(str(f))
+       435 |         if writer is None:
+       436 |             writer = pq.ParquetWriter(str(existing_path), table.schema)
+       437 |         writer.write_table(table)
+       438 |         total_rows_written += table.num_rows
+       439 |         del table
+       440 | 
+       441 |     if writer is not None:
+       442 |         writer.close()
+       443 | 
+       444 |     n_after = total_rows_written
+       445 |     fsize = existing_path.stat().st_size
+       446 | 
+       447 |     print(f"    Total rows:     {n_after:,}")
+       448 |     print(f"    Overnight: {total_ov:,}, Existing: {total_ex:,}, Midday: {total_md:,}")
+       449 |     print(f"    Growth: {n_after/max(n_existing,1):.1f}x vs existing")
+       450 |     print(f"    Saved: {existing_path.name} ({fmt(fsize)})")
+       451 | 
+       452 |     # Clean up temp directory
+       453 |     for f in day_files:
+       454 |         f.unlink()
+       455 |     tmp_dir.rmdir()
+       456 | 
+       457 |     gc.collect()
+       458 | 
+       459 |     # ── Tag aggressors (read only action=T rows) ──
+       460 |     print(f"\n  Tagging aggressors...")
+       461 |     t0 = time.time()
+       462 |     # Read only trade rows from the merged parquet to save memory
+       463 |     trades_table = pq.read_table(
+       464 |         str(existing_path),
+       465 |         filters=[("action", "=", "T")],
+       466 |     )
+       467 |     trades_df = trades_table.to_pandas()
+       468 |     del trades_table
+       469 | 
+       470 |     trades_df["aggressor_side"] = trades_df["side"].map(
+       471 |         {"B": "BUY_AGGRESSOR", "A": "SELL_AGGRESSOR"}
+       472 |     )
+       473 |     trades_df["is_buy_aggressor"] = trades_df["side"] == "B"
+       474 |     still_na = trades_df["aggressor_side"].isna()
+       475 |     if still_na.any():
+       476 |         trades_df.loc[still_na, "aggressor_side"] = "UNKNOWN"
+       477 |         trades_df.loc[still_na, "is_buy_aggressor"] = False
+       478 | 
+       479 |     n_trades = len(trades_df)
+       480 |     n_buy = int(trades_df["is_buy_aggressor"].sum())
+       481 |     trades_path = PROC_ES / f"es_trades_tagged_{month}.parquet"
+       482 |     trades_df.to_parquet(trades_path, index=False, engine="pyarrow")
+       483 |     print(f"    Trades: {n_trades:,} (buy={n_buy:,} sell={n_trades-n_buy:,}) "
+       484 |           f"in {time.time()-t0:.1f}s")
+       485 |     print(f"    Saved: {trades_path.name} ({fmt(trades_path.stat().st_size)})")
+       486 |     del trades_df
+       487 | 
+       488 |     # ── Reconstruct order books ──
+       489 |     if skip_recon:
+       490 |         print(f"\n  Book reconstruction: SKIPPED (--load-only)")
+       491 |     else:
+       492 |         print(f"\n  Reconstructing order books (day by day from parquet)...")
+       493 |         snap_dir = PROC_ES / f"book_snapshots_{month}"
+       494 |         snap_dir.mkdir(parents=True, exist_ok=True)
+       495 |         t_recon = time.time()
+       496 | 
+       497 |         # Read unique dates from parquet metadata
+       498 |         ts_col = pq.read_table(str(existing_path), columns=["ts_event"])
+       499 |         dates_arr = ts_col.column("ts_event").to_pandas().dt.date.unique()
+       500 |         dates = sorted(dates_arr)
+       501 |         del ts_col, dates_arr
+       502 |         gc.collect()
+       503 | 
+       504 |         n_days = len(dates)
+       505 |         print(f"    {n_days} trading days")
+       506 | 
+       507 |         all_snap_files = []
+       508 |         for i, date_val in enumerate(dates):
+       509 |             date_str = str(date_val)
+       510 |             day_start = pd.Timestamp(date_str, tz="UTC").normalize()
+       511 |             day_end = day_start + pd.Timedelta(days=1)
+       512 | 
+       513 |             day_table = pq.read_table(
+       514 |                 str(existing_path),
+       515 |                 filters=[
+       516 |                     ("ts_event", ">=", day_start),
+       517 |                     ("ts_event", "<", day_end),
+       518 |                 ],
+       519 |             )
+       520 |             day_df = day_table.to_pandas()
+       521 |             del day_table
+       522 | 
+       523 |             if len(day_df) == 0:
+       524 |                 continue
+       525 | 
+       526 |             t0 = time.time()
+       527 |             snaps = reconstruct_day(day_df, date_str,
+       528 |                                      interval=SNAP_INTERVAL, levels=SNAP_LEVELS)
+       529 |             elapsed = time.time() - t0
+       530 | 
+       531 |             if len(snaps) > 0:
+       532 |                 tag = date_str.replace("-", "")
+       533 |                 out = snap_dir / f"snapshots_{tag}.parquet"
+       534 |                 snaps.to_parquet(out, index=False, engine="pyarrow")
+       535 |                 all_snap_files.append(out)
+       536 | 
+       537 |                 avg_spr = snaps["spread"].dropna().mean()
+       538 |                 print(f"      {i+1:>2}/{n_days} {date_str}  "
+       539 |                       f"events={len(day_df):>10,}  snaps={len(snaps):>7,}  "
+       540 |                       f"{elapsed:>6.1f}s  spread={avg_spr:.4f}")
+       541 | 
+       542 |             del day_df, snaps
+       543 |             gc.collect()
+       544 | 
+       545 |         if all_snap_files:
+       546 |             # Merge daily snapshots
+       547 |             snap_tables = [pq.read_table(str(f)) for f in all_snap_files]
+       548 |             master_snap = pa.concat_tables(snap_tables)
+       549 |             master_snap_path = snap_dir / f"all_snapshots_{month}.parquet"
+       550 |             pq.write_table(master_snap, str(master_snap_path))
+       551 |             print(f"    Master snapshots: {master_snap_path.name} "
+       552 |                   f"({fmt(master_snap_path.stat().st_size)})")
+       553 |             print(f"    Reconstruction: {time.time()-t_recon:.1f}s total")
+       554 |             del master_snap, snap_tables
+       555 | 
+       556 |     # ── Verify completeness ──
+       557 |     print(f"\n  Verifying completeness...")
+       558 |     verify_month_from_parquet(existing_path, month)
+       559 | 
+       560 |     elapsed = time.time() - t_month
+       561 |     print(f"\n  Month {month} complete in {elapsed:.1f}s ({elapsed/60:.1f} min)")
+       562 | 
+       563 |     gc.collect()
+       564 | 
+       565 |     return {
+       566 |         "month": month,
+       567 |         "total_rows": n_after,
+       568 |         "existing_rows": n_existing,
+       569 |         "overnight_rows": total_ov,
+       570 |         "midday_rows": total_md,
+       571 |         "duplicates": total_dupes,
+       572 |         "elapsed_min": round(elapsed / 60, 1),
+       573 |     }
+
+==============================================================================
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\pipeline\process_gapfill_jan.py
+  file md5: abcb8d266047f39d48d7fa8204e2e8bd
+  writer lines: 60, 63, 66, 67
+
+  --- def tag_aggressor()  lines 58-68  block_md5=6c8296ffb86b611e8c8141270c86beb5
+        58 | def tag_aggressor(df):
+        59 |     trades = df.loc[df["action"] == "T"].copy()
+        60 |     trades["aggressor_side"] = trades["side"].map(
+        61 |         {"B": "BUY_AGGRESSOR", "A": "SELL_AGGRESSOR"}
+        62 |     )
+        63 |     trades["is_buy_aggressor"] = trades["side"] == "B"
+        64 |     still_na = trades["aggressor_side"].isna()
+        65 |     if still_na.any():
+        66 |         trades.loc[still_na, "aggressor_side"] = "UNKNOWN"
+        67 |         trades.loc[still_na, "is_buy_aggressor"] = False
+        68 |     return trades
+
+==============================================================================
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\pc2_transfer\scripts\pipeline\process_gapfill_jan.py
+  file md5: 1fcd68455e4bee63c6d02a9d6a9155cd
+  writer lines: 60, 63, 66, 67
+
+  --- def tag_aggressor()  lines 58-68  block_md5=6c8296ffb86b611e8c8141270c86beb5
+        58 | def tag_aggressor(df):
+        59 |     trades = df.loc[df["action"] == "T"].copy()
+        60 |     trades["aggressor_side"] = trades["side"].map(
+        61 |         {"B": "BUY_AGGRESSOR", "A": "SELL_AGGRESSOR"}
+        62 |     )
+        63 |     trades["is_buy_aggressor"] = trades["side"] == "B"
+        64 |     still_na = trades["aggressor_side"].isna()
+        65 |     if still_na.any():
+        66 |         trades.loc[still_na, "aggressor_side"] = "UNKNOWN"
+        67 |         trades.loc[still_na, "is_buy_aggressor"] = False
+        68 |     return trades
+
+==============================================================================
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\pipeline\flow_tagger.py
+  file md5: 5f4e7d7620672807d776cafc4c3daa72
+  writer lines: 102, 105, 132, 133, 135, 136, 138, 139, 144, 145
+
+  --- def tag_aggressor()  lines 68-147  block_md5=a0e0df3c66bdc5da09c301f10b3e0a77
+        68 | def tag_aggressor(
+        69 |     df: pd.DataFrame,
+        70 |     snapshots: Optional[pd.DataFrame] = None,
+        71 | ) -> pd.DataFrame:
+        72 |     """Tag each trade with the aggressor side.
+        73 | 
+        74 |     Primary method: uses the ``side`` field on Trade (action=T) messages.
+        75 |     In Databento MBO the T message records the **aggressor** order, so::
+        76 | 
+        77 |         T side = 'B' (Bid)  →  BUY_AGGRESSOR   (aggressive buy lifted the ask)
+        78 |         T side = 'A' (Ask)  →  SELL_AGGRESSOR   (aggressive sell hit the bid)
+        79 | 
+        80 |     Empirically verified against this dataset:
+        81 |         • T side=B and F side=A share the same match timestamp, confirming
+        82 |           T = aggressor order, F = resting order (opposite sides).
+        83 |         • Consecutive T side=B trades correlate with price *increases*,
+        84 |           T side=A with *decreases* — correct for buy/sell aggression.
+        85 | 
+        86 |     Fallback: if ``side`` is missing or ambiguous, compares trade price
+        87 |     to the nearest BBO snapshot (trade ≥ ask → BUY, trade ≤ bid → SELL).
+        88 | 
+        89 |     Args:
+        90 |         df: Full MBO DataFrame (all actions).
+        91 |         snapshots: Optional book snapshots for BBO fallback.  If None and
+        92 |             fallback is needed, loads from the default path.
+        93 | 
+        94 |     Returns:
+        95 |         DataFrame of Trade (action=T) rows with added columns:
+        96 |             aggressor_side  — 'BUY_AGGRESSOR' | 'SELL_AGGRESSOR' | 'UNKNOWN'
+        97 |             is_buy_aggressor — bool
+        98 |     """
+        99 |     trades = df.loc[df["action"] == "T"].copy()
+       100 | 
+       101 |     # ── Primary: direct side mapping ──────────────────────────────────────
+       102 |     trades["aggressor_side"] = trades["side"].map(
+       103 |         {"B": "BUY_AGGRESSOR", "A": "SELL_AGGRESSOR"}
+       104 |     )
+       105 |     trades["is_buy_aggressor"] = trades["side"] == "B"
+       106 | 
+       107 |     # ── Fallback for missing / ambiguous side ─────────────────────────────
+       108 |     unknown_mask = trades["aggressor_side"].isna()
+       109 |     n_unknown = int(unknown_mask.sum())
+       110 | 
+       111 |     if n_unknown > 0 and snapshots is None:
+       112 |         if SNAP_PATH.exists():
+       113 |             snapshots = pd.read_parquet(SNAP_PATH)
+       114 | 
+       115 |     if n_unknown > 0 and snapshots is not None:
+       116 |         snap_ts = snapshots["timestamp"].values.astype("int64")
+       117 |         snap_bids = snapshots["bid_price_1"].values
+       118 |         snap_asks = snapshots["ask_price_1"].values
+       119 | 
+       120 |         unk_idx = trades.index[unknown_mask]
+       121 |         for ix in unk_idx:
+       122 |             row = trades.loc[ix]
+       123 |             ts_val = np.int64(row["ts_event"].value)
+       124 |             px = float(row["price"])
+       125 | 
+       126 |             si = np.searchsorted(snap_ts, ts_val)
+       127 |             si = min(max(si, 0), len(snap_ts) - 1)
+       128 |             bid = snap_bids[si]
+       129 |             ask = snap_asks[si]
+       130 | 
+       131 |             if px >= ask:
+       132 |                 trades.at[ix, "aggressor_side"] = "BUY_AGGRESSOR"
+       133 |                 trades.at[ix, "is_buy_aggressor"] = True
+       134 |             elif px <= bid:
+       135 |                 trades.at[ix, "aggressor_side"] = "SELL_AGGRESSOR"
+       136 |                 trades.at[ix, "is_buy_aggressor"] = False
+       137 |             else:
+       138 |                 trades.at[ix, "aggressor_side"] = "UNKNOWN"
+       139 |                 trades.at[ix, "is_buy_aggressor"] = False
+       140 | 
+       141 |     # Any still-NaN → UNKNOWN
+       142 |     still_na = trades["aggressor_side"].isna()
+       143 |     if still_na.any():
+       144 |         trades.loc[still_na, "aggressor_side"] = "UNKNOWN"
+       145 |         trades.loc[still_na, "is_buy_aggressor"] = False
+       146 | 
+       147 |     return trades
+
+==============================================================================
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\pc2_transfer\scripts\pipeline\flow_tagger.py
+  file md5: 12ab27a8ece06734503d618d227f3aae
+  writer lines: 79, 82, 109, 110, 112, 113, 115, 116, 121, 122
+
+  --- def tag_aggressor()  lines 45-124  block_md5=a0e0df3c66bdc5da09c301f10b3e0a77
+        45 | def tag_aggressor(
+        46 |     df: pd.DataFrame,
+        47 |     snapshots: Optional[pd.DataFrame] = None,
+        48 | ) -> pd.DataFrame:
+        49 |     """Tag each trade with the aggressor side.
+        50 | 
+        51 |     Primary method: uses the ``side`` field on Trade (action=T) messages.
+        52 |     In Databento MBO the T message records the **aggressor** order, so::
+        53 | 
+        54 |         T side = 'B' (Bid)  →  BUY_AGGRESSOR   (aggressive buy lifted the ask)
+        55 |         T side = 'A' (Ask)  →  SELL_AGGRESSOR   (aggressive sell hit the bid)
+        56 | 
+        57 |     Empirically verified against this dataset:
+        58 |         • T side=B and F side=A share the same match timestamp, confirming
+        59 |           T = aggressor order, F = resting order (opposite sides).
+        60 |         • Consecutive T side=B trades correlate with price *increases*,
+        61 |           T side=A with *decreases* — correct for buy/sell aggression.
+        62 | 
+        63 |     Fallback: if ``side`` is missing or ambiguous, compares trade price
+        64 |     to the nearest BBO snapshot (trade ≥ ask → BUY, trade ≤ bid → SELL).
+        65 | 
+        66 |     Args:
+        67 |         df: Full MBO DataFrame (all actions).
+        68 |         snapshots: Optional book snapshots for BBO fallback.  If None and
+        69 |             fallback is needed, loads from the default path.
+        70 | 
+        71 |     Returns:
+        72 |         DataFrame of Trade (action=T) rows with added columns:
+        73 |             aggressor_side  — 'BUY_AGGRESSOR' | 'SELL_AGGRESSOR' | 'UNKNOWN'
+        74 |             is_buy_aggressor — bool
+        75 |     """
+        76 |     trades = df.loc[df["action"] == "T"].copy()
+        77 | 
+        78 |     # ── Primary: direct side mapping ──────────────────────────────────────
+        79 |     trades["aggressor_side"] = trades["side"].map(
+        80 |         {"B": "BUY_AGGRESSOR", "A": "SELL_AGGRESSOR"}
+        81 |     )
+        82 |     trades["is_buy_aggressor"] = trades["side"] == "B"
+        83 | 
+        84 |     # ── Fallback for missing / ambiguous side ─────────────────────────────
+        85 |     unknown_mask = trades["aggressor_side"].isna()
+        86 |     n_unknown = int(unknown_mask.sum())
+        87 | 
+        88 |     if n_unknown > 0 and snapshots is None:
+        89 |         if SNAP_PATH.exists():
+        90 |             snapshots = pd.read_parquet(SNAP_PATH)
+        91 | 
+        92 |     if n_unknown > 0 and snapshots is not None:
+        93 |         snap_ts = snapshots["timestamp"].values.astype("int64")
+        94 |         snap_bids = snapshots["bid_price_1"].values
+        95 |         snap_asks = snapshots["ask_price_1"].values
+        96 | 
+        97 |         unk_idx = trades.index[unknown_mask]
+        98 |         for ix in unk_idx:
+        99 |             row = trades.loc[ix]
+       100 |             ts_val = np.int64(row["ts_event"].value)
+       101 |             px = float(row["price"])
+       102 | 
+       103 |             si = np.searchsorted(snap_ts, ts_val)
+       104 |             si = min(max(si, 0), len(snap_ts) - 1)
+       105 |             bid = snap_bids[si]
+       106 |             ask = snap_asks[si]
+       107 | 
+       108 |             if px >= ask:
+       109 |                 trades.at[ix, "aggressor_side"] = "BUY_AGGRESSOR"
+       110 |                 trades.at[ix, "is_buy_aggressor"] = True
+       111 |             elif px <= bid:
+       112 |                 trades.at[ix, "aggressor_side"] = "SELL_AGGRESSOR"
+       113 |                 trades.at[ix, "is_buy_aggressor"] = False
+       114 |             else:
+       115 |                 trades.at[ix, "aggressor_side"] = "UNKNOWN"
+       116 |                 trades.at[ix, "is_buy_aggressor"] = False
+       117 | 
+       118 |     # Any still-NaN → UNKNOWN
+       119 |     still_na = trades["aggressor_side"].isna()
+       120 |     if still_na.any():
+       121 |         trades.loc[still_na, "aggressor_side"] = "UNKNOWN"
+       122 |         trades.loc[still_na, "is_buy_aggressor"] = False
+       123 | 
+       124 |     return trades
+
+==============================================================================
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\phase4\phase4_ml.py
+  file md5: a495814d2a80cc9fd3512169068ec185
+  writer lines: 140
+
+  --- def load_trades_month()  lines 126-143  block_md5=e89349722fb9a91b185a3f8ad81ee368
+       126 | def load_trades_month(sym: str, month: str) -> pd.DataFrame | None:
+       127 |     """Load one month of tagged trade data."""
+       128 |     data_dir = get_data_dir(sym)
+       129 |     path = data_dir / f"{sym}_trades_tagged_{month}.parquet"
+       130 |     if not path.exists():
+       131 |         return None
+       132 |     cols = ["ts_event", "price", "size", "side", "aggressor_side"]
+       133 |     try:
+       134 |         df = pq.read_table(str(path), columns=cols).to_pandas()
+       135 |     except Exception:
+       136 |         # some files may not have aggressor_side
+       137 |         df = pq.read_table(str(path)).to_pandas()
+       138 |         for c in cols:
+       139 |             if c not in df.columns:
+       140 |                 if c == "aggressor_side":
+       141 |                     df[c] = "U"
+       142 |     df["ts_event"] = pd.to_datetime(df["ts_event"])
+       143 |     return df
+
+==============================================================================
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\analysis\phase4_ml.py
+  file md5: ee8ba22f2610a88ab5fb26b30da3a24a
+  writer lines: 139
+
+  --- def load_trades_month()  lines 125-142  block_md5=e89349722fb9a91b185a3f8ad81ee368
+       125 | def load_trades_month(sym: str, month: str) -> pd.DataFrame | None:
+       126 |     """Load one month of tagged trade data."""
+       127 |     data_dir = get_data_dir(sym)
+       128 |     path = data_dir / f"{sym}_trades_tagged_{month}.parquet"
+       129 |     if not path.exists():
+       130 |         return None
+       131 |     cols = ["ts_event", "price", "size", "side", "aggressor_side"]
+       132 |     try:
+       133 |         df = pq.read_table(str(path), columns=cols).to_pandas()
+       134 |     except Exception:
+       135 |         # some files may not have aggressor_side
+       136 |         df = pq.read_table(str(path)).to_pandas()
+       137 |         for c in cols:
+       138 |             if c not in df.columns:
+       139 |                 if c == "aggressor_side":
+       140 |                     df[c] = "U"
+       141 |     df["ts_event"] = pd.to_datetime(df["ts_event"])
+       142 |     return df
+
+==============================================================================
+DISTINCT WRITER BLOCKS BY NORMALIZED BLOCK MD5: 7
+==============================================================================
+  86cde33692589fc0595e0386f6c66a82  used by 3 representative(s):
+      process_zc.py::tag_aggressor()
+      process_gapfill.py::tag_aggressor()
+      process_gapfill.py::tag_aggressor()
+  3dc0437f2d7278fa36e25af263c19c32  used by 2 representative(s):
+      process_mbo.py::process_month()
+      process_mbo.py::process_month()
+  a47a08895ea4d3d6f47a153054083c7f  used by 2 representative(s):
+      process_gapfill.py::process_month()
+      process_gapfill.py::process_month()
+  6c8296ffb86b611e8c8141270c86beb5  used by 2 representative(s):
+      process_gapfill_jan.py::tag_aggressor()
+      process_gapfill_jan.py::tag_aggressor()
+  a0e0df3c66bdc5da09c301f10b3e0a77  used by 2 representative(s):
+      flow_tagger.py::tag_aggressor()
+      flow_tagger.py::tag_aggressor()
+  e89349722fb9a91b185a3f8ad81ee368  used by 2 representative(s):
+      phase4_ml.py::load_trades_month()
+      phase4_ml.py::load_trades_month()
+  3e14daf416af9710cbe92faca331b0d9  used by 1 representative(s):
+      process_gc.py::process_month()

@@ -1,0 +1,97 @@
+== t4 unconstructible names (17) ==
+OK   t4 unconstructible set                                   got=['book_imbalance_ratio', 'dollar_volume_1s', 'session_close', 'session_mid', 'session_open', 'tick_direction', 'weighted_mid'] decl=['book_imbalance_ratio', 'dollar_volume_1s', 'session_close', 'session_mid', 'session_open', 'tick_direction', 'weighted_mid']
+OK   unconstructible_by_class                                 got={'leak_source': 3, 'descendant': 1, 'clean': 3} decl={'leak_source': 3, 'descendant': 1, 'clean': 3}
+OK   determinism contaminated sha                             got=32edf4389d9ca9435cc7923a19e0730bf409023d460b378f7acdc3cba11d719a decl=32edf4389d9ca9435cc7923a19e0730bf409023d460b378f7acdc3cba11d719a
+OK   determinism corrected sha                                got=db4193aa1ad88fa052599bf6714f2ba401bd99f52008a938a5f475280dc66245 decl=db4193aa1ad88fa052599bf6714f2ba401bd99f52008a938a5f475280dc66245
+OK   self-consistency cols                                    got=28                       decl=28
+OK   max_abs_diff                                             got=0.0                      decl=0.0
+OK   nan mismatches                                           got=0                        decl=0
+OK   value mismatches                                         got=0                        decl=0
+OK   all lagged / none exempt                                 got=(True, [])               decl=(True, [])
+
+== n2 block_overlap: B.2/B.4 ==
+     generations: {'v3_pre_gapfill_FIXTURE_PATH': 48, 'v4_v4_gapfill': 30, 'v4_v4_morning_chunk': 6}  total rows: 84
+OK   v3 fixture-path rows                                     got=48                       decl=48
+OK   MULTI-BLOCK of 48                                        got=18                       decl=18
+OK   carrying filtered excess of 48                           got=41                       decl=41
+OK   zero-excess of 48                                        got=7                        decl=7
+OK   zero-excess names                                        got=['he 2025-11', 'le 2025-11', 'zc 2025-01', 'zc 2025-11', 'zs 2025-01', 'zs 2025-11', 'zs 2025-12'] decl=['he 2025-11', 'le 2025-11', 'zc 2025-01', 'zc 2025-11', 'zs 2025-01', 'zs 2025-11', 'zs 2025-12']
+OK   multi-block names                                        got=['cl 2025-01', 'cl 2025-08', 'cl 2025-09', 'cl 2025-10', 'cl 2025-11', 'cl 2025-12', 'gc 2025-01', 'gc 2025-08', 'gc 2025-09', 'gc 2025-10', 'gc 2025-11', 'gc 2025-12', 'zc 2025-08', 'zc 2025-09', 'zc 2025-10', 'zs 2025-08', 'zs 2025-09', 'zs 2025-10'] decl=['cl 2025-01', 'cl 2025-08', 'cl 2025-09', 'cl 2025-10', 'cl 2025-11', 'cl 2025-12', 'gc 2025-01', 'gc 2025-08', 'gc 2025-09', 'gc 2025-10', 'gc 2025-11', 'gc 2025-12', 'zc 2025-08', 'zc 2025-09', 'zc 2025-10', 'zs 2025-08', 'zs 2025-09', 'zs 2025-10']
+OK   18 is subset of 41                                       got=True                     decl=True
+OK   18 + 23 single-block-with-excess = 41                    got=41                       decl=41
+OK   v4-family measured rows                                  got=36                       decl=36
+OK   v4 all single-block                                      got=True                     decl=True
+OK   v4 zero-excess                                           got=12                       decl=12
+OK   v4 with 1-5 excess                                       got=24                       decl=24
+OK   v4 max rows/sec == 2 on those 24                         got=['2']                    decl=['2']
+OK   zc 2025-01 v3 filtered_rows                              got=338159                   decl=338159
+OK   zc 2025-01 v3 blocks/overlap/excess                      got=('1', '0', '0')          decl=('1', '0', '0')
+OK   zc 2025-08 v3 blocks/overlap                             got=('17', '16')             decl=('17', '16')
+OK   zc 2025-08 v3 excess                                     got=211450                   decl=211450
+OK   zc 2025-08 v3 distinct seconds                           got=342854                   decl=342854
+OK   zc 2025-08 v3 max rows/second                            got=5                        decl=5
+OK   max excess among single-block v3                         got=17                       decl=17
+OK   zc 2025-01 v4 rows/distinct                              got=('378000', '378000')     decl=('378000', '378000')
+OK   zc 2025-08 v4 rows/distinct/excess                       got=('366005', '366000', '5') decl=('366005', '366000', '5')
+
+== B.5: the 18 MULTI-BLOCK == the 18 corrected-nonzero ==
+OK   MULTI-BLOCK set == corrected-nonzero set                 got=True                     decl=True
+OK   EXCESS(41) set == corrected-nonzero set (should be False) got=False                    decl=False
+OK   23 single-block-with-excess are corrected-ZERO           got=True                     decl=True
+
+== n1 lattice_profile ==
+OK   zc 2025-01 same_second_rows                              got=0                        decl=0
+OK   zc 2025-08 same_second_rows                              got=211450                   decl=211450
+OK   zc 2025-01 rows                                          got=338159                   decl=338159
+OK   zc 2025-08 rows -> corrected                             got=('554304', '554303')     decl=('554304', '554303')
+OK   rows-corrected == 1 in all 48                            got=[1]                      decl=[1]
+
+== t3 day-edge (11) ==
+OK   cross-boundary pairs total                               got=2100                     decl=2100
+OK   per-horizon pairs                                        got=['100', '200', '600', '1200'] decl=['100', '200', '600', '1200']
+OK   cross-boundary NaN                                       got=0                        decl=0
+OK   mag-filter pass fracs                                    got=['0.83', '0.83', '0.823', '0.812'] decl=['0.83', '0.83', '0.823', '0.812']
+OK   overall baseline fracs                                   got=['0.0', '0.001', '0.004', '0.01'] decl=['0.0', '0.001', '0.004', '0.01']
+OK   worst span h=60                                          got=3 days 19:31:00          decl=3 days 19:31:00
+OK   worst sameday span h=60                                  got=0 days 00:30:45.369966846 decl=0 days 00:30:45.369966846
+OK   sameday >60s pairs                                       got=['34', '61', '158', '255'] decl=['34', '61', '158', '255']
+OK   total_rows                                               got=['338159']               decl=['338159']
+
+== 10/12: corrected-vs-(t-1) and C4 ==
+OK   t1 corrected/claimed_T_prev trades_all                   got=[('89568', '20')]        decl=[('89568', '20')]
+OK   t1 corrected/claimed_T_prev mbo_all                      got=[('254314', '29')]       decl=[('254314', '29')]
+OK   worst overhang past t-1 (max over classes)               got=999.999579               decl=999.999579
+OK   worst overhang trades classes                            got=999.996869               decl=999.996869
+OK   c4 prev_row_B trades_all                                 got=('89568', '20')          decl=('89568', '20')
+OK   c4 prev_row_B mbo_all                                    got=('254314', '29')         decl=('254314', '29')
+OK   c4 total_rows uniform                                    got=['338158']               decl=['338158']
+OK   c4 boundaries present                                    got=['decision_T', 'prev_row_B'] decl=['decision_T', 'prev_row_B']
+OK   c4 decision_T all-zero strict/equal                      got=[('0', '0')]             decl=[('0', '0')]
+OK   c4 decision_T gap-row subset zero                        got=[('0', '0')]             decl=[('0', '0')]
+OK   t1 corrected/decision_T all zero (ZC 2025-01)            got=[('0', '0')]             decl=[('0', '0')]
+OK   t1 corrected/decision_T class count                      got=10                       decl=10
+
+== 12: the 49 exactly-equal ZC 2025-01 events ==
+     per-class equal: {'trades_all': '20', 'trades_buy': '0', 'trades_sell': '20', 'trades_large': '20', 'mbo_bid_add': '1', 'mbo_ask_add': '4', 'mbo_bid_cancel': '23', 'mbo_ask_cancel': '22', 'mbo_all': '29', 'mbo_cancel_any': '24'}
+OK   trades_all equal                                         got=20                       decl=20
+OK   mbo_all equal                                            got=29                       decl=29
+OK   20 + 29                                                  got=49                       decl=49
+OK   equal mbo_bid_add                                        got=1                        decl=1
+OK   equal mbo_ask_add                                        got=4                        decl=4
+OK   equal mbo_bid_cancel                                     got=23                       decl=23
+OK   equal mbo_ask_cancel                                     got=22                       decl=22
+OK   equal mbo_cancel_any                                     got=24                       decl=24
+OK   equal trades_large                                       got=20                       decl=20
+
+== 12/10: contaminated-minus-1 on MBO classes ==
+     mbo_all          contaminated 254315 -> prev_row_B 254314  (delta 1)
+     mbo_bid_add      contaminated 164959 -> prev_row_B 164958  (delta 1)
+     mbo_ask_add      contaminated 162754 -> prev_row_B 162753  (delta 1)
+     mbo_bid_cancel   contaminated 135981 -> prev_row_B 135980  (delta 1)
+     mbo_ask_cancel   contaminated 129334 -> prev_row_B 129333  (delta 1)
+     mbo_cancel_any   contaminated 179857 -> prev_row_B 179856  (delta 1)
+     trades_all       contaminated 89568 -> prev_row_B 89568  (delta 0)
+     trades_large     contaminated 23633 -> prev_row_B 23633  (delta 0)
+
+== 13(a) class-set rule maxima (n1 m5 comparison) ==
+     fields: ['instrument', 'month', 's10', 'e10', 'rows', 'sM5', 'eM5']

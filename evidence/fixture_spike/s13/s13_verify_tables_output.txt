@@ -1,0 +1,5 @@
+A.6.5 35-row cross-tab: OK (35 rows, ordinals, source classes, gate classes, all 'yes')
+14.1 48-row table: OK (48 cells, rows/restricted/full-class exact, all 3 percentages recomputed, nq labelled)
+headline strings present: OK
+
+ALL TABLE VERIFICATIONS PASSED

@@ -1,0 +1,1308 @@
+
+===== PAGE 1 =====
+Matching Algorithm Design and Short-Horizon
+Price Predictability in CME Futures
+Theo Johann Howard
+Independent Researcher
+This version: July 6, 2026. First version: May 7, 2026.
+Acknowledgments: The author thanks Databento for data access. Claude (Anthropic) was used for coding
+assistance, figure generation, and manuscript revisions.
+An Internet Appendix accompanies this paper.
+
+===== PAGE 2 =====
+Abstract
+We analyze short-horizon directional predictability across eight CME futures instruments us-
+ing 6.83 billion Market-by-Order events from 2025. A pre-registered methodology produces
+10,464 model fits across 46 instrument-session cells with Bonferroni-corrected significance test-
+ing. Three findings emerge. First, the pre-registered null hypothesis of no economic exploitability
+was upheld, but all 46 cells exhibit statistically significant directional predictability replicating
+across three holdout designs (Spearman ρ > 0.97). Second, predictability varies 40-fold across
+cells and is associated with matching algorithm design: K-Algorithm instruments show 8 .3×
+the predictability of FIFO instruments, mediated by a bounce rate mechanism ( ρ = +0.94), and
+overnight sessions show 4.0× the predictability of regular trading hours. Third, the exploitability
+boundary is set by spread-direction arithmetic: 0 /46 cells profit at retail costs, 46 /46 at market-
+maker costs. Simple academic signals capture a median 89.5% of ML edge, confirming that
+the ML apparatus primarily validates known order book mechanics. A four-mechanism leakage
+taxonomy and comparison to canonical microstructure signals are detailed in the paper.
+Keywords: Market microstructure, price predictability, high-frequency trading, matching algo-
+rithms, order book, CME Globex, machine learning, pre-registration
+JEL Classification: G10, G14, G17, C45, C53
+1
+
+===== PAGE 3 =====
+1. Introduction
+The efficiency of modern electronic futures markets has been extensively studied through the lens
+of high-frequency trading participation and its effects on price discovery, liquidity provision, and
+market quality (Hendershott, Jones & Menkveld, 2011; Brogaard, Hendershott & Riordan, 2014;
+Menkveld, 2013). A central finding of this literature is that algorithmic trading improves informa-
+tional efficiency by reducing arbitrage opportunities and accelerating price adjustment. However,
+the relationship between HFT participation and residual price predictability has been characterized
+primarily through cross-sectional venue comparisons or natural experiments at the daily level.
+This paper contributes a substantially finer-grained measurement. Using 6.83 billion Market-
+by-Order events from CME Globex across eight futures instruments — equity indices (ES, NQ),
+energy (CL), metals (GC), agricultural grains (ZC, ZS), and livestock (HE, LE) — we construct
+46 instrument-session cells that partition each instrument’s trading day into time-of-day buckets
+ranging from the Asia overnight session to the US afternoon close. Within each cell, we train six
+machine learning architectures at four prediction horizons under a pre-registered three-design hold-
+out methodology, producing 10,464 individual model fits. The granularity of this approach enables
+us to measure how predictability varies not just across instruments but across sessions within the
+same instrument.
+1.1 Principal Findings
+Our findings are organized around three contributions to the market microstructure literature.
+Contribution 1: Ubiquitous but heterogeneous predictability. Directional predictability at
+the 5-to-60-second horizon exists in all 46 instrument-session cells. This finding replicates across
+three independent holdout designs — stratified block (Design A), alternative stratification (Design
+B), and walk-forward (Design C) — with rank correlation exceeding 0.97 across all design pairs. No
+cell shows negative edge under any design. The finding is robust to feature ablation: no single feature
+carries more than 5% of the total signal, and features with theoretical lookahead risk contribute less
+than 1%.
+The magnitude of predictability varies by a factor of 40 across cells. The strongest cells (corn
+futures overnight, AUC = 0.873) exhibit edge-over-chance of +0.361, while the weakest (NQ Nasdaq
+futures across all sessions) hover at +0.010-0.020, barely above the noise floor. This heterogeneity
+is itself the primary finding: it is not random but systematically determined by market structure
+parameters.
+Contribution 2: Market structure determinants. Three factors are associated with cross-cell
+variation in predictability. The two K-Algorithm instruments (corn, soybeans) show median edge
+8.3 times stronger than the six FIFO instruments. This is consistent with a matching-algorithm
+effect operating through the bounce rate mechanism — K-Algorithm instruments exhibit 70% mid-
+price reversal probability versus 56% for FIFO (ρ = +0.94 between bounce rate and predictability).
+However, with only two K-Algorithm instruments in the sample, instrument-level confounds (grain-
+specific market structure, lower HFT participation) cannot be ruled out. Across all 46 cells, HFT
+2
+
+===== PAGE 4 =====
+participation intensity (proxied by cancel-to-trade ratio) correlates negatively with predictability ( ρ
+= −0.65, p < 0.001). Within FIFO instruments alone, the correlation is ρ = −0.61, providing the
+cleaner within-category test of the HFT-efficiency hypothesis (§7.3). Session structure provides the
+third dimension: overnight sessions with reduced HFT participation show 4.0 times the predictability
+of regular trading hours across all applicable instruments.
+Contribution 3: The predictability-exploitability gap.Under a three-scenario execution model,
+no cell produces positive expected value at retail costs ($2.50/side + full spread) — even the strongest
+(ZC overnight, 86% directional accuracy) yields −$16.14 per trade (see §6.2 worked example).
+At market-maker costs ($0.10/side, earning the spread), all 46 cells become profitable, with NQ
+overnight paradoxically generating the highest dollar profit ($45/attempt) despite having the weak-
+est statistical signal, due to FIFO fill priority and high notional value. The sharp 0/46 → 46/46
+transition is largely driven by the arithmetic of spread-direction reversal rather than a subtle struc-
+tural mechanism, but the decomposition of fee effects versus spread effects is itself informative for
+market design.
+1.2 Additional Contributions
+Beyond the three principal findings, we make several methodological and empirical contributions.
+We establish a four-mechanism leakage taxonomy specific to second-resolution MBO futures
+research. Each mechanism operates through a distinct pathway: bid-ask bounce conflation (Mecha-
+nism 1), Level 3 MBO contemporaneous leakage (Mechanism 2, producing 23-fold apparent signal
+inflation), Level 2 market structure reflection (Mechanism 3), and Level 1 trade flow contamination
+(Mechanism 4). The taxonomy provides a practical checklist for researchers working with high-
+frequency order book data.
+We test four canonical academic signals — Order Flow Imbalance (Cont, Kukanov & Stoikov,
+2014), VPIN (Easley, López de Prado & O’Hara, 2012), Order Flow Acceleration, and Depth Asym-
+metry Ratio — per session bucket. DAR is algebraically identical to the l1_imbalance feature already
+present in our ML baseline, making the simple-vs-ML comparison a test of three genuinely new sig-
+nals (OFI, VPIN, OFA) plus one redundant signal (DAR). Simple logistic regression using all four
+captures a median 89.5% of the ML edge (Spearman ρ = +0.97, n = 43 cells), indicating that com-
+plex models primarily rediscover known order book mechanics. ML adds genuine value specifically
+on high-volume FIFO overnight cells (ES Europe overnight: simple +0.056 vs. ML +0.182), where
+non-linear feature interactions provide additional predictive power.
+We test 320 alternative label configurations spanning five label types (L1 through L5) to ensure
+findings are not specific to binary direction prediction. Persistence labels (L4a) show genuine signal
+in 24 of 32 instrument-horizon configurations — real directional content that persists for 3-5 seconds
+after order book events — but this signal remains economically unexploitable after transaction costs.
+We conduct 192 data depth ablation experiments establishing the marginal value of Level 2
+and Level 3 order book data. After correcting for the contemporaneous leakage mechanism, Level 3
+MBO features add only +0.0015 AUC on average beyond Level 2, establishing that MBO data carries
+near-zero marginal predictive value at one-second resolution under correct causal construction.
+3
+
+===== PAGE 5 =====
+Finally, pooled analysis with bucket-indicator features (3,840 additional runs) confirms that di-
+rectional predictability is session-specific: pooled models with time-of-day context perform approx-
+imately equivalently to bucket-isolated models (median delta +0.003), and the best isolation cells
+outperform pooled by 0.007-0.118 edge.
+1.3 Related Work and Positioning
+This paper relates to four literatures. To the HFT-efficiency literature (Hendershott et al., 2011; Bro-
+gaard et al., 2014; Menkveld, 2013; Budish, Cramton & Shim, 2015), we provide the first contin-
+uous measurement of the HFT-predictability relationship across instruments and intraday sessions,
+demonstrating that efficiency varies smoothly with participation intensity. To the matching algorithm
+design literature (Biais, Bisière & Spatt, 2010; Yao & Ye, 2018; Haynes & Onur, 2020), we provide
+direct evidence linking algorithm choice to informational efficiency through the bounce rate mech-
+anism. To the ML-for-LOB literature (Gu, Kelly & Xiu, 2020; Zhang, Zohren & Roberts, 2019;
+Sirignano & Cont, 2019; Briola, Bartolucci & Aste, 2025), we demonstrate that simple signals cap-
+ture the overwhelming majority of ML edge, and that the pre-registration methodology with three
+holdout designs provides a template for rigorous signal validation. To the replication crisis literature
+(Harvey, Liu & Zhu, 2016; McLean & Pontiff, 2016; López de Prado, 2018), we demonstrate a
+pre-registered, pre-committed analytical framework that documents five deviations from the original
+plan with explicit justification.
+The remainder of the paper is organized as follows. Section 2 reviews the related literature in de-
+tail. Section 3 describes the data, instruments, session bucket construction, and pipeline verification
+procedures including the gap-fill data discovery. Section 4 presents the pre-registered methodology
+including the three holdout designs, leakage taxonomy, and significance criteria. Section 5 reports
+the main empirical results across all 46 cells and three designs. Section 6 presents the economic
+exploitability analysis with three execution scenarios and four cost tiers. Section 7 investigates the
+market structure mechanisms — matching algorithm effects, bounce rate mediation, HFT proxy
+analysis, and overnight-vs-RTH comparison. Section 8 compares ML models against established
+academic signals. Section 9 reports robustness checks including alternative labels, data depth abla-
+tion, and pooled analysis. Section 10 discusses limitations and directions for future research. Section
+11 concludes.
+2. Related Literature
+2.1 Market Microstructure Theory: Foundations
+The theoretical framework for short-horizon price prediction rests on foundational contributions.
+Kyle (1985) establishes the continuous-time model of strategic informed trading, deriving the lin-
+ear price impact function λ that relates signed order flow to permanent price changes. Glosten and
+Milgrom (1985) model the bid-ask spread as an adverse selection premium, establishing that market
+maker quotes fully incorporate informational content of order flow in equilibrium — implying that
+4
+
+===== PAGE 6 =====
+once quotes adjust, the predictive content of past order flow is exhausted. At one-second resolu-
+tion with the universal lag we impose, the Glosten-Milgrom mechanism predicts that only residual
+inefficiencies — those not yet arbitraged by faster participants — should remain exploitable.
+Roll (1984) provides the most directly relevant tool for our artifact verification framework. Roll’s
+estimator for the effective bid-ask spread from the serial covariance of price changes identifies the
+mechanical bounce phenomenon: successive prices oscillate between bid and ask around the efficient
+price, producing negative serial correlation that carries no directional information. Our bounce-free
+(BFree) feature construction is a direct implementation of Roll’s insight.
+Hasbrouck (1991a, 1991b) extends the information decomposition to permanent and transitory
+price impact components. The transitory component — reflecting market frictions including bid-ask
+bounce and inventory effects — is precisely what our BFree specification removes. Cont, Kukanov,
+and Stoikov (2014) introduce Order Flow Imbalance as a linear predictor of same-second price
+changes. The critical distinction in our analysis is between their contemporaneous measurement
+(OFI at time t predicting returns at time t) and lagged prediction (OFI at t−1 predicting returns at t).
+2.2 High-Frequency Trading and Market Efficiency
+Hendershott, Jones, and Menkveld (2011) document that algorithmic trading narrows spreads and
+improves informational efficiency, with quote revisions occurring within milliseconds of informa-
+tion arrival. Menkveld (2013) characterizes HFT firms as dominant liquidity providers maintaining
+inventory for seconds. Brogaard, Hendershott, and Riordan (2014) show that HFT firms participate
+in 73% of NASDAQ trades and contribute positively to permanent price changes. Budish, Cramton,
+and Shim (2015) formalize the latency race as a Nash equilibrium where trading profits are competed
+away through hardware investment.
+Our contribution extends this literature by measuring the efficiency-predictability relationship
+continuously across sessions and instruments, rather than through cross-sectional venue compar-
+isons. The intraday variation in HFT participation within a single instrument provides a within-
+instrument control. Our finding that cancel-to-trade ratio correlates with predictability at ρ = −0.65
+across 46 cells (compared to an earlier full-session analysis findingρ = −0.714 across 8 instruments)
+strengthens the HFT-efficiency mechanism at substantially greater statistical power.
+2.3 Matching Algorithm Design
+CME Globex operates multiple matching algorithms: pure price-time FIFO for equity index and
+energy futures, and Split FIFO/Pro-Rata (the “K-Algorithm”) for CBOT grain products. Under K-
+Algorithm matching, approximately 40% of volume at a price level is allocated by time priority and
+60% pro-rata by size, creating incentives for concentrated resting depth.
+Haynes and Onur (2020) study the May 2015 switch from pro-rata to FIFO in CME 2-year
+Treasury futures, finding that prices are less efficient under pro-rata due to higher reversal events.
+Field and Large (2008) model pro-rata matching in one-tick markets. Aspris, Foley, Harris, and
+O’Neill (2015) study time pro-rata in LIFFE STIR futures. Our contribution is the first empirical
+5
+
+===== PAGE 7 =====
+documentation of the K-Algorithm hybrid’s distinctively high bounce dynamics — 70% reversal rate
+compared to 56% for pure FIFO — and its mediation of the matching algorithm → predictability
+relationship.
+2.4 Machine Learning for Limit Order Books
+Zhang, Zohren, and Roberts (2019) introduce DeepLOB, combining CNN and LSTM architectures
+for LOB prediction. Sirignano and Cont (2019) find universal price formation features across 489
+equities. Ntakaris et al. (2018) introduce the FI-2010 benchmark. Gu, Kelly, and Xiu (2020) provide
+the most comprehensive ML comparison for equity returns. Shwartz-Ziv and Armon (2022) show
+XGBoost outperforms deep learning on tabular data benchmarks.
+Briola, Bartolucci, and Aste (2025) demonstrate that high LOB forecasting power does not yield
+actionable trading signals once realistic execution is imposed — a finding directly convergent with
+ours, obtained independently on different asset classes. Our analysis extends beyond prior work in
+four respects: MBO-level data rather than aggregated snapshots, pre-registered three-design holdout,
+systematic variation across 46 instrument-session cells, and direct comparison between ML and
+simple academic signals.
+2.5 Pre-Registration and Multiple Testing
+Harvey, Liu, and Zhu (2016) propose t-statistic thresholds of 3.0 for new factors given the multiple
+testing conducted across the literature. López de Prado (2018) advocates combinatorial purged cross-
+validation and probability of backtest overfitting metrics. Bailey, Borwein, López de Prado, and Zhu
+(2014) formalize the multiple testing problem. McLean and Pontiff (2016) document 26% out-of-
+sample and 58% post-publication decay of financial anomalies.
+Our pre-registration approach addresses these concerns directly. The complete analytical proto-
+col was committed to version control before any model training, with five documented deviations.
+The three-design holdout tests whether findings are sensitive to holdout selection: Designs A and
+B vary the seed (testing block-selection sensitivity), while Design C varies the temporal structure
+(testing walk-forward stability). The cross-design Spearman of 0.97+ establishes within-sample
+stability across holdout configurations, though it does not substitute for a genuine forward test on
+out-of-sample data.
+3. Data and Pipeline
+3.1 Data Source and Scope
+We obtain Market-by-Order data from CME Globex via Databento for eight futures instruments cov-
+ering five asset classes. The sample period spans January 2, 2025 through December 31, 2025 (ap-
+proximately 250 trading days per instrument). All instruments use schema=MBO, stype_in=continuous
+(front-month rolling), from the GLBX.MDP3 dataset.
+6
+
+===== PAGE 8 =====
+Table 1: Per-Instrument MBO Event Counts
+Instrument Asset Class
+Matching
+Algorithm MBO Events Tick Value
+NQ (E-mini
+Nasdaq)
+Equity Index FIFO 4,133,524,583 $5.00
+ES (E-mini S&P
+500)
+Equity Index FIFO 1,077,283,984 $12.50
+GC (Gold) Metals FIFO 820,000,000 $10.00
+CL (Crude Oil) Energy FIFO 543,000,000 $10.00
+ZS (Soybeans) Grain K-Algorithm 118,379,764 $12.50
+ZC (Corn) Grain K-Algorithm 75,427,534 $12.50
+LE (Live Cattle) Livestock FIFO 38,588,458 $10.00
+HE (Lean Hogs) Livestock FIFO 24,031,264 $10.00
+Total 6,830,235,587
+NQ alone accounts for 60% of total events, reflecting the intense HFT activity in Nasdaq fu-
+tures. The 85-fold ratio between NQ (4.13B events) and HE (24M events) illustrates the extreme
+heterogeneity across CME instruments that motivates our multi-instrument analysis.
+3.2 Session Bucket Construction
+We partition each instrument’s trading day into time-of-day buckets. All boundaries are defined in
+New York local time with DST transitions handled programmatically.
+Default scheme (ES, NQ, CL, GC) — 7 buckets: Asia overnight (18:00 prior – 02:00 NY , ~8
+hrs), Europe overnight (02:00 – 08:30, ~6.5 hrs), Open (08:30 – 10:00, 1.5 hrs), Morning (10:00 –
+12:00, 2 hrs), Midday (12:00 – 14:00, 2 hrs), Afternoon close (14:00 – 16:15, 2.25 hrs), Full session
+(18:00 prior – 16:15, ~22.25 hrs).
+ZC/ZS adapted scheme — 5 buckets:Overnight (20:00 prior – 08:45, ~12.75 hrs), Open (09:30
+– 10:30, 1 hr), Morning (10:30 – 12:30, 2 hrs), Afternoon (12:30 – 14:20, ~1.83 hrs), Full session
+(20:00 prior – 14:20, ~18.33 hrs).
+HE/LE adapted scheme — 4 buckets: Open (09:30 – 10:30, 1 hr), Morning (10:30 – 12:30, 2
+hrs), Afternoon (12:30 – 14:05, ~1.58 hrs), Full session (09:30 – 14:05, ~4.58 hrs).
+Total instrument-bucket cells: 4 × 7 + 2 × 5 + 2 × 4 = 46.
+The full session bucket for each instrument provides a meta-comparison: does bucket-specific
+training improve over full-session training? If overnight-specific models outperform full-session
+models, the signal is session-dependent.
+3.3 Data Processing Pipeline
+Raw MBO events are processed through a three-stage pipeline. Stage 1 (mbo_loader.py) loads com-
+pressed .dbn.zst files with streaming memory management and instrument-specific session filters.
+7
+
+===== PAGE 9 =====
+Stage 2 (book_engine.py) reconstructs the limit order book at 1-second intervals using cold-start re-
+construction per trading day, producing snapshot parquets with top-5 bid/ask price and depth. Stage
+3 (flow_tagger.py) classifies trades using exchange-assigned aggressor flags, eliminating tick-rule
+classification error.
+3.4 Data Quality Discoveries and Corrections
+Five deviations from the pre-registered protocol were documented. We describe the three most
+methodologically significant in detail because each illustrates a class of data quality issue relevant
+to researchers working with CME MBO data.
+3.4.1 Databento Delivery Completeness Divergence (Deviation 4)
+Verification of ES reprocessing revealed a systematic 3.88% divergence in trade event counts
+between two download methods (15-minute chunks vs. full-session). Diagnostic analysis traced the
+divergence to a Databento delivery mechanism: the chunk method captured aggressor-side trade
+events whose fill-event counterparts existed in the full-session download but whose trade events did
+not. The arithmetic identity was exact: 207,455 contracts of excess in chunk downloads equaled
+207,455 contracts of fill orphans in full-session downloads. All 50 sampled orphan fills had match-
+ing trade events at the exact same nanosecond timestamp with canonical flags and channel IDs,
+confirming they were real events missing from the full-session delivery.
+The 15-minute chunk method was adopted as canonical. This discovery has practical implica-
+tions for any researcher using Databento’s CME MBO data: the download method affects complete-
+ness by approximately 4% for trade events, which can bias flow-based features.
+3.4.2 Stale-Order Gap-Fill Discovery (Deviation 5)
+Book reconstruction diagnostics on NQ, ZC, and ZS identified negative bid-ask spreads persist-
+ing across multiple consecutive snapshots — a physical impossibility in a functioning limit order
+book. Root-cause analysis traced the artifact to CME’s daily maintenance window (16:00-17:00
+CT) and CBOT’s grain pre-open break (07:45-08:30 CT). Orders placed just before these bound-
+aries had cancellation events falling within unpurchased data gaps. The stale orders lingered in the
+reconstructed book, crossing the opposite side when the market reopened and moved.
+Severity varied across the three materially affected instruments: NQ (43% of overnight snap-
+shots showed negative spreads), ZS (80%), and ZC (16%). Gap-fill data was purchased for all six
+instruments with overnight sessions (ES, NQ, CL, GC, ZC, ZS; ~1,500 files, minimal cost) to ensure
+completeness across the CME maintenance window. Because the affected time window could not
+be identified in advance without inspecting each instrument’s book reconstruction, we purchased
+broadly to ensure consistent data treatment across all overnight-session instruments. Only NQ, ZS,
+and ZC showed material negative spread artifacts. ES, GC, and CL had negligible pre-fix negative
+spread rates (<1%) because their overnight sessions do not span the CBOT grain pre-open break that
+produced the most severe stale orders. After correction, negative spread rates on the three affected
+instruments fell to 0.3-3%, with residual cases handled by a negative-spread mask (features derived
+from mid-price set to NaN when bid > ask).
+This discovery illustrates a general vulnerability of MBO book reconstruction: any gap in the
+8
+
+===== PAGE 10 =====
+event stream produces stale orders that propagate forward until corrected. Researchers using MBO
+data from any source should verify spread positivity as a first diagnostic.
+3.4.3 Convention Z Parser Fix (Deviation 3)
+Initial raw data verification identified a filename-convention ambiguity. All eight instruments
+use Convention Z (filename encodes the New York trading day), correcting an initial assessment
+that attributed different conventions to different instruments. A tangential discovery during this
+investigation: January 9, 2025 was a half-trading-day due to the national Day of Mourning for
+President Carter, requiring bucket-level exclusion where the truncated session covered less than 50%
+of normal bucket duration.
+3.4.4 Half-Session Exclusion (Deviation 1)
+January 9, 2025 was a CME-designated early close for the national Day of Mourning for Pres-
+ident Jimmy Carter. For buckets where the venue close falls inside the bucket window with less
+than 50% of normal duration remaining, the bucket observation is excluded for that day. This af-
+fects afternoon-close buckets on the default-scheme instruments. One trading day is removed from
+affected buckets; no impact on cross-design agreement.
+3.4.5 ZC/ZS Overnight Boundary Amendment (Deviation 2)
+The pre-registered overnight bucket boundaries for ZC/ZS were specified as 19:00-09:30 NY .
+Verification against actual CBOT venue hours revealed the correct boundaries are 20:00-08:45 NY
+for the electronic session. The bucket specification was amended to match actual trading hours. This
+corrects a specification error in the pre-registration; the methodology (train on actual trading data
+within the bucket) is unchanged.
+3.5 Verification Protocol
+Before model training, a four-level verification protocol was applied per the pre-registration (Section
+7).
+V1 (Schema consistency): After ES reprocessing, new parquets were verified to have identical
+column names and dtypes to existing processed parquets. Result: PASS on all 12 months.
+V2 (Numerical consistency): New ES parquets filtered to 09:30-11:30 NY were compared
+against existing parquets. Row counts matched within 0.03% (below the 0.1% tolerance). Naive
+AUC matched within 0.00003 (below the 0.0001 tolerance). Result: PASS.
+V3 (Headline replication): A single baseline run (LightGBM, BFree, 5s horizon) on June 2025
+ES data filtered to 09:30-11:30 NY was compared against prior locked baseline values. BFree AUC
+matched within 0.003 (below the 0.005 tolerance). Result: PASS.
+V4 (Cross-instrument sanity): The pre-registered sanity check requires that cancel-to-trade
+ratio rank order across buckets follows the expected pattern (Open > Morning > Afternoon-close
+> Midday > Europe overnight > Asia overnight) on at least 6 of 8 applicable instruments. Result:
+PASS on 7 of 8 instruments (GC showed a minor inversion between Midday and Afternoon-close
+ranks, within the tolerance of 2 permitted failures). Daily volume on the full-session bucket was
+verified against CME published data within the 5% tolerance for all 8 instruments.
+9
+
+===== PAGE 11 =====
+3.6 Feature Construction
+From the 1-second order book snapshots, we construct two feature sets.
+The Full feature set contains 15 features spanning three data tiers. Level 1 features: spread
+(ticks), best bid and ask depth, Level 1 order book imbalance (bid_size − ask_size) / (bid_size +
+ask_size), and mid-price returns at 1, 5, 10, and 30 seconds. Level 2 features: total depth across 5
+levels for each side, depth-weighted imbalance, 300-second depth percentile, and 30-second depth
+change. Level 3 features: cancel-to-trade ratio at 10-second and 60-second windows, and minutes
+since session open.
+The BFree (bounce-free) feature set removes the four mid-price return features. The Full-BFree
+comparison isolates whether prediction derives from return autocorrelation (bounce) versus order
+book structural features (genuine signal). An earlier full-session analysis established that the Full-
+BFree gap on ZC is 28.2 percentage points (Full AUC 0.957, BFree AUC 0.675), confirming that the
+overwhelming majority of apparent predictability on K-Algorithm instruments reflects mechanical
+bounce.
+All features are subject to a mandatory causal lag: features at time t use information available
+only through t −1 (implemented as shift(1)). The prediction target is binary mid-price direction at
+four horizons: 5, 10, 30, and 60 seconds. Zero-tick observations (no mid-price change) are excluded
+from training and evaluation.
+4. Methodology
+4.1 Pre-Registration
+The complete analytical protocol was committed to git version control before any model training
+began (commit 9c372857 , dated 2026-04-15 08:05:36 PT). The repository is publicly archived at
+https://github.com/TheoJHoward/cme-futures-microstructure , where the commit hash,
+contents, and full subsequent history can be inspected. The pre-registration document is included in
+the repository as MASTER_FINDINGS/preregistration_v4.txt . The first model training output
+for the v4 protocol is dated 2026-04-19, four days after the pre-registration commit.
+The pre-registration specifies: the primary and secondary research questions with directional pre-
+dictions, all eight instruments and their data scope (January-December 2025), all bucket definitions
+with exact NY-time boundaries, three holdout designs with pre-committed random seeds (SEED_A =
+1,137,580,267, SEED_B = 1,820,754,789, SEED_C = 1,943,184,771), six model architectures with
+fixed hyperparameters, four prediction horizons, two feature sets, the Bonferroni correction thresh-
+old, the five-criterion cross-design agreement rule (Section 8 of the pre-registration), the four-level
+verification protocol, and the 14-phase execution sequence (A0-A14).
+The pre-registered primary prediction was that no instrument-bucket cell would satisfy all five
+confirmation criteria — including criterion 5, the transaction cost threshold. This prediction was
+upheld. Five deviations from the pre-registration were documented during execution (see §3.4 and
+Internet Appendix IA.10), none affecting holdout designs, significance criteria, or the cross-design
+10
+
+===== PAGE 12 =====
+agreement rule. All deviations were documented at the time they were made, following the protocol
+specified in Section 10 of the pre-registration.
+4.2 Three Holdout Designs
+Design A (Stratified block holdout):Six blocks of 10 trading days each, drawn with a no-adjacency
+constraint (no blocks from adjacent months), stratified by half-month. Five-day embargo on each
+side. Random seed: 1,137,580,267.
+Design B (Alternative stratification): Same structure, different random seed 1,820,754,789,
+with the constraint that no Design B block shares more than 5 trading days with any Design A block.
+Design C (Walk-forward): Eight monthly rolling folds. Fold k trains on months 1 through k+3
+and tests on month k+4, with 5-day embargo. This design tests temporal stability without relying on
+random block selection.
+4.3 Model Architectures
+Six architectures span the complexity spectrum. All hyperparameters are fixed across all instrument-
+horizon-bucket combinations to prevent ex-post optimization. This design choice is methodologi-
+cally conservative — particularly for deep learning models, which typically benefit from per-task
+tuning (Shwartz-Ziv & Armon, 2022) — but eliminates the risk that reported performance reflects
+hyperparameter search rather than genuine signal. The DL architecture results should be inter-
+preted under this constraint: the negative DL advantage we report may partly reflect the fixed-
+hyperparameter protocol rather than a categorical architectural inferiority.
+Table 2: Architecture Hyperparameters
+Architecture Key Parameters Training Details
+LightGBM 500 trees, 63 leaves, LR 0.05,
+subsample 0.8, colsample 0.8,
+min_child 50
+n_jobs=1 (deterministic), seed
+42
+XGBoost 500 trees, max_depth 6, LR
+0.05, subsample 0.8, colsample
+0.8, min_child_weight 50
+n_jobs=1 (deterministic), seed
+42
+Logistic Regression L2 penalty, C=0.1,
+max_iter=1000
+StandardScaler normalization
+LSTM 2 layers, 64 hidden units,
+dropout 0.2, sequence length
+10
+Adam LR 0.001, early
+stopping patience 10, batch
+512
+CNN 3 conv layers (32/64/128
+filters), kernel size 3, stride-2
+pooling
+Adam LR 0.001, early
+stopping patience 10, batch
+512
+11
+
+===== PAGE 13 =====
+Architecture Key Parameters Training Details
+Transformer 4 attention heads, 2 layers, dim
+64, dropout 0.1
+Adam LR 0.001, early
+stopping patience 10, batch
+512
+Train/validation/test split. Within each design, training data is split chronologically 75/25
+into train and validation subsets. The validation set is used exclusively for early stopping in deep
+learning models (training halts when validation AUC does not improve for 10 consecutive epochs).
+Tree models use the validation set for monitoring but train to the full 500 estimators. The test set
+comprises the holdout blocks (Designs A/B) or the test fold (Design C).
+Deep learning sequence construction. LSTM, CNN, and Transformer models use sequence
+inputs of length 10 seconds: snapshots from t −9 through t −1, all within the causal window. Se-
+quences that would cross session boundaries (market open/close) or contract roll dates are excluded
+via sentinel masking — the 10-second window must fall entirely within a single continuous trading
+session. This prevents information leakage across sessions and eliminates the possibility of artificial
+discontinuities contaminating learned representations.
+Bit-exact replication. Deterministic training (n_jobs=1 for trees, fixed CUDA seeds for DL)
+was verified through a pilot protocol: the same LightGBM model trained on identical data on both
+compute nodes (Node A: AMD Ryzen/RTX 4080; Compute Node B: Intel i7-12700/RTX 4080)
+produced bit-exact outputs (identical test AUC to 15 decimal places). DL models were verified to
+produce consistent results within floating-point tolerance across the two GPUs. During the study,
+a PyTorch installation error on Node B (CPU-only build installed instead of CUDA-enabled) was
+discovered and corrected after approximately 6 days of compute; all DL results produced after the
+correction used GPU acceleration identical to Node A.
+Each cell × design produces 48 runs: 6 architectures × 4 horizons × 2 feature sets. Total
+isolation: 46 × 48 × 3 = 6,624 runs.
+4.4 The Four-Mechanism Leakage Taxonomy
+Through the artifact verification process (developed during an earlier phase of this research), we
+identify four distinct forms of lookahead bias specific to second-resolution MBO futures research.
+We present these as a practical checklist: any researcher working with high-frequency order book
+data should verify that their feature construction does not suffer from these mechanisms. We are not
+aware of a prior published study using CME MBO data that explicitly documents applying all four
+corrections. We cannot determine which published results might be affected without access to exact
+feature construction code, but the 23-fold mean inflation from Mechanism 2 alone suggests that any
+study reporting large AUC gains from MBO features at one-second resolution without documenting
+shift(1) application should be interpreted with caution.
+Mechanism 1 (Bid-ask bounce conflation): Price-lagged return features encode mechanical
+bounce (Roll, 1984). Models trained with these features learn to predict reversal rather than genuine
+12
+
+===== PAGE 14 =====
+direction. Correction: BFree feature set removing all price-lagged returns. Magnitude: Full AUC on
+ZC = 0.957 vs. BFree = 0.675 (28 pp inflation).
+Mechanism 2 (Level 3 MBO contemporaneous leakage): Rolling aggregation windows com-
+puted at time t include the current second. Without shift(1), features at time t contain same-second
+information. Correction: shift(1) on all rolling features. Magnitude: mean L3 gain pre-fix = +0.035
+AUC, post-fix = +0.0015 AUC — a 23-fold reduction (mean-to-mean across all 8 instruments).
+The single-instrument maximum (NQ) shows pre-fix gain of +0.10 declining to +0.018 post-fix, a
+5.6-fold reduction.
+Mechanism 3 (Level 2 market structure reflection): End-of-second book state incorporates
+all intra-second orders and trades. Without lagging, the model has indirect access to concurrent
+trading activity. Correction: universal one-second lag on all book state features. M3 is corrected
+simultaneously with M2 through the universal shift(1); its individual contribution is not separately
+identifiable.
+Mechanism 4 (Level 1 trade flow contamination):Full-second aggregated signed trade volume
+includes trades that caused the price change being predicted. Correction: universal one-second lag.
+This mechanism is the primary source of the gap between contemporaneous OFI studies (Cont et
+al., 2014, report large effects) and lagged OFI studies (our mean |r| = 0.019). M4 is corrected
+simultaneously with M2 and M3.
+4.5 Significance Criteria and Multiple Testing
+Family-wise error rate α = 0.05 with Bonferroni correction across 1,104 unique tests (46 cells × 4
+horizons × 2 feature sets × 3 designs). Per-test threshold: α/1,104 ≈ 4.53 × 10−5.
+Each model undergoes five shuffle tests (training labels randomly permuted with seeds 1000-
+1004). The shuffle-based significance threshold is derived as follows: under the null hypothesis
+that the model has learned no genuine signal, test AUC follows a distribution centered at 0.50. We
+require real AUC to exceed shuffle mean plus k standard deviations, where k satisfies P(Z > k) =
+α/1,104 under a Gaussian approximation, yielding k ≈ 4.08. Shuffle baselines are computed for
+tree-based and logistic regression architectures; deep learning architectures do not generate shuffle
+baselines due to computational cost. Across the 1,656 non-DL isolation runs with shuffle baselines
+(3 architectures × 46 cells × 4 horizons × 3 designs, BFree feature set), the mean shuffle AUC is
+0.502 and the maximum is 0.552. The 95th percentile of shuffle AUC is 0.508, confirming that the
+shuffle distribution is tightly concentrated near 0.50 (Figure 5).
+Architecture selection bias. For each cell, we report the best-architecture result (highest test
+AUC across six architectures). This introduces an upward selection bias: the best of six draws from
+the AUC distribution is expected to exceed the median. We do not formally correct for this in the
+Bonferroni threshold, meaning our significance criterion is slightly lenient. However, the shuffle test
+provides a model-specific control: each architecture’s shuffle AUC is computed independently, so the
+comparison between a model’s real AUC and its own shuffle distribution accounts for architecture-
+specific baseline inflation. The practical impact is small because the best-to-second-best architecture
+gap is typically < 0.01 (median across 46 cells), and the signal-to-noise ratio in T1-T3 cells (edge >
+13
+
+===== PAGE 15 =====
+0.04) substantially exceeds this selection effect.
+4.6 Cross-Design Agreement Rule
+• CONFIRMED: Bonferroni-significant in Design A + 5/6 block consistency in A and B + 6/8
+fold consistency in C + transaction cost threshold
+• ROBUST_TO_TWO: Criteria 1-3 and 5 but not 4
+• EXPLORATORY:Criteria 1-4 pass but criterion 5 (costs) fails
+• NOT_SIGNIFICANT: Fails Bonferroni
+4.7 Compute Infrastructure
+Two compute nodes: Node A (AMD Ryzen 7000-series, 32 GB RAM, RTX 4080 16GB, NVMe)
+and Node B (Intel i7-12700, 32 GB RAM, RTX 4080 16GB, NVMe). Deterministic replication
+verified via pilot protocol. Total compute: ~13-15 days wall time producing 10,464 model fits
+(6,624 isolation + 3,840 pooled).
+5. Main Results
+5.1 Universal Predictability Across All Cells
+All 46 instrument-session cells produce statistically significant directional predictability under all
+three designs. Under Design A, all 46 cells pass Bonferroni correction; 45/46 show same-direction
+positive edge in 6/6 holdout blocks (NQ/morning achieves 5/6). Under Design B, 45/46 achieve≥5/6
+block consistency. Under Design C, all 46 achieve ≥5/6 fold consistency (proportional threshold).
+No cell shows negative edge under any design. This is the paper’s first finding: directional
+predictability at short horizons is ubiquitous in CME futures microstructure.
+5.2 Cross-Design Stability
+Table 3: Cross-Design Correlation Matrices (46 cells)
+Spearman rank correlation:
+Design A Design B Design C
+Design A 1.000 0.982 0.982
+Design B 0.982 1.000 0.975
+Design C 0.982 0.975 1.000
+Pearson correlation:
+14
+
+===== PAGE 16 =====
+Design A Design B Design C
+Design A 1.000 0.985 0.995
+Design B 0.985 1.000 0.979
+Design C 0.995 0.979 1.000
+The median per-cell edge difference across designs is −0.006 (B−A) and −0.004 (C−A), in-
+dicating slight but consistent contraction typical of holdout variation. ZC/afternoon varies by only
+0.005 across three designs, the tightest replication in the dataset.
+5.3 Tier Classification
+Table 4: Complete 46-Cell Tier Classification
+Tier Threshold Cells Key Instruments
+T1: Very Strong edge ≥ 0.20 9 ZC (all 5 buckets), ZS
+(4 of 5)
+T2: Strong 0.10 ≤ edge < 0.20 8 ES overnight (2), CL
+overnight (2),
+ZS/open,
+CL/afternoon,
+HE/afternoon, CL/full
+T3: Moderate 0.04 ≤ edge < 0.10 9 HE (3), CL/midday,
+ES/full, LE (3),
+CL/open
+T4: Weak 0.015 ≤ edge < 0.04 11 ES RTH (3), GC (5),
+CL/morning, NQ/asia,
+LE/open
+T5: Noise floor edge < 0.015 9 NQ (6), GC/open,
+GC/morning,
+ES/morning
+Table 5: Top 10 Cells by Median Edge
+Cell Edge_A Edge_B Edge_C Median AUC_A Range Tier
+ZC/overnight +0.373 +0.361 +0.353 +0.361 0.873 0.020 T1
+ZC/afternoon +0.356 +0.359 +0.361 +0.359 0.856 0.005 T1
+ZC/full_session +0.358 +0.355 +0.350 +0.355 0.858 0.008 T1
+ZC/morning +0.335 +0.346 +0.340 +0.340 0.835 0.011 T1
+ZS/overnight +0.287 +0.260 +0.273 +0.273 0.787 0.027 T1
+15
+
+===== PAGE 17 =====
+Cell Edge_A Edge_B Edge_C Median AUC_A Range Tier
+ZC/open +0.285 +0.266 +0.272 +0.272 0.785 0.020 T1
+ZS/afternoon +0.261 +0.243 +0.269 +0.261 0.761 0.027 T1
+ZS/full_session +0.271 +0.231 +0.261 +0.261 0.771 0.040 T1
+ZS/morning +0.216 +0.209 +0.222 +0.216 0.716 0.013 T1
+ES/asia_overnight +0.193 +0.183 +0.196 +0.193 0.693 0.013 T2
+Notes: Edge = best edge-over-chance (test AUC − 0.50) for the best-performing run in that cell
+under that design. Median = median of Edge_A, Edge_B, Edge_C. AUC_A = raw test AUC under
+Design A. Range = max(Edge_A, Edge_B, Edge_C) − min(Edge_A, Edge_B, Edge_C), measuring
+cross-design replication tightness. Tier classification based on median edge thresholds defined in
+Table 4.
+The T1 tier is dominated exclusively by ZC and ZS — the two K-Algorithm instruments. No
+FIFO instrument achieves T1 status. The strongest FIFO cell (ES/asia_overnight, median +0.193)
+ranks 10th overall. This concentration is the empirical foundation for the matching algorithm finding
+in Section 7.
+5.4 The NQ Anomaly: Highest HFT, Lowest Signal
+NQ (E-mini Nasdaq) is uniformly weak across all seven session buckets: median edge ranges from
++0.011 (nq/midday) to +0.018 (nq/asia_overnight). Despite producing 60% of total MBO events
+(4.13 billion) and having the highest cancel-to-trade ratio of all eight instruments, NQ exhibits vir-
+tually no directional predictability at any horizon in any session.
+This is the expected result under the HFT-efficiency hypothesis: NQ’s 24/7 intense algorith-
+mic activity eliminates any exploitable pattern before the one-second snapshot captures it. NQ’s
+consistency across sessions is itself informative — unlike ES, which shows an approximately 7 ×
+overnight-to-RTH edge ratio, NQ maintains high HFT participation even during overnight hours,
+producing uniformly flat predictability.
+5.5 Architecture and Horizon Patterns
+Transformer produces the best cell-level result in 26/46 cells, CNN in 12, LSTM in 3, XGBoost in
+3, LogReg in 2, LightGBM in 0. However, the margin between best and second-best architecture
+within each cell is typically small: median gap < 0.01, with 80% of cells showing gaps below 0.015.
+At these margins, the architecture “winner” in any given cell may be determined by noise rather than
+genuine architectural advantage. An earlier full-session analysis showed tree models dominating DL
+— a reversal that occurred because session-bucketed data reduces sample size per cell, potentially
+giving DL models a relative advantage on smaller datasets with more structured temporal patterns.
+We do not interpret the architecture rankings as evidence of categorical DL superiority; under a
+no-tuning protocol, the differences are likely within the range of random variation.
+16
+
+===== PAGE 18 =====
+Prediction quality degrades monotonically with horizon: median edge at h=5s is +0.075, declin-
+ing to +0.057 at h=10s, +0.033 at h=30s, and +0.025 at h=60s. The 3:1 decay ratio from 5 to 60
+seconds is consistent across instruments and tiers.
+The Full feature set marginally outperforms BFree (median advantage +0.001), with 73% of
+paired comparisons favoring Full. The small gap indicates the dominant signal derives from order
+book state features rather than return autocorrelation — a critical finding because it means the signal
+is not merely bounce prediction.
+5.6 Formal Classification: All Cells EXPLORATORY
+Applying the pre-registered Section 8 criteria: criteria 1-4 (statistical significance and cross-design
+consistency) pass for 45-46 of 46 cells. Criterion 5 (transaction cost threshold) fails for all 46. Clas-
+sification: 0 CONFIRMED, 0 ROBUST_TO_TWO, 46 EXPLORATORY , 0 NOT_SIGNIFICANT.
+The pre-registered prediction was that no cell would satisfy all five criteria. This prediction
+was upheld — no cell achieves CONFIRMED status. The finding that criteria 1-4 pass universally
+while criterion 5 fails universally is a more informative result than a simple null: it establishes that
+statistical predictability is ubiquitous but economically unreachable at the registered cost tiers. We
+treat the statistical predictability as a separate finding from the economic null, consistent with the
+pre-registration’s separation of statistical and economic criteria.
+5.7 Case Study: ZC (Corn) — The K-Algorithm Bounce Mechanism in Action
+ZC is the strongest-signal instrument in the study and the clearest window into how matching al-
+gorithm design creates predictable price paths. All five ZC buckets achieve T1 status, with median
+edges ranging from +0.272 (open) to +0.361 (overnight). The cross-design replication is exception-
+ally tight: ZC/afternoon varies by only 0.005 across three designs, the tightest replication in the
+entire 46-cell dataset.
+The mechanism is observable directly in the order book data. Under K-Algorithm matching,
+the pro-rata allocation component incentivizes participants to maintain large resting orders at the
+best bid and ask — a trader resting 100 contracts captures a proportionally larger fill share than one
+resting 10 contracts. This concentrated depth creates a characteristic pattern when an aggressive
+market order arrives: the aggressor consumes a portion of the resting depth, moving the mid-price
+by one tick in the aggressor’s direction. The remaining resting depth — still substantial because the
+pro-rata incentive keeps it large — immediately reasserts the original price level. The result is a
+one-tick bounce with 70% probability at the one-second horizon.
+This bounce is what the model learns to predict. At the 5-second horizon, the model’s AUC of
+0.873 reflects its ability to identify which snapshots precede a bounce (predictable) versus which
+precede a genuine directional move (less predictable). The BFree feature set, which removes price-
+lagged returns, still achieves AUC of 0.675 — indicating that order book state features (depth im-
+balance, spread, cancel-to-trade ratio) carry substantial predictive content even without the return
+autocorrelation that directly encodes bounce.
+17
+
+===== PAGE 19 =====
+The practical irony is that ZC’s statistical strength is precisely what makes it economically un-
+reachable. The pro-rata allocation that creates the bounce also ensures that a retail trader’s 1-contract
+limit order receives only a tiny fraction of fills at the best price. Under the K-Algorithm’s 40/60
+FIFO/pro-rata split, a 1-lot order arriving first gets the 40% FIFO slice, but if 200 contracts are rest-
+ing, the 60% pro-rata portion allocates approximately 0.3 contracts (rounded to zero) to the 1-lot
+participant. The signal is real but the execution mechanics prevent its capture.
+asia overnight
+europe overnight
+overnight
+open
+morning middayafternoon
+afternoon close
+full session
+Session bucket
+ZC
+ZS
+CL
+HE
+LE
+ES
+GC
+NQ Instrument
+0.361 0.272 0.340 0.359 0.354
+0.273 0.141 0.216 0.261 0.261
+0.157 0.148 0.043 0.035 0.077 0.120 0.108
+0.048 0.088 0.109 0.089
+0.028 0.052 0.061 0.049
+0.193 0.182 0.022 0.013 0.038 0.031 0.074
+0.030 0.021 0.010 0.010 0.018 0.024 0.025
+0.018 0.012 0.013 0.011 0.011 0.013 0.015
+0.00
+0.05
+0.10
+0.15
+0.20
+0.25
+0.30
+0.35
+0.40
+Median edge (test AUC  0.50)
+Figure 1: Median edge-over-chance across 46 instrument-session cells. Rows sorted by instrument-
+level median edge (descending). Heavy horizontal line separates K-Algorithm (ZC, ZS) from FIFO
+instruments. Gray hatched cells indicate inapplicable buckets.
+5.8 Case Study: NQ (Nasdaq) — Maximum HFT, Minimum Signal
+NQ is the anti-ZC: the instrument with the most data (4.13 billion MBO events, 60% of the total), the
+highest cancel-to-trade ratio, and the lowest predictability. Six of NQ’s seven buckets are classified
+T5 (noise floor); only nq/asia_overnight reaches T4 (weak).
+The uniformity across sessions is the key finding. ES shows an approximately 7 × overnight-to-
+RTH ratio. NQ shows only ~1.2 ×. This means NQ’s HFT ecosystem does not substantially thin
+out during overnight hours — the algorithmic market makers that patrol NQ’s order book during US
+regular trading hours continue to operate during Asian and European sessions, maintaining the same
+level of informational efficiency. Whatever residual inefficiency exists in ES overnight (where some
+18
+
+===== PAGE 20 =====
+market makers pull quotes) does not exist in NQ overnight.
+This finding has implications for the “overnight anomaly” interpretation. If the overnight edge
+existed because of a fundamental information advantage (e.g., fewer informed participants during
+overnight), it should appear in NQ overnight as well — NQ and ES are economically linked through
+the same equity index dynamics. The fact that ES overnight shows +0.193 edge while NQ overnight
+shows +0.018 suggests the overnight effect is not about information but about execution infrastruc-
+ture: ES overnight has fewer market makers competing for fills, leaving more residual predictability.
+Despite NQ’s statistical weakness, the A10 trading simulation reveals the dollar-value paradox:
+NQ overnight generates the highest dollar profit per trade ($45) at the market-maker tier. NQ’s $5
+tick value seems small, but the FIFO matching provides 100% fill priority (versus ZC’s 40% FIFO
+allocation), and the notional contract value (~$420K for NQ versus ~$34K for ZC) means each filled
+trade captures more economic value. The instrument with the weakest signal is the most valuable to
+trade — a finding that inverts the naive assumption that stronger signals produce more profit.
+1014 × 100 6 × 100 2 × 101
+Cancel-to-trade ratio (log scale)
+0.00
+0.05
+0.10
+0.15
+0.20
+0.25
+0.30
+0.35
+0.40Median edge across 3 designs
+NQ/midday
+HE/open
+ZC/overnight
+NQ/asia_overnight
+K-Algo (n=10)
+FIFO (n=36)
+K-Algo fit: =-0.94 (p=5.5e-05)
+FIFO fit: =-0.61 (p=8.9e-05)
+Figure 2: Cancel-to-trade ratio versus median edge across 46 cells (log x-axis). K-Algorithm instru-
+ments (orange) cluster at lower C/T with higher edges than FIFO instruments (blue). Marker area
+proportional to log(mean daily volume). Pooled ρ = −0.65 (p < 0.001).
+5.9 Case Study: ES Overnight — Where ML Genuinely Beats Simple Signals
+ES Asia overnight (+0.193 edge) and ES Europe overnight (+0.182 edge) represent the strongest
+FIFO cells in the study and the cells where ML adds the most genuine value beyond simple academic
+19
+
+===== PAGE 21 =====
+signals. The A12 analysis shows: ES Europe overnight achieves +0.056 edge with simple signals
+(OFI + VPIN + OFA + DAR logistic regression) but +0.182 with the full ML pipeline — a +0.126
+gap that is the largest in the dataset. ES Asia overnight shows a similar pattern: +0.111 simple,
++0.193 ML, gap +0.082.
+What is the ML learning that simple signals miss? The simple signals capture linear depth
+asymmetry (DAR) and flow direction (OFI). The ML models — primarily CNN and Transformer
+architectures on these cells — capture non-linear interactions: how depth asymmetry at level 2
+interacts with the cancel-to-trade ratio at the 60-second window, how order flow acceleration relates
+to spread width conditional on the time since session open. These interaction effects are too complex
+for a four-feature logistic regression but are precisely what tree-based and neural architectures are
+designed to capture.
+The ES overnight cells are also where the architecture comparison is most informative. CNN
+wins both ES overnight cells across all three designs (the only cells where the same architecture
+wins all three), with a meaningful margin over XGBoost (0.015-0.020 AUC gap). This suggests that
+CNN’s ability to capture local spatial patterns in the feature space — similar to its use in DeepLOB
+(Zhang et al., 2019) — provides genuine value when the order book has sufficient structural com-
+plexity. On simpler cells (ZC, where depth asymmetry dominates), trees match or exceed CNN.
+0.00 0.05 0.10 0.15 0.20 0.25 0.30 0.35 0.40
+Edge (test AUC  0.50)
+ZC/full_session
+ZC/afternoon
+ZS/morning
+ES/midday
+ZC/morning
+ZS/afternoon
+ZS/full_session
+CL/europe_overnight
+ES/asia_overnight
+ES/europe_overnight
++0.018
++0.023
++0.024
++0.026
++0.026
++0.027
++0.035
++0.065
++0.082
++0.126 Simple (4-feature LR)
+Best ML model
+Figure 3: Top 10 cells by ML-vs-simple edge gap. Simple: 4-feature logistic regression. ML: best
+architecture per cell. Across 43 cells, Spearman ρ = +0.97; median capture ratio 89.5%.
+20
+
+===== PAGE 22 =====
+0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80
+Bounce rate (P(mid direction reverses at next snapshot))
+0.00
+0.05
+0.10
+0.15
+0.20
+0.25
+0.30
+0.35
+0.40Median edge across 3 designs
+ZC/overnight
+ZS/overnight
+K-Algo (n=10)
+FIFO (n=36)
+OLS fit (Spearman =+0.94, p<0.001)
+Figure 4: Bounce rate versus median edge across 46 cells. K-Algorithm cells (orange) at higher
+bounce rates (mean 0.70) and edges than FIFO cells (blue, mean 0.56). Spearman ρ = +0.94 (p <
+0.001).
+21
+
+===== PAGE 23 =====
+0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85 0.90
+Test AUC
+0
+200
+400
+600
+800
+1000
+1200Shuffle count
+Shuffle (n=1656, left axis)
+Random baseline (0.50)
+Bonferroni-95% empirical ( /46): 0.663
+Real (n=46, right axis)
+0
+1
+2
+3
+4
+5
+6
+Real-AUC count (best arch per cell)
+Figure 5: Real test AUCs ( n = 46, best architecture per cell, Design A) versus shuffle-mean AUCs
+(n = 1,656, non-DL architectures only (LightGBM, XGBoost, LogReg)). Dotted red: empirical
+Bonferroni threshold at 0.663. 13 of 46 cells exceed this threshold.
+Retail
+($2.50/side)
+Member
+($0.50/side)
+MM
+($0.10/side)
+Coloc MM
+($0.05/side)
+Cost tier (cost per side, spread treatment)
+101
+100
+0
+100
+101
+Expected value per round trip ($)
+T1 VERY STRONG median (n=9)
+T2 STRONG median (n=8)
+T3 MODERATE median (n=9)
+T4 WEAK BUT REPLICATED median (n=11)
+T5 NOISE FLOOR median (n=9)
+Figure 6: Expected value per round trip across four cost tiers for 46 cells. Y-axis: symmetric log.
+Sharp transition at MM boundary shows exploitability requires earning the spread.
+22
+
+===== PAGE 24 =====
+6. Economic Exploitability
+6.1 Execution Scenarios
+We evaluate exploitability under three execution scenarios for each of the 46 cells, reflecting the
+range of market access from retail to professional.
+Scenario A (Full aggressor): Market order entry and exit. The trader crosses the full spread on
+both sides and pays exchange fees. Cost per round-turn = full spread + 2 × per-side fee. This is the
+worst-case execution representing a retail trader using market orders.
+Scenario B (Passive entry, aggressive exit): Limit order entry at mid-price (no spread cost on
+entry, but only 50% of signals result in a fill before the move occurs), market order exit. Cost per
+trade = half spread + 2 × per-side fee. Expected profit is multiplied by the fill rate: signals that don’t
+get filled contribute zero to P&L but also zero cost.
+Scenario C (Full passive): Passive entry and exit on limit orders. The trader earns the spread
+rather than paying it. Fill rate depends on matching algorithm: 100% FIFO priority for the six
+FIFO instruments (assuming time priority at an uncrowded level), 40% FIFO allocation for ZC/ZS
+under K-Algorithm. For K-Algorithm instruments, the remaining 60% pro-rata allocation yields
+fill probability of approximately (trader_size / total_resting_size) — typically 1/200 to 1/500 for a
+1-contract retail order.
+6.2 Results by Cost Tier
+Table 6: Exploitability by Cost Tier
+Cost Tier Per-Side Fee Spread Treatment
+Cells Profitable (of
+46)
+Retail ~$2.50 Pay full spread 0
+Exchange member ~$0.50 Pay full spread 0
+Market maker ~$0.10 Earn spread 46
+Colocation MM ~$0.05 Earn spread + priority 46
+The transition from zero to universal profitability is sharp and occurs at the market-maker bound-
+ary. This transition is largely arithmetic: market makers earn the spread on limit orders rather than
+paying it on market orders, which flips the sign of the spread component from cost to revenue. On
+NQ with a $5 tick, this single change amounts to ~$10 per round-turn — larger than most measured
+edges. The 0/46 → 46/46 transition therefore reflects the spread-direction reversal as much as any
+market structure insight.
+The more informative analysis isolates the per-side fee effect from the spread-direction effect.
+Holding spread treatment constant (always paying), no cell achieves profitability at any fee level
+tested — the edges are simply too small relative to one-tick spread costs. Holding fees constant at
+zero but varying spread treatment (paying vs earning), the transition to profitability occurs for all
+cells. This decomposition establishes that the binding constraint is the spread, not the per-side fee
+23
+
+===== PAGE 25 =====
+— a result that has implications for exchange design (spread-narrowing mechanisms would shift the
+boundary) but is less novel than the draft’s original framing implied.
+Worked example: ZC/overnight under Scenario A (retail). ZC overnight has median edge
++0.361, implying directional accuracy a = 0.50 + 0.361 = 0.861. ZC tick value = $12.50. Mean
+absolute 5-second mid-price move on ZC overnight ≈ 0.15 ticks ($1.88). Round-turn retail cost = 1
+tick spread × $12.50 + 2 × $2.50 fees = $17.50.
+Expected profit per trade = a × $1.88 − (1−a) × $1.88 − $17.50 = 0.861 × $1.88 − 0.139 ×
+$1.88 − $17.50 = $1.62 − $0.26 − $17.50 = −$16.14.
+Even with 86% accuracy, the expected 5-second move ($1.88) is dwarfed by the round-turn cost
+($17.50). The signal would need to predict moves of at least $12.14 (approximately 1 full tick) to
+break even at retail — a magnitude that occurs in less than 5% of 5-second windows on ZC overnight.
+Under Scenario C (market maker). Same accuracy (86.1%). Cost = 2 × $0.10 = $0.20 (fees
+only, spread earned not paid). Revenue per filled trade ≈ 1 tick earned ($12.50) × fill rate (40%
+FIFO allocation on K-Algorithm) = $5.00 per attempt. Net per attempt = 0.40 × (0.861 × $12.50 −
+0.139 × $12.50 − $0.20) = 0.40 × ($10.76 − $1.74 − $0.20) = 0.40 × $8.82 = +$3.53.
+6.3 The NQ Dollar-Value Paradox
+A finding with direct implications for market design: the instruments with the strongest statistical
+signal are not the most economically valuable.
+ZC/overnight has the strongest edge (+0.361, AUC 0.873) but generates modest dollar profit per
+trade at the MM tier because ZC’s pro-rata fill allocation limits fill probability. NQ/asia_overnight
+has the weakest statistical signal among T4 cells (+0.018, AUC 0.524) but generates the highest
+dollar profit per trade ($45) because NQ has FIFO matching (100% fill priority), tight 1-tick spreads
+($5), and the highest notional contract value (~$420K).
+This divergence between statistical and economic ranking is a direct consequence of matching
+algorithm design: K-Algorithm creates strong statistical patterns but limits the ability to capture
+them through pro-rata allocation, while FIFO creates weaker patterns but allows complete capture
+through time priority.
+6.4 Cross-Cell Correlations
+The correlation between edge and Scenario C surplus is ρ = +0.89 (p < 10 −15), confirming that
+stronger signals produce proportionally larger profits at the MM tier. Additional correlations from
+the A10 trading simulation: mean spread (ticks) vs. surplus ( ρ = −0.62), daily volume vs. surplus
+(ρ = +0.44), cancel-to-trade ratio vs. edge (ρ = −0.65).
+7. Market Structure Mechanisms
+7.1 Matching Algorithm Effect
+Table 7: K-Algorithm vs. FIFO Comparison
+24
+
+===== PAGE 26 =====
+Metric K-Algorithm (ZC, ZS) FIFO (ES, NQ, CL, GC, HE, LE)
+Cells 10 36
+Median edge +0.273 +0.033
+Mann-Whitney U 356 —
+p-value 1.5 × 10−6 —
+Rank-biserial r +0.978 —
+Mean bounce rate 0.70 0.56
+The effect is large: K-Algorithm instruments show 8.3 times the median predictability of FIFO
+instruments. However, the 10 K-Algorithm cells derive from only 2 instruments (ZC, ZS), while the
+36 FIFO cells span 6 instruments. Within-instrument cells share market structure, creating pseudo-
+replication that inflates the apparent N. The Mann-Whitney test treats each cell as independent,
+which overstates statistical power. The honest interpretation: ZC and ZS show systematically higher
+predictability than the six FIFO instruments. This is consistent with — but does not prove — a
+matching-algorithm effect; instrument-level confounds (grain-specific market structure, lower HFT
+participation, different tick-to-price ratios) cannot be ruled out from this sample alone. Haynes and
+Onur (2020) provide cleaner causal evidence from a within-instrument matching algorithm switch
+in Treasury futures; our contribution is cross-sectional confirmation across a broader product set.
+7.2 Bounce Rate Mediation
+The matching algorithm effect operates through the bounce rate mechanism. The correlation be-
+tween bounce rate and edge-over-chance is ρ = +0.94 (p < 10−15), indicating that bounce rate effec-
+tively mediates the matching algorithm → predictability relationship.
+K-Algorithm matching incentivizes large resting orders at the top of book to capture pro-rata
+allocation. When incoming market orders consume this concentrated depth, the price briefly moves
+in the aggressor’s direction, then reverts as the remaining depth reasserts. This mechanical bounce
+is deterministic given the order book state, producing highly predictable short-horizon price paths.
+Our analysis documents the bounce rate hierarchy across the two matching algorithm families
+present in our sample: K-Algorithm instruments (ZC, ZS) exhibit mean bounce rate of 0.70 versus
+0.56 for FIFO instruments (ES, NQ, CL, GC, HE, LE). Within K-Algorithm instruments, overnight
+ZC bounce rate (0.71) is nearly identical to RTH ZC bounce rate (0.69), indicating that the bounce
+mechanism is structural to the matching algorithm rather than varying with participation intensity.
+An earlier analysis classified HE and LE as “Pro Rata” instruments with a 15% bounce rate; subse-
+quent verification against CME Globex product specifications confirmed that HE and LE use FIFO
+matching for outright futures, and their low bounce rates reflect thin-market dynamics rather than a
+distinct matching algorithm.
+25
+
+===== PAGE 27 =====
+7.3 HFT Proxy and Efficiency Scaling
+We construct an HFT participation proxy and test its relationship with predictability across all 46
+cells (compared to N=8 in the earlier full-session analysis). The cancel-to-trade ratio alone correlates
+with edge at ρ = −0.65 (p < 0.001), confirming the HFT-efficiency hypothesis. Within the K-
+Algorithm subset, this correlation strengthens to ρ = −0.94; within FIFO, it is ρ = −0.61.
+The earlier full-session analysis with N=8 instruments found ρ = −0.714 (p = 0.047, two-tailed
+marginal). The bucketed analysis dramatically increases power (N=46 cells) and finds a consistent
+but better-estimated effect. The bucket-level analysis also reveals that the C/T-predictability rela-
+tionship holds both across instruments and within instruments across sessions, providing a cleaner
+causal test because within-instrument variation controls for all instrument-level confounds.
+Table 7b: Within-Instrument C/T Ratio vs. Predictability (ES example)
+ES Bucket C/T Ratio Median Edge Session Type
+Asia overnight ~2.0 +0.193 Overnight
+Europe overnight ~2.5 +0.182 Overnight
+Open ~5.5 +0.022 RTH
+Morning ~4.5 +0.014 RTH
+Midday ~3.5 +0.038 RTH
+Afternoon close ~4.0 +0.031 RTH
+Notes: C/T ratios are session-level approximations from A3 bucket statistics; exact per-bucket
+values are in the supplementary data. The qualitative gradient (overnight low, RTH high) is robust
+to the precise values.
+Within ES alone, the overnight sessions (low C/T, low HFT participation) show 5-10 × the pre-
+dictability of RTH sessions (high C/T, high HFT participation). This within-instrument gradient
+controls for everything that varies across instruments — tick size, contract specifications, partici-
+pant composition, matching algorithm — and isolates the session-level HFT intensity effect. The
+same pattern holds for CL (overnight edge 2.5 × RTH edge) and, more weakly, for GC (overnight
+edge 2.1 × RTH edge). NQ is the exception: even overnight, NQ maintains high C/T ratios and
+correspondingly low predictability.
+7.4 Overnight vs. RTH: Session Structure Effects
+Table 8: Overnight vs. RTH Comparison
+Metric Overnight RTH Ratio
+Cells (excl. full_session) 10 22 —
+Median edge +0.175 +0.043 4.07 ×
+The overnight advantage holds within every applicable instrument:
+26
+
+===== PAGE 28 =====
+Instrument Overnight Edge RTH Edge Advantage
+ES +0.187 +0.026 +0.161
+CL +0.152 +0.060 +0.092
+ZS +0.273 +0.216 +0.057
+ZC +0.361 +0.340 +0.021
+GC +0.021 +0.010 +0.011
+NQ +0.012 +0.009 +0.003
+The effect is strongest for ES (overnight ~7× RTH) and weakest for NQ (overnight ~1.2× RTH),
+consistent with the observation that NQ maintains high HFT participation even during overnight
+hours. ZC’s overnight advantage is small (+0.021) because ZC has strong signal across all sessions
+— the K-Algorithm effect dominates session effects for grain instruments.
+8. Academic Signal Comparison
+8.1 Signal Construction
+We implement three academic microstructure signals per cell plus one redundant baseline fea-
+ture: OFI (Cont et al., 2014, top-of-book with 10s rolling aggregation), VPIN (Easley et al., 2012,
+50-bucket rolling windows), OFA (signed trade flow autocorrelation at 5s lags), and DAR (depth
+asymmetry ratio). DAR is algebraically identical to l1_imbalance — both compute (bid_size_1 −
+ask_size_1) / (bid_size_1 + ask_size_1) — which is already in the BFree baseline. In the simple
+logistic regression, DAR provides predictive content because the other three signals do not encode
+depth asymmetry. In the ML pipeline, DAR adds zero marginal ∆AUC (confirmed across all 43
+testable cells) because LightGBM already extracts the same information from l1_imbalance. The
+simple-vs-ML capture ratio therefore reflects the contribution of three genuinely new signals (OFI,
+VPIN, OFA) plus the depth asymmetry feature that both approaches share.
+8.2 Simple vs. ML Comparison
+A logistic regression using only the four signals captures a median 89.5% of ML edge (Spearman ρ
+= +0.97, n = 43 testable cells; three full_session cells excluded due to out-of-memory failures during
+signal computation).
+Table 9: Academic Signals vs. ML
+Metric Value
+Spearman (simple vs. ML) +0.97
+Median capture ratio 89.5%
+Cells where simple > 80% 30 / 43
+Cells where simple < 20% 0 / 43
+27
+
+===== PAGE 29 =====
+This high capture ratio indicates ML models primarily rediscover the same order book mechan-
+ics described by the academic literature. The residual 10.5% where ML exceeds simple signals
+concentrates in high-volume FIFO overnight cells:
+Cell Simple Edge ML Edge Gap
+ES/europe_overnight +0.056 +0.182 +0.126
+ES/asia_overnight +0.111 +0.193 +0.082
+CL/europe_overnight +0.082 +0.148 +0.065
+These are precisely the cells where non-linear interactions between depth asymmetry, spread
+dynamics, and trade flow carry information beyond what any single linear signal captures. The ML
+advantage is real but narrowly localized.
+8.3 The OFI Contemporaneous vs. Predictive Distinction
+An earlier full-session analysis established a critical finding: Cont et al.’s (2014) OFI is a contempo-
+raneous measure (OFI at time t correlates with returns at time t), not a predictive one. After imposing
+the mandatory one-second causal lag, snapshot OFI correlation collapses from the published values
+to mean |r| = 0.019 across eight instruments — economically negligible. Trade OFI retains a small
+non-linear signal on ES (r = 0.019 linear, but +0.019 AUC via tree-based ML), suggesting OFI’s
+predictive content is captured through interaction terms rather than linear correlation.
+The per-bucket analysis adds granularity: the OFI signal, such as it is, concentrates in overnight
+sessions on liquid FIFO instruments. During RTH sessions, even the non-linear OFI component
+vanishes. This is consistent with the interpretation that OFI captures residual information that HFT
+market makers have not yet fully incorporated — which is more abundant during overnight hours.
+VPIN produces a complete null across all instruments, sessions, and horizons (max | ∆AUC| <
+0.003), consistent with Andersen and Bondarenko’s (2014) critique.
+8.4 Session Gradients in Academic Signals
+Academic signals exhibit the same session and matching-algorithm gradients as ML models, but
+attenuated:
+Gradient Simple LR Ratio ML Ratio
+Overnight / RTH 1.74 × 3.72×
+K-Algorithm / FIFO 4.91 × 8.79×
+The simple LR gradient largely reflects depth asymmetry (DAR/l1_imbalance), which is present
+in both the simple and ML feature sets. The attenuation of the simple-vs-ML ratio indicates that
+ML captures non-linear amplifications of the same underlying depth-asymmetry mechanism — the
+gradient itself is a property of the order book feature space rather than a separate finding about any
+individual signal.
+28
+
+===== PAGE 30 =====
+9. Robustness Checks
+9.1 Alternative Label Definitions
+We test 320 alternative label configurations spanning five label types to ensure findings are not
+specific to binary direction prediction.
+Label L1 (binary direction) is the primary label. Labels L2a-L2c apply magnitude filters (1, 2,
+3 ticks minimum). Label L3 is a five-class signed magnitude label. Labels L4a-L4c test directional
+persistence (3, 5, 10 consecutive seconds). Labels L5a-L5b implement the triple barrier method
+(1-tick and 2-tick barriers).
+The persistence labels (L4) are theoretically most important because they are by construction
+bounce-free: bounce reverses within 1-2 seconds and cannot generate 3-second persistence labels.
+L4a shows genuine signal in 24/32 instrument-horizon configurations — real directional content
+that persists beyond bounce. However, this signal remains insufficient to clear transaction costs. The
+economic conclusion is robust across all label definitions.
+9.2 Data Depth Ablation
+192 ablation experiments test the marginal value of data tiers. After correcting for the contempora-
+neous leakage mechanism (Section 4.4), Level 3 MBO features add only +0.0015 AUC on average
+beyond Level 2. The pre-fix apparent gain of +0.046 demonstrates the magnitude of Mechanism 2
+distortion. This finding has practical implications: researchers paying premium prices for MBO data
+should not expect marginal predictive value at one-second resolution under correct causal construc-
+tion.
+9.3 Pooled Analysis
+3,840 pooled runs (all buckets combined per instrument with bucket-indicator features) produce
+median edge approximately equivalent to isolation (delta +0.003). Grain instruments show mild
+pooling benefit; ES/CL show isolation advantage. This confirms predictability is session-specific:
+adding time-of-day context does not unlock signal beyond what session-specialized models capture.
+9.4 Leakage Re-Verification (A9)
+Feature ablation on the 17 T1/T2 cells (582 ablation runs) confirms: the maximum single-feature sig-
+nal contribution is 2.16%, with vwap_distance appearing most frequently in cells’ top-5 (15/17 cells)
+but never exceeding ~2%. Signal is distributed across multiple features — principally vwap_distance,
+net_delta_1s, and l1_imbalance — with no single feature dominating. This rules out the possibility
+that the documented predictability is a feature-construction artifact.
+29
+
+===== PAGE 31 =====
+9.5 Cross-Instrument Transfer
+Models trained on one instrument fail to predict returns on correlated instruments: ZC →ZS cross-
+instrument AUC = 0.512 (vs. ZS self = 0.674), ES →NQ cross AUC = 0.502 (vs. NQ self = 0.598).
+Microstructure signals encode instrument-specific order book dynamics, not shared fundamental
+information. This is consistent with the session-specific finding: the signal reflects local book struc-
+ture, not market-wide information.
+10. Limitations and Future Research
+10.1 Limitations
+Single calendar year and within-sample designs. All results derive from January-December 2025.
+The three holdout designs partition the same underlying distribution: Designs A and B use identical
+structure (6 blocks, 10 days each, same embargo) with different random seeds, varying only which
+blocks are selected. Design C (walk-forward) is the only design that meaningfully varies the tempo-
+ral structure, and its early folds train on as few as 4 months. The cross-design Spearman of 0.97+ is
+therefore largely a measure of within-sample stability — the signal is not an artifact of a particular
+holdout draw — rather than a test of temporal robustness or out-of-sample generalization. January
+2026 data was excluded per the pre-registration and provides a natural forward test that we leave for
+future work.
+Two K-Algorithm instruments. The matching algorithm comparison is based on 2 instru-
+ments (ZC, ZS) versus 6 FIFO instruments. With N=2, the K-Algorithm effect cannot be separated
+from grain-specific confounds (commercial hedging patterns, seasonal crop dynamics, lower abso-
+lute HFT participation). The within-FIFO C/T-vs-edge correlation ( ρ = −0.61) provides a cleaner
+single-mechanism test because it operates across 6 instruments with 36 cells.
+HE/LE matching algorithm clarification. An earlier version of this analysis classified HE
+and LE as “Pro Rata” instruments. Verification against CME Globex product specifications con-
+firmed that HE and LE outright futures use FIFO matching. The earlier three-category compari-
+son (FIFO/K-Algorithm/Pro Rata) was incorrect; the correct two-category comparison is reported
+throughout this paper.
+Conservative cost model. The trading simulation assumes stylized fill rates and one trade per 5-
+minute window. A realistic market simulator with queue position modeling, partial fills, and adverse
+selection would produce more precise exploitability estimates.
+Agricultural seasonality. ZC and ZS exhibit seasonal microstructure variation. The walk-
+forward Design C places harvest season in later test folds, creating potential distribution shift. We
+document this shift but do not conduct an alternative seasonal split.
+Fixed DL hyperparameters. Deep learning models use fixed hyperparameters across all cells
+to prevent ex-post optimization. This is methodologically honest but structurally disadvantages DL
+relative to tree models, which are less sensitive to hyperparameter choice. The DL architecture
+results should be interpreted under this constraint.
+30
+
+===== PAGE 32 =====
+DL convergence failures. Twenty DL runs (all on GC pooled configurations) failed due to GPU
+memory constraints when the GC pooled dataset exceeded available VRAM during sequence con-
+struction. These runs were excluded from the analysis — they are not re-run and not imputed. The
+exclusion affects only the GC pooled DL rows; all GC isolation runs and all GC pooled tree/LogReg
+runs completed successfully. The 20 excluded runs represent 0.5% of pooled runs (20 of 3,840) and
+0.2% of total model fits (20 of 10,464). No headline finding depends on GC pooled DL results.
+10.2 Future Research
+Longer horizons. Extending from 5-60 seconds to 1-60 minutes would determine whether the signal
+transforms or decays at execution-relevant timescales. This is the most natural follow-up paper.
+Cross-instrument signal propagation. Whether ZC microstructure signals predict ZS price
+movements at lagged horizons — and whether any propagation lag is sufficient for cross-instrument
+execution — is an open question with direct practical relevance.
+SHAP feature interpretation. While Section 8 demonstrates that depth asymmetry captures
+the majority of ML signal, a full SHAP analysis would reveal whether the non-linear component has
+coherent economic interpretation.
+Natural experiments. CME periodically modifies matching algorithm parameters. Such modifi-
+cations provide natural experiments for testing the causal effect of algorithm design on predictability.
+Regime conditioning. Whether signal strength varies with USDA report days, FOMC an-
+nouncements, roll periods, or seasonal crop cycles would distinguish structural from event-driven
+predictability.
+11. Conclusion
+This paper documents a precise, replicable, and economically interpretable relationship between
+market structure and short-horizon price predictability across eight CME futures instruments. Using
+6.83 billion Market-by-Order events and a pre-registered methodology producing 10,464 model fits,
+we establish three findings.
+First, the pre-registered null was upheld: no cell achieves economic exploitability. However,
+directional predictability at 5-60 second horizons is ubiquitous, replicating across three holdout de-
+signs with rank correlation exceeding 0.97.
+Second, predictability magnitude is associated with matching algorithm design (K-Algorithm in-
+struments show 8.3× FIFO predictability, consistent with bounce rate mediation atρ = 0.94, though
+based on only two K-Algorithm instruments) and with HFT participation intensity (overnight 4.0 ×
+RTH, C/T ratio ρ = −0.65 across 46 cells).
+Third, the exploitability gap is dominated by the spread-direction arithmetic: earning versus
+paying the spread determines profitability more than any signal or fee parameter. No cell profits at
+retail costs; all cells profit when spreads are earned.
+Simple academic signals capture a median 89.5% of the ML edge, indicating that the documented
+predictability reflects known order book mechanics operating at varying intensities across market
+31
+
+===== PAGE 33 =====
+structure regimes. ML adds genuine value only on high-volume FIFO overnight cells where non-
+linear interactions matter.
+These results reframe market efficiency from a binary property to a continuous function of market
+access costs, with matching algorithm design as a previously unquantified determinant. For exchange
+operators, the finding that algorithm choice directly affects the statistical properties of price paths
+informs the policy debate around pro-rata versus FIFO priority. For the academic literature, the pre-
+registered three-design methodology provides a template for rigorous signal validation in an era of
+replication concerns.
+32
+
+===== PAGE 34 =====
+References
+Andersen, T. G., & Bondarenko, O. (2014). VPIN and the flash crash. Journal of Empirical
+Finance, 28, 198–216.
+Aspris, A., Foley, S., Harris, J., & O’Neill, P. (2015). Time pro-rata matching: Evidence of a
+high-frequency battlefield. Working paper.
+Bailey, D. H., Borwein, J. M., López de Prado, M., & Zhu, Q. J. (2014). Pseudo-mathematics and
+financial charlatanism. Notices of the AMS, 61(5), 458–471.
+Biais, B., Bisière, C., & Spatt, C. (2010). Imperfect competition in financial markets. Management
+Science, 56(12), 2237–2250.
+Briola, A., Bartolucci, S., & Aste, T. (2025). Deep limit order book forecasting: A microstructural
+guide. Quantitative Finance.
+Brogaard, J., Hendershott, T., & Riordan, R. (2014). High-frequency trading and price discovery.
+Review of Financial Studies, 27(8), 2267–2306.
+Budish, E., Cramton, P., & Shim, J. (2015). The high-frequency trading arms race. Quarterly
+Journal of Economics, 130(4), 1547–1621.
+Cont, R., Kukanov, A., & Stoikov, S. (2014). The price impact of order book events. Journal of
+Financial Econometrics, 12(1), 47–88.
+Easley, D., López de Prado, M., & O’Hara, M. (2012). Flow toxicity and liquidity in a
+high-frequency world. Review of Financial Studies, 25(5), 1457–1493.
+Field, J., & Large, J. (2008). Pro-rata matching and one-tick futures markets. CFS Working Paper
+2008/40.
+Glosten, L. R., & Milgrom, P. R. (1985). Bid, ask and transaction prices in a specialist market.
+Journal of Financial Economics, 14(1), 71–100.
+Gu, S., Kelly, B., & Xiu, D. (2020). Empirical asset pricing via machine learning. Review of
+Financial Studies, 33(5), 2223–2273.
+Harvey, C. R., Liu, Y ., & Zhu, H. (2016). . . . and the cross-section of expected returns.Review of
+Financial Studies, 29(1), 5–68.
+Hasbrouck, J. (1991a). Measuring the information content of stock trades. Journal of Finance,
+46(1), 179–207.
+Hasbrouck, J. (1991b). The summary informativeness of stock trades. Review of Financial Studies,
+4(3), 571–595.
+Haynes, R., & Onur, E. (2020). Precedence rules in matching algorithms. Journal of Commodity
+Markets, 19, 100109.
+Hendershott, T., Jones, C. M., & Menkveld, A. J. (2011). Does algorithmic trading improve
+liquidity? Journal of Finance, 66(1), 1–33.
+33
+
+===== PAGE 35 =====
+Kyle, A. S. (1985). Continuous auctions and insider trading. Econometrica, 53(6), 1315–1335.
+López de Prado, M. (2018). Advances in financial machine learning. Wiley.
+McLean, R. D., & Pontiff, J. (2016). Does academic research destroy stock return predictability?
+Journal of Finance, 71(1), 5–32.
+Menkveld, A. J. (2013). High frequency trading and the new market makers. Journal of Financial
+Markets, 16(4), 712–740.
+Ntakaris, A., Magris, M., Kanniainen, J., Gabbouj, M., & Iosifidis, A. (2018). Benchmark dataset
+for mid-price forecasting. Journal of Forecasting, 37(8), 852–866.
+Roll, R. (1984). A simple implicit measure of the effective bid-ask spread. Journal of Finance,
+39(4), 1127–1139.
+Shwartz-Ziv, R., & Armon, A. (2022). Tabular data: Deep learning is not all you need. Information
+Fusion, 81, 84–90.
+Sirignano, J., & Cont, R. (2019). Universal features of price formation. Quantitative Finance,
+19(9), 1449–1459.
+Yao, C., & Ye, M. (2018). Why trading speed matters. Review of Financial Studies, 31(6),
+2157–2183.
+Zhang, Z., Zohren, S., & Roberts, S. (2019). DeepLOB: Deep convolutional neural networks for
+limit order books. IEEE Transactions on Signal Processing, 67(11), 3001–3012.
+Word count: 10928 (including abstract, references, tables, and footnotes)
+Funding: No funding was received.
+Disclosure statement: The author reports no competing interests.
+Data availability: Data are licensed from Databento (GLBX.MDP3, MBO schema) and cannot be
+redistributed. Analysis code is available from the author upon reasonable request.
+Generative AI disclosure: The author used Claude (Anthropic, Claude Opus 4.6 and Claude Sonnet
+4 via claude.ai and Claude Code) as a coding and editorial assistant during the preparation of this
+paper. Specifically, the author directed Claude to: (1) implement Python scripts for data processing
+and model training based on the author’s specifications; (2) generate publication-quality figures from
+the author’s data and design instructions; (3) assist with LaTeX formatting; and (4) provide edito-
+rial feedback on draft prose, which the author then reviewed, revised, and accepted or rejected at his
+discretion. The research was conceived, designed, and conducted entirely by the author. All method-
+ological decisions, data interpretation, analytical conclusions, and scientific claims are the author’s
+own. Claude generated no original research content; its role was limited to technical implementation
+and editorial assistance under the author’s direction.
+34

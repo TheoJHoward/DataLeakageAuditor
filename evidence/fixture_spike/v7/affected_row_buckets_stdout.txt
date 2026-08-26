@@ -1,0 +1,18 @@
+es 2025-01: n_rows=1,778,405 pairs=21 in_full_session=16 buckets={'asia_overnight': 16, 'outside_session': 5} NY_time_range=[18:59:59.862084 .. 17:00:00.064116]
+es 2025-08: n_rows=1,760,404 pairs=21 in_full_session=16 buckets={'asia_overnight': 16, 'outside_session': 5} NY_time_range=[17:00:00.064038 .. 17:00:00.064030]
+nq 2025-01: n_rows=1,778,405 pairs=21 in_full_session=16 buckets={'asia_overnight': 16, 'outside_session': 5} NY_time_range=[18:59:59.019344 .. 17:00:00.068046]
+nq 2025-08: n_rows=1,760,404 pairs=20 in_full_session=15 buckets={'asia_overnight': 15, 'outside_session': 5} NY_time_range=[17:00:00.068025 .. 17:00:00.068025]
+cl 2025-01: n_rows=1,778,401 pairs=17 in_full_session=16 buckets={'asia_overnight': 16, 'outside_session': 1} NY_time_range=[18:59:59.887085 .. 18:59:59.810672]
+cl 2025-08: n_rows=1,760,403 pairs=20 in_full_session=16 buckets={'asia_overnight': 16, 'outside_session': 4} NY_time_range=[17:00:00.080008 .. 17:00:00.080007]
+gc 2025-01: n_rows=1,778,393 pairs=21 in_full_session=16 buckets={'asia_overnight': 16, 'outside_session': 5} NY_time_range=[18:59:59.906353 .. 17:00:00.076043]
+gc 2025-08: n_rows=1,761,718 pairs=21 in_full_session=16 buckets={'asia_overnight': 16, 'outside_session': 5} NY_time_range=[17:00:00.076032 .. 17:00:00.076020]
+zc 2025-01: n_rows=1,346,274 pairs=14 in_full_session=14 buckets={'afternoon': 14} NY_time_range=[14:19:59.869251 .. 14:19:59.178534]
+zc 2025-08: n_rows=1,712,400 pairs=21 in_full_session=5 buckets={'outside_session': 16, 'afternoon': 5} NY_time_range=[14:19:59.703853 .. 14:19:59.920747]
+zs 2025-01: n_rows=1,346,211 pairs=18 in_full_session=18 buckets={'afternoon': 18} NY_time_range=[14:19:59.781525 .. 14:19:59.711764]
+zs 2025-08: n_rows=1,712,400 pairs=21 in_full_session=5 buckets={'outside_session': 16, 'afternoon': 5} NY_time_range=[14:19:59.966552 .. 14:19:59.828965]
+he 2025-01: n_rows=343,499 pairs=15 in_full_session=15 buckets={'afternoon': 15} NY_time_range=[14:04:57.753595 .. 14:04:59.712503]
+he 2025-08: n_rows=346,496 pairs=15 in_full_session=15 buckets={'afternoon': 15} NY_time_range=[14:04:59.044508 .. 14:04:59.498824]
+le 2025-01: n_rows=343,507 pairs=14 in_full_session=14 buckets={'afternoon': 14} NY_time_range=[14:04:59.999310 .. 14:04:59.931616]
+le 2025-08: n_rows=346,498 pairs=13 in_full_session=13 buckets={'afternoon': 13} NY_time_range=[14:04:59.993331 .. 14:04:59.996801]
+
+wrote C:\Users\ttbea\AppData\Local\Temp\claude\C--Users-ttbea-OneDrive-Desktop-MBO-2025-4mon--2026-01\8b1d67a4-ce4f-4c55-b09d-1c72e7b6b5e1\scratchpad\fixture_spike\v7\affected_row_buckets.csv

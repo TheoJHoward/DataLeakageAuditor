@@ -1,0 +1,20 @@
+{
+  "features": [
+    "f0",
+    "f1",
+    "f2",
+    "f3"
+  ],
+  "target": "target",
+  "group": null,
+  "time": null,
+  "truth": "test half drawn from the same distribution",
+  "case": "C8",
+  "side": "clean",
+  "type": "T8",
+  "detector_row": "L3.3",
+  "n_rows": 400,
+  "n_train": 200,
+  "n_test": 200,
+  "n_index_overlap": 0
+}

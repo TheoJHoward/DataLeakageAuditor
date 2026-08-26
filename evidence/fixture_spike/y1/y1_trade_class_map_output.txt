@@ -1,0 +1,148 @@
+C:\Users\ttbea\AppData\Local\Temp\claude\C--Users-ttbea-OneDrive-Desktop-MBO-2025-4mon--2026-01\8b1d67a4-ce4f-4c55-b09d-1c72e7b6b5e1\scratchpad\fixture_spike\y1\y1_trade_class_map.py:3: SyntaxWarning: invalid escape sequence '\d'
+  Read-only over n1\declared_map.csv. Writes only into the y1 scratchpad.
+wrote C:\Users\ttbea\AppData\Local\Temp\claude\C--Users-ttbea-OneDrive-Desktop-MBO-2025-4mon--2026-01\8b1d67a4-ce4f-4c55-b09d-1c72e7b6b5e1\scratchpad\fixture_spike\y1\trade_class_only_map.csv 96 rows
+
+========================================================================
+SIDE = corrected   (48 instrument-months)
+========================================================================
+
+  TRADE CLASSES ONLY (4)
+    strict-positive : 18/48
+    equal non-zero  : 11/48   (equal-only: 2)
+    zero-zero       : 28/48
+    check 18+2+28 = 48
+    strict cells    : cl 2025-01, cl 2025-08, cl 2025-09, cl 2025-10, cl 2025-11, cl 2025-12, gc 2025-01, gc 2025-08, gc 2025-09, gc 2025-10, gc 2025-11, gc 2025-12, zc 2025-08, zc 2025-09, zc 2025-10, zs 2025-08, zs 2025-09, zs 2025-10
+    equal-only cells: es 2025-10, es 2025-11
+    zero-zero cells : es 2025-01, es 2025-08, es 2025-09, es 2025-12, he 2025-01, he 2025-08, he 2025-09, he 2025-10, he 2025-11, he 2025-12, le 2025-01, le 2025-08, le 2025-09, le 2025-10, le 2025-11, le 2025-12, nq 2025-01, nq 2025-08, nq 2025-09, nq 2025-10, nq 2025-11, nq 2025-12, zc 2025-01, zc 2025-11, zc 2025-12, zs 2025-01, zs 2025-11, zs 2025-12
+
+  DECLARED 10 (published)
+    strict-positive : 18/48
+    equal non-zero  : 35/48   (equal-only: 17)
+    zero-zero       : 13/48
+    check 18+17+13 = 48
+    strict cells    : cl 2025-01, cl 2025-08, cl 2025-09, cl 2025-10, cl 2025-11, cl 2025-12, gc 2025-01, gc 2025-08, gc 2025-09, gc 2025-10, gc 2025-11, gc 2025-12, zc 2025-08, zc 2025-09, zc 2025-10, zs 2025-08, zs 2025-09, zs 2025-10
+    equal-only cells: es 2025-01, es 2025-08, es 2025-09, es 2025-10, es 2025-11, es 2025-12, he 2025-01, he 2025-08, he 2025-09, he 2025-10, he 2025-12, le 2025-01, le 2025-08, le 2025-09, le 2025-10, le 2025-12, zc 2025-12
+    zero-zero cells : he 2025-11, le 2025-11, nq 2025-01, nq 2025-08, nq 2025-09, nq 2025-10, nq 2025-11, nq 2025-12, zc 2025-01, zc 2025-11, zs 2025-01, zs 2025-11, zs 2025-12
+
+========================================================================
+SIDE = contaminated   (48 instrument-months)
+========================================================================
+
+  TRADE CLASSES ONLY (4)
+    strict-positive : 48/48
+    equal non-zero  : 23/48   (equal-only: 0)
+    zero-zero       : 0/48
+    check 48+0+0 = 48
+    strict cells    : cl 2025-01, cl 2025-08, cl 2025-09, cl 2025-10, cl 2025-11, cl 2025-12, es 2025-01, es 2025-08, es 2025-09, es 2025-10, es 2025-11, es 2025-12, gc 2025-01, gc 2025-08, gc 2025-09, gc 2025-10, gc 2025-11, gc 2025-12, he 2025-01, he 2025-08, he 2025-09, he 2025-10, he 2025-11, he 2025-12, le 2025-01, le 2025-08, le 2025-09, le 2025-10, le 2025-11, le 2025-12, nq 2025-01, nq 2025-08, nq 2025-09, nq 2025-10, nq 2025-11, nq 2025-12, zc 2025-01, zc 2025-08, zc 2025-09, zc 2025-10, zc 2025-11, zc 2025-12, zs 2025-01, zs 2025-08, zs 2025-09, zs 2025-10, zs 2025-11, zs 2025-12
+
+  DECLARED 10 (published)
+    strict-positive : 48/48
+    equal non-zero  : 42/48   (equal-only: 0)
+    zero-zero       : 0/48
+    check 48+0+0 = 48
+    strict cells    : cl 2025-01, cl 2025-08, cl 2025-09, cl 2025-10, cl 2025-11, cl 2025-12, es 2025-01, es 2025-08, es 2025-09, es 2025-10, es 2025-11, es 2025-12, gc 2025-01, gc 2025-08, gc 2025-09, gc 2025-10, gc 2025-11, gc 2025-12, he 2025-01, he 2025-08, he 2025-09, he 2025-10, he 2025-11, he 2025-12, le 2025-01, le 2025-08, le 2025-09, le 2025-10, le 2025-11, le 2025-12, nq 2025-01, nq 2025-08, nq 2025-09, nq 2025-10, nq 2025-11, nq 2025-12, zc 2025-01, zc 2025-08, zc 2025-09, zc 2025-10, zc 2025-11, zc 2025-12, zs 2025-01, zs 2025-08, zs 2025-09, zs 2025-10, zs 2025-11, zs 2025-12
+
+
+PER INSTRUMENT-MONTH, TRADE CLASSES ONLY (max strict / max equal)
+side         inst month       strict  equal   d10_strict d10_equal
+corrected    cl   2025-01      21770      0        53249      2194
+corrected    cl   2025-08       9048      0        27852      1427
+corrected    cl   2025-09      10803      1        34010      1388
+corrected    cl   2025-10      15002      3        42377      1893
+corrected    cl   2025-11      15345      0        48607      1680
+corrected    cl   2025-12      10837      2        38945      1985
+corrected    es   2025-01          0      0            0         4
+corrected    es   2025-08          0      0            0         6
+corrected    es   2025-09          0      0            0         5
+corrected    es   2025-10          0      1            0         4
+corrected    es   2025-11          0      1            0         3
+corrected    es   2025-12          0      0            0         6
+corrected    gc   2025-01      13907      3        37065      1853
+corrected    gc   2025-08      16051      0        42886      1907
+corrected    gc   2025-09      25862      0        59691      2053
+corrected    gc   2025-10      37913      0        71584      2588
+corrected    gc   2025-11      12764      1        30577      1686
+corrected    gc   2025-12      20195      0        49649      1793
+corrected    he   2025-01          0      0            0         1
+corrected    he   2025-08          0      0            0        15
+corrected    he   2025-09          0      0            0        14
+corrected    he   2025-10          0      0            0        17
+corrected    he   2025-11          0      0            0         0
+corrected    he   2025-12          0      0            0         1
+corrected    le   2025-01          0      0            0         1
+corrected    le   2025-08          0      0            0        13
+corrected    le   2025-09          0      0            0        15
+corrected    le   2025-10          0      0            0        14
+corrected    le   2025-11          0      0            0         0
+corrected    le   2025-12          0      0            0         1
+corrected    nq   2025-01          0      0            0         0
+corrected    nq   2025-08          0      0            0         0
+corrected    nq   2025-09          0      0            0         0
+corrected    nq   2025-10          0      0            0         0
+corrected    nq   2025-11          0      0            0         0
+corrected    nq   2025-12          0      0            0         0
+corrected    zc   2025-01          0      0            0         0
+corrected    zc   2025-08      23755      3        90868      2857
+corrected    zc   2025-09      30617      1       111334      2640
+corrected    zc   2025-10      34492      2       109332      2873
+corrected    zc   2025-11          0      0            0         0
+corrected    zc   2025-12          0      0            0         1
+corrected    zs   2025-01          0      0            0         0
+corrected    zs   2025-08      17717      2        64404      2161
+corrected    zs   2025-09      10382      0        45255      2281
+corrected    zs   2025-10      16397      0        60559      2353
+corrected    zs   2025-11          0      0            0         0
+corrected    zs   2025-12          0      0            0         0
+contaminated cl   2025-01     232865      0       534779      3205
+contaminated cl   2025-08     142974      0       406797      2469
+contaminated cl   2025-09     132950      4       414893      2277
+contaminated cl   2025-10     190595      3       493760      2981
+contaminated cl   2025-11     158683      0       497360      2466
+contaminated cl   2025-12     126520      2       454867      2740
+contaminated es   2025-01     514323      1       585940       248
+contaminated es   2025-08     424624      0       524929       290
+contaminated es   2025-09     420017      0       532496       188
+contaminated es   2025-10     490161      1       576377       275
+contaminated es   2025-11     484420      1       542495        51
+contaminated es   2025-12     499061      0       613447         7
+contaminated gc   2025-01     210374     35       523228      2713
+contaminated gc   2025-08     204014      0       461530      2865
+contaminated gc   2025-09     252461      0       515322      3369
+contaminated gc   2025-10     371565      1       646575      3732
+contaminated gc   2025-11     213333     16       470500      2670
+contaminated gc   2025-12     264176      0       604763      2890
+contaminated he   2025-01      39596      0       132122         2
+contaminated he   2025-08      29188      0       100848        21
+contaminated he   2025-09      27044      0        88859        21
+contaminated he   2025-10      30132      1       106120        23
+contaminated he   2025-11      35084      0       108223         1
+contaminated he   2025-12      36867      0       127766         1
+contaminated le   2025-01      44691      0       140720         4
+contaminated le   2025-08      43707      1       119867        21
+contaminated le   2025-09      42140      1       126122        21
+contaminated le   2025-10      47045      1       125589        23
+contaminated le   2025-11      26854      0        77483         1
+contaminated le   2025-12      31871      0        90032         1
+contaminated nq   2025-01     543341      0       543341         0
+contaminated nq   2025-08     470095      0       470095         0
+contaminated nq   2025-09     455826      0       455826         0
+contaminated nq   2025-10     524165      0       524165         0
+contaminated nq   2025-11     494380      0       494380         0
+contaminated nq   2025-12     525629      0       525629         0
+contaminated zc   2025-01      89568     20       254315        29
+contaminated zc   2025-08      92136      3       314170      3210
+contaminated zc   2025-09     109981      1       344076      2771
+contaminated zc   2025-10     117267      2       342560      3327
+contaminated zc   2025-11      57662     14       163822        20
+contaminated zc   2025-12      76969     20       222940        23
+contaminated zs   2025-01      78300     16       210254        29
+contaminated zs   2025-08      88011      3       296502      2725
+contaminated zs   2025-09      72942      0       268482      2462
+contaminated zs   2025-10      91965      0       296861      2949
+contaminated zs   2025-11      62578     14       185931        20
+contaminated zs   2025-12      60796     19       222557        23
+
+
+WHICH TRADE CLASS CARRIES A NON-ZERO, per side
+  corrected: trades_all|equal=11, trades_all|strict=18, trades_large|equal=1, trades_large|strict=18, trades_sell|equal=11, trades_sell|strict=18
+  contaminated: trades_all|equal=23, trades_all|strict=48, trades_large|equal=8, trades_large|strict=48, trades_sell|equal=23, trades_sell|strict=48

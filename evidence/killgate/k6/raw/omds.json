@@ -1,0 +1,431 @@
+[
+{
+  "tool": "OMDS",
+  "version": "0.1.0",
+  "case": "C1",
+  "side": "clean",
+  "status": "ran",
+  "config": {
+    "entry": "omds-guardrails check --files",
+    "note": "cases emitted as function-wrapped source; OMDS rules are intra-function only"
+  },
+  "payload": {
+    "violations": [
+      {
+        "axiom": "ax:fit_on_train_only",
+        "severity": "warn",
+        "file": "C1_clean.py",
+        "line": 19,
+        "message": "C1_clean.py:19: fit() call with no visible train_test_split in this function - cannot statically prove whether it runs before or after a split",
+        "needs_runtime_proof": true
+      }
+    ],
+    "summary": {
+      "certain": 0,
+      "warn": 1
+    }
+  }
+}
+,
+{
+  "tool": "OMDS",
+  "version": "0.1.0",
+  "case": "C1",
+  "side": "contaminated",
+  "status": "ran",
+  "config": {
+    "entry": "omds-guardrails check --files",
+    "note": "cases emitted as function-wrapped source; OMDS rules are intra-function only"
+  },
+  "payload": {
+    "violations": [
+      {
+        "axiom": "ax:fit_on_train_only",
+        "severity": "warn",
+        "file": "C1_contaminated.py",
+        "line": 19,
+        "message": "C1_contaminated.py:19: fit() call with no visible train_test_split in this function - cannot statically prove whether it runs before or after a split",
+        "needs_runtime_proof": true
+      }
+    ],
+    "summary": {
+      "certain": 0,
+      "warn": 1
+    }
+  }
+}
+,
+{
+  "tool": "OMDS",
+  "version": "0.1.0",
+  "case": "C2",
+  "side": "clean",
+  "status": "ran",
+  "config": {
+    "entry": "omds-guardrails check --files",
+    "note": "cases emitted as function-wrapped source; OMDS rules are intra-function only"
+  },
+  "payload": {
+    "violations": [],
+    "summary": {
+      "certain": 0,
+      "warn": 0
+    }
+  }
+}
+,
+{
+  "tool": "OMDS",
+  "version": "0.1.0",
+  "case": "C2",
+  "side": "contaminated",
+  "status": "ran",
+  "config": {
+    "entry": "omds-guardrails check --files",
+    "note": "cases emitted as function-wrapped source; OMDS rules are intra-function only"
+  },
+  "payload": {
+    "violations": [
+      {
+        "axiom": "ax:fit_on_train_only",
+        "severity": "certain",
+        "file": "C2_contaminated.py",
+        "line": 16,
+        "message": "C2_contaminated.py:16: scaler/encoder fit on full data before split - fit_transform() argument 'X' is also the full dataset passed to train_test_split in this function",
+        "needs_runtime_proof": false
+      }
+    ],
+    "summary": {
+      "certain": 1,
+      "warn": 0
+    }
+  }
+}
+,
+{
+  "tool": "OMDS",
+  "version": "0.1.0",
+  "case": "C3",
+  "side": "clean",
+  "status": "ran",
+  "config": {
+    "entry": "omds-guardrails check --files",
+    "note": "cases emitted as function-wrapped source; OMDS rules are intra-function only"
+  },
+  "payload": {
+    "violations": [],
+    "summary": {
+      "certain": 0,
+      "warn": 0
+    }
+  }
+}
+,
+{
+  "tool": "OMDS",
+  "version": "0.1.0",
+  "case": "C3",
+  "side": "contaminated",
+  "status": "ran",
+  "config": {
+    "entry": "omds-guardrails check --files",
+    "note": "cases emitted as function-wrapped source; OMDS rules are intra-function only"
+  },
+  "payload": {
+    "violations": [
+      {
+        "axiom": "ax:fit_on_train_only",
+        "severity": "certain",
+        "file": "C3_contaminated.py",
+        "line": 16,
+        "message": "C3_contaminated.py:16: scaler/encoder fit on full data before split - fit_transform() argument 'X' is also the full dataset passed to train_test_split in this function",
+        "needs_runtime_proof": false
+      }
+    ],
+    "summary": {
+      "certain": 1,
+      "warn": 0
+    }
+  }
+}
+,
+{
+  "tool": "OMDS",
+  "version": "0.1.0",
+  "case": "C4",
+  "side": "clean",
+  "status": "ran",
+  "config": {
+    "entry": "omds-guardrails check --files",
+    "note": "cases emitted as function-wrapped source; OMDS rules are intra-function only"
+  },
+  "payload": {
+    "violations": [
+      {
+        "axiom": "ax:fit_on_train_only",
+        "severity": "warn",
+        "file": "C4_clean.py",
+        "line": 19,
+        "message": "C4_clean.py:19: fit() call with no visible train_test_split in this function - cannot statically prove whether it runs before or after a split",
+        "needs_runtime_proof": true
+      }
+    ],
+    "summary": {
+      "certain": 0,
+      "warn": 1
+    }
+  }
+}
+,
+{
+  "tool": "OMDS",
+  "version": "0.1.0",
+  "case": "C4",
+  "side": "contaminated",
+  "status": "ran",
+  "config": {
+    "entry": "omds-guardrails check --files",
+    "note": "cases emitted as function-wrapped source; OMDS rules are intra-function only"
+  },
+  "payload": {
+    "violations": [
+      {
+        "axiom": "ax:fit_on_train_only",
+        "severity": "warn",
+        "file": "C4_contaminated.py",
+        "line": 19,
+        "message": "C4_contaminated.py:19: fit() call with no visible train_test_split in this function - cannot statically prove whether it runs before or after a split",
+        "needs_runtime_proof": true
+      }
+    ],
+    "summary": {
+      "certain": 0,
+      "warn": 1
+    }
+  }
+}
+,
+{
+  "tool": "OMDS",
+  "version": "0.1.0",
+  "case": "C5",
+  "side": "clean",
+  "status": "ran",
+  "config": {
+    "entry": "omds-guardrails check --files",
+    "note": "cases emitted as function-wrapped source; OMDS rules are intra-function only"
+  },
+  "payload": {
+    "violations": [
+      {
+        "axiom": "ax:fit_on_train_only",
+        "severity": "warn",
+        "file": "C5_clean.py",
+        "line": 19,
+        "message": "C5_clean.py:19: fit() call with no visible train_test_split in this function - cannot statically prove whether it runs before or after a split",
+        "needs_runtime_proof": true
+      }
+    ],
+    "summary": {
+      "certain": 0,
+      "warn": 1
+    }
+  }
+}
+,
+{
+  "tool": "OMDS",
+  "version": "0.1.0",
+  "case": "C5",
+  "side": "contaminated",
+  "status": "ran",
+  "config": {
+    "entry": "omds-guardrails check --files",
+    "note": "cases emitted as function-wrapped source; OMDS rules are intra-function only"
+  },
+  "payload": {
+    "violations": [
+      {
+        "axiom": "ax:fit_on_train_only",
+        "severity": "warn",
+        "file": "C5_contaminated.py",
+        "line": 19,
+        "message": "C5_contaminated.py:19: fit() call with no visible train_test_split in this function - cannot statically prove whether it runs before or after a split",
+        "needs_runtime_proof": true
+      }
+    ],
+    "summary": {
+      "certain": 0,
+      "warn": 1
+    }
+  }
+}
+,
+{
+  "tool": "OMDS",
+  "version": "0.1.0",
+  "case": "C6",
+  "side": "clean",
+  "status": "ran",
+  "config": {
+    "entry": "omds-guardrails check --files",
+    "note": "cases emitted as function-wrapped source; OMDS rules are intra-function only"
+  },
+  "payload": {
+    "violations": [
+      {
+        "axiom": "ax:fit_on_train_only",
+        "severity": "warn",
+        "file": "C6_clean.py",
+        "line": 21,
+        "message": "C6_clean.py:21: fit() call with no visible train_test_split in this function - cannot statically prove whether it runs before or after a split",
+        "needs_runtime_proof": true
+      }
+    ],
+    "summary": {
+      "certain": 0,
+      "warn": 1
+    }
+  }
+}
+,
+{
+  "tool": "OMDS",
+  "version": "0.1.0",
+  "case": "C6",
+  "side": "contaminated",
+  "status": "ran",
+  "config": {
+    "entry": "omds-guardrails check --files",
+    "note": "cases emitted as function-wrapped source; OMDS rules are intra-function only"
+  },
+  "payload": {
+    "violations": [
+      {
+        "axiom": "ax:fit_on_train_only",
+        "severity": "warn",
+        "file": "C6_contaminated.py",
+        "line": 21,
+        "message": "C6_contaminated.py:21: fit() call with no visible train_test_split in this function - cannot statically prove whether it runs before or after a split",
+        "needs_runtime_proof": true
+      }
+    ],
+    "summary": {
+      "certain": 0,
+      "warn": 1
+    }
+  }
+}
+,
+{
+  "tool": "OMDS",
+  "version": "0.1.0",
+  "case": "C7",
+  "side": "clean",
+  "status": "ran",
+  "config": {
+    "entry": "omds-guardrails check --files",
+    "note": "cases emitted as function-wrapped source; OMDS rules are intra-function only"
+  },
+  "payload": {
+    "violations": [
+      {
+        "axiom": "ax:fit_on_train_only",
+        "severity": "warn",
+        "file": "C7_clean.py",
+        "line": 20,
+        "message": "C7_clean.py:20: fit() call with no visible train_test_split in this function - cannot statically prove whether it runs before or after a split",
+        "needs_runtime_proof": true
+      }
+    ],
+    "summary": {
+      "certain": 0,
+      "warn": 1
+    }
+  }
+}
+,
+{
+  "tool": "OMDS",
+  "version": "0.1.0",
+  "case": "C7",
+  "side": "contaminated",
+  "status": "ran",
+  "config": {
+    "entry": "omds-guardrails check --files",
+    "note": "cases emitted as function-wrapped source; OMDS rules are intra-function only"
+  },
+  "payload": {
+    "violations": [
+      {
+        "axiom": "ax:fit_on_train_only",
+        "severity": "warn",
+        "file": "C7_contaminated.py",
+        "line": 20,
+        "message": "C7_contaminated.py:20: fit() call with no visible train_test_split in this function - cannot statically prove whether it runs before or after a split",
+        "needs_runtime_proof": true
+      }
+    ],
+    "summary": {
+      "certain": 0,
+      "warn": 1
+    }
+  }
+}
+,
+{
+  "tool": "OMDS",
+  "version": "0.1.0",
+  "case": "C8",
+  "side": "clean",
+  "status": "ran",
+  "config": {
+    "entry": "omds-guardrails check --files",
+    "note": "cases emitted as function-wrapped source; OMDS rules are intra-function only"
+  },
+  "payload": {
+    "violations": [
+      {
+        "axiom": "ax:fit_on_train_only",
+        "severity": "warn",
+        "file": "C8_clean.py",
+        "line": 17,
+        "message": "C8_clean.py:17: fit() call with no visible train_test_split in this function - cannot statically prove whether it runs before or after a split",
+        "needs_runtime_proof": true
+      }
+    ],
+    "summary": {
+      "certain": 0,
+      "warn": 1
+    }
+  }
+}
+,
+{
+  "tool": "OMDS",
+  "version": "0.1.0",
+  "case": "C8",
+  "side": "contaminated",
+  "status": "ran",
+  "config": {
+    "entry": "omds-guardrails check --files",
+    "note": "cases emitted as function-wrapped source; OMDS rules are intra-function only"
+  },
+  "payload": {
+    "violations": [
+      {
+        "axiom": "ax:fit_on_train_only",
+        "severity": "warn",
+        "file": "C8_contaminated.py",
+        "line": 18,
+        "message": "C8_contaminated.py:18: fit() call with no visible train_test_split in this function - cannot statically prove whether it runs before or after a split",
+        "needs_runtime_proof": true
+      }
+    ],
+    "summary": {
+      "certain": 0,
+      "warn": 1
+    }
+  }
+}
+]

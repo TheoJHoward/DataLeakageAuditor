@@ -1,0 +1,8 @@
+decl bytes 274475 sha256 456f5568cb73bf6fc1328e19abe1a91c0dc5e9ee8529ba95117ad32293be368a
+decl newline counts: CRLF 0 LF 3650 CR 0
+new bytes 8043 sha256 6f77bcbbcabe626f3306a13e3b0110aecc5b2642b64190dfb0b082279b2666e1
+new newline counts: CRLF 88 LF 88 CR 88
+raw containment count: 0
+raw find idx: -1
+normalized containment count: 1 idx 75152
+heading occurrences: 1

@@ -1,0 +1,58 @@
+K6 VERSION AND CONFIGURATION RECORD -- PREREG.md 9.2 item 2
+Captured 2026-08-14 before results were read. OS: Windows 11 Home 10.0.26200
+R/Rscript: NOT INSTALLED   Docker: NOT INSTALLED   WSL: NOT INSTALLED   souffle: NOT INSTALLED
+
+### venv general
+  python 3.12.10
+  leakage-buster==1.0.2
+  leakfence==0.5.0
+  Leakly==0.1.2
+  numpy==1.26.4
+  pandas==2.3.3
+  scikit-learn==1.6.1
+  scipy==1.15.3
+  setuptools==84.0.0
+  statsmodels==0.14.6
+  temporalcv==2.3.0
+
+### venv ld
+  python 3.12.10
+  leak-detect==0.0.1
+  numpy==1.26.4
+  pandas==2.2.3
+  scikit-learn==1.9.0
+  scipy==1.18.0
+  setuptools==84.0.0
+
+### venv dc
+  python 3.12.10
+  category-encoders==2.6.3
+  deepchecks==0.19.1
+  numpy==1.26.4
+  pandas==2.2.3
+  scikit-learn==1.5.2
+  scipy==1.17.1
+  setuptools==80.10.2
+  statsmodels==0.14.6
+
+### venv omds
+  python 3.12.10
+  numpy==2.5.2
+  pandas==3.0.5
+  scikit-learn==1.9.0
+  scipy==1.18.0
+  setuptools==84.0.0
+
+### venv lav
+  python 3.12.10
+  astunparse==1.6.3
+  numpy==2.5.2
+  pandas==3.0.5
+  scikit-learn==1.9.0
+  scipy==1.18.0
+  setuptools==84.0.0
+
+### leakage-analysis checkout
+  commit a7d038bfec6b8ddbe21d87dde54b806aecdd79f7 (2023-05-02 17:13:44 -0400)
+  submodule  e3d7d9c44ac69fa6bc66bb8a47377fcec034e503 pyright (1.1.232-20-ge3d7d9c4)
+omds==0.1.0 (git+https://github.com/spkc83/omds.git#subdirectory=python/omds)

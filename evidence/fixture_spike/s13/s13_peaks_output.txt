@@ -1,0 +1,12 @@
+es 2025-12 rows=620108 | full-class max 613447 (98.93%) classes=mbo_all | trade max 499061 (80.48%) classes=trades_all,trades_sell | nclasses=10
+gc 2025-10 rows=772448 | full-class max 646575 (83.70%) classes=mbo_all | trade max 371565 (48.10%) classes=trades_all,trades_sell | nclasses=10
+nq 2025-01 rows=598228 | full-class max 543341 (90.83%) classes=trades_all,trades_sell | trade max 543341 (90.83%) classes=trades_all,trades_sell | nclasses=4
+es 2025-11 rows=549424 | full-class max 542495 (98.74%) classes=mbo_all | trade max 484420 (88.17%) classes=trades_all,trades_sell | nclasses=10
+es 2025-01 rows=605290 | full-class max 585940 (96.80%) classes=mbo_all | trade max 514323 (84.97%) classes=trades_all,trades_sell | nclasses=10
+zc 2025-01 rows=338159 | full-class max 254315 (75.21%) classes=mbo_all | trade max 89568 (26.49%) classes=trades_all,trades_sell | nclasses=10
+
+per-trade-class strict-positive counts over the 48 contaminated cells:
+  trades_all    scored cells 48  strict>0 48  equal>0 23
+  trades_buy    scored cells 48  strict>0  0  equal>0  0
+  trades_large  scored cells 48  strict>0 48  equal>0  8
+  trades_sell   scored cells 48  strict>0 48  equal>0 23

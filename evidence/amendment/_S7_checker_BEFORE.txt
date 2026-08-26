@@ -1,0 +1,61 @@
+== check_registration --stage prereg (root: .) ==
+[PASS] structure
+[PASS] config_schema
+[PASS] lock_table
+[PASS] banned_vocabulary
+    note: PREREG.md:495: EXEMPTION APPLIED id=REG15 reason='the registry entry must name the parked mechanism to state what a user does not get'
+    note: PREREG.md:1415: EXEMPTION APPLIED id=PARK9 reason='the parking-lot pointer must name the parked mechanism to state what an amendment would restore'
+[PASS] deletion_certificate
+[FAIL] single_source
+    AVAILABILITY_DECLARATION.md:974: rule about what may be reported/published stated outside PREREG.md; what a published number means is owned by PREREG §7.2/§8.3/§10.2: 'and a slice may not be reported as a pass on the strength of containing only unscored cells.'
+    AVAILABILITY_DECLARATION.md:1035: denominator constitution defined outside PREREG.md; owned by PREREG §7.2/§7.4: 'by column. **The denominator derives from the DECLARED MAP (`n1\\declared_map.csv`), not from'
+    AVAILABILITY_DECLARATION.md:1239: denominator membership stated outside PREREG.md; owned by PREREG §7.2/§7.4/§7.7: 'Requires no finding and forbids none; enters no denominator, contributes to no rate, and'
+    AVAILABILITY_DECLARATION.md:1557: a defining clause for a term used normatively by PREREG.md is opened here; what a term means is owned by PREREG.md (§0.2.1): '**DEFINITION, declared.**'
+    AVAILABILITY_DECLARATION.md:1562: denominator membership stated outside PREREG.md; owned by PREREG §7.2/§7.4/§7.7: "> **(i)** it is excluded from the criterion's denominator; **(ii)** it is in the denominator but"
+    AVAILABILITY_DECLARATION.md:1591: denominator membership stated outside PREREG.md; owned by PREREG §7.2/§7.4/§7.7: 'path, entering no denominator, contributing to no rate, and **never reported as a pass**'
+    AVAILABILITY_DECLARATION.md:1591: rule about what may be reported/published stated outside PREREG.md; what a published number means is owned by PREREG §7.2/§8.3/§10.2: 'path, entering no denominator, contributing to no rate, and **never reported as a pass**'
+    AVAILABILITY_DECLARATION.md:2224: denominator membership stated outside PREREG.md; owned by PREREG §7.2/§7.4/§7.7: 'enters no denominator, contributes to no rate, and **cannot be reported as a pass**. A gate'
+    AVAILABILITY_DECLARATION.md:2723: denominator membership stated outside PREREG.md; owned by PREREG §7.2/§7.4/§7.7: 'either side. Its gate status is **EXCLUDED**, and it enters no denominator.'
+    AVAILABILITY_DECLARATION.md:2765: denominator membership stated outside PREREG.md; owned by PREREG §7.2/§7.4/§7.7: '**None of the four categories enters the criterion-1 denominator except Category 4**, which is'
+    AVAILABILITY_DECLARATION.md:3688: denominator constitution defined outside PREREG.md; owned by PREREG §7.2/§7.4: "- **R11.** Criterion-1 denominator derives from the DECLARED MAP, not from the manifest's construction classes"
+    CI_GATE_RESULT.md:199: rule about what may be reported/published stated outside PREREG.md; what a published number means is owned by PREREG §7.2/§8.3/§10.2: 'AVAILABILITY_DECLARATION.md:974: rule about what may be reported/published stated outside PREREG.md; what a pu'
+    CI_GATE_RESULT.md:200: denominator constitution defined outside PREREG.md; owned by PREREG §7.2/§7.4: 'AVAILABILITY_DECLARATION.md:1035: denominator constitution defined outside PREREG.md; owned by PREREG §7.2/§7.'
+    CI_GATE_RESULT.md:201: state-classification rule stated as a biconditional; a rule for assigning a state is owned by PREREG §6.6/§7.0, not by a companion document: 'AVAILABILITY_DECLARATION.md:1052: state-classification rule stated as a biconditional; a rule for assigning a '
+    CI_GATE_RESULT.md:202: state-classification rule stated as a biconditional; a rule for assigning a state is owned by PREREG §6.6/§7.0, not by a companion document: 'AVAILABILITY_DECLARATION.md:1054: state-classification rule stated as a biconditional; a rule for assigning a '
+    CI_GATE_RESULT.md:203: state-classification rule stated as a biconditional; a rule for assigning a state is owned by PREREG §6.6/§7.0, not by a companion document: 'AVAILABILITY_DECLARATION.md:1056: state-classification rule stated as a biconditional; a rule for assigning a '
+    CI_GATE_RESULT.md:204: denominator membership stated outside PREREG.md; owned by PREREG §7.2/§7.4/§7.7: 'AVAILABILITY_DECLARATION.md:1228: denominator membership stated outside PREREG.md; owned by PREREG §7.2/§7.4/§'
+    CI_GATE_RESULT.md:206: denominator membership stated outside PREREG.md; owned by PREREG §7.2/§7.4/§7.7: 'AVAILABILITY_DECLARATION.md:1551: denominator membership stated outside PREREG.md; owned by PREREG §7.2/§7.4/§'
+    CI_GATE_RESULT.md:207: denominator membership stated outside PREREG.md; owned by PREREG §7.2/§7.4/§7.7: 'AVAILABILITY_DECLARATION.md:1580: denominator membership stated outside PREREG.md; owned by PREREG §7.2/§7.4/§'
+    CI_GATE_RESULT.md:207: rule about what may be reported/published stated outside PREREG.md; what a published number means is owned by PREREG §7.2/§8.3/§10.2: 'AVAILABILITY_DECLARATION.md:1580: denominator membership stated outside PREREG.md; owned by PREREG §7.2/§7.4/§'
+    CI_GATE_RESULT.md:208: denominator membership stated outside PREREG.md; owned by PREREG §7.2/§7.4/§7.7: 'AVAILABILITY_DECLARATION.md:1580: rule about what may be reported/published stated outside PREREG.md; what a p'
+    CI_GATE_RESULT.md:208: rule about what may be reported/published stated outside PREREG.md; what a published number means is owned by PREREG §7.2/§8.3/§10.2: 'AVAILABILITY_DECLARATION.md:1580: rule about what may be reported/published stated outside PREREG.md; what a p'
+    CI_GATE_RESULT.md:209: denominator membership stated outside PREREG.md; owned by PREREG §7.2/§7.4/§7.7: 'AVAILABILITY_DECLARATION.md:2213: denominator membership stated outside PREREG.md; owned by PREREG §7.2/§7.4/§'
+    CI_GATE_RESULT.md:210: denominator membership stated outside PREREG.md; owned by PREREG §7.2/§7.4/§7.7: 'AVAILABILITY_DECLARATION.md:2712: denominator membership stated outside PREREG.md; owned by PREREG §7.2/§7.4/§'
+    CI_GATE_RESULT.md:211: denominator membership stated outside PREREG.md; owned by PREREG §7.2/§7.4/§7.7: 'AVAILABILITY_DECLARATION.md:2754: denominator membership stated outside PREREG.md; owned by PREREG §7.2/§7.4/§'
+    CI_GATE_RESULT.md:212: denominator constitution defined outside PREREG.md; owned by PREREG §7.2/§7.4: 'AVAILABILITY_DECLARATION.md:3677: denominator constitution defined outside PREREG.md; owned by PREREG §7.2/§7.'
+    CI_GATE_RESULT.md:243: rule about what may be reported/published stated outside PREREG.md; what a published number means is owned by PREREG §7.2/§8.3/§10.2: '| 1 | 974 (§A.4) | reported/published rule | **Expected — pre-existing, unscrubbed declaration (K4 not landed)'
+    CI_GATE_RESULT.md:245: state-classification rule stated as a biconditional; a rule for assigning a state is owned by PREREG §6.6/§7.0, not by a companion document: '| 3–5 | 1052 / 1054 / 1056 (§A.6.0) | biconditional class rule | Expected — pre-existing, **but flagged: not c'
+    CI_GATE_RESULT.md:246: denominator membership stated outside PREREG.md; owned by PREREG §7.2/§7.4/§7.7: '| 6 | 1228 | denominator membership | Expected — pre-existing | Restates SC-3(b)/SC-6(a) text ("requires no fi'
+    CI_GATE_RESULT.md:247: a defining clause for a term used normatively by PREREG.md is opened here; what a term means is owned by PREREG.md (§0.2.1): '| 7 | 1546 (§A.12) | defining clause | Expected — pre-existing | `**DEFINITION, declared.**` opens the "waived'
+    CI_GATE_RESULT.md:251: denominator membership stated outside PREREG.md; owned by PREREG §7.2/§7.4/§7.7: '| 12 | 2712 | denominator membership | Expected — pre-existing | Instance statement about one column ("gate st'
+    CI_GATE_RESULT.md:252: denominator membership stated outside PREREG.md; owned by PREREG §7.2/§7.4/§7.7: '| 13 | 2754 | denominator membership | Expected — pre-existing | Instance accounting ("none of the four catego'
+    CI_GATE_RESULT.md:323: rule about what may be reported/published stated outside PREREG.md; what a published number means is owned by PREREG §7.2/§8.3/§10.2: '| 974 | §A.4 | H4 ("a slice may not be reported as a pass …") | 24 lines | **yes (#1)** |'
+[PASS] phase_arithmetic
+[PASS] requirement_ids
+[PASS] legality_table
+[PASS] parking_lot
+[PASS] reducer_functions
+[PASS] unit_grammar
+[PASS] suppression_anchor
+
+Deferred at this stage (owned elsewhere; an omitted branch is a failure, not a pass):
+    ties_comparator_vs_shipped_mask  -> owned by --stage implementation
+    l31b_inequalities_vs_shipped_rule  -> owned by --stage implementation
+    shipping_defaults_vs_validated_runtime  -> owned by --stage implementation
+    deleted_config_fields_rejected  -> owned by --stage implementation
+    cost_script_total  -> owned by --stage implementation
+    readme_numbers_regenerated  -> owned by --stage release
+    package_defaults  -> owned by --stage release
+    installability  -> owned by --stage release
+
+RESULT: FAIL — 1 check(s) failed, 33 finding(s)

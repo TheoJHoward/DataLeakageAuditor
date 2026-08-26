@@ -1,0 +1,1256 @@
+C1 (c) all-writers survey: aggressor_side / is_buy_aggressor
+run_utc: 2026-08-12T00:12:55.741793+00:00
+archive root (read-only): C:\Users\ttbea\OneDrive\Desktop\MBO_2025
+columns surveyed: aggressor_side, is_buy_aggressor
+scope: every *.py under the archive root, recursive
+
+writer classification patterns:
+  subscript-assign                   \[\s*["'](?:aggressor_side|is_buy_aggressor)["']\s*\]\s*(?:\+|-|\*|/|\|)?=(?!=)
+  loc/iloc-assign                    \.(?:loc|iloc|at|iat)\s*\[[^\]]*["'](?:aggressor_side|is_buy_aggressor)["'][^\]]*\]\s*=(?!=)
+  kwarg-assign(assign/agg/NamedAgg)  (?<![\w."'])(?:aggressor_side|is_buy_aggressor)\s*=(?!=)
+  dict-literal-key                   ["'](?:aggressor_side|is_buy_aggressor)["']\s*:
+  rename-target                      rename\s*\(.*["'](?:aggressor_side|is_buy_aggressor)["']
+  schema/field-decl                  (?:pa\.field|pd\.Series|astype)\s*\(\s*["']?(?:aggressor_side|is_buy_aggressor)
+  (a line starting with '#' is classified COMMENT even if it matches)
+
+total *.py scanned: 460
+files with >=1 mention: 119
+total mention lines: 472
+total WRITER lines: 152
+
+==============================================================================
+SECTION 1 - WRITER LINES ONLY (verbatim, grouped by file)
+==============================================================================
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\PC2_TRANSFER_v4\scripts\pipeline\flow_tagger.py
+  L102   [subscript-assign]
+            trades["aggressor_side"] = trades["side"].map(
+  L105   [subscript-assign]
+            trades["is_buy_aggressor"] = trades["side"] == "B"
+  L132   [loc/iloc-assign]
+                        trades.at[ix, "aggressor_side"] = "BUY_AGGRESSOR"
+  L133   [loc/iloc-assign]
+                        trades.at[ix, "is_buy_aggressor"] = True
+  L135   [loc/iloc-assign]
+                        trades.at[ix, "aggressor_side"] = "SELL_AGGRESSOR"
+  L136   [loc/iloc-assign]
+                        trades.at[ix, "is_buy_aggressor"] = False
+  L138   [loc/iloc-assign]
+                        trades.at[ix, "aggressor_side"] = "UNKNOWN"
+  L139   [loc/iloc-assign]
+                        trades.at[ix, "is_buy_aggressor"] = False
+  L144   [loc/iloc-assign]
+                trades.loc[still_na, "aggressor_side"] = "UNKNOWN"
+  L145   [loc/iloc-assign]
+                trades.loc[still_na, "is_buy_aggressor"] = False
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\PC2_TRANSFER_v4\scripts\pipeline\process_gapfill.py
+  L88    [subscript-assign]
+            trades["aggressor_side"] = trades["side"].map(
+  L91    [subscript-assign]
+            trades["is_buy_aggressor"] = trades["side"] == "B"
+  L94    [loc/iloc-assign]
+                trades.loc[still_na, "aggressor_side"] = "UNKNOWN"
+  L95    [loc/iloc-assign]
+                trades.loc[still_na, "is_buy_aggressor"] = False
+  L470   [subscript-assign]
+            trades_df["aggressor_side"] = trades_df["side"].map(
+  L473   [subscript-assign]
+            trades_df["is_buy_aggressor"] = trades_df["side"] == "B"
+  L476   [loc/iloc-assign]
+                trades_df.loc[still_na, "aggressor_side"] = "UNKNOWN"
+  L477   [loc/iloc-assign]
+                trades_df.loc[still_na, "is_buy_aggressor"] = False
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\PC2_TRANSFER_v4\scripts\pipeline\process_gapfill_jan.py
+  L60    [subscript-assign]
+            trades["aggressor_side"] = trades["side"].map(
+  L63    [subscript-assign]
+            trades["is_buy_aggressor"] = trades["side"] == "B"
+  L66    [loc/iloc-assign]
+                trades.loc[still_na, "aggressor_side"] = "UNKNOWN"
+  L67    [loc/iloc-assign]
+                trades.loc[still_na, "is_buy_aggressor"] = False
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\PC2_TRANSFER_v4\scripts\pipeline\process_gc.py
+  L454   [subscript-assign]
+            trades_df["aggressor_side"] = trades_df["side"].map(
+  L457   [subscript-assign]
+            trades_df["is_buy_aggressor"] = trades_df["side"] == "B"
+  L460   [loc/iloc-assign]
+                trades_df.loc[still_na, "aggressor_side"] = "UNKNOWN"
+  L461   [loc/iloc-assign]
+                trades_df.loc[still_na, "is_buy_aggressor"] = False
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\PC2_TRANSFER_v4\scripts\pipeline\process_mbo.py
+  L549   [subscript-assign]
+            trades_df["aggressor_side"] = trades_df["side"].map(
+  L552   [subscript-assign]
+            trades_df["is_buy_aggressor"] = trades_df["side"] == "B"
+  L555   [loc/iloc-assign]
+                trades_df.loc[still_na, "aggressor_side"] = "UNKNOWN"
+  L556   [loc/iloc-assign]
+                trades_df.loc[still_na, "is_buy_aggressor"] = False
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\PC2_TRANSFER_v4\scripts\pipeline\process_zc.py
+  L92    [subscript-assign]
+            trades["aggressor_side"] = trades["side"].map(
+  L95    [subscript-assign]
+            trades["is_buy_aggressor"] = trades["side"] == "B"
+  L99    [loc/iloc-assign]
+                trades.loc[still_na, "aggressor_side"] = "UNKNOWN"
+  L100   [loc/iloc-assign]
+                trades.loc[still_na, "is_buy_aggressor"] = False
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\pc2_transfer\scripts\analysis\phase4_ml.py
+  L139   [dict-literal-key]
+                        if c == "aggressor_side":
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\pc2_transfer\scripts\phase4\phase4_ml.py
+  L140   [dict-literal-key]
+                        if c == "aggressor_side":
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\pc2_transfer\scripts\pipeline\flow_tagger.py
+  L79    [subscript-assign]
+            trades["aggressor_side"] = trades["side"].map(
+  L82    [subscript-assign]
+            trades["is_buy_aggressor"] = trades["side"] == "B"
+  L109   [loc/iloc-assign]
+                        trades.at[ix, "aggressor_side"] = "BUY_AGGRESSOR"
+  L110   [loc/iloc-assign]
+                        trades.at[ix, "is_buy_aggressor"] = True
+  L112   [loc/iloc-assign]
+                        trades.at[ix, "aggressor_side"] = "SELL_AGGRESSOR"
+  L113   [loc/iloc-assign]
+                        trades.at[ix, "is_buy_aggressor"] = False
+  L115   [loc/iloc-assign]
+                        trades.at[ix, "aggressor_side"] = "UNKNOWN"
+  L116   [loc/iloc-assign]
+                        trades.at[ix, "is_buy_aggressor"] = False
+  L121   [loc/iloc-assign]
+                trades.loc[still_na, "aggressor_side"] = "UNKNOWN"
+  L122   [loc/iloc-assign]
+                trades.loc[still_na, "is_buy_aggressor"] = False
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\pc2_transfer\scripts\pipeline\process_gapfill.py
+  L88    [subscript-assign]
+            trades["aggressor_side"] = trades["side"].map(
+  L91    [subscript-assign]
+            trades["is_buy_aggressor"] = trades["side"] == "B"
+  L94    [loc/iloc-assign]
+                trades.loc[still_na, "aggressor_side"] = "UNKNOWN"
+  L95    [loc/iloc-assign]
+                trades.loc[still_na, "is_buy_aggressor"] = False
+  L470   [subscript-assign]
+            trades_df["aggressor_side"] = trades_df["side"].map(
+  L473   [subscript-assign]
+            trades_df["is_buy_aggressor"] = trades_df["side"] == "B"
+  L476   [loc/iloc-assign]
+                trades_df.loc[still_na, "aggressor_side"] = "UNKNOWN"
+  L477   [loc/iloc-assign]
+                trades_df.loc[still_na, "is_buy_aggressor"] = False
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\pc2_transfer\scripts\pipeline\process_gapfill_jan.py
+  L60    [subscript-assign]
+            trades["aggressor_side"] = trades["side"].map(
+  L63    [subscript-assign]
+            trades["is_buy_aggressor"] = trades["side"] == "B"
+  L66    [loc/iloc-assign]
+                trades.loc[still_na, "aggressor_side"] = "UNKNOWN"
+  L67    [loc/iloc-assign]
+                trades.loc[still_na, "is_buy_aggressor"] = False
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\pc2_transfer\scripts\pipeline\process_gc.py
+  L454   [subscript-assign]
+            trades_df["aggressor_side"] = trades_df["side"].map(
+  L457   [subscript-assign]
+            trades_df["is_buy_aggressor"] = trades_df["side"] == "B"
+  L460   [loc/iloc-assign]
+                trades_df.loc[still_na, "aggressor_side"] = "UNKNOWN"
+  L461   [loc/iloc-assign]
+                trades_df.loc[still_na, "is_buy_aggressor"] = False
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\pc2_transfer\scripts\pipeline\process_mbo.py
+  L549   [subscript-assign]
+            trades_df["aggressor_side"] = trades_df["side"].map(
+  L552   [subscript-assign]
+            trades_df["is_buy_aggressor"] = trades_df["side"] == "B"
+  L555   [loc/iloc-assign]
+                trades_df.loc[still_na, "aggressor_side"] = "UNKNOWN"
+  L556   [loc/iloc-assign]
+                trades_df.loc[still_na, "is_buy_aggressor"] = False
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\pc2_transfer\scripts\pipeline\process_zc.py
+  L92    [subscript-assign]
+            trades["aggressor_side"] = trades["side"].map(
+  L95    [subscript-assign]
+            trades["is_buy_aggressor"] = trades["side"] == "B"
+  L99    [loc/iloc-assign]
+                trades.loc[still_na, "aggressor_side"] = "UNKNOWN"
+  L100   [loc/iloc-assign]
+                trades.loc[still_na, "is_buy_aggressor"] = False
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\results\pc2_all_phases\_scripts\scripts\analysis\phase4_ml.py
+  L139   [dict-literal-key]
+                        if c == "aggressor_side":
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\results\pc2_all_phases\_scripts\scripts\phase4\phase4_ml.py
+  L140   [dict-literal-key]
+                        if c == "aggressor_side":
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\results\pc2_all_phases\_scripts\scripts\pipeline\flow_tagger.py
+  L79    [subscript-assign]
+            trades["aggressor_side"] = trades["side"].map(
+  L82    [subscript-assign]
+            trades["is_buy_aggressor"] = trades["side"] == "B"
+  L109   [loc/iloc-assign]
+                        trades.at[ix, "aggressor_side"] = "BUY_AGGRESSOR"
+  L110   [loc/iloc-assign]
+                        trades.at[ix, "is_buy_aggressor"] = True
+  L112   [loc/iloc-assign]
+                        trades.at[ix, "aggressor_side"] = "SELL_AGGRESSOR"
+  L113   [loc/iloc-assign]
+                        trades.at[ix, "is_buy_aggressor"] = False
+  L115   [loc/iloc-assign]
+                        trades.at[ix, "aggressor_side"] = "UNKNOWN"
+  L116   [loc/iloc-assign]
+                        trades.at[ix, "is_buy_aggressor"] = False
+  L121   [loc/iloc-assign]
+                trades.loc[still_na, "aggressor_side"] = "UNKNOWN"
+  L122   [loc/iloc-assign]
+                trades.loc[still_na, "is_buy_aggressor"] = False
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\results\pc2_all_phases\_scripts\scripts\pipeline\process_gapfill.py
+  L88    [subscript-assign]
+            trades["aggressor_side"] = trades["side"].map(
+  L91    [subscript-assign]
+            trades["is_buy_aggressor"] = trades["side"] == "B"
+  L94    [loc/iloc-assign]
+                trades.loc[still_na, "aggressor_side"] = "UNKNOWN"
+  L95    [loc/iloc-assign]
+                trades.loc[still_na, "is_buy_aggressor"] = False
+  L470   [subscript-assign]
+            trades_df["aggressor_side"] = trades_df["side"].map(
+  L473   [subscript-assign]
+            trades_df["is_buy_aggressor"] = trades_df["side"] == "B"
+  L476   [loc/iloc-assign]
+                trades_df.loc[still_na, "aggressor_side"] = "UNKNOWN"
+  L477   [loc/iloc-assign]
+                trades_df.loc[still_na, "is_buy_aggressor"] = False
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\results\pc2_all_phases\_scripts\scripts\pipeline\process_gapfill_jan.py
+  L60    [subscript-assign]
+            trades["aggressor_side"] = trades["side"].map(
+  L63    [subscript-assign]
+            trades["is_buy_aggressor"] = trades["side"] == "B"
+  L66    [loc/iloc-assign]
+                trades.loc[still_na, "aggressor_side"] = "UNKNOWN"
+  L67    [loc/iloc-assign]
+                trades.loc[still_na, "is_buy_aggressor"] = False
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\results\pc2_all_phases\_scripts\scripts\pipeline\process_gc.py
+  L454   [subscript-assign]
+            trades_df["aggressor_side"] = trades_df["side"].map(
+  L457   [subscript-assign]
+            trades_df["is_buy_aggressor"] = trades_df["side"] == "B"
+  L460   [loc/iloc-assign]
+                trades_df.loc[still_na, "aggressor_side"] = "UNKNOWN"
+  L461   [loc/iloc-assign]
+                trades_df.loc[still_na, "is_buy_aggressor"] = False
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\results\pc2_all_phases\_scripts\scripts\pipeline\process_mbo.py
+  L549   [subscript-assign]
+            trades_df["aggressor_side"] = trades_df["side"].map(
+  L552   [subscript-assign]
+            trades_df["is_buy_aggressor"] = trades_df["side"] == "B"
+  L555   [loc/iloc-assign]
+                trades_df.loc[still_na, "aggressor_side"] = "UNKNOWN"
+  L556   [loc/iloc-assign]
+                trades_df.loc[still_na, "is_buy_aggressor"] = False
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\results\pc2_all_phases\_scripts\scripts\pipeline\process_zc.py
+  L92    [subscript-assign]
+            trades["aggressor_side"] = trades["side"].map(
+  L95    [subscript-assign]
+            trades["is_buy_aggressor"] = trades["side"] == "B"
+  L99    [loc/iloc-assign]
+                trades.loc[still_na, "aggressor_side"] = "UNKNOWN"
+  L100   [loc/iloc-assign]
+                trades.loc[still_na, "is_buy_aggressor"] = False
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\analysis\phase4_ml.py
+  L139   [dict-literal-key]
+                        if c == "aggressor_side":
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\phase4\phase4_ml.py
+  L140   [dict-literal-key]
+                        if c == "aggressor_side":
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\pipeline\flow_tagger.py
+  L102   [subscript-assign]
+            trades["aggressor_side"] = trades["side"].map(
+  L105   [subscript-assign]
+            trades["is_buy_aggressor"] = trades["side"] == "B"
+  L132   [loc/iloc-assign]
+                        trades.at[ix, "aggressor_side"] = "BUY_AGGRESSOR"
+  L133   [loc/iloc-assign]
+                        trades.at[ix, "is_buy_aggressor"] = True
+  L135   [loc/iloc-assign]
+                        trades.at[ix, "aggressor_side"] = "SELL_AGGRESSOR"
+  L136   [loc/iloc-assign]
+                        trades.at[ix, "is_buy_aggressor"] = False
+  L138   [loc/iloc-assign]
+                        trades.at[ix, "aggressor_side"] = "UNKNOWN"
+  L139   [loc/iloc-assign]
+                        trades.at[ix, "is_buy_aggressor"] = False
+  L144   [loc/iloc-assign]
+                trades.loc[still_na, "aggressor_side"] = "UNKNOWN"
+  L145   [loc/iloc-assign]
+                trades.loc[still_na, "is_buy_aggressor"] = False
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\pipeline\process_gapfill.py
+  L88    [subscript-assign]
+            trades["aggressor_side"] = trades["side"].map(
+  L91    [subscript-assign]
+            trades["is_buy_aggressor"] = trades["side"] == "B"
+  L94    [loc/iloc-assign]
+                trades.loc[still_na, "aggressor_side"] = "UNKNOWN"
+  L95    [loc/iloc-assign]
+                trades.loc[still_na, "is_buy_aggressor"] = False
+  L470   [subscript-assign]
+            trades_df["aggressor_side"] = trades_df["side"].map(
+  L473   [subscript-assign]
+            trades_df["is_buy_aggressor"] = trades_df["side"] == "B"
+  L476   [loc/iloc-assign]
+                trades_df.loc[still_na, "aggressor_side"] = "UNKNOWN"
+  L477   [loc/iloc-assign]
+                trades_df.loc[still_na, "is_buy_aggressor"] = False
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\pipeline\process_gapfill_jan.py
+  L60    [subscript-assign]
+            trades["aggressor_side"] = trades["side"].map(
+  L63    [subscript-assign]
+            trades["is_buy_aggressor"] = trades["side"] == "B"
+  L66    [loc/iloc-assign]
+                trades.loc[still_na, "aggressor_side"] = "UNKNOWN"
+  L67    [loc/iloc-assign]
+                trades.loc[still_na, "is_buy_aggressor"] = False
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\pipeline\process_gc.py
+  L454   [subscript-assign]
+            trades_df["aggressor_side"] = trades_df["side"].map(
+  L457   [subscript-assign]
+            trades_df["is_buy_aggressor"] = trades_df["side"] == "B"
+  L460   [loc/iloc-assign]
+                trades_df.loc[still_na, "aggressor_side"] = "UNKNOWN"
+  L461   [loc/iloc-assign]
+                trades_df.loc[still_na, "is_buy_aggressor"] = False
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\pipeline\process_mbo.py
+  L549   [subscript-assign]
+            trades_df["aggressor_side"] = trades_df["side"].map(
+  L552   [subscript-assign]
+            trades_df["is_buy_aggressor"] = trades_df["side"] == "B"
+  L555   [loc/iloc-assign]
+                trades_df.loc[still_na, "aggressor_side"] = "UNKNOWN"
+  L556   [loc/iloc-assign]
+                trades_df.loc[still_na, "is_buy_aggressor"] = False
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\pipeline\process_zc.py
+  L92    [subscript-assign]
+            trades["aggressor_side"] = trades["side"].map(
+  L95    [subscript-assign]
+            trades["is_buy_aggressor"] = trades["side"] == "B"
+  L99    [loc/iloc-assign]
+                trades.loc[still_na, "aggressor_side"] = "UNKNOWN"
+  L100   [loc/iloc-assign]
+                trades.loc[still_na, "is_buy_aggressor"] = False
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\v5\flow_tagger.py
+  L102   [subscript-assign]
+            trades["aggressor_side"] = trades["side"].map(
+  L105   [subscript-assign]
+            trades["is_buy_aggressor"] = trades["side"] == "B"
+  L132   [loc/iloc-assign]
+                        trades.at[ix, "aggressor_side"] = "BUY_AGGRESSOR"
+  L133   [loc/iloc-assign]
+                        trades.at[ix, "is_buy_aggressor"] = True
+  L135   [loc/iloc-assign]
+                        trades.at[ix, "aggressor_side"] = "SELL_AGGRESSOR"
+  L136   [loc/iloc-assign]
+                        trades.at[ix, "is_buy_aggressor"] = False
+  L138   [loc/iloc-assign]
+                        trades.at[ix, "aggressor_side"] = "UNKNOWN"
+  L139   [loc/iloc-assign]
+                        trades.at[ix, "is_buy_aggressor"] = False
+  L144   [loc/iloc-assign]
+                trades.loc[still_na, "aggressor_side"] = "UNKNOWN"
+  L145   [loc/iloc-assign]
+                trades.loc[still_na, "is_buy_aggressor"] = False
+
+==============================================================================
+SECTION 2 - WRITER FILE ROLL-UP (31 files)
+==============================================================================
+   10 writer line(s)  C:\Users\ttbea\OneDrive\Desktop\MBO_2025\PC2_TRANSFER_v4\scripts\pipeline\flow_tagger.py
+   10 writer line(s)  C:\Users\ttbea\OneDrive\Desktop\MBO_2025\pc2_transfer\scripts\pipeline\flow_tagger.py
+   10 writer line(s)  C:\Users\ttbea\OneDrive\Desktop\MBO_2025\results\pc2_all_phases\_scripts\scripts\pipeline\flow_tagger.py
+   10 writer line(s)  C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\pipeline\flow_tagger.py
+   10 writer line(s)  C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\v5\flow_tagger.py
+    8 writer line(s)  C:\Users\ttbea\OneDrive\Desktop\MBO_2025\PC2_TRANSFER_v4\scripts\pipeline\process_gapfill.py
+    8 writer line(s)  C:\Users\ttbea\OneDrive\Desktop\MBO_2025\pc2_transfer\scripts\pipeline\process_gapfill.py
+    8 writer line(s)  C:\Users\ttbea\OneDrive\Desktop\MBO_2025\results\pc2_all_phases\_scripts\scripts\pipeline\process_gapfill.py
+    8 writer line(s)  C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\pipeline\process_gapfill.py
+    4 writer line(s)  C:\Users\ttbea\OneDrive\Desktop\MBO_2025\PC2_TRANSFER_v4\scripts\pipeline\process_gapfill_jan.py
+    4 writer line(s)  C:\Users\ttbea\OneDrive\Desktop\MBO_2025\PC2_TRANSFER_v4\scripts\pipeline\process_gc.py
+    4 writer line(s)  C:\Users\ttbea\OneDrive\Desktop\MBO_2025\PC2_TRANSFER_v4\scripts\pipeline\process_mbo.py
+    4 writer line(s)  C:\Users\ttbea\OneDrive\Desktop\MBO_2025\PC2_TRANSFER_v4\scripts\pipeline\process_zc.py
+    4 writer line(s)  C:\Users\ttbea\OneDrive\Desktop\MBO_2025\pc2_transfer\scripts\pipeline\process_gapfill_jan.py
+    4 writer line(s)  C:\Users\ttbea\OneDrive\Desktop\MBO_2025\pc2_transfer\scripts\pipeline\process_gc.py
+    4 writer line(s)  C:\Users\ttbea\OneDrive\Desktop\MBO_2025\pc2_transfer\scripts\pipeline\process_mbo.py
+    4 writer line(s)  C:\Users\ttbea\OneDrive\Desktop\MBO_2025\pc2_transfer\scripts\pipeline\process_zc.py
+    4 writer line(s)  C:\Users\ttbea\OneDrive\Desktop\MBO_2025\results\pc2_all_phases\_scripts\scripts\pipeline\process_gapfill_jan.py
+    4 writer line(s)  C:\Users\ttbea\OneDrive\Desktop\MBO_2025\results\pc2_all_phases\_scripts\scripts\pipeline\process_gc.py
+    4 writer line(s)  C:\Users\ttbea\OneDrive\Desktop\MBO_2025\results\pc2_all_phases\_scripts\scripts\pipeline\process_mbo.py
+    4 writer line(s)  C:\Users\ttbea\OneDrive\Desktop\MBO_2025\results\pc2_all_phases\_scripts\scripts\pipeline\process_zc.py
+    4 writer line(s)  C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\pipeline\process_gapfill_jan.py
+    4 writer line(s)  C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\pipeline\process_gc.py
+    4 writer line(s)  C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\pipeline\process_mbo.py
+    4 writer line(s)  C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\pipeline\process_zc.py
+    1 writer line(s)  C:\Users\ttbea\OneDrive\Desktop\MBO_2025\pc2_transfer\scripts\analysis\phase4_ml.py
+    1 writer line(s)  C:\Users\ttbea\OneDrive\Desktop\MBO_2025\pc2_transfer\scripts\phase4\phase4_ml.py
+    1 writer line(s)  C:\Users\ttbea\OneDrive\Desktop\MBO_2025\results\pc2_all_phases\_scripts\scripts\analysis\phase4_ml.py
+    1 writer line(s)  C:\Users\ttbea\OneDrive\Desktop\MBO_2025\results\pc2_all_phases\_scripts\scripts\phase4\phase4_ml.py
+    1 writer line(s)  C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\analysis\phase4_ml.py
+    1 writer line(s)  C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\phase4\phase4_ml.py
+
+==============================================================================
+SECTION 3 - WRITER FILES DEDUPLICATED BY CONTENT (whole-file MD5)
+==============================================================================
+Purpose: the archive keeps several mirrored script trees; identical
+MD5 means the same tagger source, not an independent writer.
+
+distinct (basename, md5) writer sources: 12
+
+flow_tagger.py           md5=12ab27a8ece06734503d618d227f3aae  copies=2
+    C:\Users\ttbea\OneDrive\Desktop\MBO_2025\pc2_transfer\scripts\pipeline\flow_tagger.py
+    C:\Users\ttbea\OneDrive\Desktop\MBO_2025\results\pc2_all_phases\_scripts\scripts\pipeline\flow_tagger.py
+flow_tagger.py           md5=5f4e7d7620672807d776cafc4c3daa72  copies=3
+    C:\Users\ttbea\OneDrive\Desktop\MBO_2025\PC2_TRANSFER_v4\scripts\pipeline\flow_tagger.py
+    C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\pipeline\flow_tagger.py
+    C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\v5\flow_tagger.py
+phase4_ml.py             md5=a495814d2a80cc9fd3512169068ec185  copies=3
+    C:\Users\ttbea\OneDrive\Desktop\MBO_2025\pc2_transfer\scripts\phase4\phase4_ml.py
+    C:\Users\ttbea\OneDrive\Desktop\MBO_2025\results\pc2_all_phases\_scripts\scripts\phase4\phase4_ml.py
+    C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\phase4\phase4_ml.py
+phase4_ml.py             md5=ee8ba22f2610a88ab5fb26b30da3a24a  copies=3
+    C:\Users\ttbea\OneDrive\Desktop\MBO_2025\pc2_transfer\scripts\analysis\phase4_ml.py
+    C:\Users\ttbea\OneDrive\Desktop\MBO_2025\results\pc2_all_phases\_scripts\scripts\analysis\phase4_ml.py
+    C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\analysis\phase4_ml.py
+process_gapfill.py       md5=423a8c0413f313b37e721dc185a2463b  copies=2
+    C:\Users\ttbea\OneDrive\Desktop\MBO_2025\PC2_TRANSFER_v4\scripts\pipeline\process_gapfill.py
+    C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\pipeline\process_gapfill.py
+process_gapfill.py       md5=c4deb9fc5823765c29c8c08303d7f3ea  copies=2
+    C:\Users\ttbea\OneDrive\Desktop\MBO_2025\pc2_transfer\scripts\pipeline\process_gapfill.py
+    C:\Users\ttbea\OneDrive\Desktop\MBO_2025\results\pc2_all_phases\_scripts\scripts\pipeline\process_gapfill.py
+process_gapfill_jan.py   md5=1fcd68455e4bee63c6d02a9d6a9155cd  copies=2
+    C:\Users\ttbea\OneDrive\Desktop\MBO_2025\pc2_transfer\scripts\pipeline\process_gapfill_jan.py
+    C:\Users\ttbea\OneDrive\Desktop\MBO_2025\results\pc2_all_phases\_scripts\scripts\pipeline\process_gapfill_jan.py
+process_gapfill_jan.py   md5=abcb8d266047f39d48d7fa8204e2e8bd  copies=2
+    C:\Users\ttbea\OneDrive\Desktop\MBO_2025\PC2_TRANSFER_v4\scripts\pipeline\process_gapfill_jan.py
+    C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\pipeline\process_gapfill_jan.py
+process_gc.py            md5=edd57fefdf5e5d6af899c77cc108d1c6  copies=4
+    C:\Users\ttbea\OneDrive\Desktop\MBO_2025\PC2_TRANSFER_v4\scripts\pipeline\process_gc.py
+    C:\Users\ttbea\OneDrive\Desktop\MBO_2025\pc2_transfer\scripts\pipeline\process_gc.py
+    C:\Users\ttbea\OneDrive\Desktop\MBO_2025\results\pc2_all_phases\_scripts\scripts\pipeline\process_gc.py
+    C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\pipeline\process_gc.py
+process_mbo.py           md5=167ddc0876de043f77d88576dba1afe1  copies=2
+    C:\Users\ttbea\OneDrive\Desktop\MBO_2025\pc2_transfer\scripts\pipeline\process_mbo.py
+    C:\Users\ttbea\OneDrive\Desktop\MBO_2025\results\pc2_all_phases\_scripts\scripts\pipeline\process_mbo.py
+process_mbo.py           md5=f944893bdfd34ffad2278653ebd4192e  copies=2
+    C:\Users\ttbea\OneDrive\Desktop\MBO_2025\PC2_TRANSFER_v4\scripts\pipeline\process_mbo.py
+    C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\pipeline\process_mbo.py
+process_zc.py            md5=4e3b74ea74c75323240f3e7c54c59d33  copies=4
+    C:\Users\ttbea\OneDrive\Desktop\MBO_2025\PC2_TRANSFER_v4\scripts\pipeline\process_zc.py
+    C:\Users\ttbea\OneDrive\Desktop\MBO_2025\pc2_transfer\scripts\pipeline\process_zc.py
+    C:\Users\ttbea\OneDrive\Desktop\MBO_2025\results\pc2_all_phases\_scripts\scripts\pipeline\process_zc.py
+    C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\pipeline\process_zc.py
+
+basenames with MORE THAN ONE distinct content hash (divergent copies):
+  flow_tagger.py -> 2 distinct hashes: 12ab27a8ece06734503d618d227f3aae, 5f4e7d7620672807d776cafc4c3daa72
+  phase4_ml.py -> 2 distinct hashes: a495814d2a80cc9fd3512169068ec185, ee8ba22f2610a88ab5fb26b30da3a24a
+  process_gapfill.py -> 2 distinct hashes: 423a8c0413f313b37e721dc185a2463b, c4deb9fc5823765c29c8c08303d7f3ea
+  process_gapfill_jan.py -> 2 distinct hashes: 1fcd68455e4bee63c6d02a9d6a9155cd, abcb8d266047f39d48d7fa8204e2e8bd
+  process_mbo.py -> 2 distinct hashes: 167ddc0876de043f77d88576dba1afe1, f944893bdfd34ffad2278653ebd4192e
+
+==============================================================================
+SECTION 4 - ALL MENTIONS (verbatim, incl. readers and comments)
+==============================================================================
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\PC2_TRANSFER_v4\scripts\pipeline\flow_tagger.py   (23 mention line(s))
+  L96    READ/OTHER                                     | aggressor_side  — 'BUY_AGGRESSOR' | 'SELL_AGGRESSOR' | 'UNKNOWN'
+  L97    READ/OTHER                                     | is_buy_aggressor — bool
+  L102   WRITER:subscript-assign                        | trades["aggressor_side"] = trades["side"].map(
+  L105   WRITER:subscript-assign                        | trades["is_buy_aggressor"] = trades["side"] == "B"
+  L108   READ/OTHER                                     | unknown_mask = trades["aggressor_side"].isna()
+  L132   WRITER:loc/iloc-assign                         | trades.at[ix, "aggressor_side"] = "BUY_AGGRESSOR"
+  L133   WRITER:loc/iloc-assign                         | trades.at[ix, "is_buy_aggressor"] = True
+  L135   WRITER:loc/iloc-assign                         | trades.at[ix, "aggressor_side"] = "SELL_AGGRESSOR"
+  L136   WRITER:loc/iloc-assign                         | trades.at[ix, "is_buy_aggressor"] = False
+  L138   WRITER:loc/iloc-assign                         | trades.at[ix, "aggressor_side"] = "UNKNOWN"
+  L139   WRITER:loc/iloc-assign                         | trades.at[ix, "is_buy_aggressor"] = False
+  L142   READ/OTHER                                     | still_na = trades["aggressor_side"].isna()
+  L144   WRITER:loc/iloc-assign                         | trades.loc[still_na, "aggressor_side"] = "UNKNOWN"
+  L145   WRITER:loc/iloc-assign                         | trades.loc[still_na, "is_buy_aggressor"] = False
+  L162   READ/OTHER                                     | ts_event, price, size, is_buy_aggressor.
+  L186   READ/OTHER                                     | buy_mask = group["is_buy_aggressor"]
+  L238   READ/OTHER                                     | is_buy = df["is_buy_aggressor"].values
+  L354   READ/OTHER                                     | buy_mask = df["is_buy_aggressor"]
+  L396   READ/OTHER                                     | n_buy = int(trades["is_buy_aggressor"].sum())
+  L397   READ/OTHER                                     | n_sell = int((trades["aggressor_side"] == "SELL_AGGRESSOR").sum())
+  L398   READ/OTHER                                     | n_unk = int((trades["aggressor_side"] == "UNKNOWN").sum())
+  L400   READ/OTHER                                     | buy_vol = int(trades.loc[trades["is_buy_aggressor"], "size"].sum())
+  L401   READ/OTHER                                     | sell_vol = int(trades.loc[trades["aggressor_side"] == "SELL_AGGRESSOR", "size"].sum())
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\PC2_TRANSFER_v4\scripts\pipeline\mm_utils.py   (3 mention line(s))
+  L88    COMMENT:kwarg-assign(assign/agg/NamedAgg)      | # Aggressor side: is_buy_aggressor=True → buyer aggressor → side='B'
+  L90    READ/OTHER                                     | if "is_buy_aggressor" in trades_df.columns:
+  L91    READ/OTHER                                     | t_is_sell = (~trades_df["is_buy_aggressor"].values).astype(np.int8)
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\PC2_TRANSFER_v4\scripts\pipeline\process_all_months.py   (1 mention line(s))
+  L295   READ/OTHER                                     | n_buy = trades["is_buy_aggressor"].sum()
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\PC2_TRANSFER_v4\scripts\pipeline\process_gapfill.py   (11 mention line(s))
+  L88    WRITER:subscript-assign                        | trades["aggressor_side"] = trades["side"].map(
+  L91    WRITER:subscript-assign                        | trades["is_buy_aggressor"] = trades["side"] == "B"
+  L92    READ/OTHER                                     | still_na = trades["aggressor_side"].isna()
+  L94    WRITER:loc/iloc-assign                         | trades.loc[still_na, "aggressor_side"] = "UNKNOWN"
+  L95    WRITER:loc/iloc-assign                         | trades.loc[still_na, "is_buy_aggressor"] = False
+  L470   WRITER:subscript-assign                        | trades_df["aggressor_side"] = trades_df["side"].map(
+  L473   WRITER:subscript-assign                        | trades_df["is_buy_aggressor"] = trades_df["side"] == "B"
+  L474   READ/OTHER                                     | still_na = trades_df["aggressor_side"].isna()
+  L476   WRITER:loc/iloc-assign                         | trades_df.loc[still_na, "aggressor_side"] = "UNKNOWN"
+  L477   WRITER:loc/iloc-assign                         | trades_df.loc[still_na, "is_buy_aggressor"] = False
+  L480   READ/OTHER                                     | n_buy = int(trades_df["is_buy_aggressor"].sum())
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\PC2_TRANSFER_v4\scripts\pipeline\process_gapfill_jan.py   (6 mention line(s))
+  L60    WRITER:subscript-assign                        | trades["aggressor_side"] = trades["side"].map(
+  L63    WRITER:subscript-assign                        | trades["is_buy_aggressor"] = trades["side"] == "B"
+  L64    READ/OTHER                                     | still_na = trades["aggressor_side"].isna()
+  L66    WRITER:loc/iloc-assign                         | trades.loc[still_na, "aggressor_side"] = "UNKNOWN"
+  L67    WRITER:loc/iloc-assign                         | trades.loc[still_na, "is_buy_aggressor"] = False
+  L192   READ/OTHER                                     | n_buy = int(trades["is_buy_aggressor"].sum())
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\PC2_TRANSFER_v4\scripts\pipeline\process_gc.py   (6 mention line(s))
+  L454   WRITER:subscript-assign                        | trades_df["aggressor_side"] = trades_df["side"].map(
+  L457   WRITER:subscript-assign                        | trades_df["is_buy_aggressor"] = trades_df["side"] == "B"
+  L458   READ/OTHER                                     | still_na = trades_df["aggressor_side"].isna()
+  L460   WRITER:loc/iloc-assign                         | trades_df.loc[still_na, "aggressor_side"] = "UNKNOWN"
+  L461   WRITER:loc/iloc-assign                         | trades_df.loc[still_na, "is_buy_aggressor"] = False
+  L464   READ/OTHER                                     | n_buy = int(trades_df["is_buy_aggressor"].sum())
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\PC2_TRANSFER_v4\scripts\pipeline\process_mbo.py   (6 mention line(s))
+  L549   WRITER:subscript-assign                        | trades_df["aggressor_side"] = trades_df["side"].map(
+  L552   WRITER:subscript-assign                        | trades_df["is_buy_aggressor"] = trades_df["side"] == "B"
+  L553   READ/OTHER                                     | still_na = trades_df["aggressor_side"].isna()
+  L555   WRITER:loc/iloc-assign                         | trades_df.loc[still_na, "aggressor_side"] = "UNKNOWN"
+  L556   WRITER:loc/iloc-assign                         | trades_df.loc[still_na, "is_buy_aggressor"] = False
+  L559   READ/OTHER                                     | n_buy = int(trades_df["is_buy_aggressor"].sum())
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\PC2_TRANSFER_v4\scripts\pipeline\process_zc.py   (8 mention line(s))
+  L92    WRITER:subscript-assign                        | trades["aggressor_side"] = trades["side"].map(
+  L95    WRITER:subscript-assign                        | trades["is_buy_aggressor"] = trades["side"] == "B"
+  L97    READ/OTHER                                     | still_na = trades["aggressor_side"].isna()
+  L99    WRITER:loc/iloc-assign                         | trades.loc[still_na, "aggressor_side"] = "UNKNOWN"
+  L100   WRITER:loc/iloc-assign                         | trades.loc[still_na, "is_buy_aggressor"] = False
+  L364   READ/OTHER                                     | n_buy = int(trades["is_buy_aggressor"].sum())
+  L366   READ/OTHER                                     | buy_vol = int(trades.loc[trades["is_buy_aggressor"], "size"].sum())
+  L367   READ/OTHER                                     | sell_vol = int(trades.loc[~trades["is_buy_aggressor"], "size"].sum())
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\PC2_TRANSFER_v4\scripts\pipeline\resume_pipeline.py   (1 mention line(s))
+  L343   READ/OTHER                                     | n_buy = oct_trades["is_buy_aggressor"].sum()
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\pc2_transfer\scripts\analysis\micro_large.py   (2 mention line(s))
+  L278   READ/OTHER                                     | tbl = pq.read_table(str(path), columns=["size", "is_buy_aggressor", "ts_event", "price"])
+  L282   READ/OTHER                                     | total_buy += pc.sum(tbl.column("is_buy_aggressor").cast(pa.int64())).as_py()
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\pc2_transfer\scripts\analysis\microstructure_analysis.py   (1 mention line(s))
+  L364   READ/OTHER                                     | n_buy = trades_df["is_buy_aggressor"].sum()
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\pc2_transfer\scripts\analysis\microstructure_report.py   (1 mention line(s))
+  L91    READ/OTHER                                     | buy_vol = int(day_trades.loc[day_trades["is_buy_aggressor"], "size"].sum())
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\pc2_transfer\scripts\analysis\phase4_ml.py   (6 mention line(s))
+  L131   READ/OTHER                                     | cols = ["ts_event", "price", "size", "side", "aggressor_side"]
+  L135   COMMENT                                        | # some files may not have aggressor_side
+  L139   WRITER:dict-literal-key                        | if c == "aggressor_side":
+  L241   READ/OTHER                                     | if "aggressor_side" in trades.columns:
+  L242   READ/OTHER                                     | buy_mask = trades["aggressor_side"].isin(["B", "Buy", "buy"])
+  L243   READ/OTHER                                     | sell_mask = trades["aggressor_side"].isin(["A", "S", "Sell", "sell"])
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\pc2_transfer\scripts\analysis\phase4_v2.py   (1 mention line(s))
+  L345   READ/OTHER                                     | is_buy = trades["aggressor_side"].isin(["B", "Buy", "buy"]) if "aggressor_side" in trades.columns \
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\pc2_transfer\scripts\analysis\validate_is_bid.py   (6 mention line(s))
+  L29    READ/OTHER                                     | buy_count = int(trades["is_buy_aggressor"].sum())
+  L55    READ/OTHER                                     | exchange_side = np.where(trades["is_buy_aggressor"].values, "B", "A")
+  L88    READ/OTHER                                     | trades_copy = trades[["ts_event", "size", "is_buy_aggressor"]].copy()
+  L97    READ/OTHER                                     | lambda g: g.loc[g["is_buy_aggressor"], "size_int"].sum(), include_groups=False)
+  L99    READ/OTHER                                     | lambda g: g.loc[~g["is_buy_aggressor"], "size_int"].sum(), include_groups=False)
+  L162   READ/OTHER                                     | exch_buy=("is_buy_aggressor", "sum"),
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\pc2_transfer\scripts\analysis\validate_march17.py   (1 mention line(s))
+  L186   READ/OTHER                                     | n_buy = trades["is_buy_aggressor"].sum()
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\pc2_transfer\scripts\ml\edge_discovery.py   (3 mention line(s))
+  L238   READ/OTHER                                     | trade_buy   = trades["is_buy_aggressor"].values.astype("bool")
+  L856   READ/OTHER                                     | trade_buy   = trades["is_buy_aggressor"].values.astype("bool")
+  L982   READ/OTHER                                     | trade_buy   = trades["is_buy_aggressor"].values.astype("bool")
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\pc2_transfer\scripts\ml\ml_explore.py   (2 mention line(s))
+  L28    READ/OTHER                                     | columns=["ts_event","price","size","is_buy_aggressor"],
+  L41    READ/OTHER                                     | t_buy = trades["is_buy_aggressor"].values.astype(bool)
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\pc2_transfer\scripts\ml\ml_explore2.py   (2 mention line(s))
+  L34    READ/OTHER                                     | columns=["ts_event","price","size","is_buy_aggressor"],
+  L49    READ/OTHER                                     | t_buy = trades["is_buy_aggressor"].values.astype(bool)
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\pc2_transfer\scripts\ml\ml_explore3.py   (2 mention line(s))
+  L39    READ/OTHER                                     | columns=["ts_event","price","size","is_buy_aggressor"])
+  L50    READ/OTHER                                     | t_buy_all = trades["is_buy_aggressor"].values.astype(bool)
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\pc2_transfer\scripts\ml\ml_explore3b.py   (2 mention line(s))
+  L34    READ/OTHER                                     | columns=["ts_event","price","size","is_buy_aggressor"])
+  L41    READ/OTHER                                     | t_buy = trades["is_buy_aggressor"].values.astype(bool)
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\pc2_transfer\scripts\ml\ml_features.py   (2 mention line(s))
+  L103   READ/OTHER                                     | columns=["ts_event", "price", "size", "is_buy_aggressor"],
+  L214   READ/OTHER                                     | is_buy = trades["is_buy_aggressor"].values.astype(bool)
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\pc2_transfer\scripts\ml\zc_ml_explore.py   (3 mention line(s))
+  L74    READ/OTHER                                     | n_buy = trades["is_buy_aggressor"].sum()
+  L116   READ/OTHER                                     | t_buy = trades["is_buy_aggressor"].values.astype(bool)
+  L552   READ/OTHER                                     | t_buy = trades["is_buy_aggressor"].values.astype(bool)
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\pc2_transfer\scripts\phase45\phase45_verify.py   (1 mention line(s))
+  L202   READ/OTHER                                     | is_buy = trades["aggressor_side"].isin(["B","Buy","buy"]) if "aggressor_side" in trades.columns \
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\pc2_transfer\scripts\phase45\phase45b_audit.py   (1 mention line(s))
+  L213   READ/OTHER                                     | is_buy = trades["aggressor_side"].isin(["B","Buy","buy"]) if "aggressor_side" in trades.columns \
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\pc2_transfer\scripts\phase4\phase4_ml.py   (6 mention line(s))
+  L132   READ/OTHER                                     | cols = ["ts_event", "price", "size", "side", "aggressor_side"]
+  L136   COMMENT                                        | # some files may not have aggressor_side
+  L140   WRITER:dict-literal-key                        | if c == "aggressor_side":
+  L242   READ/OTHER                                     | if "aggressor_side" in trades.columns:
+  L243   READ/OTHER                                     | buy_mask = trades["aggressor_side"].isin(["B", "Buy", "buy"])
+  L244   READ/OTHER                                     | sell_mask = trades["aggressor_side"].isin(["A", "S", "Sell", "sell"])
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\pc2_transfer\scripts\phase4\phase4_shuffle_fix.py   (1 mention line(s))
+  L236   READ/OTHER                                     | is_buy = trades["aggressor_side"].isin(["B","Buy","buy"]) if "aggressor_side" in trades.columns \
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\pc2_transfer\scripts\phase4\phase4_v2.py   (1 mention line(s))
+  L346   READ/OTHER                                     | is_buy = trades["aggressor_side"].isin(["B", "Buy", "buy"]) if "aggressor_side" in trades.columns \
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\pc2_transfer\scripts\phase5\phase5_ml.py   (1 mention line(s))
+  L231   READ/OTHER                                     | is_buy = trades["aggressor_side"].isin(["B","Buy","buy"]) if "aggressor_side" in trades.columns \
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\pc2_transfer\scripts\pipeline\flow_tagger.py   (23 mention line(s))
+  L73    READ/OTHER                                     | aggressor_side  — 'BUY_AGGRESSOR' | 'SELL_AGGRESSOR' | 'UNKNOWN'
+  L74    READ/OTHER                                     | is_buy_aggressor — bool
+  L79    WRITER:subscript-assign                        | trades["aggressor_side"] = trades["side"].map(
+  L82    WRITER:subscript-assign                        | trades["is_buy_aggressor"] = trades["side"] == "B"
+  L85    READ/OTHER                                     | unknown_mask = trades["aggressor_side"].isna()
+  L109   WRITER:loc/iloc-assign                         | trades.at[ix, "aggressor_side"] = "BUY_AGGRESSOR"
+  L110   WRITER:loc/iloc-assign                         | trades.at[ix, "is_buy_aggressor"] = True
+  L112   WRITER:loc/iloc-assign                         | trades.at[ix, "aggressor_side"] = "SELL_AGGRESSOR"
+  L113   WRITER:loc/iloc-assign                         | trades.at[ix, "is_buy_aggressor"] = False
+  L115   WRITER:loc/iloc-assign                         | trades.at[ix, "aggressor_side"] = "UNKNOWN"
+  L116   WRITER:loc/iloc-assign                         | trades.at[ix, "is_buy_aggressor"] = False
+  L119   READ/OTHER                                     | still_na = trades["aggressor_side"].isna()
+  L121   WRITER:loc/iloc-assign                         | trades.loc[still_na, "aggressor_side"] = "UNKNOWN"
+  L122   WRITER:loc/iloc-assign                         | trades.loc[still_na, "is_buy_aggressor"] = False
+  L139   READ/OTHER                                     | ts_event, price, size, is_buy_aggressor.
+  L163   READ/OTHER                                     | buy_mask = group["is_buy_aggressor"]
+  L215   READ/OTHER                                     | is_buy = df["is_buy_aggressor"].values
+  L285   READ/OTHER                                     | buy_mask = df["is_buy_aggressor"]
+  L327   READ/OTHER                                     | n_buy = int(trades["is_buy_aggressor"].sum())
+  L328   READ/OTHER                                     | n_sell = int((trades["aggressor_side"] == "SELL_AGGRESSOR").sum())
+  L329   READ/OTHER                                     | n_unk = int((trades["aggressor_side"] == "UNKNOWN").sum())
+  L331   READ/OTHER                                     | buy_vol = int(trades.loc[trades["is_buy_aggressor"], "size"].sum())
+  L332   READ/OTHER                                     | sell_vol = int(trades.loc[trades["aggressor_side"] == "SELL_AGGRESSOR", "size"].sum())
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\pc2_transfer\scripts\pipeline\mm_utils.py   (3 mention line(s))
+  L88    COMMENT:kwarg-assign(assign/agg/NamedAgg)      | # Aggressor side: is_buy_aggressor=True → buyer aggressor → side='B'
+  L90    READ/OTHER                                     | if "is_buy_aggressor" in trades_df.columns:
+  L91    READ/OTHER                                     | t_is_sell = (~trades_df["is_buy_aggressor"].values).astype(np.int8)
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\pc2_transfer\scripts\pipeline\process_all_months.py   (1 mention line(s))
+  L269   READ/OTHER                                     | n_buy = trades["is_buy_aggressor"].sum()
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\pc2_transfer\scripts\pipeline\process_gapfill.py   (11 mention line(s))
+  L88    WRITER:subscript-assign                        | trades["aggressor_side"] = trades["side"].map(
+  L91    WRITER:subscript-assign                        | trades["is_buy_aggressor"] = trades["side"] == "B"
+  L92    READ/OTHER                                     | still_na = trades["aggressor_side"].isna()
+  L94    WRITER:loc/iloc-assign                         | trades.loc[still_na, "aggressor_side"] = "UNKNOWN"
+  L95    WRITER:loc/iloc-assign                         | trades.loc[still_na, "is_buy_aggressor"] = False
+  L470   WRITER:subscript-assign                        | trades_df["aggressor_side"] = trades_df["side"].map(
+  L473   WRITER:subscript-assign                        | trades_df["is_buy_aggressor"] = trades_df["side"] == "B"
+  L474   READ/OTHER                                     | still_na = trades_df["aggressor_side"].isna()
+  L476   WRITER:loc/iloc-assign                         | trades_df.loc[still_na, "aggressor_side"] = "UNKNOWN"
+  L477   WRITER:loc/iloc-assign                         | trades_df.loc[still_na, "is_buy_aggressor"] = False
+  L480   READ/OTHER                                     | n_buy = int(trades_df["is_buy_aggressor"].sum())
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\pc2_transfer\scripts\pipeline\process_gapfill_jan.py   (6 mention line(s))
+  L60    WRITER:subscript-assign                        | trades["aggressor_side"] = trades["side"].map(
+  L63    WRITER:subscript-assign                        | trades["is_buy_aggressor"] = trades["side"] == "B"
+  L64    READ/OTHER                                     | still_na = trades["aggressor_side"].isna()
+  L66    WRITER:loc/iloc-assign                         | trades.loc[still_na, "aggressor_side"] = "UNKNOWN"
+  L67    WRITER:loc/iloc-assign                         | trades.loc[still_na, "is_buy_aggressor"] = False
+  L192   READ/OTHER                                     | n_buy = int(trades["is_buy_aggressor"].sum())
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\pc2_transfer\scripts\pipeline\process_gc.py   (6 mention line(s))
+  L454   WRITER:subscript-assign                        | trades_df["aggressor_side"] = trades_df["side"].map(
+  L457   WRITER:subscript-assign                        | trades_df["is_buy_aggressor"] = trades_df["side"] == "B"
+  L458   READ/OTHER                                     | still_na = trades_df["aggressor_side"].isna()
+  L460   WRITER:loc/iloc-assign                         | trades_df.loc[still_na, "aggressor_side"] = "UNKNOWN"
+  L461   WRITER:loc/iloc-assign                         | trades_df.loc[still_na, "is_buy_aggressor"] = False
+  L464   READ/OTHER                                     | n_buy = int(trades_df["is_buy_aggressor"].sum())
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\pc2_transfer\scripts\pipeline\process_mbo.py   (6 mention line(s))
+  L549   WRITER:subscript-assign                        | trades_df["aggressor_side"] = trades_df["side"].map(
+  L552   WRITER:subscript-assign                        | trades_df["is_buy_aggressor"] = trades_df["side"] == "B"
+  L553   READ/OTHER                                     | still_na = trades_df["aggressor_side"].isna()
+  L555   WRITER:loc/iloc-assign                         | trades_df.loc[still_na, "aggressor_side"] = "UNKNOWN"
+  L556   WRITER:loc/iloc-assign                         | trades_df.loc[still_na, "is_buy_aggressor"] = False
+  L559   READ/OTHER                                     | n_buy = int(trades_df["is_buy_aggressor"].sum())
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\pc2_transfer\scripts\pipeline\process_zc.py   (8 mention line(s))
+  L92    WRITER:subscript-assign                        | trades["aggressor_side"] = trades["side"].map(
+  L95    WRITER:subscript-assign                        | trades["is_buy_aggressor"] = trades["side"] == "B"
+  L97    READ/OTHER                                     | still_na = trades["aggressor_side"].isna()
+  L99    WRITER:loc/iloc-assign                         | trades.loc[still_na, "aggressor_side"] = "UNKNOWN"
+  L100   WRITER:loc/iloc-assign                         | trades.loc[still_na, "is_buy_aggressor"] = False
+  L364   READ/OTHER                                     | n_buy = int(trades["is_buy_aggressor"].sum())
+  L366   READ/OTHER                                     | buy_vol = int(trades.loc[trades["is_buy_aggressor"], "size"].sum())
+  L367   READ/OTHER                                     | sell_vol = int(trades.loc[~trades["is_buy_aggressor"], "size"].sum())
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\pc2_transfer\scripts\pipeline\resume_pipeline.py   (1 mention line(s))
+  L343   READ/OTHER                                     | n_buy = oct_trades["is_buy_aggressor"].sum()
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\pc2_transfer\scripts\strategies\adaptive_exit_test.py   (1 mention line(s))
+  L231   READ/OTHER                                     | t_iba = dt["is_buy_aggressor"].values
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\pc2_transfer\scripts\strategies\test_b_trend_mbo.py   (2 mention line(s))
+  L309   READ/OTHER                                     | if len(trade_ts_arr) > 0 and "is_buy_aggressor" in trades_day.columns:
+  L315   READ/OTHER                                     | buy_mask = wt["is_buy_aggressor"].values.astype(bool)
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\pc2_transfer\scripts\strategies\tick_signals_test.py   (6 mention line(s))
+  L129   COMMENT                                        | #  BUY  when ratio ≥ threshold AND is_buy_aggressor
+  L130   COMMENT                                        | #  SELL when ratio ≥ threshold AND NOT is_buy_aggressor
+  L172   READ/OTHER                                     | t_iba = dt["is_buy_aggressor"].values  # bool
+  L280   READ/OTHER                                     | t_iba = dt["is_buy_aggressor"].values
+  L405   READ/OTHER                                     | t_iba  = dt["is_buy_aggressor"].values
+  L557   READ/OTHER                                     | t_iba = dt["is_buy_aggressor"].values
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\pc2_transfer\scripts\visualization\footprint_chart.py   (3 mention line(s))
+  L56    READ/OTHER                                     | trades_df: Tagged trades (must have is_buy_aggressor, price, size, ts_event).
+  L90    READ/OTHER                                     | is_buy = grp["is_buy_aggressor"].values
+  L111   READ/OTHER                                     | buy_vol = int(grp.loc[grp["is_buy_aggressor"], "size"].sum())
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\pc2_transfer\scripts\visualization\liquidity_heatmap.py   (1 mention line(s))
+  L216   READ/OTHER                                     | trade_buy = day_trades["is_buy_aggressor"].values
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\pc2_transfer\transfer\scripts\phase5_ml.py   (1 mention line(s))
+  L230   READ/OTHER                                     | is_buy = trades["aggressor_side"].isin(["B","Buy","buy"]) if "aggressor_side" in trades.columns \
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\results\pc2_all_phases\_scripts\scripts\analysis\micro_large.py   (2 mention line(s))
+  L278   READ/OTHER                                     | tbl = pq.read_table(str(path), columns=["size", "is_buy_aggressor", "ts_event", "price"])
+  L282   READ/OTHER                                     | total_buy += pc.sum(tbl.column("is_buy_aggressor").cast(pa.int64())).as_py()
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\results\pc2_all_phases\_scripts\scripts\analysis\microstructure_analysis.py   (1 mention line(s))
+  L364   READ/OTHER                                     | n_buy = trades_df["is_buy_aggressor"].sum()
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\results\pc2_all_phases\_scripts\scripts\analysis\microstructure_report.py   (1 mention line(s))
+  L91    READ/OTHER                                     | buy_vol = int(day_trades.loc[day_trades["is_buy_aggressor"], "size"].sum())
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\results\pc2_all_phases\_scripts\scripts\analysis\phase4_ml.py   (6 mention line(s))
+  L131   READ/OTHER                                     | cols = ["ts_event", "price", "size", "side", "aggressor_side"]
+  L135   COMMENT                                        | # some files may not have aggressor_side
+  L139   WRITER:dict-literal-key                        | if c == "aggressor_side":
+  L241   READ/OTHER                                     | if "aggressor_side" in trades.columns:
+  L242   READ/OTHER                                     | buy_mask = trades["aggressor_side"].isin(["B", "Buy", "buy"])
+  L243   READ/OTHER                                     | sell_mask = trades["aggressor_side"].isin(["A", "S", "Sell", "sell"])
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\results\pc2_all_phases\_scripts\scripts\analysis\phase4_v2.py   (1 mention line(s))
+  L345   READ/OTHER                                     | is_buy = trades["aggressor_side"].isin(["B", "Buy", "buy"]) if "aggressor_side" in trades.columns \
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\results\pc2_all_phases\_scripts\scripts\analysis\validate_is_bid.py   (6 mention line(s))
+  L29    READ/OTHER                                     | buy_count = int(trades["is_buy_aggressor"].sum())
+  L55    READ/OTHER                                     | exchange_side = np.where(trades["is_buy_aggressor"].values, "B", "A")
+  L88    READ/OTHER                                     | trades_copy = trades[["ts_event", "size", "is_buy_aggressor"]].copy()
+  L97    READ/OTHER                                     | lambda g: g.loc[g["is_buy_aggressor"], "size_int"].sum(), include_groups=False)
+  L99    READ/OTHER                                     | lambda g: g.loc[~g["is_buy_aggressor"], "size_int"].sum(), include_groups=False)
+  L162   READ/OTHER                                     | exch_buy=("is_buy_aggressor", "sum"),
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\results\pc2_all_phases\_scripts\scripts\analysis\validate_march17.py   (1 mention line(s))
+  L186   READ/OTHER                                     | n_buy = trades["is_buy_aggressor"].sum()
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\results\pc2_all_phases\_scripts\scripts\ml\edge_discovery.py   (3 mention line(s))
+  L238   READ/OTHER                                     | trade_buy   = trades["is_buy_aggressor"].values.astype("bool")
+  L856   READ/OTHER                                     | trade_buy   = trades["is_buy_aggressor"].values.astype("bool")
+  L982   READ/OTHER                                     | trade_buy   = trades["is_buy_aggressor"].values.astype("bool")
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\results\pc2_all_phases\_scripts\scripts\ml\ml_explore.py   (2 mention line(s))
+  L28    READ/OTHER                                     | columns=["ts_event","price","size","is_buy_aggressor"],
+  L41    READ/OTHER                                     | t_buy = trades["is_buy_aggressor"].values.astype(bool)
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\results\pc2_all_phases\_scripts\scripts\ml\ml_explore2.py   (2 mention line(s))
+  L34    READ/OTHER                                     | columns=["ts_event","price","size","is_buy_aggressor"],
+  L49    READ/OTHER                                     | t_buy = trades["is_buy_aggressor"].values.astype(bool)
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\results\pc2_all_phases\_scripts\scripts\ml\ml_explore3.py   (2 mention line(s))
+  L39    READ/OTHER                                     | columns=["ts_event","price","size","is_buy_aggressor"])
+  L50    READ/OTHER                                     | t_buy_all = trades["is_buy_aggressor"].values.astype(bool)
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\results\pc2_all_phases\_scripts\scripts\ml\ml_explore3b.py   (2 mention line(s))
+  L34    READ/OTHER                                     | columns=["ts_event","price","size","is_buy_aggressor"])
+  L41    READ/OTHER                                     | t_buy = trades["is_buy_aggressor"].values.astype(bool)
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\results\pc2_all_phases\_scripts\scripts\ml\ml_features.py   (2 mention line(s))
+  L103   READ/OTHER                                     | columns=["ts_event", "price", "size", "is_buy_aggressor"],
+  L214   READ/OTHER                                     | is_buy = trades["is_buy_aggressor"].values.astype(bool)
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\results\pc2_all_phases\_scripts\scripts\ml\zc_ml_explore.py   (3 mention line(s))
+  L74    READ/OTHER                                     | n_buy = trades["is_buy_aggressor"].sum()
+  L116   READ/OTHER                                     | t_buy = trades["is_buy_aggressor"].values.astype(bool)
+  L552   READ/OTHER                                     | t_buy = trades["is_buy_aggressor"].values.astype(bool)
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\results\pc2_all_phases\_scripts\scripts\phase45\phase45_verify.py   (1 mention line(s))
+  L202   READ/OTHER                                     | is_buy = trades["aggressor_side"].isin(["B","Buy","buy"]) if "aggressor_side" in trades.columns \
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\results\pc2_all_phases\_scripts\scripts\phase45\phase45b_audit.py   (1 mention line(s))
+  L213   READ/OTHER                                     | is_buy = trades["aggressor_side"].isin(["B","Buy","buy"]) if "aggressor_side" in trades.columns \
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\results\pc2_all_phases\_scripts\scripts\phase4\phase4_ml.py   (6 mention line(s))
+  L132   READ/OTHER                                     | cols = ["ts_event", "price", "size", "side", "aggressor_side"]
+  L136   COMMENT                                        | # some files may not have aggressor_side
+  L140   WRITER:dict-literal-key                        | if c == "aggressor_side":
+  L242   READ/OTHER                                     | if "aggressor_side" in trades.columns:
+  L243   READ/OTHER                                     | buy_mask = trades["aggressor_side"].isin(["B", "Buy", "buy"])
+  L244   READ/OTHER                                     | sell_mask = trades["aggressor_side"].isin(["A", "S", "Sell", "sell"])
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\results\pc2_all_phases\_scripts\scripts\phase4\phase4_shuffle_fix.py   (1 mention line(s))
+  L236   READ/OTHER                                     | is_buy = trades["aggressor_side"].isin(["B","Buy","buy"]) if "aggressor_side" in trades.columns \
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\results\pc2_all_phases\_scripts\scripts\phase4\phase4_v2.py   (1 mention line(s))
+  L346   READ/OTHER                                     | is_buy = trades["aggressor_side"].isin(["B", "Buy", "buy"]) if "aggressor_side" in trades.columns \
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\results\pc2_all_phases\_scripts\scripts\phase5\phase5_ml.py   (1 mention line(s))
+  L231   READ/OTHER                                     | is_buy = trades["aggressor_side"].isin(["B","Buy","buy"]) if "aggressor_side" in trades.columns \
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\results\pc2_all_phases\_scripts\scripts\phase7_l2_sim.py   (1 mention line(s))
+  L207   READ/OTHER                                     | is_buy = trades["aggressor_side"].isin(["B", "Buy", "buy"]) if "aggressor_side" in trades.columns \
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\results\pc2_all_phases\_scripts\scripts\phase9_ofa_dar_pc2.py   (2 mention line(s))
+  L116   READ/OTHER                                     | is_buy = trades["aggressor_side"] == "BUY_AGGRESSOR"
+  L117   READ/OTHER                                     | is_sell = trades["aggressor_side"] == "SELL_AGGRESSOR"
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\results\pc2_all_phases\_scripts\scripts\phase9_ofi_pc2.py   (2 mention line(s))
+  L149   READ/OTHER                                     | is_buy = trades["aggressor_side"] == "BUY_AGGRESSOR"
+  L151   READ/OTHER                                     | np.where(trades["aggressor_side"] == "SELL_AGGRESSOR",
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\results\pc2_all_phases\_scripts\scripts\pipeline\flow_tagger.py   (23 mention line(s))
+  L73    READ/OTHER                                     | aggressor_side  — 'BUY_AGGRESSOR' | 'SELL_AGGRESSOR' | 'UNKNOWN'
+  L74    READ/OTHER                                     | is_buy_aggressor — bool
+  L79    WRITER:subscript-assign                        | trades["aggressor_side"] = trades["side"].map(
+  L82    WRITER:subscript-assign                        | trades["is_buy_aggressor"] = trades["side"] == "B"
+  L85    READ/OTHER                                     | unknown_mask = trades["aggressor_side"].isna()
+  L109   WRITER:loc/iloc-assign                         | trades.at[ix, "aggressor_side"] = "BUY_AGGRESSOR"
+  L110   WRITER:loc/iloc-assign                         | trades.at[ix, "is_buy_aggressor"] = True
+  L112   WRITER:loc/iloc-assign                         | trades.at[ix, "aggressor_side"] = "SELL_AGGRESSOR"
+  L113   WRITER:loc/iloc-assign                         | trades.at[ix, "is_buy_aggressor"] = False
+  L115   WRITER:loc/iloc-assign                         | trades.at[ix, "aggressor_side"] = "UNKNOWN"
+  L116   WRITER:loc/iloc-assign                         | trades.at[ix, "is_buy_aggressor"] = False
+  L119   READ/OTHER                                     | still_na = trades["aggressor_side"].isna()
+  L121   WRITER:loc/iloc-assign                         | trades.loc[still_na, "aggressor_side"] = "UNKNOWN"
+  L122   WRITER:loc/iloc-assign                         | trades.loc[still_na, "is_buy_aggressor"] = False
+  L139   READ/OTHER                                     | ts_event, price, size, is_buy_aggressor.
+  L163   READ/OTHER                                     | buy_mask = group["is_buy_aggressor"]
+  L215   READ/OTHER                                     | is_buy = df["is_buy_aggressor"].values
+  L285   READ/OTHER                                     | buy_mask = df["is_buy_aggressor"]
+  L327   READ/OTHER                                     | n_buy = int(trades["is_buy_aggressor"].sum())
+  L328   READ/OTHER                                     | n_sell = int((trades["aggressor_side"] == "SELL_AGGRESSOR").sum())
+  L329   READ/OTHER                                     | n_unk = int((trades["aggressor_side"] == "UNKNOWN").sum())
+  L331   READ/OTHER                                     | buy_vol = int(trades.loc[trades["is_buy_aggressor"], "size"].sum())
+  L332   READ/OTHER                                     | sell_vol = int(trades.loc[trades["aggressor_side"] == "SELL_AGGRESSOR", "size"].sum())
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\results\pc2_all_phases\_scripts\scripts\pipeline\mm_utils.py   (3 mention line(s))
+  L88    COMMENT:kwarg-assign(assign/agg/NamedAgg)      | # Aggressor side: is_buy_aggressor=True → buyer aggressor → side='B'
+  L90    READ/OTHER                                     | if "is_buy_aggressor" in trades_df.columns:
+  L91    READ/OTHER                                     | t_is_sell = (~trades_df["is_buy_aggressor"].values).astype(np.int8)
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\results\pc2_all_phases\_scripts\scripts\pipeline\process_all_months.py   (1 mention line(s))
+  L269   READ/OTHER                                     | n_buy = trades["is_buy_aggressor"].sum()
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\results\pc2_all_phases\_scripts\scripts\pipeline\process_gapfill.py   (11 mention line(s))
+  L88    WRITER:subscript-assign                        | trades["aggressor_side"] = trades["side"].map(
+  L91    WRITER:subscript-assign                        | trades["is_buy_aggressor"] = trades["side"] == "B"
+  L92    READ/OTHER                                     | still_na = trades["aggressor_side"].isna()
+  L94    WRITER:loc/iloc-assign                         | trades.loc[still_na, "aggressor_side"] = "UNKNOWN"
+  L95    WRITER:loc/iloc-assign                         | trades.loc[still_na, "is_buy_aggressor"] = False
+  L470   WRITER:subscript-assign                        | trades_df["aggressor_side"] = trades_df["side"].map(
+  L473   WRITER:subscript-assign                        | trades_df["is_buy_aggressor"] = trades_df["side"] == "B"
+  L474   READ/OTHER                                     | still_na = trades_df["aggressor_side"].isna()
+  L476   WRITER:loc/iloc-assign                         | trades_df.loc[still_na, "aggressor_side"] = "UNKNOWN"
+  L477   WRITER:loc/iloc-assign                         | trades_df.loc[still_na, "is_buy_aggressor"] = False
+  L480   READ/OTHER                                     | n_buy = int(trades_df["is_buy_aggressor"].sum())
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\results\pc2_all_phases\_scripts\scripts\pipeline\process_gapfill_jan.py   (6 mention line(s))
+  L60    WRITER:subscript-assign                        | trades["aggressor_side"] = trades["side"].map(
+  L63    WRITER:subscript-assign                        | trades["is_buy_aggressor"] = trades["side"] == "B"
+  L64    READ/OTHER                                     | still_na = trades["aggressor_side"].isna()
+  L66    WRITER:loc/iloc-assign                         | trades.loc[still_na, "aggressor_side"] = "UNKNOWN"
+  L67    WRITER:loc/iloc-assign                         | trades.loc[still_na, "is_buy_aggressor"] = False
+  L192   READ/OTHER                                     | n_buy = int(trades["is_buy_aggressor"].sum())
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\results\pc2_all_phases\_scripts\scripts\pipeline\process_gc.py   (6 mention line(s))
+  L454   WRITER:subscript-assign                        | trades_df["aggressor_side"] = trades_df["side"].map(
+  L457   WRITER:subscript-assign                        | trades_df["is_buy_aggressor"] = trades_df["side"] == "B"
+  L458   READ/OTHER                                     | still_na = trades_df["aggressor_side"].isna()
+  L460   WRITER:loc/iloc-assign                         | trades_df.loc[still_na, "aggressor_side"] = "UNKNOWN"
+  L461   WRITER:loc/iloc-assign                         | trades_df.loc[still_na, "is_buy_aggressor"] = False
+  L464   READ/OTHER                                     | n_buy = int(trades_df["is_buy_aggressor"].sum())
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\results\pc2_all_phases\_scripts\scripts\pipeline\process_mbo.py   (6 mention line(s))
+  L549   WRITER:subscript-assign                        | trades_df["aggressor_side"] = trades_df["side"].map(
+  L552   WRITER:subscript-assign                        | trades_df["is_buy_aggressor"] = trades_df["side"] == "B"
+  L553   READ/OTHER                                     | still_na = trades_df["aggressor_side"].isna()
+  L555   WRITER:loc/iloc-assign                         | trades_df.loc[still_na, "aggressor_side"] = "UNKNOWN"
+  L556   WRITER:loc/iloc-assign                         | trades_df.loc[still_na, "is_buy_aggressor"] = False
+  L559   READ/OTHER                                     | n_buy = int(trades_df["is_buy_aggressor"].sum())
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\results\pc2_all_phases\_scripts\scripts\pipeline\process_zc.py   (8 mention line(s))
+  L92    WRITER:subscript-assign                        | trades["aggressor_side"] = trades["side"].map(
+  L95    WRITER:subscript-assign                        | trades["is_buy_aggressor"] = trades["side"] == "B"
+  L97    READ/OTHER                                     | still_na = trades["aggressor_side"].isna()
+  L99    WRITER:loc/iloc-assign                         | trades.loc[still_na, "aggressor_side"] = "UNKNOWN"
+  L100   WRITER:loc/iloc-assign                         | trades.loc[still_na, "is_buy_aggressor"] = False
+  L364   READ/OTHER                                     | n_buy = int(trades["is_buy_aggressor"].sum())
+  L366   READ/OTHER                                     | buy_vol = int(trades.loc[trades["is_buy_aggressor"], "size"].sum())
+  L367   READ/OTHER                                     | sell_vol = int(trades.loc[~trades["is_buy_aggressor"], "size"].sum())
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\results\pc2_all_phases\_scripts\scripts\pipeline\resume_pipeline.py   (1 mention line(s))
+  L343   READ/OTHER                                     | n_buy = oct_trades["is_buy_aggressor"].sum()
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\results\pc2_all_phases\_scripts\scripts\strategies\adaptive_exit_test.py   (1 mention line(s))
+  L231   READ/OTHER                                     | t_iba = dt["is_buy_aggressor"].values
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\results\pc2_all_phases\_scripts\scripts\strategies\test_b_trend_mbo.py   (2 mention line(s))
+  L309   READ/OTHER                                     | if len(trade_ts_arr) > 0 and "is_buy_aggressor" in trades_day.columns:
+  L315   READ/OTHER                                     | buy_mask = wt["is_buy_aggressor"].values.astype(bool)
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\results\pc2_all_phases\_scripts\scripts\strategies\tick_signals_test.py   (6 mention line(s))
+  L129   COMMENT                                        | #  BUY  when ratio ≥ threshold AND is_buy_aggressor
+  L130   COMMENT                                        | #  SELL when ratio ≥ threshold AND NOT is_buy_aggressor
+  L172   READ/OTHER                                     | t_iba = dt["is_buy_aggressor"].values  # bool
+  L280   READ/OTHER                                     | t_iba = dt["is_buy_aggressor"].values
+  L405   READ/OTHER                                     | t_iba  = dt["is_buy_aggressor"].values
+  L557   READ/OTHER                                     | t_iba = dt["is_buy_aggressor"].values
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\results\pc2_all_phases\_scripts\scripts\visualization\footprint_chart.py   (3 mention line(s))
+  L56    READ/OTHER                                     | trades_df: Tagged trades (must have is_buy_aggressor, price, size, ts_event).
+  L90    READ/OTHER                                     | is_buy = grp["is_buy_aggressor"].values
+  L111   READ/OTHER                                     | buy_vol = int(grp.loc[grp["is_buy_aggressor"], "size"].sum())
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\results\pc2_all_phases\_scripts\scripts\visualization\liquidity_heatmap.py   (1 mention line(s))
+  L216   READ/OTHER                                     | trade_buy = day_trades["is_buy_aggressor"].values
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\analysis\micro_large.py   (2 mention line(s))
+  L278   READ/OTHER                                     | tbl = pq.read_table(str(path), columns=["size", "is_buy_aggressor", "ts_event", "price"])
+  L282   READ/OTHER                                     | total_buy += pc.sum(tbl.column("is_buy_aggressor").cast(pa.int64())).as_py()
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\analysis\microstructure_analysis.py   (1 mention line(s))
+  L364   READ/OTHER                                     | n_buy = trades_df["is_buy_aggressor"].sum()
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\analysis\microstructure_report.py   (1 mention line(s))
+  L91    READ/OTHER                                     | buy_vol = int(day_trades.loc[day_trades["is_buy_aggressor"], "size"].sum())
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\analysis\phase4_ml.py   (6 mention line(s))
+  L131   READ/OTHER                                     | cols = ["ts_event", "price", "size", "side", "aggressor_side"]
+  L135   COMMENT                                        | # some files may not have aggressor_side
+  L139   WRITER:dict-literal-key                        | if c == "aggressor_side":
+  L241   READ/OTHER                                     | if "aggressor_side" in trades.columns:
+  L242   READ/OTHER                                     | buy_mask = trades["aggressor_side"].isin(["B", "Buy", "buy"])
+  L243   READ/OTHER                                     | sell_mask = trades["aggressor_side"].isin(["A", "S", "Sell", "sell"])
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\analysis\phase4_v2.py   (1 mention line(s))
+  L345   READ/OTHER                                     | is_buy = trades["aggressor_side"].isin(["B", "Buy", "buy"]) if "aggressor_side" in trades.columns \
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\analysis\validate_is_bid.py   (6 mention line(s))
+  L29    READ/OTHER                                     | buy_count = int(trades["is_buy_aggressor"].sum())
+  L55    READ/OTHER                                     | exchange_side = np.where(trades["is_buy_aggressor"].values, "B", "A")
+  L88    READ/OTHER                                     | trades_copy = trades[["ts_event", "size", "is_buy_aggressor"]].copy()
+  L97    READ/OTHER                                     | lambda g: g.loc[g["is_buy_aggressor"], "size_int"].sum(), include_groups=False)
+  L99    READ/OTHER                                     | lambda g: g.loc[~g["is_buy_aggressor"], "size_int"].sum(), include_groups=False)
+  L162   READ/OTHER                                     | exch_buy=("is_buy_aggressor", "sum"),
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\analysis\validate_march17.py   (1 mention line(s))
+  L186   READ/OTHER                                     | n_buy = trades["is_buy_aggressor"].sum()
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\ml\edge_discovery.py   (3 mention line(s))
+  L238   READ/OTHER                                     | trade_buy   = trades["is_buy_aggressor"].values.astype("bool")
+  L856   READ/OTHER                                     | trade_buy   = trades["is_buy_aggressor"].values.astype("bool")
+  L982   READ/OTHER                                     | trade_buy   = trades["is_buy_aggressor"].values.astype("bool")
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\ml\ml_explore.py   (2 mention line(s))
+  L28    READ/OTHER                                     | columns=["ts_event","price","size","is_buy_aggressor"],
+  L41    READ/OTHER                                     | t_buy = trades["is_buy_aggressor"].values.astype(bool)
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\ml\ml_explore2.py   (2 mention line(s))
+  L34    READ/OTHER                                     | columns=["ts_event","price","size","is_buy_aggressor"],
+  L49    READ/OTHER                                     | t_buy = trades["is_buy_aggressor"].values.astype(bool)
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\ml\ml_explore3.py   (2 mention line(s))
+  L39    READ/OTHER                                     | columns=["ts_event","price","size","is_buy_aggressor"])
+  L50    READ/OTHER                                     | t_buy_all = trades["is_buy_aggressor"].values.astype(bool)
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\ml\ml_explore3b.py   (2 mention line(s))
+  L34    READ/OTHER                                     | columns=["ts_event","price","size","is_buy_aggressor"])
+  L41    READ/OTHER                                     | t_buy = trades["is_buy_aggressor"].values.astype(bool)
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\ml\ml_features.py   (2 mention line(s))
+  L103   READ/OTHER                                     | columns=["ts_event", "price", "size", "is_buy_aggressor"],
+  L214   READ/OTHER                                     | is_buy = trades["is_buy_aggressor"].values.astype(bool)
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\ml\zc_ml_explore.py   (3 mention line(s))
+  L74    READ/OTHER                                     | n_buy = trades["is_buy_aggressor"].sum()
+  L116   READ/OTHER                                     | t_buy = trades["is_buy_aggressor"].values.astype(bool)
+  L552   READ/OTHER                                     | t_buy = trades["is_buy_aggressor"].values.astype(bool)
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\phase45\phase45_verify.py   (1 mention line(s))
+  L202   READ/OTHER                                     | is_buy = trades["aggressor_side"].isin(["B","Buy","buy"]) if "aggressor_side" in trades.columns \
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\phase45\phase45b_audit.py   (1 mention line(s))
+  L213   READ/OTHER                                     | is_buy = trades["aggressor_side"].isin(["B","Buy","buy"]) if "aggressor_side" in trades.columns \
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\phase4\phase4_ml.py   (6 mention line(s))
+  L132   READ/OTHER                                     | cols = ["ts_event", "price", "size", "side", "aggressor_side"]
+  L136   COMMENT                                        | # some files may not have aggressor_side
+  L140   WRITER:dict-literal-key                        | if c == "aggressor_side":
+  L242   READ/OTHER                                     | if "aggressor_side" in trades.columns:
+  L243   READ/OTHER                                     | buy_mask = trades["aggressor_side"].isin(["B", "Buy", "buy"])
+  L244   READ/OTHER                                     | sell_mask = trades["aggressor_side"].isin(["A", "S", "Sell", "sell"])
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\phase4\phase4_shuffle_fix.py   (1 mention line(s))
+  L236   READ/OTHER                                     | is_buy = trades["aggressor_side"].isin(["B","Buy","buy"]) if "aggressor_side" in trades.columns \
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\phase4\phase4_v2.py   (1 mention line(s))
+  L346   READ/OTHER                                     | is_buy = trades["aggressor_side"].isin(["B", "Buy", "buy"]) if "aggressor_side" in trades.columns \
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\phase5\phase5_ml.py   (1 mention line(s))
+  L231   READ/OTHER                                     | is_buy = trades["aggressor_side"].isin(["B","Buy","buy"]) if "aggressor_side" in trades.columns \
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\pipeline\flow_tagger.py   (23 mention line(s))
+  L96    READ/OTHER                                     | aggressor_side  — 'BUY_AGGRESSOR' | 'SELL_AGGRESSOR' | 'UNKNOWN'
+  L97    READ/OTHER                                     | is_buy_aggressor — bool
+  L102   WRITER:subscript-assign                        | trades["aggressor_side"] = trades["side"].map(
+  L105   WRITER:subscript-assign                        | trades["is_buy_aggressor"] = trades["side"] == "B"
+  L108   READ/OTHER                                     | unknown_mask = trades["aggressor_side"].isna()
+  L132   WRITER:loc/iloc-assign                         | trades.at[ix, "aggressor_side"] = "BUY_AGGRESSOR"
+  L133   WRITER:loc/iloc-assign                         | trades.at[ix, "is_buy_aggressor"] = True
+  L135   WRITER:loc/iloc-assign                         | trades.at[ix, "aggressor_side"] = "SELL_AGGRESSOR"
+  L136   WRITER:loc/iloc-assign                         | trades.at[ix, "is_buy_aggressor"] = False
+  L138   WRITER:loc/iloc-assign                         | trades.at[ix, "aggressor_side"] = "UNKNOWN"
+  L139   WRITER:loc/iloc-assign                         | trades.at[ix, "is_buy_aggressor"] = False
+  L142   READ/OTHER                                     | still_na = trades["aggressor_side"].isna()
+  L144   WRITER:loc/iloc-assign                         | trades.loc[still_na, "aggressor_side"] = "UNKNOWN"
+  L145   WRITER:loc/iloc-assign                         | trades.loc[still_na, "is_buy_aggressor"] = False
+  L162   READ/OTHER                                     | ts_event, price, size, is_buy_aggressor.
+  L186   READ/OTHER                                     | buy_mask = group["is_buy_aggressor"]
+  L238   READ/OTHER                                     | is_buy = df["is_buy_aggressor"].values
+  L354   READ/OTHER                                     | buy_mask = df["is_buy_aggressor"]
+  L396   READ/OTHER                                     | n_buy = int(trades["is_buy_aggressor"].sum())
+  L397   READ/OTHER                                     | n_sell = int((trades["aggressor_side"] == "SELL_AGGRESSOR").sum())
+  L398   READ/OTHER                                     | n_unk = int((trades["aggressor_side"] == "UNKNOWN").sum())
+  L400   READ/OTHER                                     | buy_vol = int(trades.loc[trades["is_buy_aggressor"], "size"].sum())
+  L401   READ/OTHER                                     | sell_vol = int(trades.loc[trades["aggressor_side"] == "SELL_AGGRESSOR", "size"].sum())
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\pipeline\mm_utils.py   (3 mention line(s))
+  L88    COMMENT:kwarg-assign(assign/agg/NamedAgg)      | # Aggressor side: is_buy_aggressor=True → buyer aggressor → side='B'
+  L90    READ/OTHER                                     | if "is_buy_aggressor" in trades_df.columns:
+  L91    READ/OTHER                                     | t_is_sell = (~trades_df["is_buy_aggressor"].values).astype(np.int8)
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\pipeline\process_all_months.py   (1 mention line(s))
+  L295   READ/OTHER                                     | n_buy = trades["is_buy_aggressor"].sum()
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\pipeline\process_gapfill.py   (11 mention line(s))
+  L88    WRITER:subscript-assign                        | trades["aggressor_side"] = trades["side"].map(
+  L91    WRITER:subscript-assign                        | trades["is_buy_aggressor"] = trades["side"] == "B"
+  L92    READ/OTHER                                     | still_na = trades["aggressor_side"].isna()
+  L94    WRITER:loc/iloc-assign                         | trades.loc[still_na, "aggressor_side"] = "UNKNOWN"
+  L95    WRITER:loc/iloc-assign                         | trades.loc[still_na, "is_buy_aggressor"] = False
+  L470   WRITER:subscript-assign                        | trades_df["aggressor_side"] = trades_df["side"].map(
+  L473   WRITER:subscript-assign                        | trades_df["is_buy_aggressor"] = trades_df["side"] == "B"
+  L474   READ/OTHER                                     | still_na = trades_df["aggressor_side"].isna()
+  L476   WRITER:loc/iloc-assign                         | trades_df.loc[still_na, "aggressor_side"] = "UNKNOWN"
+  L477   WRITER:loc/iloc-assign                         | trades_df.loc[still_na, "is_buy_aggressor"] = False
+  L480   READ/OTHER                                     | n_buy = int(trades_df["is_buy_aggressor"].sum())
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\pipeline\process_gapfill_jan.py   (6 mention line(s))
+  L60    WRITER:subscript-assign                        | trades["aggressor_side"] = trades["side"].map(
+  L63    WRITER:subscript-assign                        | trades["is_buy_aggressor"] = trades["side"] == "B"
+  L64    READ/OTHER                                     | still_na = trades["aggressor_side"].isna()
+  L66    WRITER:loc/iloc-assign                         | trades.loc[still_na, "aggressor_side"] = "UNKNOWN"
+  L67    WRITER:loc/iloc-assign                         | trades.loc[still_na, "is_buy_aggressor"] = False
+  L192   READ/OTHER                                     | n_buy = int(trades["is_buy_aggressor"].sum())
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\pipeline\process_gc.py   (6 mention line(s))
+  L454   WRITER:subscript-assign                        | trades_df["aggressor_side"] = trades_df["side"].map(
+  L457   WRITER:subscript-assign                        | trades_df["is_buy_aggressor"] = trades_df["side"] == "B"
+  L458   READ/OTHER                                     | still_na = trades_df["aggressor_side"].isna()
+  L460   WRITER:loc/iloc-assign                         | trades_df.loc[still_na, "aggressor_side"] = "UNKNOWN"
+  L461   WRITER:loc/iloc-assign                         | trades_df.loc[still_na, "is_buy_aggressor"] = False
+  L464   READ/OTHER                                     | n_buy = int(trades_df["is_buy_aggressor"].sum())
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\pipeline\process_mbo.py   (6 mention line(s))
+  L549   WRITER:subscript-assign                        | trades_df["aggressor_side"] = trades_df["side"].map(
+  L552   WRITER:subscript-assign                        | trades_df["is_buy_aggressor"] = trades_df["side"] == "B"
+  L553   READ/OTHER                                     | still_na = trades_df["aggressor_side"].isna()
+  L555   WRITER:loc/iloc-assign                         | trades_df.loc[still_na, "aggressor_side"] = "UNKNOWN"
+  L556   WRITER:loc/iloc-assign                         | trades_df.loc[still_na, "is_buy_aggressor"] = False
+  L559   READ/OTHER                                     | n_buy = int(trades_df["is_buy_aggressor"].sum())
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\pipeline\process_zc.py   (8 mention line(s))
+  L92    WRITER:subscript-assign                        | trades["aggressor_side"] = trades["side"].map(
+  L95    WRITER:subscript-assign                        | trades["is_buy_aggressor"] = trades["side"] == "B"
+  L97    READ/OTHER                                     | still_na = trades["aggressor_side"].isna()
+  L99    WRITER:loc/iloc-assign                         | trades.loc[still_na, "aggressor_side"] = "UNKNOWN"
+  L100   WRITER:loc/iloc-assign                         | trades.loc[still_na, "is_buy_aggressor"] = False
+  L364   READ/OTHER                                     | n_buy = int(trades["is_buy_aggressor"].sum())
+  L366   READ/OTHER                                     | buy_vol = int(trades.loc[trades["is_buy_aggressor"], "size"].sum())
+  L367   READ/OTHER                                     | sell_vol = int(trades.loc[~trades["is_buy_aggressor"], "size"].sum())
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\pipeline\resume_pipeline.py   (1 mention line(s))
+  L343   READ/OTHER                                     | n_buy = oct_trades["is_buy_aggressor"].sum()
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\strategies\adaptive_exit_test.py   (1 mention line(s))
+  L231   READ/OTHER                                     | t_iba = dt["is_buy_aggressor"].values
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\strategies\test_b_trend_mbo.py   (2 mention line(s))
+  L309   READ/OTHER                                     | if len(trade_ts_arr) > 0 and "is_buy_aggressor" in trades_day.columns:
+  L315   READ/OTHER                                     | buy_mask = wt["is_buy_aggressor"].values.astype(bool)
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\strategies\tick_signals_test.py   (6 mention line(s))
+  L129   COMMENT                                        | #  BUY  when ratio ≥ threshold AND is_buy_aggressor
+  L130   COMMENT                                        | #  SELL when ratio ≥ threshold AND NOT is_buy_aggressor
+  L172   READ/OTHER                                     | t_iba = dt["is_buy_aggressor"].values  # bool
+  L280   READ/OTHER                                     | t_iba = dt["is_buy_aggressor"].values
+  L405   READ/OTHER                                     | t_iba  = dt["is_buy_aggressor"].values
+  L557   READ/OTHER                                     | t_iba = dt["is_buy_aggressor"].values
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\v4\a12_academic_signals.py   (4 mention line(s))
+  L155   READ/OTHER                                     | tr = trades[["ts_event", "size", "is_buy_aggressor"]].copy()
+  L157   READ/OTHER                                     | tr["signed"] = np.where(tr["is_buy_aggressor"].astype(bool), tr["size"], -tr["size"])
+  L185   READ/OTHER                                     | tr = trades[["ts_event", "size", "is_buy_aggressor"]].copy()
+  L187   READ/OTHER                                     | tr["signed"] = np.where(tr["is_buy_aggressor"].astype(bool), tr["size"], -tr["size"])
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\v4\a4_runner.py   (4 mention line(s))
+  L218   READ/OTHER                                     | df = pq.read_table(str(p), columns=["ts_event", "price", "size", "is_buy_aggressor"]).to_pandas()
+  L307   READ/OTHER                                     | tr["signed_size"] = np.where(tr["is_buy_aggressor"].astype(bool), tr["size"], -tr["size"])
+  L308   READ/OTHER                                     | tr["buy_size"] = np.where(tr["is_buy_aggressor"].astype(bool), tr["size"], 0)
+  L309   READ/OTHER                                     | tr["sell_size"] = np.where(~tr["is_buy_aggressor"].astype(bool), tr["size"], 0)
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\v5\flow_tagger.py   (23 mention line(s))
+  L96    READ/OTHER                                     | aggressor_side  — 'BUY_AGGRESSOR' | 'SELL_AGGRESSOR' | 'UNKNOWN'
+  L97    READ/OTHER                                     | is_buy_aggressor — bool
+  L102   WRITER:subscript-assign                        | trades["aggressor_side"] = trades["side"].map(
+  L105   WRITER:subscript-assign                        | trades["is_buy_aggressor"] = trades["side"] == "B"
+  L108   READ/OTHER                                     | unknown_mask = trades["aggressor_side"].isna()
+  L132   WRITER:loc/iloc-assign                         | trades.at[ix, "aggressor_side"] = "BUY_AGGRESSOR"
+  L133   WRITER:loc/iloc-assign                         | trades.at[ix, "is_buy_aggressor"] = True
+  L135   WRITER:loc/iloc-assign                         | trades.at[ix, "aggressor_side"] = "SELL_AGGRESSOR"
+  L136   WRITER:loc/iloc-assign                         | trades.at[ix, "is_buy_aggressor"] = False
+  L138   WRITER:loc/iloc-assign                         | trades.at[ix, "aggressor_side"] = "UNKNOWN"
+  L139   WRITER:loc/iloc-assign                         | trades.at[ix, "is_buy_aggressor"] = False
+  L142   READ/OTHER                                     | still_na = trades["aggressor_side"].isna()
+  L144   WRITER:loc/iloc-assign                         | trades.loc[still_na, "aggressor_side"] = "UNKNOWN"
+  L145   WRITER:loc/iloc-assign                         | trades.loc[still_na, "is_buy_aggressor"] = False
+  L162   READ/OTHER                                     | ts_event, price, size, is_buy_aggressor.
+  L186   READ/OTHER                                     | buy_mask = group["is_buy_aggressor"]
+  L238   READ/OTHER                                     | is_buy = df["is_buy_aggressor"].values
+  L354   READ/OTHER                                     | buy_mask = df["is_buy_aggressor"]
+  L396   READ/OTHER                                     | n_buy = int(trades["is_buy_aggressor"].sum())
+  L397   READ/OTHER                                     | n_sell = int((trades["aggressor_side"] == "SELL_AGGRESSOR").sum())
+  L398   READ/OTHER                                     | n_unk = int((trades["aggressor_side"] == "UNKNOWN").sum())
+  L400   READ/OTHER                                     | buy_vol = int(trades.loc[trades["is_buy_aggressor"], "size"].sum())
+  L401   READ/OTHER                                     | sell_vol = int(trades.loc[trades["aggressor_side"] == "SELL_AGGRESSOR", "size"].sum())
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\visualization\footprint_chart.py   (3 mention line(s))
+  L56    READ/OTHER                                     | trades_df: Tagged trades (must have is_buy_aggressor, price, size, ts_event).
+  L90    READ/OTHER                                     | is_buy = grp["is_buy_aggressor"].values
+  L111   READ/OTHER                                     | buy_vol = int(grp.loc[grp["is_buy_aggressor"], "size"].sum())
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\scripts\visualization\liquidity_heatmap.py   (1 mention line(s))
+  L216   READ/OTHER                                     | trade_buy = day_trades["is_buy_aggressor"].values
+
+FILE: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\transfer\scripts\phase5_ml.py   (1 mention line(s))
+  L230   READ/OTHER                                     | is_buy = trades["aggressor_side"].isin(["B","Buy","buy"]) if "aggressor_side" in trades.columns \
+
+==============================================================================
+SECTION 5 - READER'S GUIDE / WHAT THE SURVEY SHOWS
+==============================================================================
+Companion artifact: tagger_logic_compare.txt (per-writer def blocks + block MD5)
+Companion artifact: tagger_divergence_diff.txt (diff of the two flow_tagger.py)
+
+1. 460 *.py scanned; 119 files mention the columns; 472 mention lines;
+   152 WRITER lines across 31 files.
+2. Those 31 files collapse to 12 distinct (basename, whole-file MD5) sources.
+   The archive keeps 4 mirrored script trees:
+     scripts\ ; pc2_transfer\scripts\ ; PC2_TRANSFER_v4\scripts\ ;
+     results\pc2_all_phases\_scripts\scripts\
+3. Five basenames have 2 distinct whole-file hashes (flow_tagger.py,
+   phase4_ml.py, process_gapfill.py, process_gapfill_jan.py, process_mbo.py).
+   In EVERY case the divergence is OUTSIDE the aggressor-tagging block: the
+   normalized MD5 of the enclosing def is identical across the pair
+   (see tagger_logic_compare.txt). Example: the flow_tagger.py divergence is
+   the TICK_SIZES registry + compute_delta_profile signature
+   (tagger_divergence_diff.txt hunks @@ -22, @@ -36, @@ -268), not tag_aggressor.
+4. Distinct tagging RULES, not files:
+   RULE A - side-map + UNKNOWN fallback. Verbatim:
+       trades["aggressor_side"] = trades["side"].map(
+           {"B": "BUY_AGGRESSOR", "A": "SELL_AGGRESSOR"}
+       )
+       trades["is_buy_aggressor"] = trades["side"] == "B"
+       still_na = trades["aggressor_side"].isna()
+       if still_na.any():
+           trades.loc[still_na, "aggressor_side"] = "UNKNOWN"
+           trades.loc[still_na, "is_buy_aggressor"] = False
+     Sites: scripts\pipeline\process_zc.py L92-L100 (def tag_aggressor,
+     block_md5 86cde33692589fc0595e0386f6c66a82);
+     scripts\pipeline\process_gapfill.py L85-L96 (same block_md5);
+     scripts\pipeline\process_gapfill_jan.py L58-L68 (block_md5
+     6c8296ffb86b611e8c8141270c86beb5 - same statements, no type hints);
+     scripts\pipeline\process_mbo.py L549-L556 (inline in process_month,
+     identical statements with the frame named trades_df);
+     scripts\pipeline\process_gc.py L454-L461 (inline, identical to process_mbo).
+   RULE B - side-map, then QUOTE-BASED INFERENCE for missing side, then
+     UNKNOWN. Only in flow_tagger.py (scripts\pipeline L68-L147 and
+     scripts\v5 same content; block_md5 a0e0df3c66bdc5da09c301f10b3e0a77):
+       L131:  if px >= ask:   -> BUY_AGGRESSOR
+       L134:  elif px <= bid: -> SELL_AGGRESSOR
+       L137:  else:           -> UNKNOWN
+     This is a DIFFERENT rule from RULE A: RULE A sends every unmapped side
+     to UNKNOWN; RULE B first tries to infer it from the L1 quote.
+   RULE C - read-path backfill, NOT a producer. phase4_ml.py
+     def load_trades_month (scripts\phase4 L140, scripts\analysis L139,
+     block_md5 e89349722fb9a91b185a3f8ad81ee368):
+         if c == "aggressor_side":
+             df[c] = "U"
+     Note the value domain: "U", not "UNKNOWN". Any consumer comparing to
+     "UNKNOWN" will not see these rows.
+5. Which writer produced the C1 file (zc_trades_tagged_2025-01.parquet)?
+   NOT process_zc.py: its MONTHS list covers only 2025-07 and 2025-12
+   (scripts\pipeline\process_zc.py L38-L53). The generic driver
+   scripts\pipeline\process_mbo.py carries a "zc" InstrumentConfig (L90-L91)
+   and writes proc_dir / f"{sym_lc}_trades_tagged_{month}.parquet" (L560-L561),
+   so RULE A as spelled inline at L549-L556 is the tagging that produced it.

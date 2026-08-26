@@ -1,0 +1,123 @@
+=== CORRECTED / decision_T — the headline cells (2025-01) ===
+shape: (76, 5)
+┌────────────┬────────────────┬────────┬───────┬────────┐
+│ instrument ┆ class          ┆ strict ┆ equal ┆ rows   │
+│ ---        ┆ ---            ┆ ---    ┆ ---   ┆ ---    │
+│ str        ┆ str            ┆ i64    ┆ i64   ┆ i64    │
+╞════════════╪════════════════╪════════╪═══════╪════════╡
+│ cl         ┆ mbo_all        ┆ 53249  ┆ 2194  ┆ 801410 │
+│ cl         ┆ mbo_all_rows   ┆ 54341  ┆ 2197  ┆ 801410 │
+│ cl         ┆ mbo_ask_add    ┆ 40435  ┆ 927   ┆ 801410 │
+│ cl         ┆ mbo_ask_cancel ┆ 39559  ┆ 6     ┆ 801410 │
+│ cl         ┆ mbo_bid_add    ┆ 40600  ┆ 1259  ┆ 801410 │
+│ cl         ┆ mbo_bid_cancel ┆ 39581  ┆ 2     ┆ 801410 │
+│ cl         ┆ mbo_cancel_any ┆ 46643  ┆ 8     ┆ 801410 │
+│ cl         ┆ trades_all     ┆ 21770  ┆ 0     ┆ 801410 │
+│ cl         ┆ trades_buy     ┆ 0      ┆ 0     ┆ 801410 │
+│ cl         ┆ trades_large   ┆ 1594   ┆ 0     ┆ 801410 │
+│ cl         ┆ trades_sell    ┆ 21770  ┆ 0     ┆ 801410 │
+│ es         ┆ mbo_all        ┆ 0      ┆ 4     ┆ 605289 │
+│ es         ┆ mbo_all_rows   ┆ 0      ┆ 6     ┆ 605289 │
+│ es         ┆ mbo_ask_add    ┆ 0      ┆ 1     ┆ 605289 │
+│ es         ┆ mbo_ask_cancel ┆ 0      ┆ 1     ┆ 605289 │
+│ es         ┆ mbo_bid_add    ┆ 0      ┆ 2     ┆ 605289 │
+│ es         ┆ mbo_bid_cancel ┆ 0      ┆ 0     ┆ 605289 │
+│ es         ┆ mbo_cancel_any ┆ 0      ┆ 1     ┆ 605289 │
+│ es         ┆ trades_all     ┆ 0      ┆ 0     ┆ 605289 │
+│ es         ┆ trades_buy     ┆ 0      ┆ 0     ┆ 605289 │
+│ es         ┆ trades_large   ┆ 0      ┆ 0     ┆ 605289 │
+│ es         ┆ trades_sell    ┆ 0      ┆ 0     ┆ 605289 │
+│ gc         ┆ mbo_all        ┆ 37065  ┆ 1853  ┆ 761736 │
+│ gc         ┆ mbo_ask_add    ┆ 25919  ┆ 767   ┆ 761736 │
+│ gc         ┆ mbo_ask_cancel ┆ 24993  ┆ 5     ┆ 761736 │
+│ gc         ┆ mbo_bid_add    ┆ 26290  ┆ 1068  ┆ 761736 │
+│ gc         ┆ mbo_bid_cancel ┆ 25095  ┆ 10    ┆ 761736 │
+│ gc         ┆ mbo_cancel_any ┆ 30403  ┆ 15    ┆ 761736 │
+│ gc         ┆ trades_all     ┆ 13907  ┆ 3     ┆ 761736 │
+│ gc         ┆ trades_buy     ┆ 0      ┆ 0     ┆ 761736 │
+│ gc         ┆ trades_large   ┆ 267    ┆ 0     ┆ 761736 │
+│ gc         ┆ trades_sell    ┆ 13907  ┆ 3     ┆ 761736 │
+│ he         ┆ mbo_all        ┆ 0      ┆ 1     ┆ 337488 │
+│ he         ┆ mbo_ask_add    ┆ 0      ┆ 0     ┆ 337488 │
+│ he         ┆ mbo_ask_cancel ┆ 0      ┆ 0     ┆ 337488 │
+│ he         ┆ mbo_bid_add    ┆ 0      ┆ 0     ┆ 337488 │
+│ he         ┆ mbo_bid_cancel ┆ 0      ┆ 1     ┆ 337488 │
+│ he         ┆ mbo_cancel_any ┆ 0      ┆ 1     ┆ 337488 │
+│ he         ┆ trades_all     ┆ 0      ┆ 0     ┆ 337488 │
+│ he         ┆ trades_buy     ┆ 0      ┆ 0     ┆ 337488 │
+│ he         ┆ trades_large   ┆ 0      ┆ 0     ┆ 337488 │
+│ he         ┆ trades_sell    ┆ 0      ┆ 0     ┆ 337488 │
+│ le         ┆ mbo_all        ┆ 0      ┆ 1     ┆ 337493 │
+│ le         ┆ mbo_ask_add    ┆ 0      ┆ 0     ┆ 337493 │
+│ le         ┆ mbo_ask_cancel ┆ 0      ┆ 0     ┆ 337493 │
+│ le         ┆ mbo_bid_add    ┆ 0      ┆ 1     ┆ 337493 │
+│ le         ┆ mbo_bid_cancel ┆ 0      ┆ 0     ┆ 337493 │
+│ le         ┆ mbo_cancel_any ┆ 0      ┆ 0     ┆ 337493 │
+│ le         ┆ trades_all     ┆ 0      ┆ 0     ┆ 337493 │
+│ le         ┆ trades_buy     ┆ 0      ┆ 0     ┆ 337493 │
+│ le         ┆ trades_large   ┆ 0      ┆ 0     ┆ 337493 │
+│ le         ┆ trades_sell    ┆ 0      ┆ 0     ┆ 337493 │
+│ nq         ┆ trades_all     ┆ 0      ┆ 0     ┆ 598227 │
+│ nq         ┆ trades_buy     ┆ 0      ┆ 0     ┆ 598227 │
+│ nq         ┆ trades_large   ┆ 0      ┆ 0     ┆ 598227 │
+│ nq         ┆ trades_sell    ┆ 0      ┆ 0     ┆ 598227 │
+│ zc         ┆ mbo_all        ┆ 0      ┆ 0     ┆ 338158 │
+│ zc         ┆ mbo_ask_add    ┆ 0      ┆ 0     ┆ 338158 │
+│ zc         ┆ mbo_ask_cancel ┆ 0      ┆ 0     ┆ 338158 │
+│ zc         ┆ mbo_bid_add    ┆ 0      ┆ 0     ┆ 338158 │
+│ zc         ┆ mbo_bid_cancel ┆ 0      ┆ 0     ┆ 338158 │
+│ zc         ┆ mbo_cancel_any ┆ 0      ┆ 0     ┆ 338158 │
+│ zc         ┆ trades_all     ┆ 0      ┆ 0     ┆ 338158 │
+│ zc         ┆ trades_buy     ┆ 0      ┆ 0     ┆ 338158 │
+│ zc         ┆ trades_large   ┆ 0      ┆ 0     ┆ 338158 │
+│ zc         ┆ trades_sell    ┆ 0      ┆ 0     ┆ 338158 │
+│ zs         ┆ mbo_all        ┆ 0      ┆ 0     ┆ 337844 │
+│ zs         ┆ mbo_ask_add    ┆ 0      ┆ 0     ┆ 337844 │
+│ zs         ┆ mbo_ask_cancel ┆ 0      ┆ 0     ┆ 337844 │
+│ zs         ┆ mbo_bid_add    ┆ 0      ┆ 0     ┆ 337844 │
+│ zs         ┆ mbo_bid_cancel ┆ 0      ┆ 0     ┆ 337844 │
+│ zs         ┆ mbo_cancel_any ┆ 0      ┆ 0     ┆ 337844 │
+│ zs         ┆ trades_all     ┆ 0      ┆ 0     ┆ 337844 │
+│ zs         ┆ trades_buy     ┆ 0      ┆ 0     ┆ 337844 │
+│ zs         ┆ trades_large   ┆ 0      ┆ 0     ┆ 337844 │
+│ zs         ┆ trades_sell    ┆ 0      ┆ 0     ┆ 337844 │
+└────────────┴────────────────┴────────┴───────┴────────┘
+
+=== NONZERO ONLY ===
+shape: (30, 5)
+┌────────────┬────────────────┬────────┬───────┬────────┐
+│ instrument ┆ class          ┆ strict ┆ equal ┆ rows   │
+│ ---        ┆ ---            ┆ ---    ┆ ---   ┆ ---    │
+│ str        ┆ str            ┆ i64    ┆ i64   ┆ i64    │
+╞════════════╪════════════════╪════════╪═══════╪════════╡
+│ cl         ┆ mbo_all        ┆ 53249  ┆ 2194  ┆ 801410 │
+│ cl         ┆ mbo_all_rows   ┆ 54341  ┆ 2197  ┆ 801410 │
+│ cl         ┆ mbo_ask_add    ┆ 40435  ┆ 927   ┆ 801410 │
+│ cl         ┆ mbo_ask_cancel ┆ 39559  ┆ 6     ┆ 801410 │
+│ cl         ┆ mbo_bid_add    ┆ 40600  ┆ 1259  ┆ 801410 │
+│ cl         ┆ mbo_bid_cancel ┆ 39581  ┆ 2     ┆ 801410 │
+│ cl         ┆ mbo_cancel_any ┆ 46643  ┆ 8     ┆ 801410 │
+│ cl         ┆ trades_all     ┆ 21770  ┆ 0     ┆ 801410 │
+│ cl         ┆ trades_large   ┆ 1594   ┆ 0     ┆ 801410 │
+│ cl         ┆ trades_sell    ┆ 21770  ┆ 0     ┆ 801410 │
+│ es         ┆ mbo_all        ┆ 0      ┆ 4     ┆ 605289 │
+│ es         ┆ mbo_all_rows   ┆ 0      ┆ 6     ┆ 605289 │
+│ es         ┆ mbo_ask_add    ┆ 0      ┆ 1     ┆ 605289 │
+│ es         ┆ mbo_ask_cancel ┆ 0      ┆ 1     ┆ 605289 │
+│ es         ┆ mbo_bid_add    ┆ 0      ┆ 2     ┆ 605289 │
+│ es         ┆ mbo_cancel_any ┆ 0      ┆ 1     ┆ 605289 │
+│ gc         ┆ mbo_all        ┆ 37065  ┆ 1853  ┆ 761736 │
+│ gc         ┆ mbo_ask_add    ┆ 25919  ┆ 767   ┆ 761736 │
+│ gc         ┆ mbo_ask_cancel ┆ 24993  ┆ 5     ┆ 761736 │
+│ gc         ┆ mbo_bid_add    ┆ 26290  ┆ 1068  ┆ 761736 │
+│ gc         ┆ mbo_bid_cancel ┆ 25095  ┆ 10    ┆ 761736 │
+│ gc         ┆ mbo_cancel_any ┆ 30403  ┆ 15    ┆ 761736 │
+│ gc         ┆ trades_all     ┆ 13907  ┆ 3     ┆ 761736 │
+│ gc         ┆ trades_large   ┆ 267    ┆ 0     ┆ 761736 │
+│ gc         ┆ trades_sell    ┆ 13907  ┆ 3     ┆ 761736 │
+│ he         ┆ mbo_all        ┆ 0      ┆ 1     ┆ 337488 │
+│ he         ┆ mbo_bid_cancel ┆ 0      ┆ 1     ┆ 337488 │
+│ he         ┆ mbo_cancel_any ┆ 0      ┆ 1     ┆ 337488 │
+│ le         ┆ mbo_all        ┆ 0      ┆ 1     ┆ 337493 │
+│ le         ┆ mbo_bid_add    ┆ 0      ┆ 1     ┆ 337493 │
+└────────────┴────────────────┴────────┴───────┴────────┘

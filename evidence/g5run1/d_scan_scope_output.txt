@@ -1,0 +1,18 @@
+=== PART 1: files opened during the full --stage prereg run ===
+(run_stage returned 0)
+  opened: DESIGN.md   x4
+  opened: PARKING_LOT.md   x1
+  opened: PREREG.md   x11
+  opened: VALIDATED_CONFIG.toml   x2
+  opened: protocol/runtime_reference.py   x1
+
+  AVAILABILITY_DECLARATION.md opened: 0 time(s) -> NEVER READ / OUT OF SCOPE
+
+=== PART 2: apply check_single_source's own rules to the declaration ===
+declaration size: 275348 chars, 3684 lines
+check_single_source(root) findings mentioning the declaration: []
+normative_lines() yields 3684 scannable lines for the declaration
+
+WOULD-FLAG COUNT if AVAILABILITY_DECLARATION.md were in scope: 0
+
+--- first 15 would-be findings ---

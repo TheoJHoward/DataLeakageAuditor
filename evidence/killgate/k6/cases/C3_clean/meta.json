@@ -1,0 +1,21 @@
+{
+  "features": [
+    "f0",
+    "f5",
+    "f20",
+    "f1",
+    "f7"
+  ],
+  "target": "target",
+  "group": null,
+  "time": null,
+  "truth": "selection scored on train only",
+  "case": "C3",
+  "side": "clean",
+  "type": "T3",
+  "detector_row": "L1.3",
+  "n_rows": 400,
+  "n_train": 200,
+  "n_test": 200,
+  "n_index_overlap": 0
+}

@@ -1,0 +1,31 @@
+==============================================================================
+(A) CELL-BY-CELL vs m5/per_instrument_counts.csv  (2025-01 & 2025-08)
+  M5 cells                       : 453
+  N1 cells matched to an M5 cell : 453
+  M5 cells with NO N1 counterpart: 0
+  DISAGREEING CELLS              : 0
+  -> EXACT REPRODUCTION of every M5 cell.
+
+==============================================================================
+(B) MAXIMA vs the M5 numbers QUOTED IN THE BRIEF (corrected, decision_T)
+inst month            quoted   N1 max over M5 class set   N1 max over declared 10      rows  verdict
+cl   2025-01   (54341, 2197)              (54341, 2197)             (53249, 2194)    801410  MATCH (M5 class set); differs over declared-10 only b/c M5 max used mbo_all_rows
+cl   2025-08   (27852, 1427)              (27852, 1427)             (27852, 1427)    664076  MATCH (M5 class set)
+es   2025-01          (0, 6)                     (0, 6)                    (0, 4)    605289  MATCH (M5 class set); differs over declared-10 only b/c M5 max used mbo_all_rows
+es   2025-08          (0, 6)                     (0, 6)                    (0, 6)    546609  MATCH (M5 class set)
+gc   2025-01   (37065, 1853)              (37065, 1853)             (37065, 1853)    761736  MATCH (M5 class set)
+gc   2025-08   (42886, 1907)              (42886, 1907)             (42886, 1907)    692041  MATCH (M5 class set)
+he   2025-01          (0, 1)                     (0, 1)                    (0, 1)    337488  MATCH (M5 class set)
+he   2025-08         (0, 15)                    (0, 15)                   (0, 15)    308710  MATCH (M5 class set)
+le   2025-01          (0, 1)                     (0, 1)                    (0, 1)    337493  MATCH (M5 class set)
+le   2025-08         (0, 13)                    (0, 13)                   (0, 13)    308710  MATCH (M5 class set)
+nq   2025-01          (0, 0)                     (0, 0)                    (0, 0)    598227  MATCH (M5 class set)
+nq   2025-08          (0, 0)                     (0, 0)                    (0, 0)    540530  MATCH (M5 class set)
+zc   2025-01          (0, 0)                     (0, 0)                    (0, 0)    338158  MATCH (M5 class set)
+zc   2025-08   (90868, 2857)              (90868, 2857)             (90868, 2857)    554303  MATCH (M5 class set)
+zs   2025-01          (0, 0)                     (0, 0)                    (0, 0)    337844  MATCH (M5 class set)
+zs   2025-08   (64404, 2161)              (64404, 2161)             (64404, 2161)    465381  MATCH (M5 class set)
+  quoted row total ('zc', '2025-08'): brief=554303 n1=554303 MATCH
+
+TOTAL QUOTED-MAXIMA DISAGREEMENTS: 0
+TOTAL CELL-BY-CELL DISAGREEMENTS : 0

@@ -1,0 +1,21 @@
+{"rows": 338159, "rows_integral(T==floor)": 321384, "rows_mid_second(T>floor)": 16775}
+Method A strict totals: {'trades_all': 89568, 'mbo_all': 254315}
+class event counts: {'trades_all': 397457, 'trades_buy': 0, 'trades_sell': 397457, 'trades_large': 75606, 'mbo_all': 8272769, 'mbo_bid_add': 1239887, 'mbo_ask_add': 1223790, 'mbo_bid_cancel': 1219431, 'mbo_ask_cancel': 1212634, 'mbo_cancel_any': 2432065}
+cross-check trades_all: method A vs B per-row differences = 0
+cross-check mbo_all: method A vs B per-row differences = 0
+
+stamp_type_breakdown.csv written: (10, 19)
+   event_class  strict_viol_integral  strict_viol_mid_second  strict_viol_total  viol_rate_integral  viol_rate_mid_second  share_of_viol_on_integral
+    trades_all                 89566                       2              89568            0.278688              0.000119                   0.999978
+    trades_buy                     0                       0                  0            0.000000              0.000000                        NaN
+   trades_sell                 89566                       2              89568            0.278688              0.000119                   0.999978
+  trades_large                 23633                       0              23633            0.073535              0.000000                   1.000000
+       mbo_all                254266                      49             254315            0.791159              0.002921                   0.999807
+   mbo_bid_add                164952                       7             164959            0.513255              0.000417                   0.999958
+   mbo_ask_add                162735                      19             162754            0.506357              0.001133                   0.999883
+mbo_bid_cancel                135972                       9             135981            0.423083              0.000537                   0.999934
+mbo_ask_cancel                129325                       9             129334            0.402400              0.000537                   0.999930
+mbo_cancel_any                179841                      16             179857            0.559583              0.000954                   0.999911
+
+classes mismatching t1 totals: 0
+DONE

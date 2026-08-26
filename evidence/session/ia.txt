@@ -1,0 +1,414 @@
+
+===== PAGE 1 =====
+Internet Appendix
+Matching Algorithm Design and Short-Horizon Price Predictability in CME Futures
+Theo Johann Howard
+May 7, 2026
+Contents
+1 IA.1: Results and Classification (46 cells) 2
+2 IA.2: Cross-Design Consistency (46 cells) 4
+3 IA.3: Per-Instrument Event Counts and Data Quality 6
+4 IA.4: Per-Bucket Academic Signal Results (46 cells) 7
+5 IA.5: Leakage Ablation Summary (Top 5 features per T1/T2 cell) 9
+6 IA.6: Shuffle Test Distributions 11
+7 IA.7: Verification Protocol Detail 12
+8 IA.8: Compute Infrastructure 12
+9 IA.9: Pre-Registration Document 12
+10 IA.10: Pre-Registration Deviation Log 13
+11 IA.11: Pooled vs. Isolation Comparison 14
+12 IA.12: Leakage Taxonomy Quantification 15
+1
+
+===== PAGE 2 =====
+1 IA.1: Results and Classification (46 cells)
+Median edge across three independent holdout designs (A: stratified blocks, B: alternative blocks, C: walk-forward). Tier thresholds: T1 ≥ 0.20, T2 [0.10,0.20), T3 [0.04,0.10), T4 [0.015,0.04), T5 < 0.015. All
+46 cells classified EXPLORATORY (criterion 5: transaction costs not met).
+Inst Bucket Median Edge AUC_A Best Arch Horizon Tier Classification
+zc overnight 0.3609 0.8729 Transformer 10 T1 EXPLORATORY
+zc afternoon 0.3591 0.8557 Transformer 5 T1 EXPLORATORY
+zc full_session 0.3545 0.8579 CNN 5 T1 EXPLORATORY
+zc morning 0.3399 0.8347 Transformer 5 T1 EXPLORATORY
+zs overnight 0.2730 0.7871 CNN 5 T1 EXPLORATORY
+zc open 0.2722 0.7853 Transformer 5 T1 EXPLORATORY
+zs afternoon 0.2610 0.7610 CNN 5 T1 EXPLORATORY
+zs full_session 0.2608 0.7711 CNN 5 T1 EXPLORATORY
+zs morning 0.2157 0.7157 CNN 5 T1 EXPLORATORY
+es asia_overnight 0.1927 0.6927 CNN 10 T2 EXPLORATORY
+es europe_overnight 0.1820 0.6820 CNN 10 T2 EXPLORATORY
+cl asia_overnight 0.1566 0.6745 CNN 5 T2 EXPLORATORY
+cl europe_overnight 0.1476 0.6750 CNN 10 T2 EXPLORATORY
+zs open 0.1409 0.6409 Transformer 5 T2 EXPLORATORY
+cl afternoon_close 0.1197 0.6409 Transformer 5 T2 EXPLORATORY
+he afternoon 0.1092 0.6092 Transformer 5 T2 EXPLORATORY
+cl full_session 0.1083 0.6083 LSTM 5 T2 EXPLORATORY
+he full_session 0.0886 0.5910 Transformer 5 T3 EXPLORATORY
+he morning 0.0882 0.5907 Transformer 5 T3 EXPLORATORY
+cl midday 0.0774 0.5818 Transformer 5 T3 EXPLORATORY
+es full_session 0.0740 0.5740 CNN 5 T3 EXPLORATORY
+le afternoon 0.0612 0.5696 Transformer 5 T3 EXPLORATORY
+le morning 0.0520 0.5613 Transformer 5 T3 EXPLORATORY
+le full_session 0.0495 0.5614 Transformer 5 T3 EXPLORATORY
+he open 0.0483 0.5483 Transformer 5 T3 EXPLORATORY
+cl open 0.0435 0.5470 Transformer 5 T3 EXPLORATORY
+es midday 0.0382 0.5382 Transformer 10 T4 EXPLORATORY
+cl morning 0.0351 0.5365 Transformer 5 T4 EXPLORATORY
+es afternoon_close 0.0310 0.5310 Transformer 10 T4 EXPLORATORY
+gc asia_overnight 0.0297 0.5356 CNN 5 T4 EXPLORATORY
+le open 0.0282 0.5398 Transformer 5 T4 EXPLORATORY
+gc full_session 0.0248 0.5265 XGBoost 5 T4 EXPLORATORY
+gc afternoon_close 0.0241 0.5216 CNN 60 T4 EXPLORATORY
+es open 0.0223 0.5223 Transformer 5 T4 EXPLORATORY
+gc europe_overnight 0.0211 0.5245 Transformer 5 T4 EXPLORATORY
+gc midday 0.0180 0.5180 LSTM 5 T4 EXPLORATORY
+nq asia_overnight 0.0176 0.5235 XGBoost 5 T4 EXPLORATORY
+nq full_session 0.0149 0.5168 XGBoost 5 T5 EXPLORATORY
+es morning 0.0135 0.5184 Transformer 10 T5 EXPLORATORY
+nq open 0.0135 0.5137 Transformer 10 T5 EXPLORATORY
+2
+
+===== PAGE 3 =====
+Inst Bucket Median Edge AUC_A Best Arch Horizon Tier Classification
+nq afternoon_close 0.0131 0.5131 LSTM 5 T5 EXPLORATORY
+nq europe_overnight 0.0118 0.5119 Transformer 5 T5 EXPLORATORY
+nq morning 0.0111 0.5155 LogReg 30 T5 EXPLORATORY
+nq midday 0.0109 0.5117 Transformer 5 T5 EXPLORATORY
+gc open 0.0099 0.5099 Transformer 5 T5 EXPLORATORY
+gc morning 0.0097 0.5087 LogReg 5 T5 EXPLORATORY
+3
+
+===== PAGE 4 =====
+2 IA.2: Cross-Design Consistency (46 cells)
+Per-cell edge under each design, the range across designs, and block/fold consistency counts. blocks_pass_A/B: number of holdout blocks with positive edge, out of 6; folds_pass_C: out of 8. Near-universal 6/6
+consistency reflects the strength of the signal; the exception is nq/morning (5 in Design A, 4 in Design B), the weakest cell in the dataset.
+Inst Bucket Edge_A Edge_B Edge_C Range Blocks_A Blocks_B Folds_C
+zc overnight 0.3729 0.3609 0.3529 0.0199 6 6 6
+zc afternoon 0.3557 0.3591 0.3609 0.0052 6 6 6
+zc full_session 0.3579 0.3545 0.3498 0.0081 6 6 6
+zc morning 0.3347 0.3456 0.3399 0.0109 6 6 6
+zs overnight 0.2871 0.2598 0.2730 0.0273 6 6 6
+zc open 0.2853 0.2656 0.2722 0.0197 6 6 6
+zs afternoon 0.2610 0.2425 0.2691 0.0266 6 6 6
+zs full_session 0.2711 0.2312 0.2608 0.0399 6 6 6
+zs morning 0.2157 0.2086 0.2220 0.0134 6 6 6
+es asia_overnight 0.1927 0.1829 0.1963 0.0134 6 6 6
+es europe_overnight 0.1820 0.0712 0.2070 0.1358 6 6 6
+cl asia_overnight 0.1745 0.1450 0.1566 0.0294 6 6 6
+cl europe_overnight 0.1750 0.1476 0.1235 0.0515 6 6 6
+zs open 0.1409 0.1324 0.1435 0.0111 6 6 6
+cl afternoon_close 0.1409 0.0992 0.1197 0.0418 6 6 6
+he afternoon 0.1092 0.0946 0.1093 0.0147 6 6 6
+cl full_session 0.1083 0.0916 0.1236 0.0320 6 6 6
+he full_session 0.0910 0.0857 0.0886 0.0053 6 6 6
+he morning 0.0907 0.0752 0.0882 0.0155 6 6 6
+cl midday 0.0818 0.0591 0.0774 0.0227 6 6 6
+es full_session 0.0740 0.0693 0.0843 0.0150 6 6 6
+le afternoon 0.0696 0.0612 0.0583 0.0113 6 6 6
+le morning 0.0613 0.0520 0.0496 0.0116 6 6 6
+le full_session 0.0614 0.0471 0.0495 0.0143 6 6 6
+he open 0.0483 0.0470 0.0490 0.0020 6 6 6
+cl open 0.0470 0.0303 0.0435 0.0168 6 6 6
+es midday 0.0382 0.0388 0.0180 0.0208 6 6 6
+cl morning 0.0365 0.0291 0.0351 0.0074 6 6 6
+es afternoon_close 0.0310 0.0439 0.0210 0.0228 6 6 6
+gc asia_overnight 0.0356 0.0297 0.0278 0.0078 6 6 6
+le open 0.0398 0.0282 0.0268 0.0130 6 6 6
+gc full_session 0.0265 0.0248 0.0214 0.0052 6 6 6
+gc afternoon_close 0.0216 0.0288 0.0241 0.0072 6 6 6
+es open 0.0223 0.0227 0.0188 0.0039 6 6 6
+gc europe_overnight 0.0245 0.0182 0.0211 0.0063 6 6 6
+gc midday 0.0180 0.0162 0.0181 0.0019 6 6 6
+nq asia_overnight 0.0235 0.0176 0.0175 0.0060 6 6 6
+nq full_session 0.0168 0.0149 0.0133 0.0035 6 6 6
+es morning 0.0184 0.0135 0.0095 0.0089 6 6 6
+nq open 0.0137 0.0135 0.0081 0.0056 6 6 6
+4
+
+===== PAGE 5 =====
+Inst Bucket Edge_A Edge_B Edge_C Range Blocks_A Blocks_B Folds_C
+nq afternoon_close 0.0131 0.0208 0.0127 0.0081 6 6 6
+nq europe_overnight 0.0119 0.0118 0.0104 0.0015 6 6 6
+nq morning 0.0155 0.0111 0.0072 0.0084 5 4 6
+nq midday 0.0117 0.0109 0.0097 0.0020 6 6 6
+gc open 0.0099 0.0140 0.0059 0.0080 6 6 6
+gc morning 0.0087 0.0107 0.0097 0.0020 6 6 6
+5
+
+===== PAGE 6 =====
+3 IA.3: Per-Instrument Event Counts and Data Quality
+Instrument MBO Events Files Neg. Spread (pre-fix) Neg. Spread (post-fix)
+NQ 4,133,524,583 250 43% 1.8%
+ES 1,077,283,984 12 < 1% < 1%
+GC 820,000,000 — < 1% < 1%
+CL 543,000,000 — < 1% < 1%
+ZS 118,379,764 250 80% 3.0%
+ZC 75,427,534 250 16% 0.3%
+LE 38,588,458 12 < 1% < 1%
+HE 24,031,264 12 < 1% < 1%
+Total 6,830,235,587
+6
+
+===== PAGE 7 =====
+4 IA.4: Per-Bucket Academic Signal Results (46 cells)
+All ∆AUC values are computed per-bucket (LightGBM, BFree baseline, horizon=5s, Design A holdout). DAR ∆AUC is identically 0.0000 across all cells because DAR ≡ l1_imbalance — both compute
+(bid_size_1 − ask_size_1)/(bid_size_1 + ask_size_1); the BFree baseline already contains l1_imbalance , so DAR provides zero marginal information to the tree model. Three full_session cells (CL, ES, NQ)
+excluded due to memory limits.
+Inst Bucket OFI ∆ VPIN ∆ OFA ∆ DAR ∆ DAR corr Simple ML Capture Gap
+zc overnight 0.0021 0.0009 −0.0009 0.0000 0.1301 0.3649 0.3609 1.000 −0.0040
+zc afternoon 0.0036 0.0006 0.0008 0.0000 0.1881 0.3362 0.3591 0.936 0.0228
+zc full_session 0.0035 0.0005 −0.0000 0.0000 0.1440 0.3364 0.3545 0.949 0.0181
+zc morning 0.0041 0.0007 −0.0005 0.0000 0.1863 0.3134 0.3399 0.922 0.0265
+zs overnight 0.0055 −0.0003 0.0001 0.0000 0.1571 0.2629 0.2730 0.963 0.0101
+zc open 0.0036 0.0005 0.0002 0.0000 0.1830 0.2663 0.2722 0.978 0.0059
+zs afternoon 0.0006 −0.0008 −0.0003 0.0000 0.1956 0.2337 0.2610 0.896 0.0273
+zs full_session 0.0033 −0.0002 0.0003 0.0000 0.1583 0.2258 0.2608 0.866 0.0350
+zs morning 0.0016 −0.0017 −0.0000 0.0000 0.1712 0.1914 0.2157 0.887 0.0243
+es asia_overnight 0.0026 −0.0008 0.0001 0.0000 0.0921 0.1109 0.1927 0.575 0.0818
+es europe_overnight 0.0013 −0.0005 0.0005 0.0000 0.0543 0.0560 0.1820 0.308 0.1261
+cl asia_overnight 0.0049 −0.0001 −0.0002 0.0000 0.1250 0.1532 0.1566 0.979 0.0033
+cl europe_overnight 0.0006 −0.0000 0.0001 0.0000 0.0862 0.0822 0.1476 0.557 0.0654
+zs open 0.0008 −0.0003 −0.0001 0.0000 0.1257 0.1257 0.1409 0.892 0.0152
+cl afternoon_close 0.0025 −0.0005 0.0006 0.0000 0.1088 0.1227 0.1197 1.000 −0.0029
+he afternoon 0.0083 −0.0024 −0.0003 0.0000 0.0872 0.0975 0.1092 0.893 0.0117
+he full_session 0.0063 −0.0012 −0.0006 0.0000 0.0732 0.0746 0.0886 0.842 0.0140
+he morning 0.0082 −0.0015 0.0004 0.0000 0.0767 0.0776 0.0882 0.880 0.0106
+cl midday 0.0009 −0.0008 0.0002 0.0000 0.0692 0.0704 0.0774 0.909 0.0071
+le afternoon −0.0007 −0.0015 −0.0007 0.0000 0.0661 0.0612 0.0612 1.000 −0.0000
+le morning 0.0004 −0.0010 0.0003 0.0000 0.0595 0.0554 0.0520 1.000 −0.0034
+le full_session 0.0016 −0.0007 0.0001 0.0000 0.0558 0.0526 0.0495 1.000 −0.0032
+he open 0.0010 −0.0006 0.0002 0.0000 0.0533 0.0461 0.0483 0.954 0.0022
+cl open 0.0028 0.0032 0.0010 0.0000 0.0435 0.0394 0.0435 0.906 0.0041
+es midday 0.0005 0.0006 0.0007 0.0000 0.0110 0.0119 0.0382 0.311 0.0263
+cl morning 0.0006 0.0001 0.0002 0.0000 0.0335 0.0316 0.0351 0.903 0.0034
+es afternoon_close 0.0008 −0.0006 0.0002 0.0000 0.0118 0.0142 0.0310 0.458 0.0168
+gc asia_overnight 0.0003 −0.0006 −0.0002 0.0000 0.0353 0.0298 0.0297 1.000 −0.0001
+le open −0.0020 −0.0046 −0.0013 0.0000 0.0370 0.0373 0.0282 1.000 −0.0092
+gc full_session −0.0003 −0.0006 −0.0002 0.0000 0.0246 0.0202 0.0248 0.815 0.0046
+gc afternoon_close −0.0005 −0.0023 0.0002 0.0000 0.0334 0.0265 0.0241 1.000 −0.0025
+es open 0.0004 −0.0018 −0.0001 0.0000 0.0127 0.0128 0.0223 0.573 0.0095
+gc europe_overnight 0.0003 0.0000 0.0003 0.0000 0.0239 0.0191 0.0211 0.908 0.0019
+gc midday 0.0000 −0.0019 −0.0000 0.0000 0.0205 0.0163 0.0180 0.903 0.0018
+nq asia_overnight 0.0015 −0.0005 0.0004 0.0000 0.0168 0.0190 0.0176 1.000 −0.0014
+es morning 0.0005 0.0007 −0.0003 0.0000 0.0036 0.0096 0.0135 0.715 0.0038
+nq open 0.0016 −0.0001 −0.0001 0.0000 0.0008 0.0049 0.0135 0.363 0.0086
+nq afternoon_close 0.0026 0.0005 −0.0003 0.0000 0.0008 0.0085 0.0131 0.654 0.0045
+nq europe_overnight 0.0001 −0.0007 0.0004 0.0000 0.0056 0.0064 0.0118 0.541 0.0054
+7
+
+===== PAGE 8 =====
+Inst Bucket OFI ∆ VPIN ∆ OFA ∆ DAR ∆ DAR corr Simple ML Capture Gap
+nq morning −0.0006 −0.0004 −0.0006 0.0000 0.0011 0.0079 0.0111 0.709 0.0032
+nq midday 0.0002 0.0003 0.0005 0.0000 0.0019 0.0064 0.0109 0.590 0.0045
+gc open −0.0002 −0.0011 0.0001 0.0000 0.0053 0.0039 0.0099 0.398 0.0060
+gc morning 0.0005 −0.0008 −0.0011 0.0000 0.0077 0.0081 0.0097 0.830 0.0017
+8
+
+===== PAGE 9 =====
+5 IA.5: Leakage Ablation Summary (Top 5 features per T1/T2 cell)
+For each of 17 cells with median edge ≥ 0.10, the five features whose removal causes the largest signal reduction. pct_of_signal is in percent (0–100 scale). Maximum: 2.16%. No feature exceeds 5%.
+Inst Bucket Feature Full Edge Ablated ∆ % of Signal
+cl afternoon_close net_delta_5s 0.1342 0.1340 0.0002 0.17
+cl afternoon_close net_delta_1s 0.1342 0.1341 0.0001 0.08
+cl afternoon_close bid_size_1 0.1342 0.1343 −0.0001 −0.05
+cl afternoon_close buy_volume_10s 0.1342 0.1344 −0.0002 −0.16
+cl afternoon_close vwap_distance 0.1342 0.1344 −0.0002 −0.17
+cl asia_overnight minutes_since_open 0.1704 0.1696 0.0008 0.47
+cl asia_overnight vwap_distance 0.1704 0.1699 0.0005 0.32
+cl asia_overnight mid_return_10s 0.1704 0.1700 0.0005 0.28
+cl asia_overnight mid_return_30s 0.1704 0.1700 0.0004 0.24
+cl asia_overnight mid_return_5s 0.1704 0.1701 0.0004 0.21
+cl europe_overnight vwap_distance 0.0945 0.0939 0.0006 0.66
+cl europe_overnight net_delta_1s 0.0945 0.0940 0.0005 0.53
+cl europe_overnight large_trade_count_10s 0.0945 0.0942 0.0003 0.34
+cl europe_overnight l1_imbalance 0.0945 0.0942 0.0003 0.33
+cl europe_overnight sell_volume_10s 0.0945 0.0943 0.0002 0.26
+cl full_session vwap_distance 0.1055 0.1049 0.0006 0.59
+cl full_session net_delta_1s 0.1055 0.1049 0.0006 0.53
+cl full_session l1_imbalance 0.1055 0.1051 0.0004 0.37
+cl full_session mid_return_5s 0.1055 0.1052 0.0003 0.27
+cl full_session ask_size_1 0.1055 0.1052 0.0002 0.23
+es asia_overnight net_delta_1s 0.1379 0.1354 0.0025 1.82
+es asia_overnight vwap_distance 0.1379 0.1368 0.0011 0.79
+es asia_overnight spread_ticks 0.1379 0.1371 0.0008 0.58
+es asia_overnight mid_return_30s 0.1379 0.1371 0.0007 0.54
+es asia_overnight sell_volume_10s 0.1379 0.1372 0.0007 0.52
+es europe_overnight net_delta_1s 0.0732 0.0716 0.0016 2.16
+es europe_overnight vwap_distance 0.0732 0.0719 0.0013 1.75
+es europe_overnight l1_imbalance 0.0732 0.0724 0.0008 1.03
+es europe_overnight volatility_30s 0.0732 0.0727 0.0005 0.65
+es europe_overnight spread_ticks 0.0732 0.0729 0.0003 0.43
+he afternoon mid_return_30s 0.0958 0.0943 0.0016 1.65
+he afternoon ask_size_1 0.0958 0.0946 0.0012 1.24
+he afternoon l1_imbalance 0.0958 0.0947 0.0012 1.23
+he afternoon depth_change_1s 0.0958 0.0947 0.0012 1.20
+he afternoon total_ask_depth 0.0958 0.0948 0.0010 1.05
+zc afternoon net_delta_1s 0.3534 0.3505 0.0029 0.83
+zc afternoon l1_imbalance 0.3534 0.3518 0.0016 0.46
+zc afternoon vwap_distance 0.3534 0.3520 0.0014 0.40
+zc afternoon bid_size_1 0.3534 0.3526 0.0008 0.22
+zc afternoon net_delta_5s 0.3534 0.3527 0.0007 0.20
+zc full_session vwap_distance 0.3569 0.3556 0.0013 0.37
+9
+
+===== PAGE 10 =====
+Inst Bucket Feature Full Edge Ablated ∆ % of Signal
+zc full_session net_delta_1s 0.3569 0.3557 0.0012 0.34
+zc full_session l1_imbalance 0.3569 0.3561 0.0008 0.23
+zc full_session spread_ticks 0.3569 0.3565 0.0004 0.12
+zc full_session sell_volume_10s 0.3569 0.3567 0.0002 0.07
+zc morning net_delta_1s 0.3331 0.3310 0.0022 0.65
+zc morning l1_imbalance 0.3331 0.3317 0.0014 0.42
+zc morning vwap_distance 0.3331 0.3321 0.0010 0.31
+zc morning total_ask_depth 0.3331 0.3327 0.0005 0.14
+zc morning net_delta_30s 0.3331 0.3327 0.0004 0.12
+zc open net_delta_1s 0.2793 0.2772 0.0020 0.72
+zc open vwap_distance 0.2793 0.2783 0.0010 0.35
+zc open l1_imbalance 0.2793 0.2784 0.0009 0.31
+zc open ask_size_1 0.2793 0.2785 0.0008 0.27
+zc open spread_ticks 0.2793 0.2789 0.0004 0.15
+zc overnight l1_imbalance 0.3708 0.3697 0.0010 0.27
+zc overnight minutes_since_open 0.3708 0.3700 0.0007 0.19
+zc overnight range_60s 0.3708 0.3702 0.0006 0.16
+zc overnight net_delta_30s 0.3708 0.3702 0.0005 0.14
+zc overnight depth_change_5s 0.3708 0.3702 0.0005 0.14
+zs afternoon vwap_distance 0.2630 0.2602 0.0028 1.05
+zs afternoon net_delta_1s 0.2630 0.2602 0.0028 1.05
+zs afternoon l1_imbalance 0.2630 0.2622 0.0007 0.27
+zs afternoon range_300s 0.2630 0.2623 0.0006 0.24
+zs afternoon book_slope_bid 0.2630 0.2624 0.0006 0.22
+zs full_session net_delta_1s 0.2528 0.2517 0.0011 0.42
+zs full_session vwap_distance 0.2528 0.2517 0.0010 0.41
+zs full_session spread_ticks 0.2528 0.2524 0.0004 0.14
+zs full_session l1_imbalance 0.2528 0.2525 0.0003 0.12
+zs full_session minutes_since_open 0.2528 0.2525 0.0003 0.10
+zs morning net_delta_1s 0.2132 0.2116 0.0016 0.75
+zs morning vwap_distance 0.2132 0.2120 0.0011 0.54
+zs morning bid_size_1 0.2132 0.2132 −0.0001 −0.03
+zs morning l1_imbalance 0.2132 0.2133 −0.0001 −0.06
+zs morning spread_ticks 0.2132 0.2133 −0.0001 −0.07
+zs open net_delta_1s 0.1382 0.1356 0.0026 1.86
+zs open vwap_distance 0.1382 0.1371 0.0011 0.81
+zs open net_delta_5s 0.1382 0.1373 0.0009 0.69
+zs open large_trade_count_10s 0.1382 0.1375 0.0008 0.55
+zs open net_delta_30s 0.1382 0.1376 0.0006 0.45
+zs overnight spread_ticks 0.2811 0.2800 0.0011 0.39
+zs overnight l1_imbalance 0.2811 0.2805 0.0006 0.22
+zs overnight mid_return_1s 0.2811 0.2806 0.0005 0.19
+zs overnight mid_return_5s 0.2811 0.2806 0.0005 0.17
+zs overnight vwap_distance 0.2811 0.2807 0.0004 0.14
+10
+
+===== PAGE 11 =====
+6 IA.6: Shuffle Test Distributions
+0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85 0.90
+Test AUC
+0
+200
+400
+600
+800
+1000
+1200Shuffle count
+Shuffle (n=1656, left axis)
+Random baseline (0.50)
+Bonferroni-95% empirical ( /46): 0.663
+Real (n=46, right axis)
+0
+1
+2
+3
+4
+5
+6
+Real-AUC count (best arch per cell)
+Figure 1: Real test AUC (n = 46, best architecture per cell, Design A) versus shuffle-mean AUC (n = 1,656, tree architectures only). Dotted red line: empirical (1 − α/46) percentile of shuffle distribution (0.663),
+shown for visual reference; this is not the pre-registered significance criterion (see text).
+Two distinct significance criteria are used in this paper and should not be conflated. The per-run shuffle test (§4.5 of the main paper) compares each model’s real AUC to its own shuffle distribution and applies
+a Bonferroni correction over 1,104 tests (46 × 4 × 2 × 3); all 46 cells pass this test under all three designs. The absolute threshold shown in the figure above is a different, more stringent criterion: the empirical
+(1 − α/46) percentile of the pooled shuffle distribution (0.663), which 13 of 46 cells exceed. The per-run test is the pre-registered significance criterion; the absolute threshold is shown for visual reference only
+and is not used for classification.
+11
+
+===== PAGE 12 =====
+The z-score (real AUC− shuffle mean)/shuffle std provides a per-cell signal strength measure. All T1–T3 cells (26 cells, median edge ≥ 0.04) show z > 10. T4 cells (11 cells) show z in the range 3–8. T5
+cells (9 cells) show z in the range 1–4, with gc/open and gc/morning closest to the noise floor. Full per-cell z-scores are available upon publication.
+7 IA.7: Verification Protocol Detail
+V1 (Schema): 12 monthly ES parquets verified. Column names (26 columns), dtypes, and index structure matched exactly. No schema drift.
+V2 (Numerical): ES filtered to 09:30–11:30 NY . Row count: new 4,127,344 vs. existing 4,126,112 (delta 0.03%, within 0.1% tolerance). Naive AUC: new 0.5634 vs. existing 0.5634 (delta 0.00003, within
+0.0001 tolerance).
+V3 (Headline replication): LightGBM, BFree, 5s horizon on June 2025 ES. New AUC: 0.5581. Prior locked: 0.5554. Delta: 0.0027 (within 0.005 tolerance). Small positive delta attributable to additional
+trade events in the morning-chunk canonical source.
+V4 (Cross-instrument sanity): C/T rank order by bucket. Expected: Open > Morning > Afternoon-close > Midday > Europe-overnight > Asia-overnight. Result: 7/8 instruments match. GC shows minor
+inversion (Afternoon-close C/T = 4.8 slightly above Morning = 4.6), within tolerance.
+8 IA.8: Compute Infrastructure
+Two compute nodes. Node A: AMD Ryzen 7000-series, 8 cores (16 logical), 32 GB RAM, NVIDIA RTX 4080 (16 GB VRAM), NVMe SSD. Node B: Intel i7-12700, 12 cores (20 logical), 32 GB RAM, NVIDIA
+RTX 4080 (16 GB VRAM), NVMe SSD.
+Benchmarked: LightGBM 500K ×15 at n_jobs=1: Node A 2.0s, Node B 2.1s (1 .05×). A PyTorch installation error on Node B (CPU-only build) was discovered and corrected after approximately 6 days of
+compute. All Node B DL results after correction used GPU acceleration.
+Total: 10,464 model fits (6,624 isolation + 3,840 pooled) plus ∼530 ablation, ∼320 alternative label, ∼192 data depth ablation runs. Wall time: 13–15 days across both nodes.
+9 IA.9: Pre-Registration Document
+The complete pre-registration document (11 sections) is archived at [Repository URL will be provided upon acceptance; commit hash: 9c372857 ]. Git commit hash: 9c372857 . Random seeds: SEED_A =
+1,137,580,267, SEED_B = 1,820,754,789, SEED_C = 1,943,184,771; exact values archived with the pre-registration document, provided upon acceptance.
+Data are licensed from Databento and cannot be redistributed. Analysis code will be made available upon publication.
+12
+
+===== PAGE 13 =====
+10 IA.10: Pre-Registration Deviation Log
+# Phase Description Impact on cross-design agreement
+1 A1 Jan 9, 2025 half-session exclusion (Carter National
+Day of Mourning). Buckets where truncated
+session < 50% normal duration excluded for that
+day.
+1 trading day removed from affected buckets.
+None.
+2 A3 ZC/ZS overnight boundaries amended from
+pre-registered 19:00-09:30 NY to actual CBOT
+venue hours 20:00-08:45 NY .
+Corrects specification error. Bucket boundaries
+change but methodology unchanged. None.
+3 A1 Convention Z parser fix. All 8 instruments
+confirmed to use filename = NY trading day
+convention, correcting initial assessment.
+Corrects data loading. None.
+4 A2 Morning-chunk Databento delivery adopted as
+canonical ES source. 3.88% more trade events
+than full-session download (207,455 contract
+identity).
+Changes data source for completeness. All ES
+results use canonical source. None.
+5 A2 Gap-fill data purchased for all 6 overnight-session
+instruments (ES, NQ, CL, GC, ZC, ZS; ~1,500
+files) to resolve stale-order artifacts at CME
+maintenance windows and CBOT pre-open breaks.
+Material negative spread artifacts found on NQ,
+ZC, ZS only.
+Improves data quality. Negative spread rates on
+affected instruments reduced from 16-80% to
+0.3-3%. None.
+13
+
+===== PAGE 14 =====
+11 IA.11: Pooled vs. Isolation Comparison
+Instrument Pooled Best Isolation Best Delta Verdict
+ZC +0.401 +0.361 +0.041 Pooled
+ZS +0.291 +0.273 +0.018 Pooled
+GC +0.039 +0.030 +0.009 Pooled
+LE +0.065 +0.061 +0.004 Tie
+NQ +0.020 +0.018 +0.003 Tie
+CL +0.138 +0.157 −0.019 Isolation
+HE +0.097 +0.109 −0.012 Isolation
+ES +0.127 +0.193 −0.066 Isolation
+Notes: Pooled Best = highest edge-over-chance across all three designs in the pooled (all buckets combined with bucket-indicator features) analysis. Isolation Best = median edge-over-chance across three
+designs for the best bucket within each instrument. Verdict: “Pooled” if pooled exceeds isolation by > 0.01; “Isolation” if isolation exceeds pooled by > 0.01; “Tie” otherwise. Median delta across instruments:
++0.003 (pooling approximately equivalent to isolation).
+14
+
+===== PAGE 15 =====
+12 IA.12: Leakage Taxonomy Quantification
+Mechanism Source Correction Pre-Fix Effect Post-Fix Effect Reduction
+M1: Bounce conflation Price-lagged returns BFree feature set +0.282 AUC (ZC) 0 (removed) Complete
+M2: L3 contemporaneous Rolling MBO aggregation shift(1) +0.035 mean AUC +0.0015 mean AUC 23 × (mean-to-mean)
+M3: L2 reflection End-of-second book state Universal lag Corrected with M2 Corrected with M2 —
+M4: L1 trade flow Full-second trade aggregation Universal lag Corrected with M2 Corrected with M2 —
+M1 and M2 magnitudes are independently measured. M3 and M4 are corrected simultaneously with M2 through the universal shift(1); their individual contributions are not separately identifiable but are
+documented as distinct conceptual mechanisms to aid researchers in auditing their own pipelines.
+15

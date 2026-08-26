@@ -1,0 +1,114 @@
+--- C:/Users/ttbea/OneDrive/Desktop/MBO_2025/pc2_transfer/scripts/pipeline/flow_tagger.py	2026-03-30 15:26:47.442297200 -0700
++++ C:/Users/ttbea/OneDrive/Desktop/MBO_2025/scripts/pipeline/flow_tagger.py	2026-04-15 17:17:46.884278000 -0700
+@@ -22,6 +22,7 @@
+ from __future__ import annotations
+ 
+ import time
++import warnings
+ from pathlib import Path
+ from typing import Optional
+ 
+@@ -36,6 +37,28 @@
+ TAGGED_PATH = BASE / "es_trades_tagged.parquet"
+ DELTA_BARS_PATH = BASE / "delta_bars_20260115.parquet"
+ 
++# ── Per-instrument tick sizes (CME) ───────────────────────────────────────
++# Registry used by compute_delta_profile to bin prices. Passing the wrong
++# tick silently corrupts price buckets, so callers MUST supply the right
++# one for their instrument.
++#
++# Source: CME contract specifications (minimum price fluctuation).
++# Added 2026-04-15 as part of A2.3 pre-requisite fix (BLOCKER 1+2 in
++# A2.1_pipeline_audit.csv).
++TICK_SIZES = {
++    "ES": 0.25,
++    "NQ": 0.25,
++    "CL": 0.01,
++    "GC": 0.10,
++    "ZC": 0.25,
++    "ZS": 0.25,
++    "HE": 0.025,
++    "LE": 0.025,
++}
++
++# Module-level default kept ONLY for the __main__ demo block (ES, Jan 2026),
++# which predates the registry. New code must not read this; call
++# compute_delta_profile(..., tick=TICK_SIZES[instrument]) instead.
+ TICK = 0.25
+ 
+ 
+@@ -268,24 +291,70 @@
+ # ═══════════════════════════════════════════════════════════════════════════
+ #  3.  Delta Profile (Volume at Price)
+ # ═══════════════════════════════════════════════════════════════════════════
+-def compute_delta_profile(trades_df: pd.DataFrame) -> pd.DataFrame:
++def compute_delta_profile(
++    trades_df: pd.DataFrame,
++    tick: Optional[float] = None,
++    instrument: Optional[str] = None,
++) -> pd.DataFrame:
+     """Compute volume-at-price delta profile (footprint chart foundation).
+ 
+-    Groups trades by price level (0.25 tick) and computes buy/sell volume
+-    and delta at each price.
++    Groups trades by price level and computes buy/sell volume and delta at
++    each price. The price-bin width is the instrument's tick size.
+ 
+     Args:
+         trades_df: Output of tag_aggressor().
++        tick: Tick size in price units (e.g. 0.25 for ES, 0.01 for CL).
++            Exactly one of ``tick`` or ``instrument`` should be supplied.
++        instrument: Instrument symbol (e.g. "ES", "CL"); looked up in
++            ``TICK_SIZES``. Alternative to passing ``tick`` directly.
++
++    Precedence: if both are supplied, ``tick`` wins and must match
++    ``TICK_SIZES[instrument]``; mismatches raise ``ValueError``.
++
++    If neither is supplied, falls back to the legacy module-level
++    ``TICK = 0.25`` with a ``DeprecationWarning``. New code (post
++    A2.3 pre-requisite fix) must supply one of the two parameters
++    explicitly — the silent-ES-default is preserved only so existing
++    ES-only call sites do not break immediately.
+ 
+     Returns:
+         DataFrame indexed by price with columns: total_volume, buy_volume,
+         sell_volume, delta, trade_count.
+     """
++    # ── Resolve tick size ────────────────────────────────────────────────
++    if instrument is not None:
++        if instrument not in TICK_SIZES:
++            raise ValueError(
++                f"Unknown instrument {instrument!r}; "
++                f"expected one of {sorted(TICK_SIZES)}"
++            )
++        inst_tick = TICK_SIZES[instrument]
++        if tick is not None and tick != inst_tick:
++            raise ValueError(
++                f"tick={tick} does not match TICK_SIZES[{instrument!r}]="
++                f"{inst_tick}; pass only one, or ensure they agree"
++            )
++        resolved_tick = inst_tick
++    elif tick is not None:
++        resolved_tick = float(tick)
++    else:
++        warnings.warn(
++            "compute_delta_profile called without tick or instrument; "
++            "falling back to module-level TICK=0.25 (ES). This fallback "
++            "is retained only for the ES __main__ demo and for legacy "
++            "ES-only call sites; multi-instrument code must pass tick "
++            "or instrument explicitly. This warning will become an "
++            "error in a future release.",
++            DeprecationWarning,
++            stacklevel=2,
++        )
++        resolved_tick = TICK
++
+     df = trades_df.copy()
+     buy_mask = df["is_buy_aggressor"]
+ 
+     # Round prices to tick (should already be, but ensure)
+-    df["price_tick"] = (df["price"] / TICK).round() * TICK
++    df["price_tick"] = (df["price"] / resolved_tick).round() * resolved_tick
+ 
+     grouped = df.groupby("price_tick")
+ 

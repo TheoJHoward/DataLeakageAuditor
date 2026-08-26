@@ -1,0 +1,134 @@
+== 1. n1/declared_map.csv structure (§13(a)) ==
+OK   rows in declared_map.csv                                   got=984                    decl=984
+     scored_flag: {'SCORED': 888, 'SCORED_DIAGNOSTIC_11TH_CLASS': 24, 'UNSCORED_FOR_LACK_OF_DATA': 72}
+OK   SCORED (declared-10)                                       got=888                    decl=888
+OK   UNSCORED_FOR_LACK_OF_DATA                                  got=72                     decl=72
+OK   SCORED_DIAGNOSTIC_11TH_CLASS                               got=24                     decl=24
+     boundaries: {'decision_T'}
+     classes(11): ['mbo_all', 'mbo_all_rows', 'mbo_ask_add', 'mbo_ask_cancel', 'mbo_bid_add', 'mbo_bid_cancel', 'mbo_cancel_any', 'trades_all', 'trades_buy', 'trades_large', 'trades_sell']
+OK   instrument-months                                          got=48                     decl=48
+
+== 2. corrected side 18/48 and the peak (§13(b), §A.8) ==
+OK   corrected instrument-months with max_strict>0              got=18                     decl=18
+OK   peak cell                                                  got=zc 2025-09             decl=zc 2025-09
+OK   peak strict                                                got=111334                 decl=111334
+OK   peak rows                                                  got=580944                 decl=580944
+OK   peak rate 19.16%                                           got=19.16                  decl=19.16
+OK   peak max_strict_frac                                       got=0.191643               decl=0.191643
+OK   argmax class on all 18 == mbo_all                          got={'mbo_all'}            decl={'mbo_all'}
+OK   classes_scored on all 18                                   got=['10']                 decl=['10']
+OK   nq classes_scored                                          got=['4']                  decl=['4']
+
+== 3. contaminated saturation 48/48 and its range (§13(c)) ==
+OK   contaminated cells                                         got=48                     decl=48
+OK   contaminated max_strict>0                                  got=48                     decl=48
+OK   min frac cell                                              got=le 2025-11 0.2545      decl=le 2025-11 0.2545
+OK   min strict/rows                                            got=77483/304492           decl=77483/304492
+OK   max frac cell                                              got=es 2025-12 0.9893      decl=es 2025-12 0.9893
+OK   max strict/rows                                            got=613447/620108          decl=613447/620108
+
+== 4. N3 cohort predicate (§13(d), §C.2) ==
+OK   predicate_check rows (scored cells)                        got=456                    decl=456
+OK   strict_viol total                                          got=5305430                decl=5305430
+OK   same_second_viol total                                     got=5305430                decl=5305430
+OK   exception_viol total                                       got=0                      decl=0
+OK   converse rows                                              got=48                     decl=48
+OK   cohort_profile nonmonotonic rows                           got=0                      decl=0
+OK   cohort_profile floor_decreasing rows                       got=0                      decl=0
+OK   lattice rows - corrected rows == 48 (one per im)           got=48                     decl=48
+OK   cohort rows total                                          got=1966088                decl=1966088
+OK   corrected rows total                                       got=24768472               decl=24768472
+OK   cohort share 7.94%                                         got=7.94                   decl=7.94
+OK   LOWERBOUND violating                                       got=1024196                decl=1024196
+OK   UPPERBOUND non-violating                                   got=941892                 decl=941892
+OK   exceptions.csv data rows                                   got=0                      decl=0
+
+== 5. unscored ledger (§13(g)) ==
+OK   unscored_ledger rows                                       got=6                      decl=6
+OK   total unscored cells (6 x 12)                              got=72                     decl=72
+OK   n_cells each                                               got=['12']                 decl=['12']
+
+== 6. §14 ZC 2025-01 contaminated profile ==
+OK   t1 contaminated/decision_T trades_all strict               got=['89568']              decl=['89568']
+OK   t1 contaminated/decision_T trades_all equal                got=['20']                 decl=['20']
+OK   t1 contaminated/decision_T trades_large strict             got=['23633']              decl=['23633']
+OK   t1 contaminated/decision_T trades_large equal              got=['20']                 decl=['20']
+OK   t1 contaminated/decision_T trades_buy strict               got=['0']                  decl=['0']
+OK   t1 contaminated/decision_T trades_buy equal                got=['0']                  decl=['0']
+OK   t1 contaminated/decision_T mbo_all strict                  got=['254315']             decl=['254315']
+OK   t1 contaminated/decision_T mbo_all equal                   got=['29']                 decl=['29']
+OK   trades_all rate 26.4869%                                   got=26.49                  decl=26.49
+OK   mbo_all rate                                               got=75.21                  decl=75.21
+OK   trades_large rate                                          got=6.99                   decl=6.99
+OK   delta pp                                                   got=48.72                  decl=48.72
+OK   row delta                                                  got=164747                 decl=164747
+OK   restricted as share of published                           got=35.2%                  decl=35.2%
+OK   factor                                                     got=2.84                   decl=2.84
+
+== 7. §14 / §10 overhang + stamp-type (v1, m4) ==
+OK   trades_all mean_overhang_ms                                got=519.797439             decl=519.797439
+OK   trades_large mean_overhang_ms                              got=506.273305             decl=506.273305
+OK   mbo_all mean_overhang_ms                                   got=655.194723             decl=655.194723
+     m4 fields: ['event_class', 'side', 'boundary', 'rows_total', 'rows_integral', 'rows_mid_second', 'strict_viol_integral', 'strict_viol_mid_second', 'strict_viol_total', 'strict_total_matches_t1', 'equal_tie_integral', 'equal_tie_mid_second', 'equal_tie_total', 'equal_total_matches_t1', 'viol_rate_integral', 'viol_rate_mid_second', 'rate_ratio_integral_over_mid', 'share_of_viol_on_integral', 'share_of_rows_integral', 'cf_integral_stamp_viol_rate_on_mid_rows', 'cf_mid_rows_viol_if_stamp_were_integral', 'cf_viol_total_if_all_stamps_integral', 'estimators']
+OK   trades_all viol_rate_integral                              got=0.278688               decl=0.278688
+OK   trades_all rate_ratio                                      got=2337.499               decl=2337.499
+OK   trades_all share_on_integral                               got=0.999978               decl=0.999978
+OK   mbo_all share_on_integral                                  got=0.999807               decl=0.999807
+
+== 8. §14.1 restricted map, ex-nq peaks (y1) ==
+OK   contaminated rows in trade_class_only_map                  got=48                     decl=48
+OK   unrestricted restricted-RATE peak                          got=nq 2025-01 90.83%      decl=nq 2025-01 90.83%
+OK   EX-NQ restricted RATE peak                                 got=es 2025-11 484420/549424 88.17% decl=es 2025-11 484420/549424 88.17%
+OK   EX-NQ restricted ABSOLUTE peak                             got=es 2025-01 514323 of 605290 decl=es 2025-01 514323 of 605290
+OK   EX-NQ absolute peak rate                                   got=84.97                  decl=84.97
+OK   restricted ABSOLUTE peak incl nq                           got=nq 2025-01 543341      decl=nq 2025-01 543341
+OK   full-class RATE peak                                       got=es 2025-12 98.93%      decl=es 2025-12 98.93%
+OK   full-class ABSOLUTE peak                                   got=gc 2025-10 646575 of 772448 decl=gc 2025-10 646575 of 772448
+OK   restricted rate span low                                   got=8.76                   decl=8.76
+OK   restricted rate span high                                  got=90.83                  decl=90.83
+OK   restricted median                                          got=21.66                  decl=21.66
+OK   full-class median                                          got=63.08                  decl=63.08
+OK   zc 2025-01 delta pp (largest of 48)                        got=48.72                  decl=48.72
+OK   largest delta cell                                         got=zc 2025-01             decl=zc 2025-01
+OK   min non-nq delta                                           got=10.57 es 2025-11       decl=10.57 es 2025-11
+OK   contaminated equal-nonzero restricted                      got=23                     decl=23
+OK   contaminated equal-nonzero full-class                      got=42                     decl=42
+OK   corrected strict>0 restricted                              got=18                     decl=18
+OK   corrected strict>0 full-class                              got=18                     decl=18
+OK   corrected equal-nonzero restricted                         got=11                     decl=11
+OK   corrected equal-nonzero full-class                         got=35                     decl=35
+OK   corrected restricted RATE peak                             got=zc 2025-10 34492/634445 5.44% decl=zc 2025-10 34492/634445 5.44%
+OK   corrected restricted ABS peak                              got=gc 2025-10 37913       decl=gc 2025-10 37913
+
+== 9. §A.1 / §8 reference AUC trio (f1) ==
+OK   AUC pre ZC LightGBM 5s                                     got=0.966244               decl=0.966244
+OK   AUC pre ZC LightGBM 10s                                    got=0.939968               decl=0.939968
+OK   AUC pre ZC LightGBM 30s                                    got=0.856419               decl=0.856419
+OK   AUC post ZC LightGBM 5s                                    got=0.931536               decl=0.931536
+OK   AUC post ZC LightGBM 10s                                   got=0.756504               decl=0.756504
+OK   AUC post ZC LightGBM 30s                                   got=0.679288               decl=0.679288
+OK   f1 rows                                                    got=128                    decl=128
+
+== 10. §A.2 / §A.6.4 f3 manifest counts ==
+OK   f3 counts.independently_leaking_sources                    got=25                     decl=25
+OK   f3 counts.leak_source                                      got=25                     decl=25
+OK   f3 counts.descendant                                       got=6                      decl=6
+OK   f3 counts.clean                                            got=4                      decl=4
+OK   f3 counts.total_fed_to_phase7                              got=35                     decl=35
+OK   f3 counts.not_fed_to_phase7                                got=19                     decl=19
+OK   f3 columns array length                                    got=35                     decl=35
+OK   f3 not_fed array length                                    got=19                     decl=19
+     flavor split on LEAK-SOURCE: {'label_base_price': 7, 'contemporaneous_state_flow': 18}
+     class split over 35: {'LEAK-SOURCE': 25, 'CLEAN': 4, 'DESCENDANT': 6}
+
+== 11. §17 / t4 manifest ==
+OK   t4 counts_projected_subset.projected_total                 got=28                     decl=28
+OK   t4 counts_projected_subset.unconstructible_total           got=7                      decl=7
+OK   t4 counts_projected_subset.leak_source                     got=22                     decl=22
+OK   t4 counts_projected_subset.descendant                      got=5                      decl=5
+OK   t4 counts_projected_subset.clean                           got=1                      decl=1
+Traceback (most recent call last):
+  File "C:\Users\ttbea\AppData\Local\Temp\claude\C--Users-ttbea-OneDrive-Desktop-MBO-2025-4mon--2026-01\8b1d67a4-ce4f-4c55-b09d-1c72e7b6b5e1\scratchpad\fixture_spike\b1verify\chk8.py", line 189, in <module>
+    names = [u['column'] if isinstance(u, dict) else u for u in (un if isinstance(un, list) else un.keys())]
+             ~^^^^^^^^^^
+KeyError: 'column'

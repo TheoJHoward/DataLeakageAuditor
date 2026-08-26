@@ -1,0 +1,293 @@
+ITEM G5 (RUN 2) — CI GATE RE-RUN AFTER H3 CHANGED THE CHECKER
+==============================================================
+Date: 2026-08-14   Python 3.12.10   pytest 9.1.1
+Repo: C:\Users\ttbea\OneDrive\Desktop\MBO_2025(4mon)+2026-01
+
+HEADLINE
+--------
+The prereg gate now FAILS. Exit 1, 14 findings, all on
+AVAILABILITY_DECLARATION.md, all from check_single_source. The test suite
+drops from 137 passed to 136 passed / 1 failed; the single failure is
+test_prereg_stage_on_real_repo_exits_zero, which is a DERIVED failure — it
+asserts the checker exits 0 on the real repo, so it is the same root cause
+reported twice, not an independent defect.
+
+This is the intended consequence of H3. It is the scrub's work list.
+
+
+CONTROLLED COMPARISON — ONLY ONE VARIABLE MOVED
+------------------------------------------------
+sha256 of all four live documents is BYTE-IDENTICAL to run 1:
+  PREREG.md                    f0a8f00164c217a40f87a4dc9fee6193ee7e4e125c68e3ecc84863fd6e2c7cc6
+  DESIGN.md                    39a944c1cef2f4cea8cac3d84648ecec5407997ee010ef4e33ea6131cd0dcc00
+  HISTORY.md                   3845b779949767c5a1b2193111d92e6fb37360b058140253804ff2f8ff9f4fa7
+  AVAILABILITY_DECLARATION.md  f0829bd3a0f11b05170a5e2686b953c5def39104af0bbfa2904afb3da2f53310
+tests/ is unmodified (git status shows no test file dirty).
+The ONLY changed input is tools/check_registration.py:
+  30d3ad4cfd72e1cb611bdbc4f3fb72cc66b00a9c1292aa76c1d564b4ceed7425
+  git diff --stat: 250 insertions, 15 deletions.
+So every delta below is attributable to H3 and to nothing else.
+
+
+ISOLATION METHOD (repo never written to)
+----------------------------------------
+Same method as run 1:
+  git archive HEAD | tar -x -C <scratch>/tree
+  cp {AVAILABILITY_DECLARATION.md,DESIGN.md,HISTORY.md} <scratch>/tree/
+  cp tools/check_registration.py <scratch>/tree/tools/
+The fourth cp is NEW this run and is required: the checker is now dirty in the
+working tree and is the artifact under test, so the archived blob would have
+run the OLD checker.
+Verified byte-identical (sha256) before running, 14/14 MATCH.
+
+
+(a) CHECKER
+-----------
+EXACT COMMAND (cwd = <scratch>/tree):
+  python tools/check_registration.py --stage prereg
+
+EXIT CODE: 1        RESULT: FAIL — 1 check(s) failed, 14 finding(s)
+13/14 checks PASS. 2 notes (declared exemptions REG15, PARK9) unchanged.
+8 checks still correctly deferred to implementation/release.
+The one failure is [FAIL] single_source.
+Full stdout: a_checker_stdout.txt   Exit code: a_checker_exit.txt
+
+FIDELITY CROSS-CHECK: running the same check_single_source against the LIVE
+repo root (which additionally carries the untracked evidence/ tree, 28 .md
+files, absent from the scratch copy) yields the SAME 14 findings at the SAME
+line numbers. evidence/ is excluded wholesale, so its absence from the scratch
+tree changes nothing. The scratch result is faithful.
+
+
+(b) TEST SUITE
+--------------
+EXACT COMMAND (cwd = <scratch>/tree):
+  python -m pytest tests/registration -q
+
+SUMMARY LINE: 1 failed, 136 passed in 0.96s
+PASS 136 / FAIL 1 / ERROR 0 / SKIP 0        EXIT CODE: 1
+FAILED tests/registration/test_checker.py::test_prereg_stage_on_real_repo_exits_zero
+  assert cr.run_stage("prereg", ROOT) == 0
+  AssertionError: assert 1 == 0        (test_checker.py:367)
+Full stdout: b_pytest_stdout.txt   Exit code: b_pytest_exit.txt
+
+
+(c) WHAT CHANGED VS RUN 1, AND WHY
+-----------------------------------
+                        RUN 1              RUN 2
+  checker exit          0  (PASS)          1  (FAIL)
+  checker findings      0                  14
+  single_source         [PASS]             [FAIL]
+  other 13 checks       PASS               PASS  (identical, incl. both notes)
+  deferred checks       8                  8     (identical)
+  pytest                137 passed         136 passed, 1 failed
+  pytest exit           0                  1
+  pytest total          137                137   (UNCHANGED — no tests added)
+
+WHY, decomposed. H3 made two separable changes; only one of them causes the
+failure. Probe: c_attribution_probe.py / c_attribution_output.txt,
+c_attribution_part2.txt.
+
+  CHANGE 1 — SCOPE WIDENING (check_single_source now scans by exclusion).
+  Scan set went from the hardcoded {DESIGN.md} to:
+      AVAILABILITY_DECLARATION.md, DESIGN.md, DEVIATIONS.md,
+      PRIOR_ART_VERIFICATION.md, README.md
+  This closes exactly the structural gap run 1 identified empirically at
+  tools/check_registration.py:451-452 (`path = root / "DESIGN.md"`).
+  CONTRIBUTION TO THE FAILURE: ZERO. Counterfactual run — the pre-H3 ruleset
+  (8 detectors + the state-enumeration rule) applied over the POST-H3 scope
+  set — produces 0 findings on all five files. This independently reproduces
+  run 1's conclusion ("were the declaration added to scan scope today, it
+  would produce zero new findings") and confirms it was correct.
+
+  CHANGE 2 — FIVE NEW DETECTORS (4 in _SINGLE_SOURCE_RULES, 1 in the new
+  _SINGLE_SOURCE_DEFINITIONAL_RULES). These are the sole cause. Attribution of
+  all 14 findings:
+      RULE#10 denominator membership .................. 6
+      RULE#9  state-classification biconditional ...... 3
+      RULE#11 denominator constitution ................ 2
+      RULE#12 what may be reported/published .......... 2
+      DEFINITIONAL (defining clause opened) ........... 1
+      from PRE-H3 detectors ........................... 0
+  H3's own source comment predicted this ("widening the file list alone finds
+  nothing in AVAILABILITY_DECLARATION.md"); the run confirms it.
+
+  CALIBRATION HOLDS. The five new detectors fire 0 times on DESIGN.md,
+  DEVIATIONS.md, PRIOR_ART_VERIFICATION.md and README.md. No collateral.
+
+  THE TWO NEW EXEMPTIONS ARE LOAD-BEARING, NOT DECORATIVE:
+   - verbatim-attributed-quote exemption fires 22 times, all on
+     AVAILABILITY_DECLARATION.md (blockquoted registered text at L761-765,
+     L778, L826, L886, L942, L992-1032, L1396-1442, L1533-1537, L2765,
+     L3445-3446). Without it the declaration's quoted-PREREG blocks would
+     themselves be flagged and the work list would be far larger and wrong.
+   - _REFERENCE_NOT_RESTATEMENT fires 7 times, all on DESIGN.md
+     (L78, L111, L168, L422, L490, L518, L522). This is what keeps DESIGN.md
+     at [PASS]: its "…are defined by `PREREG.md` §7.2 and are not restated
+     here" lines would otherwise trip the new definitional detector.
+
+  OBSERVATION — H3 SHIPPED 250 LINES WITH NO NEW TESTS. Total test count is
+  137 in both runs. grep over tests/registration/test_checker.py for
+  single_source_scan_set, SINGLE_SOURCE_EXCLUDED_*, _is_attributed_quote,
+  _prereg_quote_blob, _REFERENCE_NOT_RESTATEMENT,
+  _SINGLE_SOURCE_DEFINITIONAL_RULES, and "AVAILABILITY": ZERO hits. The only
+  single_source tests are the two pre-existing ones (test_checker.py:275 and
+  :280). Nothing pins the exclusion list, the scope-by-exclusion behaviour,
+  the quote exemption, or any of the five new detectors. A later edit that
+  silently re-narrows scope or widens an exemption would not be caught. Not a
+  gate failure — a durability gap, flagged for whoever owns checker tests.
+
+
+(d) THE 14 FINDINGS — THE SCRUB'S WORK LIST
+--------------------------------------------
+COUNT: 14 findings on 13 distinct lines (L1580 trips two detectors).
+FILE:  AVAILABILITY_DECLARATION.md only. No other file has any finding.
+These are the checker doing its job, not defects in the checker.
+
+Grouped by section, exact text:
+
+§A.4 — Sliced variant for CI (1 finding)
+  L974  reported/published rule
+        "and a slice may not be reported as a pass on the strength of
+         containing only unscored cells."
+
+§A.6 — Criterion 1, denominator re-derived (1 finding)
+  L1035 denominator constitution
+        "by column. **The denominator derives from the DECLARED MAP
+         (`n1\declared_map.csv`), not from"
+
+§A.6.0 — "DERIVATION RULE" (3 findings)
+  L1052 state-classification biconditional
+        "- **REQUIRED** iff its construction carries the wall-clock
+         `ts_floor` join **and** it is not"
+  L1054 state-classification biconditional
+        "- **OUT OF JURISDICTION** iff its construction reads only same-row
+         book/clock values,"
+  L1056 state-classification biconditional
+        "- **UNSCORED** iff it is degenerate-constant **or** unconstructible
+         under T4."
+
+§A.6.3 — UNSCORED (2 columns, plus a cell-level member) (1 finding)
+  L1228 denominator membership
+        "Requires no finding and forbids none; enters no denominator,
+         contributes to no rate, and"
+
+§A.12 — "Waived", defined for §10.2's replacement-criterion floor (4 findings)
+  L1546 defining clause opened
+        "**DEFINITION, declared.**"
+  L1551 denominator membership
+        "> **(i)** it is excluded from the criterion's denominator;
+         **(ii)** it is in the denominator but"
+  L1580 denominator membership  AND  reported/published rule (two findings)
+        "path, entering no denominator, contributing to no rate, and
+         **never reported as a pass**"
+
+§(g) The 72 unscored cells are UNSCORED — never clean (1 finding)
+  L2213 denominator membership
+        "enters no denominator, contributes to no rate, and **cannot be
+         reported as a pass**. A gate"
+
+§C.3 — Same-row book reads: availability-LEGAL at the boundary (2 findings)
+  L2712 denominator membership
+        "either side. Its gate status is **EXCLUDED**, and it enters no
+         denominator."
+  L2754 denominator membership
+        "**None of the four categories enters the criterion-1 denominator
+         except Category 4**, which is"
+
+§Working resolutions — DELTA R9 (1 finding)
+  L3677 denominator constitution
+        "- **R11.** Criterion-1 denominator derives from the DECLARED MAP,
+         not from the manifest's construction classes"
+
+SECTION TALLY: A.4 (1), A.6 (1), A.6.0 (3), A.6.3 (1), A.12 (4), (g) (1),
+C.3 (2), Working resolutions R9/R11 (1). Eight sections.
+
+MY READ AGAINST THE SCOPE LINE — offered as input to H2, not a verdict.
+Applying the author's test ("would it still be true for a DIFFERENT fixture?
+if yes it is a rule"):
+  CLEAR RULES, belong in PREREG.md — L974, L1052, L1054, L1056, L1228, L1546,
+  L1551, L1580, L2213, L3677. Note A.6.0's own heading is literally
+  "DERIVATION RULE… the enumeration below is what the rule yields", which
+  concedes the point: the enumeration is the instance, the iff-clauses above
+  it are the rule. A.12 is the "waived" definition already tracked as the
+  class C amendment, so its 4 findings should be discharged by H1, not by H2.
+  L1035 and L3677 state a fixture-independent constitution rule while naming
+  this fixture's artifact — rule core, instance parenthetical.
+  ARGUABLY INSTANCES, worth adjudicating rather than rewriting — L2712 and
+  L2754. Both are scoped to this fixture's own C.3 column family and its
+  "four categories", so they may be instance statements that the membership
+  regex catches by shape. If H2 concludes they are instances, the right fix is
+  a narrowed regex with a written reason, not a rewrite of true prose.
+
+
+(e) CI-GATE STATUS
+-------------------
+PASSES TODAY (13 of 14 prereg checks, plus 136 of 137 tests):
+  structure, config_schema, lock_table, banned_vocabulary (with REG15/PARK9
+  notes), deletion_certificate, phase_arithmetic, requirement_ids,
+  legality_table, parking_lot, reducer_functions, unit_grammar,
+  suppression_anchor. All 8 later-stage checks still correctly deferred.
+
+FAILS TODAY:
+  1. check_single_source — 14 findings, all AVAILABILITY_DECLARATION.md.
+     Checker exit 1.
+  2. test_prereg_stage_on_real_repo_exits_zero — derived from (1). It will
+     clear automatically when (1) clears; there is nothing to fix in the test.
+
+MUST LAND BEFORE THE GATE CAN BE EXPECTED TO PASS AT CEREMONY TIME:
+  - H1's v30a amendment. Discharges the A.12 cluster (L1546, L1551, L1580 x2
+    = 4 of the 14) by moving the "waived" definition INLINE INTO PREREG.md per
+    working resolution R20, leaving the declaration to carry only this
+    fixture's instance of it.
+  - H2's scrub. Discharges the remaining 10 across A.4, A.6, A.6.0, A.6.3,
+    (g), C.3 and R11 — each either relocated to PREREG.md as a rule, restated
+    as this fixture's instance, or converted to an attributed verbatim quote
+    (the 22 existing exemptions show that form already works and is
+    re-verified against PREREG.md on every run).
+  - Nothing else. No other check is failing, no other file is flagged, and
+    the 136 passing tests are unaffected.
+
+SEQUENCING RISK WORTH NAMING: H1 edits PREREG.md, and the quote exemption is
+re-derived from PREREG.md on every run. Any declaration line currently
+exempted as a verbatim quote of PREREG text that H1 rewords will STOP being
+exempt and appear as a new finding. All 22 current exemptions are in the
+declaration; the A.12 region (L1533-1537) is among them. So run the gate again
+AFTER H1 lands and BEFORE the ceremony — a clean H2 scrub measured against
+today's PREREG.md is not proof of a clean gate against the amended one.
+
+RESIDUAL, RECORDED NOT HIDDEN: the gate's own scope machinery is untested (see
+(c)). The gate passing after H1 and H2 land tells you the documents are clean;
+it does not tell you the scope rules that judged them are pinned.
+
+
+END STATE (re-read after the run)
+---------------------------------
+git status --porcelain identical to session start:
+   M AVAILABILITY_DECLARATION.md / M DESIGN.md / M HISTORY.md
+   M tools/check_registration.py
+  ?? .claude/ / ?? evidence/ / ?? tagmsg.txt
+Live doc sha256 after run — all four unchanged from before the run and from
+run 1 (values in "CONTROLLED COMPARISON" above); tools/check_registration.py
+unchanged at 30d3ad4c….
+No git state-changing command was run; git reflog HEAD@{0} is still
+ffa6d94 "Track the v30a availability declaration and prior-art verification".
+PREREG.md was READ ONLY (for the quote blob and section attribution) and NOT
+edited. AVAILABILITY_DECLARATION.md not edited.
+Repo caches untouched: .pytest_cache/ mtime Aug 7 08:56; tools/__pycache__
+mtime Aug 14 16:30, which PREDATES this run (it was already at 16:30 in the
+first directory listing of this session, left by H3). My own imports compiled
+to <scratch>/tree/tools/__pycache__ at 16:34.
+
+
+ARTIFACTS IN THIS DIRECTORY
+---------------------------
+  RUN_LOG.txt                this file
+  a_checker_stdout.txt       (a) full checker stdout
+  a_checker_exit.txt         (a) exit code: 1
+  b_pytest_stdout.txt        (b) full pytest stdout incl. the failure
+  b_pytest_exit.txt          (b) exit code: 1
+  c_attribution_probe.py     (c) scope/detector attribution probe
+  c_attribution_output.txt   (c) scan set, exclusions, counterfactual
+  c_attribution_part2.txt    (c) per-finding attribution, exemption activity
+  tree/                      scratch copy of the current working tree

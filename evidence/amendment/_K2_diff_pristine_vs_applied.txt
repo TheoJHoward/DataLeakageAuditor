@@ -1,0 +1,385 @@
+=== HUNK 1: insert pristine[7..6] -> applied[7..9]  (removed 0 lines, added 3 lines)
+    [context: pristine line 6 = '**Status:** v30 — supersedes v1–v29. Committed together with `DESIGN.md` v26 and `HISTORY.md`. **The last version under the self-imposed cap']
+  + A7: 
+  + A8: **Amendment status:** **v30a — this file is amended.** Six class C changes under §0.2.1, listed in the v30a amendments block below. The v30 text of every amended clause is retained inline, marked superseded; `git show pr
+  + A9: 
+=== HUNK 2: insert pristine[9..8] -> applied[12..53]  (removed 0 lines, added 42 lines)
+    [context: pristine line 8 = '**Registration:** committed unchanged as `PREREG.md` at first commit, before any detector code is written. See §11.']
+  + A12: 
+  + A13: ---
+  + A14: 
+  + A15: ## v30a amendments (class C under §0.2.1)
+  + A16: 
+  + A17: **What this block is.** `prereg-v30a` is an **amended registration, not a restart** (§0.2.1, line 95). It carries six class C changes. Each was produced by the element-by-element conformance walk of the acceptance fixtur
+  + A18: 
+  + A19: **The test applied to every sentence below, so the split is checkable rather than asserted:** *would this still be true for a different fixture?* If yes it is a **rule** and it is here. If no it is an **instance** and it
+  + A20: 
+  + A21: **How the amendment is written, so nothing is lost.**
+  + A22: 
+  + A23: 1. **The superseded v30 text is retained inline, verbatim, in a block marked `SUPERSEDED BY v30a` and marked NOT operative.** No registered sentence is deleted from this file.
+  + A24: 2. **Each amended clause carries an inline supersession marker naming v30a**, and the new normative text sits beside the old.
+  + A25: 3. **The registered text is recoverable byte-exact independently of this file: `git show prereg-v30:PREREG.md`.** The retained inline copies are a reading convenience; the signed `prereg-v30` tag is the record.
+  + A26: 4. **This amendment inherits §11's integrity chain in full** (§0.2.1, line 97): signed tag, file hashes in the tag message, external timestamp receipt committed, repository publicly reachable at lock.
+  + A27: 
+  + A28: | # | Clause amended | Class | `AVAILABILITY_DECLARATION.md` §A justification | What it changes |
+  + A29: |---|---|---|---|---|
+  + A30: | 1 | §6.2 — reference AUC anchor | C | §A.1 | Retires the registered anchor pair; an anchor is henceforth **constituted by recomputation** from the fixture's stored per-row predictions, with the ±0.010 interval retained
+  + A31: | 2 | §6.2 — contamination availability class | C | §A.3 | Moves the **recording locus** from the manifest to the fixture's availability declaration, which the tag hashes; an evidence artifact may not be the locus of a d
+  + A32: | 3 | §6.2 — sliced variant for CI | C | §A.4 | Moves the sliced variant **off the Phase 0 acceptance fixture** and re-registers it as a Phase 1 CI obligation with its scoring rule declared ex ante. |
+  + A33: | 4 | §6.2 — criterion 3 | C | §A.8 (working resolution R9) | Replaces "no finding on the corrected side" with **scoring against a declared ground-truth map**; neither side is assumed clean. |
+  + A34: | 5 | §6.2 — criterion 1's denominator, and the scored-set partition rule | C | §A.6, §A.6.0–§A.6.4, §A.10 (working resolution R11) | Adds the rule constituting the denominator — derived from the declared map, three clas
+  + A35: | 6 | §10.2 — the word "waived" in the replacement-criterion floor | C | §A.12 | Adds the **missing defining clause** to a floor that used the word without one. Changes no threshold and grants no permission. |
+  + A36: 
+  + A37: **All six are class C under §0.2.1 line 93** — each changes what a published number means, or what an acceptance criterion requires — **and are carried by this registration under line 95.** None is a `DEVIATIONS.md` entr
+  + A38: 
+  + A39: **What an amendment may not do, restated here because this is the first one.** It may not be weaker than the thing it amends (line 97). It may not convert an unmet element into a satisfied one by re-reading it. Where an 
+  + A40: 
+  + A41: **RECORDED DEFECT, NOT RESOLVED BY THIS AMENDMENT — `PREREG.md` lines 816 and 830 hold duplicated, conflicting authority over one state.**
+  + A42: 
+  + A43: Line 816, verbatim: "**A combination that is `not_applicable` on every scope-eligible case in a body of data publishes its counts and suppresses its yields, rates, and gates**, naming the reason."
+  + A44: 
+  + A45: Line 830, verbatim: "**scope-eligible** — the leakage risk logically applies to this unit. For a labelled feature-cohort pair this is a property of the corpus label, **not of what the detector could do about it**: a pair
+  + A46: 
+  + A47: For a combination `not_applicable` on every scope-eligible case in a body of data, line 830 keeps every labelled pair **in §7.2's yield denominators as a miss** — a yield that therefore exists and reads zero — while line
+  + A48: 
+  + A49: **What this amendment does about it: an express, scoped exception only.** SC-13c(c2) excepts the quantities SC-13a–c require from line 816's suppression clause, because a gate suppressed on the `not_applicable`-everywher
+  + A50: 
+  + A51: **What this amendment claims for the exception, and what it does not.** The exception rests on this amendment's own class C authority and on the capability ground stated at SC-13b(b3). It does not claim the support of `P
+  + A52: 
+  + A53: **What this amendment does NOT do: resolve the conflict.** Everywhere outside SC-13a–c, lines 816 and 830 both stand as registered and continue to point in opposite directions over the `not_applicable`-everywhere state. 
+=== HUNK 3: insert pristine[99..98] -> applied[144..145]  (removed 0 lines, added 2 lines)
+    [context: pristine line 98 = '']
+  + A144: > **§0.2.1 line 97 — v30a, SUPERSEDED AS A COUNT, NOT AS A REQUIREMENT.** "both file hashes in the tag message" records the count at the time of writing; it is superseded as a count by §11 item 8, which derives the count
+  + A145: 
+=== HUNK 4: insert pristine[100..99] -> applied[147..160]  (removed 0 lines, added 14 lines)
+    [context: pristine line 99 = '**A class C change discovered after the affected detector already exists** cannot be made ex ante by any ceremony. It is recorded, the amend']
+  + A147: 
+  + A148: **Integrity of a declared instance — v30a [SC-9]**
+  + A149: 
+  + A150: **(a) A DECLARATION SUPPLIES DATA UNDER A REGISTERED SCHEMA. IT CREATES NO GATE OBJECT.** A declaration supplies the values, enumerations, and evidence the registered clauses call for. **It creates no new criterion, no n
+  + A151: 
+  + A152: **(b) EVIDENCE ARTIFACTS ARE NEVER ADJUSTED TOWARD A DECISION.** A manifest, a measurement record, a capture, or any artifact whose job is to record what was measured **is not edited to carry a declaration, a decision, o
+  + A153: 
+  + A154: **(c) A LOCKED OBLIGATION IS DISCHARGED ONLY BY BEING MET OR BY BEING AMENDED.** It may not be discharged by a `DEVIATIONS.md` entry, by a working resolution, by an orchestrator decision, or by being carried forward sile
+  + A155: 
+  + A156: **(d) WORKING-RESOLUTION AUTHORITY IS UNIFORM, AND SUPERSESSION IS ORDERED.** A working resolution binds by its content and its date, **not by where it was recorded**: a resolution issued in the course of the work binds 
+  + A157: 
+  + A158: **(e) THE INTERPRETATION RULE — resolution toward the stronger reading only.** **An interpretation of locked text may resolve ONLY toward the STRONGER reading. Any interpretation that weakens a locked obligation — narrow
+  + A159: 
+  + A160: **(f) A RULE STATED TWICE HAS NO CANONICAL SOURCE.** *(Citation: §0.2.1 line 77.)* Where a declaration needs one of these rules, it **cites this section and does not restate it.** A second normative copy in a declaration
+=== HUNK 5: insert pristine[214..213] -> applied[275..276]  (removed 0 lines, added 2 lines)
+    [context: pristine line 213 = '']
+  + A275: > **§2.3 line 205 (`column_roles`) — v30a, ADDED NOT SUPERSEDED.** The role enumeration stands byte-exact. SC-1(c) states what a role value *is* relative to the comparator; it removes no role and adds none.
+  + A276: 
+=== HUNK 6: insert pristine[221..220] -> applied[284..285]  (removed 0 lines, added 2 lines)
+    [context: pristine line 220 = '> **`a(y_j) = label timestamp + label horizon + publication delay`**']
+  + A284: 
+  + A285: > **§2.4 lines 220–222 — v30a, PARTIALLY SUPERSEDED.** The formula `a(y_j) = label timestamp + label horizon + publication delay` stands byte-exact as the *form*. **Superseded is the assumption, unstated in v30, that the
+=== HUNK 7: insert pristine[267..266] -> applied[332..347]  (removed 0 lines, added 16 lines)
+    [context: pristine line 266 = 'Therefore: every L2a and L3.1 finding prints its declaration and its cohorts (§8.4); the declaration is in `VALIDATED_CONFIG` with every pub']
+  + A332: 
+  + A333: **§2.9 What a reconstructed declaration fixes, and what it may not leave open — v30a [SC-1]**
+  + A334: 
+  + A335: A declaration is the gate's semantic authority: every availability instant a comparator reads is the one the declaration declares. Six requirements follow, and a declaration that does not meet them fixes nothing.
+  + A336: 
+  + A337: **(a) MEASURED, NOT INTENDED.** Where a reconstructed element's *documented* value and its *measured* value differ, the declaration declares the **measured** value as the element's declared value, records the documented 
+  + A338: 
+  + A339: **(b) THE REPRESENTATION IS NAMED.** Every declared element states **which representation of the data it describes** — the value as constructed, or the value as fed to the model — and, where a transform separates them, n
+  + A340: 
+  + A341: **(c) A ROLE IS A POSITION, NOT AN AVAILABILITY INSTANT.** A `column_roles` value (§2.3) names where a value sits on a lattice. The instant the comparator reads is the availability instant the declaration declares for th
+  + A342: 
+  + A343: **(d) UNITS ARE DECLARED, AND A CHANGE OF UNIT IS CLASS C.** Where a declared element supplies a term of a registered formula, the declaration states that term's **unit**. Where the declared unit differs from the unit th
+  + A344: 
+  + A345: **(e) STALENESS IS NOT UNAVAILABILITY.** A value whose declared availability instant is legal at the decision instant under the declared `ties` branch is **available**, however old it is. Age licenses no finding. A findi
+  + A346: 
+  + A347: **(f) ONE COMPARATOR BRANCH IS SCORED.** Exactly one `ties` branch (§2.3) is declared, and it alone is scored. Figures computed under any other branch are published as **informational disclosures** so the tie choice is a
+=== HUNK 8: insert pristine[443..442] -> applied[524..537]  (removed 0 lines, added 14 lines)
+    [context: pristine line 442 = '']
+  + A524: > **§6.1 line 431 heading and table — v30a, AMENDED IN FORM.** The five bodies stand unchanged as bodies of data. **Superseded is the implication that the enumeration is exhaustive of everything a fixture declaration may
+  + A525: 
+  + A526: **Declared non-gated data — v30a [SC-10]**
+  + A527: 
+  + A528: **(a) A DECLARATION MAY CARRY DATA THE GATE DOES NOT CONSUME, IF IT SAYS SO IN TERMS.** The declaration marks such a body **NOT PART OF THE GATE**: nothing in it enters any acceptance criterion, any denominator, any rate
+  + A529: 
+  + A530: **(b) THE EXEMPTION IS CONDITIONAL, AND THE CONDITION IS THE WHOLE POINT.** Non-gated data may be added, revised, or withdrawn without amendment **provided its figures are never moved into an acceptance denominator.** Mo
+  + A531: 
+  + A532: **(c) DIAGNOSTIC CLASSES ARE NOT DECLARED CLASSES.** Where the declaration's class set carries classes for diagnosis alongside the classes the map scores, **the diagnostic classes are named as such and are not members of
+  + A533: 
+  + A534: **(d) FOUR FORBIDDEN USES OF NON-GATE DATA, REGISTERED BECAUSE EACH IS A ROUTE INTO THE ARITHMETIC.** Non-gated data, diagnostic classes, and figures the declaration marks informational may never be quoted as: **(1)** ev
+  + A535: 
+  + A536: **(e) ONE COPY.** These rules are stated here and cited elsewhere. A declaration restating them for a particular side has created a second normative copy (§0.2.1 line 77) and must cite instead.
+  + A537: 
+=== HUNK 9: replace pristine[445..445] -> applied[540..543]  (removed 1 lines, added 4 lines)
+    [context: pristine line 444 = '']
+  - P445: - **Reference AUC:** 0.957 and 0.675, **acceptance interval ±0.010 absolute**. The gate runs in `full` mode.
+  + A540: - **Reference AUC anchor — v30a, operative** (supersedes the registered clause quoted immediately below; `AVAILABILITY_DECLARATION.md` §A.1). **The anchor is constituted by recomputation, not by transcription.** It is co
+  + A541:   > **SUPERSEDED BY v30a — registered v30 text, retained verbatim, NOT operative:** "- **Reference AUC:** 0.957 and 0.675, **acceptance interval ±0.010 absolute**. The gate runs in `full` mode."
+  + A542:   >
+  + A543:   > *Retired because no horizon of the declared fixture reproduces the registered pair, and because the anchor's model family changed — both facts, and the replacement entries themselves, are instances and are recorded i
+=== HUNK 10: replace pristine[450..451] -> applied[548..567]  (removed 2 lines, added 20 lines)
+    [context: pristine line 449 = '- **If the original work did not document prediction timing, the fixture is recorded as semantically ambiguous.** It may be used under an ex']
+  - P450: - **Contamination availability class** recorded in the manifest.
+  - P451: - **Sliced variant** for CI, from the same padded slicer as user-facing slice auditing.
+  + A548: - **Contamination availability class — v30a, operative** (supersedes the registered clause quoted immediately below; `AVAILABILITY_DECLARATION.md` §A.3). **The contamination availability class is recorded in the fixture'
+  + A549:   > **SUPERSEDED BY v30a — registered v30 text, retained verbatim, NOT operative:** "- **Contamination availability class** recorded in the manifest."
+  + A550:   >
+  + A551:   > *The obligation to record the class is not removed — only its locus moves, and it moves to a file the tag hashes, which binds harder than the manifest did.*
+  + A552: - **Sliced variant — v30a, operative** (supersedes the registered clause quoted immediately below; `AVAILABILITY_DECLARATION.md` §A.4). **The sliced variant is not part of the Phase 0 acceptance fixture.** It is a **Phas
+  + A553:   > **SUPERSEDED BY v30a — registered v30 text, retained verbatim, NOT operative:** "- **Sliced variant** for CI, from the same padded slicer as user-facing slice auditing."
+  + A554:   >
+  + A555:   > *The variant is moved and re-registered, not deleted: slice auditing is not dropped and the slicer is not exempt from CI.*
+  + A556: 
+  + A557: **The acceptance fixture's composition — v30a [SC-2]**
+  + A558: 
+  + A559: **(a) THE FIXTURE IS AN ENUMERATED SET OF ARTIFACTS, DECLARED.** The declaration enumerates the artifacts that constitute the acceptance fixture, by side, with the provenance of each. An artifact not in that enumeration 
+  + A560: 
+  + A561: **(b) CHANGING THE COMPOSITION IS CLASS C — NEVER A DEVIATION, NEVER A WORKING RESOLUTION.** Admitting an artifact the declaration excludes, or removing one it includes, **changes the object the acceptance criteria are e
+  + A562: 
+  + A563: **(c) THE PRE/POST LICENCE IS BOUNDED.** Where the fixture is a paired pre/post construction and a delta across the pair is read as an availability effect, the licence for that reading requires the two sides to differ **
+  + A564: 
+  + A565: **(d) A REFERENCE ANCHOR IS CONSTITUTED BY RECOMPUTATION, NOT BY TRANSCRIPTION.** Where the gate requires a reference quantity to reproduce, that quantity is **recomputed from the fixture's own committed bytes** and decl
+  + A566: 
+  + A567: **(e) MOVING AN ELEMENT BETWEEN PHASES IS AN AMENDMENT, AND ITS SCORING RULE IS DECLARED WITH THE MOVE.** A registered element that cannot be satisfied at the instant the amendment must be committed is **amended explicit
+=== HUNK 11: replace pristine[461..461] -> applied[577..599]  (removed 1 lines, added 23 lines)
+    [context: pristine line 460 = '2. No **manifest-clean** source column receives **any runtime finding of any tier, primary or secondary**, on `fixture_contaminated`.']
+  - P461: 3. **No runtime finding of any tier, primary or secondary**, appears on `fixture_corrected`.
+  + A577: 3. **Runtime findings on every fixture side are scored against the fixture's DECLARED GROUND-TRUTH MAP — v30a, operative. [SC-3]**
+  + A578: 
+  + A579:    **(a) WHAT THE MAP IS.** The map is an **enumeration of expected findings**, declared in the fixture's availability declaration, stated **per side**, **per declared violation class**, and **per declared cell** of the 
+  + A580: 
+  + A581:    **(b) THREE DISPOSITIONS, MUTUALLY EXCLUSIVE AND EXHAUSTIVE OVER THE MAP.**
+  + A582:    - **A finding the map predicts is REQUIRED.** Its absence is a miss.
+  + A583:    - **A finding the map excludes is a FALSE POSITIVE.** It fails the gate — on any side, at any tier, primary or secondary.
+  + A584:    - **A cell the map does not cover is UNSCORED** (SC-6). It requires no finding and forbids none, enters no denominator, contributes to no rate, and is **never reported as a pass.**
+  + A585: 
+  + A586:    **(c) THE MAP COVERS THE WHOLE DECLARED SCORED POPULATION.** The declaration declares the scored population — the rows and units the criteria adjudicate. **A subclass of that population is never excluded, masked, or g
+  + A587: 
+  + A588:    **(d) THE MAP IS STATED IN THE TERMS THE DECLARATION DECLARES.** It is stated in the representation §2.9(b) names and **side-relatively**. **There is no side-independent statement of what leaks**; a side-independent l
+  + A589: 
+  + A590:    **(e) ONE SCORING KEY, AND ONLY ONE.** A re-aggregation, restriction, or re-projection of the map published for reporting is a **REPORTING OBJECT**: it is **not a second scoring key and changes no adjudication.** Wher
+  + A591: 
+  + A592:    **(f) A DERIVED SUBSET INHERITS ITS CELLS.** Where a subset of a scored artifact is produced (a slice, a filtered variant, a projection), it **inherits the map cells its units select** and is scored against those cell
+  + A593: 
+  + A594:    **(g) NEITHER SIDE IS ASSUMED CLEAN.** A side the declaration characterizes is **CHARACTERIZED, never clean**, and no report describes it as clean. Silence and belief never convert into a pass (§2.7, §8.1), applied he
+  + A595: 
+  + A596:    **(h) THE AMENDMENT DOES NOT LOWER THE BAR.** A finding on a cell the map marks zero is still a false positive and still fails the gate. The unscored disposition is not an escape hatch. The map is **declared and froze
+  + A597:    > **SUPERSEDED BY v30a — registered v30 criterion 3, retained verbatim, NOT operative:** "3. **No runtime finding of any tier, primary or secondary**, appears on `fixture_corrected`." *Retired because a fixture side m
+  + A598:    >
+  + A599:    > **Consequential — §10.1 line 1022** (H1 **C2**): the kill gate carries a second copy of the retired premise ("silent on `fixture_corrected`") and must be amended with this clause or `PREREG.md` holds both readings a
+=== HUNK 12: insert pristine[466..465] -> applied[604..652]  (removed 0 lines, added 49 lines)
+    [context: pristine line 465 = '']
+  + A604: > **§6.2 line 459 — v30a, ADDED NOT SUPERSEDED.** Criterion 1 stands byte-exact. **SUPERSEDED BY v30a is the inference** that the denominator is any construction-taxonomy count recorded elsewhere in the fixture's evidenc
+  + A605: 
+  + A606: **The criterion-1 denominator, and the partition rule that constitutes it — v30a [SC-4]**
+  + A607: 
+  + A608: **(a) THE DENOMINATOR IS DERIVED FROM THE DECLARED MAP, BY THE RULE REGISTERED HERE, AND THE DECLARATION SHOWS THE DERIVATION.** The rule by which each unit of the declared scored set is assigned its gate class is **regi
+  + A609: 
+  + A610: **(b) EXACTLY THREE CLASSES, MUTUALLY EXCLUSIVE AND EXHAUSTIVE OVER THE DECLARED SCORED SET.**
+  + A611: 
+  + A612: | Class | Registered predicate (cited by the declaration, per unit; never restated) | What a finding on it means |
+  + A613: |---|---|---|
+  + A614: | **REQUIRED** | the map declares a violation on it, on the scored side, under the declared branch | at least one **primary** runtime finding attributed to it is required; absence is a miss |
+  + A615: | **OUT OF JURISDICTION** | every constituent read is declared legal at the boundary instant under the declared branch | an availability-class finding on it is a **false positive** |
+  + A616: | **UNSCORED** | scoring on it is declared impossible, on a ground the declaration states | counts **neither for nor against** any criterion (SC-6) |
+  + A617: 
+  + A618: **The declaration cites these rows, per unit, and states the facts on which each unit satisfies the row it cites; it does not restate them** (a). **There is no fourth class and no residue class.** **N is the length of th
+  + A619: 
+  + A620: **(c) PRECEDENCE, REGISTERED.** Where a unit satisfies more than one class predicate, **UNSCORED wins.** The declaration derives under this precedence and states none of its own; a unit's class is the first the order yie
+  + A621: 
+  + A622: **(d) THE DECLARATION FIXES THE READING AT EVERY EDGE, EX ANTE, AND THE READINGS ARE PART OF THE DERIVATION.** Where a registered class predicate admits two readings, the declaration states which it derives under and why
+  + A623: 
+  + A624: **(e) GROUNDS FOR EXCLUSION ARE DECLARED, AND DECLARED PRE-RUN.** A unit is excluded only on a ground the declaration states. Two grounds are registered here because each is otherwise a guaranteed failure of criterion 1 
+  + A625: 
+  + A626: **(f) PUBLICATION DISCIPLINE — three constraints, and they are the point of the rule.**
+  + A627: 1. **Each class is published as an enumerated list of unit names.** A class stated as a bare count is not auditable and does not satisfy this. A count that cannot be written out as a list is a count nobody can audit.
+  + A628: 2. **No class is defined as a residue.** "Everything else" is not a class definition; each unit's membership is derived by (a) and shown.
+  + A629: 3. **The partition check is printed and reproducible by any gate report:** the three class sizes sum to the size of the declared scored set, no unit appears in two classes, and no unit of the set is missing from all thre
+  + A630: 
+  + A631: **(g) ONE GATE CLASS PER UNIT.** A unit carries **one** gate class and one only — §0.2.1 line 79's rule that no field answers two questions, applied to gate classes. **A unit's gate class is a statement about what the ga
+  + A632: 
+  + A633: **(h) RE-DERIVATION IS MANDATORY, AND MOVING A UNIT IS AN AMENDMENT.** If a unit's construction changes, or an excluded unit becomes constructible, its class is **re-derived by the rule of (a).** **The declaration's enum
+  + A634: 
+  + A635: **(i) DISAGREEMENT HALTS.** Any disagreement between the rule-derived class and the frozen class is a **stop-and-report**. It is not resolved in favour of either at run time, and a run that proceeds past it has not score
+  + A636: 
+  + A637: **(j) THE SCORED SET IS NAMED, NOT COUNTED.** The declared scored set is identified by **the named constant the declaration declares**, never by its cardinality. Any re-derivation names the constant, not the length; two 
+  + A638: 
+  + A639: **Adjudication routing — v30a [SC-5]**
+  + A640: 
+  + A641: **(a) EVERY FINDING IS CHARGED TO EXACTLY ONE CRITERION, BY THE CLASS OF THE UNIT IT NAMES.** The gate needs one answer per finding. Routing is derived from the unit's gate class (SC-4) and the map's disposition of the c
+  + A642: 
+  + A643: **(b) ATTRIBUTION IS TO THE GROUND, NOT TO THE NAME.** A REQUIRED entry is satisfied only by a finding **on the side, in the cells, and on the ground the map declares.** **Criterion 1 is not satisfied by unit name alone.
+  + A644: 
+  + A645: **(c) THE FALSE-POSITIVE CONSEQUENCE ATTACHES TO THE OUT-OF-JURISDICTION CLASS AND TO NO OTHER.** An availability-class finding on an out-of-jurisdiction unit is a **declared false positive**, recorded as such in the gat
+  + A646: 
+  + A647: **(d) A FINDING ON A CHARACTERIZED SIDE IS CHARGED TWICE ONLY WHERE THE CRITERIA ARE INDEPENDENT.** Where a finding is a false positive under (c) **and** contradicts the map on a characterized side, it is charged under b
+  + A648: 
+  + A649: **(e) JURISDICTION BETWEEN DETECTORS IS DECLARED, AND A BOUNDARY CUTS BOTH WAYS.** Where a finding's character belongs to a detector row **outside** the criteria this gate scores, the declaration assigns it to that row a
+  + A650: 
+  + A651: **(f) DECLARED SENTINELS UNDER THE IDENTITY CONTROL.** An as-built artefact of the fixture that is **present identically on every side** is **data content, not a finding**: it cannot differentiate the sides, and a detect
+  + A652: 
+=== HUNK 13: insert pristine[469..468] -> applied[656..667]  (removed 0 lines, added 12 lines)
+    [context: pristine line 468 = 'Top-k presence does not satisfy criterion 1. An alias satisfies it only if recorded before the run.']
+  + A656: 
+  + A657: **The gate's input surface — v30a [SC-7]**
+  + A658: 
+  + A659: **(a) AT GATE TIME A DETECTOR RECEIVES EXACTLY TWO THINGS, FOR ONE SIDE AT A TIME:** the pipeline for that side, and the availability declaration's **declared elements** (§2.3, §2.4, §2.9). **Nothing else.**
+  + A660: 
+  + A661: **(b) IT NEVER RECEIVES, AT ANY POINT IN A GATE RUN:** the paired side or any artifact derived from it; the paired side's stored predictions or any statistic derived from them; **the declared ground-truth map**, nor any 
+  + A662: 
+  + A663: **(c) WHY THE MAP IN PARTICULAR IS WITHHELD.** Under criterion 3 the map **is** the scoring key. A detector that could read it would be graded against a key it had seen, and the run would measure **retrieval rather than 
+  + A664: 
+  + A665: **(d) ONE SIDE AT A TIME IS A HARD SEQUENCING RULE, NOT A CONVENTION.** The criteria are per-side, and each is evaluated from a run that saw only its own side. **A single run given more than one side satisfies none of th
+  + A666: 
+  + A667: **(e) THE SURFACE IS DECLARED AND FROZEN WITH EVERYTHING ELSE (SC-8).** Widening it — including by supplying a derived summary "for convenience" — is a class C amendment, not a harness detail.
+=== HUNK 14: insert pristine[481..480] -> applied[680..695]  (removed 0 lines, added 16 lines)
+    [context: pristine line 480 = '**Ordering, locked:** tune on the development corpus → freeze the candidate configuration → run the fixture gate → tag the same unchanged co']
+  + A680: 
+  + A681: > **§6.2 line 480 — v30a, EXTENDED NOT SUPERSEDED.** The locked ordering stands byte-exact. SC-8 states what the ordering ranges over and what happens when a frozen object is later found wrong, which line 480 left unstat
+  + A682: 
+  + A683: **The freeze, and what "declared ex ante" requires — v30a [SC-8]**
+  + A684: 
+  + A685: **(a) EVERYTHING THE GATE CONSUMES FREEZES AT THE AMENDED REGISTRATION'S TAG.** At the moment the tag is signed, every object a gate outcome can be computed from becomes **locked**, and any subsequent change to any of th
+  + A686: 
+  + A687: **(b) WHAT FREEZES IS THE OBJECT IN ITS AUDITABLE FORM — LISTS, NOT COUNTS.** A partition freezes as its **enumerated lists of member names**, a map as its **rows**, an exclusion as **the named unit and its ground**. A c
+  + A688: 
+  + A689: **(c) EX ANTE MEANS CHECKABLE BEFORE ANY DETECTOR RUNS.** Every declared object the gate consumes — the map, the partition, the exclusions, any declared cohort or restriction — must be **regenerable and checkable from th
+  + A690: 
+  + A691: **(d) A SCOPE CHOICE IS JUSTIFIED INDEPENDENTLY OF ITS EFFECT ON ANY NUMBER.** Where the declaration restricts a scope — a class set, a cohort, a population — the justification **makes no reference to what the restrictio
+  + A692: 
+  + A693: **(e) A NUMBER FOUND WRONG AFTER A RESULT IS NOT CORRECTED IN PLACE.** *(Citation, not restatement: §0.2.1 line 99 governs.)* It is recorded, an amended registration is committed, and the affected benchmark is regenerate
+  + A694: 
+  + A695: **(f) THE FREEZE IS ONLY AS GOOD AS THE INTEGRITY CHAIN THAT CARRIES IT.** Every file the freeze ranges over — **including the declaration itself, which carries the scoring key** — is hashed in the amended registration's
+=== HUNK 15: insert pristine[818..817] -> applied[1033..1034]  (removed 0 lines, added 2 lines)
+    [context: pristine line 817 = '']
+  + A1033: **The suppression clause above is subject to one express, scoped exception, stated in §10.2 (v30a) [SC-13c(c2)].** That clause states which quantities the exception reaches and what is published for them; it governs the 
+  + A1034: 
+=== HUNK 16: replace pristine[855..855] -> applied[1072..1072]  (removed 1 lines, added 1 lines)
+    [context: pristine line 854 = '|---|---|']
+  - P855: | **Detector-case coverage** | `passed`, `failed`, `not_applicable`, `unsupported`, `could_not_run(reason)`, `waived` |
+  + A1072: | **Detector-case coverage** | `passed`, `failed`, `not_applicable`, `unsupported`, `could_not_run(reason)`, `waived`, `unscored` |
+=== HUNK 17: insert pristine[857..856] -> applied[1074..1089]  (removed 0 lines, added 16 lines)
+    [context: pristine line 856 = '| **Strategy diagnostic** | `completed`, `optional_strategy_failed`, `required_strategy_failed` |']
+  + A1074: 
+  + A1075: > **§7.7 line 855 — SUPERSEDED BY v30a. Registered v30 row, retained verbatim, NOT operative:** "| **Detector-case coverage** | `passed`, `failed`, `not_applicable`, `unsupported`, `could_not_run(reason)`, `waived` |" *S
+  + A1076: 
+  + A1077: **`unscored` — a coverage state, v30a [SC-6]**
+  + A1078: 
+  + A1079: **(a) SEMANTICS.** A unit is **`unscored`** when the declaration declares, **before any detector runs**, that scoring it is impossible on a stated ground. An `unscored` unit **requires no finding and forbids none.** It *
+  + A1080: 
+  + A1081: **(b) ENTRY CONDITION — declared, never inferred.** A unit may be reported `unscored` **only if it appears, by name, in the declaration's unscored ledger, with its ground, frozen before any detector runs.** A unit may no
+  + A1082: 
+  + A1083: **(c) TWO LEVELS, AND THEY DO NOT COLLAPSE.** The state exists at the **cell** level of the declared map (SC-3) and at the **unit** level of the declared partition (SC-4). **A cell-level `unscored` never makes its unit `
+  + A1084: 
+  + A1085: **(d) FINDINGS ON `unscored` UNITS ARE NOT FALSE POSITIVES.** They are reported as **unscored observations**, separately from the false-positive tally, and they carry no criterion consequence in either direction. **The t
+  + A1086: 
+  + A1087: **(e) THE PASS PROHIBITION IS ABSOLUTE.** A report that counts `unscored` units or cells as clean, as covered, or as passing **has converted absence of data into evidence**. `unscored` entries are named as unscored, neve
+  + A1088: 
+  + A1089: **`waived` is defined in §10.2 (v30a).** That definition governs the word wherever it appears, including this table. **The conditions under which a detector-case may be reported in this state are not defined by this regi
+=== HUNK 18: insert pristine[894..893] -> applied[1127..1142]  (removed 0 lines, added 16 lines)
+    [context: pristine line 893 = '']
+  + A1127: **The all-zero control — v30a [SC-11]**
+  + A1128: 
+  + A1129: **(a) AN EMPTY AGGREGATE MUST BE PROVED EMPTY BEFORE IT MAY BE REPORTED.** Any aggregate that reports zero violations, zero findings, all-clean, "no cells", "no rows", or an empty result set **is automatically cross-chec
+  + A1130: 
+  + A1131: **(b) MINIMUM SUFFICIENT FORM OF THE CHECK.** Assert that **every key the aggregation groups or filters on resolves to a real field with a non-empty domain in the source**, and that **the source is non-empty on those key
+  + A1132: 
+  + A1133: **(c) ON MISMATCH THE CHECK RAISES.** It does not print a warning, does not annotate the output, and does not continue. **A warning next to a zero is read as a zero; an exception is not read as anything, which is the poi
+  + A1134: 
+  + A1135: **(d) SCOPE — THIS BINDS GATE REPORTING, NOT ONLY THE ARTIFACT THAT PROMPTED IT.** It applies wherever a zero or an all-clean is produced in this programme: **the gate report's per-criterion counts and its false-positive
+  + A1136: 
+  + A1137: **(e) AN UNEXPECTED ALL-ZERO IS A FINDING, NOT A PASS.** Where a declared expectation predicts non-zero and the aggregate returns zero, **the zero is a finding about the aggregation or about the declaration — and never a
+  + A1138: 
+  + A1139: **(f) A ZERO OVER A PARTIAL POPULATION IS NOT A ZERO OVER THE POPULATION.** A measured zero over a subset of the declared class set, the declared sides, or the declared cells **is not the same predicate** as a zero over 
+  + A1140: 
+  + A1141: **(g) THIS COMPOSES WITH THE DISPOSITIONS ALREADY DECLARED; IT SOFTENS NONE OF THEM.** Unscored cells remain unscored and never clean (SC-6); excluded units remain excluded and are never reported as missed; the control a
+  + A1142: 
+=== HUNK 19: insert pristine[916..915] -> applied[1165..1168]  (removed 0 lines, added 4 lines)
+    [context: pristine line 915 = 'Per §7.7, coverage states are `not_applicable`, `unsupported`, and `could_not_run(reason)` with reason `crash` | `alignment` | `compatibilit']
+  + A1165: 
+  + A1166: > **§8.2 line 915 — v30a, EXTENDED NOT SUPERSEDED.** §8.2's list is the *not-run* subset and stays correct as far as it goes; `unscored` joins it, and §8.2's closing sentence governs it unchanged.
+  + A1167: 
+  + A1168: **`unscored` — §7.7 (v30a) [SC-6] — is governed by this section's closing sentence as well.** It is neither a pass nor a not-run: this section's boundary sentence does not reach it, and its entry condition and semantics 
+=== HUNK 20: insert pristine[963..962] -> applied[1216..1217]  (removed 0 lines, added 2 lines)
+    [context: pristine line 962 = '']
+  + A1216: **A zero, an empty result, or an all-clean statement is a published number and carries provenance under this section.** The control it must survive before it may be reported, and what it must name when it is, are stated 
+  + A1217: 
+=== HUNK 21: replace pristine[992..992] -> applied[1247..1247]  (removed 1 lines, added 1 lines)
+    [context: pristine line 991 = '| **0** | Fixture declaration reconstruction with evidence; prior-art verification; cross-tool comparison per §9.2; licence check | 1–2 wknd']
+  - P992: | **1** | Availability model and profiles; **verification of §0.3 Claims A–C and the §6.10 comparator cases**; fixture harness and manifest; padded slicer; evaluation generator and conformance suite frozen; detector prot
+  + A1247: | **1** | Availability model and profiles; **verification of §0.3 Claims A–C and the §6.10 comparator cases**; fixture harness and manifest; padded slicer; evaluation generator and conformance suite frozen; detector prot
+=== HUNK 22: replace pristine[1022..1022] -> applied[1277..1277]  (removed 1 lines, added 1 lines)
+    [context: pristine line 1021 = '2. Produces explicit executed / not-run accounting;']
+  - P1022: 3. Fires on `fixture_contaminated` and is silent on `fixture_corrected` **under the reconstructed declaration — or, where the fixture is semantically ambiguous (§6.2), under the labelled hypothetical declaration**;
+  + A1277: 3. Fires on `fixture_contaminated` and, on `fixture_corrected`, reports findings **consistent with the declared ground-truth map — silent where the map is silent, firing where the map declares a violation** (§6.2 criteri
+=== HUNK 23: replace pristine[1030..1030] -> applied[1285..1300]  (removed 1 lines, added 16 lines)
+    [context: pristine line 1029 = '']
+  - P1030: 2. **The runtime detectors cannot separate contaminated from corrected fixture under the reconstructed declaration** → **stop.**
+  + A1285: 2. **Where the fixture is semantically ambiguous, the runtime detectors must reach a non-zero per-side proof yield on every detector — v30a, operative on the ambiguity branch. [SC-13a]**
+  + A1286: 
+  + A1287:    This criterion replaces the criterion above wherever §6.2's ambiguity branch has fired and been recorded in Phase 0, and it is evaluated **under the labelled hypothetical declaration that branch requires**, on the fro
+  + A1288: 
+  + A1289:    **(a1) UNIT.** The scoring unit is the **feature-cohort pair** §7.2 registers as its runtime scoring unit, and the quantity computed over it is **proof yield**, as §7.2 defines it. **The yield is computed per runtime 
+  + A1290: 
+  + A1291:    **(a2) THRESHOLD.** For **each** runtime detector the floor governs (the set SC-13c(c3) pins), on **each** declared side, the `preserving` combination's proof yield must be **strictly greater than zero** — `proof yiel
+  + A1292: 
+  + A1293:    **(a3) DENOMINATOR — THE REGISTERED ONE, UNNARROWED.** The yield of (a2) is computed over **the denominator §7.2 registers for proof yield — all scope-eligible labelled pairs — with scope-eligibility as §7.4 defines i
+  + A1294: 
+  + A1295:    > **§10.2 criterion 2, line 1030 — v30a, SUPERSEDED ON THE AMBIGUITY BRANCH ONLY. Registered v30 text, retained verbatim, operative where the branch has NOT fired:** "2. **The runtime detectors cannot separate contami
+  + A1296:    >
+  + A1297:    > **NOT SUPERSEDED, stated so the marker's scope cannot be widened by reading:** line 1031 (the branch and the before-tuning rule), line 1033 (the three-part obligation and the no-`DEVIATIONS.md`-only rule), line 1035
+  + A1298:    >
+  + A1299:    > **Consequential — §10.1 criterion 3, line 1022.** The Phase 0 kill gate's third condition already carries the ambiguity branch on its face ("**or, where the fixture is semantically ambiguous (§6.2), under the labell
+  + A1300: 
+=== HUNK 24: insert pristine[1036..1035] -> applied[1306..1348]  (removed 0 lines, added 43 lines)
+    [context: pristine line 1035 = "   The replacement may be stricter than the floor and may not be weaker: non-zero proof yield, neither runtime detector waived, criterion 3'"]
+  + A1306: 
+  + A1307:    **"Waived", defined — v30a [SC-12]**
+  + A1308: 
+  + A1309:    The floor above uses the word without a defining clause, and the word appears again as a coverage state in §7.7's table, also undefined. An undefined term inside a floor whose purpose is to stop criteria being dropped
+  + A1310: 
+  + A1311:    > A detector is **WAIVED** with respect to a criterion when the criterion is written, configured, or reported in any way that makes the detector's own result **incapable of changing the criterion's outcome**. Concrete
+  + A1312: 
+  + A1313:    **Which detectors the floor governs is not the declaration's to choose.** They are the detector rows §7.1's two runtime metric rows name, and which §10.2 criterion 3's per-combination rule gates — `PREREG.md` line 759
+  + A1314: 
+  + A1315:    **What invoking it requires: nothing, because it may not be invoked.** The floor is a **prohibition, not a permission with conditions.** There is no procedure by which a detector the floor governs may be waived in a r
+  + A1316: 
+  + A1317:    **What this definition does NOT permit.** (1) It is not an escape hatch of any kind and creates no exception, justified, approved, or time-limited. (2) It does not reach any other criterion and may not be cited to sof
+  + A1318: 
+  + A1319:    **ADMISSIBILITY FOR THE CRITERION ABOVE — v30a [SC-13b]. Tested before any detector runs, and before any limb of the criterion.**
+  + A1320: 
+  + A1321:    **(b1) THE DECLARED SET.** A semantically ambiguous fixture may discharge the criterion above only if the declaration enumerates, **by name, before any run, and frozen with everything else the gate consumes**, a **non
+  + A1322: 
+  + A1323:    **(b2) THE DECLARED SET, PER SIDE.** The set's partition by declared fixture side is itself gate input, and **the labelled-unit set must be non-empty in every (governed detector) × (declared side) cell**. A cell that 
+  + A1324: 
+  + A1325:    **(b3) THE `not_applicable`-EVERYWHERE STATE — DISPOSED, NOT SUPPRESSED.** A governed combination that is `not_applicable` on every scope-eligible case of a declared side, over a declared non-empty labelled-unit set, 
+  + A1326: 
+  + A1327:    **(b4) WHY THIS TEST EXISTS, AND WHAT MAKES IT A TEST RATHER THAN A FORMALITY.** A detector whose declared labelled-unit set is empty **cannot change the criterion's outcome**, which is the defining condition of a wai
+  + A1328: 
+  + A1329:    **INTERACTIONS OF THE CRITERION ABOVE — v30a [SC-13c].**
+  + A1330: 
+  + A1331:    **(c1) ADOPTION, AND THE ONE NAMED DEPENDENCY — ONE WAY.** The criterion (SC-13a with SC-13b and this clause) is drafted against **§6.2 criterion 3 as amended by this registration** and **is not adoptable without that
+  + A1332: 
+  + A1333:    **(c2) THE LINE-816 EXCEPTION — EXPRESS, SCOPED, AND RECORDED.** `PREREG.md` line 816, verbatim:
+  + A1334: 
+  + A1335:    > **A combination that is `not_applicable` on every scope-eligible case in a body of data publishes its counts and suppresses its yields, rates, and gates**, naming the reason.
+  + A1336: 
+  + A1337:    **For the quantities this criterion requires — the per-detector, per-side `preserving` proof yields SC-13a(a2) gates, that gate itself, and the published yields (c4) requires — line 816's suppression clause does not a
+  + A1338: 
+  + A1339:    **(c3) WHICH DETECTORS THE FLOOR GOVERNS IS NOT THE DECLARATION'S TO CHOOSE.** They are **the detector rows §7.1's two runtime metric rows name, and which §10.2 criterion 3's per-combination rule gates** — §7.1's `Run
+  + A1340: 
+  + A1341:    **(c4) EVERY COMBINATION IS EXECUTED, AND NONE IS DROPPED.** Proof yield is registered for the `preserving` combination only. A criterion stated in proof-yield terms therefore scores one combination, and dropping the 
+  + A1342: 
+  + A1343:    **(c5) THE REMAINING FLOOR LIMBS ARE CARRIED BY CITATION, AND THIS CLAUSE NAMES WHICH VERSION IT CARRIES.** Line 1035's second and third limbs remain in force over the criterion exactly as written there. **Where "crit
+  + A1344: 
+  + A1345:    **(c6) WHAT THE CRITERION DOES NOT REACH, AND WHAT DOES NOT REACH IT.** It is a kill/pause criterion over the runtime detectors. **It creates no acceptance criterion, amends none, and is never cited against one.** The
+  + A1346: 
+  + A1347:    **(c7) WHAT THE CRITERION IS FOR, so it is not read as a quality bar.** It fires on an approach that is **broken**, not on one that is **incomplete**. A detector that probes few cohorts, proves what it probes, and pub
+  + A1348: 
+=== HUNK 25: insert pristine[1055..1054] -> applied[1368..1372]  (removed 0 lines, added 5 lines)
+    [context: pristine line 1054 = '7. Evaluation generator snapshot, conformance suite, adjudication rubrics, parameter distributions, beacon records, and generated manifests ']
+  + A1368: 8. **The freeze, and the hash set that carries it — v30a.** What freezes at an amended registration's tag, in what form, and what may not happen to it afterwards is stated in §6.2 (v30a) [SC-8] and is not restated here. 
+  + A1369: 
+  + A1370: > **§11 item 3 — v30a, SUPERSEDED AS A FILE SET, NOT AS A REQUIREMENT.** The registered v30 item names three files; the `prereg-v30` tag as executed enumerated five. The requirement — SHA-256 as committed, in the tag mes
+  + A1371: 
+  + A1372: > **§11 items 1–7 — v30a, EXTENDED.** Item 8 is added: it indexes the freeze (SC-8) and amends item 3's hash set; SC-8(f) states the requirement generically and does not fix a count.
+TOTAL HUNKS 25

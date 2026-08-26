@@ -1,0 +1,14 @@
+T2 start marker idx: 24539 occurrences: 1
+SUPERSESSION marker idx: 30709 occurrences: 1
+T2 block: ('d4dd09b939540bdc2db33a2e13cb049e', '3a82ba45bb83095239f17e5169d11b5724419fe629b5ac08aee313020424ae81', 6170)
+expect md5 d4dd09b939540bdc2db33a2e13cb049e sha256 3a82ba45bb83095239f17e5169d11b5724419fe629b5ac08aee313020424ae81 len 6170
+Decision log idx: 268731 occurrences: 1
+tail: ('059bbb1d33e4c93c254ac5f1dabf8dae', 'ad8b327707ecb9627b56b9e74e757facad55fb14e87a3082470fd7398bf267e0', 5744)
+expect md5 059bbb1d33e4c93c254ac5f1dabf8dae sha256 ad8b327707ecb9627b56b9e74e757facad55fb14e87a3082470fd7398bf267e0 len 5744
+tail last byte: b'\n'
+d1\pre_tail.txt len 1105 is prefix of live tail: True md5 92357739754dd5a0cbb48a0d27daf0b5
+p2\frozen_tail_before.bin len 3353 is prefix of live tail: True md5 ce1ac521e8582da910642eba1b189d45
+d1\post_tail.txt len 1105 is prefix of live tail: True md5 92357739754dd5a0cbb48a0d27daf0b5
+d1\pre_t2_block.txt len 6170 identical to live T2 block: True
+d1\post_t2_block.txt len 6170 identical to live T2 block: True
+p2\frozen_t2_before.bin len 6170 identical to live T2 block: True

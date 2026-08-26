@@ -1,0 +1,242 @@
+[
+  {
+    "tool": "leakage-analysis",
+    "version": "commit a7d038b (2023-05-02)",
+    "case": "C1",
+    "side": "clean",
+    "status": "crash",
+    "config": {
+      "entry": "python -m src.main",
+      "souffle": "NOT INSTALLED (no Windows build)",
+      "python": "3.12.10 (tool documents Python 3.8)",
+      "pyright_submodule": "checked out e3d7d9c"
+    },
+    "returncode": 0,
+    "error": "  File \"C:\\Users\\ttbea\\k6env\\la\\src\\irgen.py\", line 373, in visit_Subscript\n    assert 0\n           ^\nAssertionError\n\nFailed to generate IR: C:\\Users\\ttbea\\AppData\\Local\\Temp\\claude\\C--Users-ttbea-OneDrive-Desktop-MBO-2025-4mon--2026-01\\8b1d67a4-ce4f-4c55-b09d-1c72e7b6b5e1\\scratchpad\\killgate\\k6\\cases\\_scripts\\C1_clean.py"
+  },
+  {
+    "tool": "leakage-analysis",
+    "version": "commit a7d038b (2023-05-02)",
+    "case": "C1",
+    "side": "contaminated",
+    "status": "crash",
+    "config": {
+      "entry": "python -m src.main",
+      "souffle": "NOT INSTALLED (no Windows build)",
+      "python": "3.12.10 (tool documents Python 3.8)",
+      "pyright_submodule": "checked out e3d7d9c"
+    },
+    "returncode": 0,
+    "error": "  File \"C:\\Users\\ttbea\\k6env\\la\\src\\irgen.py\", line 373, in visit_Subscript\n    assert 0\n           ^\nAssertionError\n\nFailed to generate IR: C:\\Users\\ttbea\\AppData\\Local\\Temp\\claude\\C--Users-ttbea-OneDrive-Desktop-MBO-2025-4mon--2026-01\\8b1d67a4-ce4f-4c55-b09d-1c72e7b6b5e1\\scratchpad\\killgate\\k6\\cases\\_scripts\\C1_contaminated.py"
+  },
+  {
+    "tool": "leakage-analysis",
+    "version": "commit a7d038b (2023-05-02)",
+    "case": "C2",
+    "side": "clean",
+    "status": "crash",
+    "config": {
+      "entry": "python -m src.main",
+      "souffle": "NOT INSTALLED (no Windows build)",
+      "python": "3.12.10 (tool documents Python 3.8)",
+      "pyright_submodule": "checked out e3d7d9c"
+    },
+    "returncode": 0,
+    "error": "  File \"C:\\Users\\ttbea\\k6env\\la\\src\\irgen.py\", line 373, in visit_Subscript\n    assert 0\n           ^\nAssertionError\n\nFailed to generate IR: C:\\Users\\ttbea\\AppData\\Local\\Temp\\claude\\C--Users-ttbea-OneDrive-Desktop-MBO-2025-4mon--2026-01\\8b1d67a4-ce4f-4c55-b09d-1c72e7b6b5e1\\scratchpad\\killgate\\k6\\cases\\_scripts\\C2_clean.py"
+  },
+  {
+    "tool": "leakage-analysis",
+    "version": "commit a7d038b (2023-05-02)",
+    "case": "C2",
+    "side": "contaminated",
+    "status": "crash",
+    "config": {
+      "entry": "python -m src.main",
+      "souffle": "NOT INSTALLED (no Windows build)",
+      "python": "3.12.10 (tool documents Python 3.8)",
+      "pyright_submodule": "checked out e3d7d9c"
+    },
+    "returncode": 0,
+    "error": "  File \"C:\\Users\\ttbea\\k6env\\la\\src\\irgen.py\", line 373, in visit_Subscript\n    assert 0\n           ^\nAssertionError\n\nFailed to generate IR: C:\\Users\\ttbea\\AppData\\Local\\Temp\\claude\\C--Users-ttbea-OneDrive-Desktop-MBO-2025-4mon--2026-01\\8b1d67a4-ce4f-4c55-b09d-1c72e7b6b5e1\\scratchpad\\killgate\\k6\\cases\\_scripts\\C2_contaminated.py"
+  },
+  {
+    "tool": "leakage-analysis",
+    "version": "commit a7d038b (2023-05-02)",
+    "case": "C3",
+    "side": "clean",
+    "status": "crash",
+    "config": {
+      "entry": "python -m src.main",
+      "souffle": "NOT INSTALLED (no Windows build)",
+      "python": "3.12.10 (tool documents Python 3.8)",
+      "pyright_submodule": "checked out e3d7d9c"
+    },
+    "returncode": 0,
+    "error": "  File \"C:\\Users\\ttbea\\k6env\\la\\src\\irgen.py\", line 373, in visit_Subscript\n    assert 0\n           ^\nAssertionError\n\nFailed to generate IR: C:\\Users\\ttbea\\AppData\\Local\\Temp\\claude\\C--Users-ttbea-OneDrive-Desktop-MBO-2025-4mon--2026-01\\8b1d67a4-ce4f-4c55-b09d-1c72e7b6b5e1\\scratchpad\\killgate\\k6\\cases\\_scripts\\C3_clean.py"
+  },
+  {
+    "tool": "leakage-analysis",
+    "version": "commit a7d038b (2023-05-02)",
+    "case": "C3",
+    "side": "contaminated",
+    "status": "crash",
+    "config": {
+      "entry": "python -m src.main",
+      "souffle": "NOT INSTALLED (no Windows build)",
+      "python": "3.12.10 (tool documents Python 3.8)",
+      "pyright_submodule": "checked out e3d7d9c"
+    },
+    "returncode": 0,
+    "error": "  File \"C:\\Users\\ttbea\\k6env\\la\\src\\irgen.py\", line 373, in visit_Subscript\n    assert 0\n           ^\nAssertionError\n\nFailed to generate IR: C:\\Users\\ttbea\\AppData\\Local\\Temp\\claude\\C--Users-ttbea-OneDrive-Desktop-MBO-2025-4mon--2026-01\\8b1d67a4-ce4f-4c55-b09d-1c72e7b6b5e1\\scratchpad\\killgate\\k6\\cases\\_scripts\\C3_contaminated.py"
+  },
+  {
+    "tool": "leakage-analysis",
+    "version": "commit a7d038b (2023-05-02)",
+    "case": "C4",
+    "side": "clean",
+    "status": "crash",
+    "config": {
+      "entry": "python -m src.main",
+      "souffle": "NOT INSTALLED (no Windows build)",
+      "python": "3.12.10 (tool documents Python 3.8)",
+      "pyright_submodule": "checked out e3d7d9c"
+    },
+    "returncode": 0,
+    "error": "  File \"C:\\Users\\ttbea\\k6env\\la\\src\\irgen.py\", line 373, in visit_Subscript\n    assert 0\n           ^\nAssertionError\n\nFailed to generate IR: C:\\Users\\ttbea\\AppData\\Local\\Temp\\claude\\C--Users-ttbea-OneDrive-Desktop-MBO-2025-4mon--2026-01\\8b1d67a4-ce4f-4c55-b09d-1c72e7b6b5e1\\scratchpad\\killgate\\k6\\cases\\_scripts\\C4_clean.py"
+  },
+  {
+    "tool": "leakage-analysis",
+    "version": "commit a7d038b (2023-05-02)",
+    "case": "C4",
+    "side": "contaminated",
+    "status": "crash",
+    "config": {
+      "entry": "python -m src.main",
+      "souffle": "NOT INSTALLED (no Windows build)",
+      "python": "3.12.10 (tool documents Python 3.8)",
+      "pyright_submodule": "checked out e3d7d9c"
+    },
+    "returncode": 0,
+    "error": "  File \"C:\\Users\\ttbea\\k6env\\la\\src\\irgen.py\", line 373, in visit_Subscript\n    assert 0\n           ^\nAssertionError\n\nFailed to generate IR: C:\\Users\\ttbea\\AppData\\Local\\Temp\\claude\\C--Users-ttbea-OneDrive-Desktop-MBO-2025-4mon--2026-01\\8b1d67a4-ce4f-4c55-b09d-1c72e7b6b5e1\\scratchpad\\killgate\\k6\\cases\\_scripts\\C4_contaminated.py"
+  },
+  {
+    "tool": "leakage-analysis",
+    "version": "commit a7d038b (2023-05-02)",
+    "case": "C5",
+    "side": "clean",
+    "status": "crash",
+    "config": {
+      "entry": "python -m src.main",
+      "souffle": "NOT INSTALLED (no Windows build)",
+      "python": "3.12.10 (tool documents Python 3.8)",
+      "pyright_submodule": "checked out e3d7d9c"
+    },
+    "returncode": 0,
+    "error": "  File \"C:\\Users\\ttbea\\k6env\\la\\src\\irgen.py\", line 373, in visit_Subscript\n    assert 0\n           ^\nAssertionError\n\nFailed to generate IR: C:\\Users\\ttbea\\AppData\\Local\\Temp\\claude\\C--Users-ttbea-OneDrive-Desktop-MBO-2025-4mon--2026-01\\8b1d67a4-ce4f-4c55-b09d-1c72e7b6b5e1\\scratchpad\\killgate\\k6\\cases\\_scripts\\C5_clean.py"
+  },
+  {
+    "tool": "leakage-analysis",
+    "version": "commit a7d038b (2023-05-02)",
+    "case": "C5",
+    "side": "contaminated",
+    "status": "crash",
+    "config": {
+      "entry": "python -m src.main",
+      "souffle": "NOT INSTALLED (no Windows build)",
+      "python": "3.12.10 (tool documents Python 3.8)",
+      "pyright_submodule": "checked out e3d7d9c"
+    },
+    "returncode": 0,
+    "error": "  File \"C:\\Users\\ttbea\\k6env\\la\\src\\irgen.py\", line 373, in visit_Subscript\n    assert 0\n           ^\nAssertionError\n\nFailed to generate IR: C:\\Users\\ttbea\\AppData\\Local\\Temp\\claude\\C--Users-ttbea-OneDrive-Desktop-MBO-2025-4mon--2026-01\\8b1d67a4-ce4f-4c55-b09d-1c72e7b6b5e1\\scratchpad\\killgate\\k6\\cases\\_scripts\\C5_contaminated.py"
+  },
+  {
+    "tool": "leakage-analysis",
+    "version": "commit a7d038b (2023-05-02)",
+    "case": "C6",
+    "side": "clean",
+    "status": "crash",
+    "config": {
+      "entry": "python -m src.main",
+      "souffle": "NOT INSTALLED (no Windows build)",
+      "python": "3.12.10 (tool documents Python 3.8)",
+      "pyright_submodule": "checked out e3d7d9c"
+    },
+    "returncode": 0,
+    "error": "  File \"C:\\Users\\ttbea\\k6env\\la\\src\\irgen.py\", line 373, in visit_Subscript\n    assert 0\n           ^\nAssertionError\n\nFailed to generate IR: C:\\Users\\ttbea\\AppData\\Local\\Temp\\claude\\C--Users-ttbea-OneDrive-Desktop-MBO-2025-4mon--2026-01\\8b1d67a4-ce4f-4c55-b09d-1c72e7b6b5e1\\scratchpad\\killgate\\k6\\cases\\_scripts\\C6_clean.py"
+  },
+  {
+    "tool": "leakage-analysis",
+    "version": "commit a7d038b (2023-05-02)",
+    "case": "C6",
+    "side": "contaminated",
+    "status": "crash",
+    "config": {
+      "entry": "python -m src.main",
+      "souffle": "NOT INSTALLED (no Windows build)",
+      "python": "3.12.10 (tool documents Python 3.8)",
+      "pyright_submodule": "checked out e3d7d9c"
+    },
+    "returncode": 0,
+    "error": "  File \"C:\\Users\\ttbea\\k6env\\la\\src\\irgen.py\", line 373, in visit_Subscript\n    assert 0\n           ^\nAssertionError\n\nFailed to generate IR: C:\\Users\\ttbea\\AppData\\Local\\Temp\\claude\\C--Users-ttbea-OneDrive-Desktop-MBO-2025-4mon--2026-01\\8b1d67a4-ce4f-4c55-b09d-1c72e7b6b5e1\\scratchpad\\killgate\\k6\\cases\\_scripts\\C6_contaminated.py"
+  },
+  {
+    "tool": "leakage-analysis",
+    "version": "commit a7d038b (2023-05-02)",
+    "case": "C7",
+    "side": "clean",
+    "status": "crash",
+    "config": {
+      "entry": "python -m src.main",
+      "souffle": "NOT INSTALLED (no Windows build)",
+      "python": "3.12.10 (tool documents Python 3.8)",
+      "pyright_submodule": "checked out e3d7d9c"
+    },
+    "returncode": 0,
+    "error": "  File \"C:\\Users\\ttbea\\k6env\\la\\src\\irgen.py\", line 373, in visit_Subscript\n    assert 0\n           ^\nAssertionError\n\nFailed to generate IR: C:\\Users\\ttbea\\AppData\\Local\\Temp\\claude\\C--Users-ttbea-OneDrive-Desktop-MBO-2025-4mon--2026-01\\8b1d67a4-ce4f-4c55-b09d-1c72e7b6b5e1\\scratchpad\\killgate\\k6\\cases\\_scripts\\C7_clean.py"
+  },
+  {
+    "tool": "leakage-analysis",
+    "version": "commit a7d038b (2023-05-02)",
+    "case": "C7",
+    "side": "contaminated",
+    "status": "crash",
+    "config": {
+      "entry": "python -m src.main",
+      "souffle": "NOT INSTALLED (no Windows build)",
+      "python": "3.12.10 (tool documents Python 3.8)",
+      "pyright_submodule": "checked out e3d7d9c"
+    },
+    "returncode": 0,
+    "error": "  File \"C:\\Users\\ttbea\\k6env\\la\\src\\irgen.py\", line 373, in visit_Subscript\n    assert 0\n           ^\nAssertionError\n\nFailed to generate IR: C:\\Users\\ttbea\\AppData\\Local\\Temp\\claude\\C--Users-ttbea-OneDrive-Desktop-MBO-2025-4mon--2026-01\\8b1d67a4-ce4f-4c55-b09d-1c72e7b6b5e1\\scratchpad\\killgate\\k6\\cases\\_scripts\\C7_contaminated.py"
+  },
+  {
+    "tool": "leakage-analysis",
+    "version": "commit a7d038b (2023-05-02)",
+    "case": "C8",
+    "side": "clean",
+    "status": "crash",
+    "config": {
+      "entry": "python -m src.main",
+      "souffle": "NOT INSTALLED (no Windows build)",
+      "python": "3.12.10 (tool documents Python 3.8)",
+      "pyright_submodule": "checked out e3d7d9c"
+    },
+    "returncode": 0,
+    "error": "  File \"C:\\Users\\ttbea\\k6env\\la\\src\\irgen.py\", line 373, in visit_Subscript\n    assert 0\n           ^\nAssertionError\n\nFailed to generate IR: C:\\Users\\ttbea\\AppData\\Local\\Temp\\claude\\C--Users-ttbea-OneDrive-Desktop-MBO-2025-4mon--2026-01\\8b1d67a4-ce4f-4c55-b09d-1c72e7b6b5e1\\scratchpad\\killgate\\k6\\cases\\_scripts\\C8_clean.py"
+  },
+  {
+    "tool": "leakage-analysis",
+    "version": "commit a7d038b (2023-05-02)",
+    "case": "C8",
+    "side": "contaminated",
+    "status": "crash",
+    "config": {
+      "entry": "python -m src.main",
+      "souffle": "NOT INSTALLED (no Windows build)",
+      "python": "3.12.10 (tool documents Python 3.8)",
+      "pyright_submodule": "checked out e3d7d9c"
+    },
+    "returncode": 0,
+    "error": "  File \"C:\\Users\\ttbea\\k6env\\la\\src\\irgen.py\", line 373, in visit_Subscript\n    assert 0\n           ^\nAssertionError\n\nFailed to generate IR: C:\\Users\\ttbea\\AppData\\Local\\Temp\\claude\\C--Users-ttbea-OneDrive-Desktop-MBO-2025-4mon--2026-01\\8b1d67a4-ce4f-4c55-b09d-1c72e7b6b5e1\\scratchpad\\killgate\\k6\\cases\\_scripts\\C8_contaminated.py"
+  }
+]

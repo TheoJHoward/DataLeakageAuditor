@@ -1,0 +1,20 @@
+{
+  "features": [
+    "f0",
+    "f1",
+    "f2",
+    "f3"
+  ],
+  "target": "target",
+  "group": null,
+  "time": null,
+  "truth": "scaler fitted on train only",
+  "case": "C2",
+  "side": "clean",
+  "type": "T2",
+  "detector_row": "L1.2",
+  "n_rows": 400,
+  "n_train": 200,
+  "n_test": 200,
+  "n_index_overlap": 0
+}

@@ -1,0 +1,20 @@
+{
+  "features": [
+    "f0",
+    "f1",
+    "f2",
+    "risk_score"
+  ],
+  "target": "target",
+  "group": null,
+  "time": null,
+  "truth": "feature 'risk_score' is computed from the same-row label",
+  "case": "C5",
+  "side": "contaminated",
+  "type": "T5",
+  "detector_row": "L2a",
+  "n_rows": 400,
+  "n_train": 200,
+  "n_test": 200,
+  "n_index_overlap": 0
+}

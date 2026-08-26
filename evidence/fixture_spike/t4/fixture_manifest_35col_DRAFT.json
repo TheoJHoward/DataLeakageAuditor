@@ -1,0 +1,516 @@
+{
+  "manifest_status": "DRAFT - author review required",
+  "item": "T4 35-column projection manifest: F3 ground-truth manifest filtered to the columns constructible from the existing F2 ZC 2025-01 fixture builds by column selection/renaming only",
+  "generated_utc_date": "2026-08-10",
+  "working_resolution_R3": "R3. 35-column: accepted as a documented-unverifiable assumption (basis: F3 manifest 9/9 agreement). T4 is unblocked by this.",
+  "derived_from": {
+    "f3_manifest": "C:\\Users\\ttbea\\AppData\\Local\\Temp\\claude\\C--Users-ttbea-OneDrive-Desktop-MBO-2025-4mon--2026-01\\8b1d67a4-ce4f-4c55-b09d-1c72e7b6b5e1\\scratchpad\\fixture_spike\\f3\\fixture_manifest_DRAFT.json",
+    "phase7_script": "C:\\Users\\ttbea\\OneDrive\\Desktop\\MBO_2025\\results\\pc2_all_phases\\_scripts\\scripts\\phase7_l2_sim.py",
+    "build_pickles": [
+      "C:\\Users\\ttbea\\AppData\\Local\\Temp\\claude\\C--Users-ttbea-OneDrive-Desktop-MBO-2025-4mon--2026-01\\8b1d67a4-ce4f-4c55-b09d-1c72e7b6b5e1\\scratchpad\\fixture_spike\\f2\\out\\contaminated_zc_2025-01_run1.pkl",
+      "C:\\Users\\ttbea\\AppData\\Local\\Temp\\claude\\C--Users-ttbea-OneDrive-Desktop-MBO-2025-4mon--2026-01\\8b1d67a4-ce4f-4c55-b09d-1c72e7b6b5e1\\scratchpad\\fixture_spike\\f2\\out\\contaminated_zc_2025-01_run2.pkl",
+      "C:\\Users\\ttbea\\AppData\\Local\\Temp\\claude\\C--Users-ttbea-OneDrive-Desktop-MBO-2025-4mon--2026-01\\8b1d67a4-ce4f-4c55-b09d-1c72e7b6b5e1\\scratchpad\\fixture_spike\\f2\\out\\corrected_zc_2025-01_run1.pkl",
+      "C:\\Users\\ttbea\\AppData\\Local\\Temp\\claude\\C--Users-ttbea-OneDrive-Desktop-MBO-2025-4mon--2026-01\\8b1d67a4-ce4f-4c55-b09d-1c72e7b6b5e1\\scratchpad\\fixture_spike\\f2\\out\\corrected_zc_2025-01_run2.pkl"
+    ],
+    "builder_code": "C:\\Users\\ttbea\\AppData\\Local\\Temp\\claude\\C--Users-ttbea-OneDrive-Desktop-MBO-2025-4mon--2026-01\\8b1d67a4-ce4f-4c55-b09d-1c72e7b6b5e1\\scratchpad\\fixture_spike\\f2\\phase5_ml_fixture.py",
+    "lag_wrapper": "C:\\Users\\ttbea\\AppData\\Local\\Temp\\claude\\C--Users-ttbea-OneDrive-Desktop-MBO-2025-4mon--2026-01\\8b1d67a4-ce4f-4c55-b09d-1c72e7b6b5e1\\scratchpad\\fixture_spike\\f2\\fixture.py"
+  },
+  "projection_rule": "Column selection/renaming ONLY. A target column is 'direct' on exact name match in the 87-column build output, 'mapped-from:<name>' only where the construction of the intermediate was verified identical to phase7's construction (source column, aggregation, window), else UNCONSTRUCTIBLE. No feature was constructed.",
+  "canonical_serialization": "df.to_csv(index=False, float_format=\"%.12g\"), sha256 over utf-8 bytes (same convention as f2/run_fixture.py lines 28-31)",
+  "projection_column_order": [
+    "mid_return_1s",
+    "mid_return_5s",
+    "mid_return_10s",
+    "mid_return_30s",
+    "trade_volume_1s",
+    "trade_count_1s",
+    "minutes_since_open",
+    "net_delta_1s",
+    "net_delta_5s",
+    "net_delta_10s",
+    "net_delta_30s",
+    "net_delta_60s",
+    "buy_volume_10s",
+    "sell_volume_10s",
+    "large_trade_count_10s",
+    "vwap_distance",
+    "bid_size_1",
+    "ask_size_1",
+    "total_bid_depth",
+    "total_ask_depth",
+    "spread_ticks",
+    "depth_imbalance",
+    "book_slope_bid",
+    "book_slope_ask",
+    "depth_change_1s",
+    "depth_change_5s",
+    "depth_change_30s",
+    "l1_imbalance"
+  ],
+  "projected_columns": [
+    {
+      "name": "mid_return_1s",
+      "class": "LEAK-SOURCE",
+      "flavor": "label_base_price",
+      "parents": [],
+      "construction_quote": "for lag in [1, 5, 10, 30]:\n    snap[f\"mid_return_{lag}s\"] = mid.pct_change(lag)",
+      "construction_source": "phase7_l2_sim.py lines 152-153",
+      "note": "pct_change(lag) at row t reads mid(t), the label base. In-code comment line 151 '(lagged - use data through t-1)' is FALSE pre-shift; the lag exists only via line 276 shift(1).",
+      "projection_status": "direct",
+      "projection_evidence": "identical: phase7 lines 152-153 'for lag in [1, 5, 10, 30]:\\n    snap[f\"mid_return_{lag}s\"] = mid.pct_change(lag)' == fixture lines 195-196 'for lag in [1, 5, 10, 30, 60, 300]:\\n    snap[f\"mid_return_{lag}s\"] = mid.pct_change(lag)' (shared lags 1/5/10/30; mid identical: phase7 line 149 == fixture line 193 'mid = snap[\"mid_price\"].replace(0, np.nan)')"
+    },
+    {
+      "name": "mid_return_5s",
+      "class": "LEAK-SOURCE",
+      "flavor": "label_base_price",
+      "parents": [],
+      "construction_quote": "for lag in [1, 5, 10, 30]:\n    snap[f\"mid_return_{lag}s\"] = mid.pct_change(lag)",
+      "construction_source": "phase7_l2_sim.py lines 152-153",
+      "projection_status": "direct",
+      "projection_evidence": "same as mid_return_1s"
+    },
+    {
+      "name": "mid_return_10s",
+      "class": "LEAK-SOURCE",
+      "flavor": "label_base_price",
+      "parents": [],
+      "construction_quote": "for lag in [1, 5, 10, 30]:\n    snap[f\"mid_return_{lag}s\"] = mid.pct_change(lag)",
+      "construction_source": "phase7_l2_sim.py lines 152-153",
+      "projection_status": "direct",
+      "projection_evidence": "same as mid_return_1s"
+    },
+    {
+      "name": "mid_return_30s",
+      "class": "LEAK-SOURCE",
+      "flavor": "label_base_price",
+      "parents": [],
+      "construction_quote": "for lag in [1, 5, 10, 30]:\n    snap[f\"mid_return_{lag}s\"] = mid.pct_change(lag)",
+      "construction_source": "phase7_l2_sim.py lines 152-153",
+      "projection_status": "direct",
+      "projection_evidence": "same as mid_return_1s"
+    },
+    {
+      "name": "trade_volume_1s",
+      "class": "LEAK-SOURCE",
+      "flavor": "contemporaneous_state_flow",
+      "parents": [],
+      "construction_quote": "snap[\"trade_volume_1s\"] = snap[\"trade_volume\"].fillna(0)",
+      "construction_source": "phase7_l2_sim.py line 246; upstream groupby line 221: trade_volume=(\"size\", \"sum\") over ts_floor of second t (full second t.000-t.999)",
+      "note": "Not in the 45-set; new classification. Full-second aggregation of second t while row is stamped within second t.",
+      "projection_status": "mapped-from:trade_volume",
+      "projection_evidence": "phase7_l2_sim.py line 246: 'snap[\"trade_volume_1s\"] = snap[\"trade_volume\"].fillna(0)'; its groupby line 216 'tagg = trades.groupby(\"ts_floor\").agg(' with line 221 'trade_volume=(\"size\", \"sum\"),', merge line 231, fillna(0) lines 232-234. phase5_ml_fixture.py groupby line 240 'tagg = trades.groupby(\"ts_floor\").agg(' with line 243 'trade_volume=(\"size\",\"sum\"), large_trade_count=(\"is_large\",\"sum\"),', merge line 251, fillna(0) lines 252-253. Same source column ('size'), same aggregation ('sum'), same window (ts_floor = ts_event.dt.floor(\"1s\"): phase7 line 206, fixture line 233), same left merge on ts_floor, same fillna(0). phase7's extra .fillna(0) at line 246 acts on a column already filled at lines 232-234, hence identity. => mappable."
+    },
+    {
+      "name": "trade_count_1s",
+      "class": "LEAK-SOURCE",
+      "flavor": "contemporaneous_state_flow",
+      "parents": [],
+      "construction_quote": "snap[\"trade_count_1s\"] = snap[\"trade_count\"].fillna(0)",
+      "construction_source": "phase7_l2_sim.py line 247; upstream groupby line 220: trade_count=(\"size\", \"count\")",
+      "note": "Not in the 45-set; new classification.",
+      "projection_status": "mapped-from:trade_count",
+      "projection_evidence": "phase7_l2_sim.py line 247: 'snap[\"trade_count_1s\"] = snap[\"trade_count\"].fillna(0)'; groupby line 220 'trade_count=(\"size\", \"count\"),'. phase5_ml_fixture.py line 242 'sell_volume=(\"sell_vol\",\"sum\"), trade_count=(\"size\",\"count\"),'. Same source column ('size'), same aggregation ('count'), same ts_floor 1s window, same merge/fillna(0) as trade_volume. => mappable."
+    },
+    {
+      "name": "minutes_since_open",
+      "class": "CLEAN",
+      "flavor": null,
+      "parents": [],
+      "construction_quote": "snap[\"minutes_since_open\"] = (snap[\"hour_utc\"] - ds) * 60 + snap[\"timestamp\"].dt.minute",
+      "construction_source": "phase7_l2_sim.py line 159",
+      "note": "Clock time only. Same CLEAN class as in the 45-set DAG (phase5_ml.py line 189).",
+      "projection_status": "direct",
+      "projection_evidence": "identical: phase7 line 159 == fixture line 192 'snap[\"minutes_since_open\"] = (snap[\"hour_utc\"] - ds) * 60 + snap[\"timestamp\"].dt.minute'; zc ds=14 in both INST_META (phase7 line 50, fixture line 58)"
+    },
+    {
+      "name": "net_delta_1s",
+      "class": "LEAK-SOURCE",
+      "flavor": "contemporaneous_state_flow",
+      "parents": [],
+      "construction_quote": "for w in [1, 5, 10, 30, 60]:\n    snap[f\"net_delta_{w}s\"] = snap[\"net_delta\"].rolling(w, min_periods=1).sum()",
+      "construction_source": "phase7_l2_sim.py lines 238-239; upstream groupby line 217: net_delta=(\"signed_vol\", \"sum\"); signed_vol line 209",
+      "note": "Rolling window includes full second t.",
+      "projection_status": "direct",
+      "projection_evidence": "identical: phase7 lines 238-239 == fixture lines 255-256 'for w in [1, 5, 10, 30, 60]:\\n    snap[f\"net_delta_{w}s\"] = snap[\"net_delta\"].rolling(w, min_periods=1).sum()'; upstream net_delta=(\"signed_vol\",\"sum\") phase7 line 217 == fixture line 241; signed_vol phase7 line 209 == fixture line 236"
+    },
+    {
+      "name": "net_delta_5s",
+      "class": "LEAK-SOURCE",
+      "flavor": "contemporaneous_state_flow",
+      "parents": [],
+      "construction_quote": "snap[f\"net_delta_{w}s\"] = snap[\"net_delta\"].rolling(w, min_periods=1).sum()",
+      "construction_source": "phase7_l2_sim.py lines 238-239",
+      "projection_status": "direct",
+      "projection_evidence": "same as net_delta_1s"
+    },
+    {
+      "name": "net_delta_10s",
+      "class": "LEAK-SOURCE",
+      "flavor": "contemporaneous_state_flow",
+      "parents": [],
+      "construction_quote": "snap[f\"net_delta_{w}s\"] = snap[\"net_delta\"].rolling(w, min_periods=1).sum()",
+      "construction_source": "phase7_l2_sim.py lines 238-239",
+      "projection_status": "direct",
+      "projection_evidence": "same as net_delta_1s"
+    },
+    {
+      "name": "net_delta_30s",
+      "class": "LEAK-SOURCE",
+      "flavor": "contemporaneous_state_flow",
+      "parents": [],
+      "construction_quote": "snap[f\"net_delta_{w}s\"] = snap[\"net_delta\"].rolling(w, min_periods=1).sum()",
+      "construction_source": "phase7_l2_sim.py lines 238-239",
+      "projection_status": "direct",
+      "projection_evidence": "same as net_delta_1s"
+    },
+    {
+      "name": "net_delta_60s",
+      "class": "LEAK-SOURCE",
+      "flavor": "contemporaneous_state_flow",
+      "parents": [],
+      "construction_quote": "snap[f\"net_delta_{w}s\"] = snap[\"net_delta\"].rolling(w, min_periods=1).sum()",
+      "construction_source": "phase7_l2_sim.py lines 238-239",
+      "projection_status": "direct",
+      "projection_evidence": "same as net_delta_1s"
+    },
+    {
+      "name": "buy_volume_10s",
+      "class": "LEAK-SOURCE",
+      "flavor": "contemporaneous_state_flow",
+      "parents": [],
+      "construction_quote": "snap[\"buy_volume_10s\"] = snap[\"buy_volume\"].rolling(10, min_periods=1).sum()",
+      "construction_source": "phase7_l2_sim.py line 240; upstream groupby line 218",
+      "projection_status": "direct",
+      "projection_evidence": "identical: phase7 line 240 == fixture line 257 'snap[\"buy_volume_10s\"] = snap[\"buy_volume\"].rolling(10, min_periods=1).sum()'"
+    },
+    {
+      "name": "sell_volume_10s",
+      "class": "LEAK-SOURCE",
+      "flavor": "contemporaneous_state_flow",
+      "parents": [],
+      "construction_quote": "snap[\"sell_volume_10s\"] = snap[\"sell_volume\"].rolling(10, min_periods=1).sum()",
+      "construction_source": "phase7_l2_sim.py line 241; upstream groupby line 219",
+      "projection_status": "direct",
+      "projection_evidence": "identical: phase7 line 241 == fixture line 258 'snap[\"sell_volume_10s\"] = snap[\"sell_volume\"].rolling(10, min_periods=1).sum()'"
+    },
+    {
+      "name": "large_trade_count_10s",
+      "class": "LEAK-SOURCE",
+      "flavor": "contemporaneous_state_flow",
+      "parents": [],
+      "construction_quote": "snap[\"large_trade_count_10s\"] = snap[\"large_trade_count\"].rolling(10, min_periods=1).sum()",
+      "construction_source": "phase7_l2_sim.py line 242; upstream line 212: trades[\"is_large\"] = (trades[\"size\"] >= 10).astype(int); groupby line 222",
+      "projection_status": "direct",
+      "projection_evidence": "identical: phase7 line 242 == fixture line 260 'snap[\"large_trade_count_10s\"] = snap[\"large_trade_count\"].rolling(10, min_periods=1).sum()'; is_large phase7 line 212 == fixture line 239 'trades[\"is_large\"] = (trades[\"size\"] >= 10).astype(int)'"
+    },
+    {
+      "name": "vwap_distance",
+      "class": "LEAK-SOURCE",
+      "flavor": "label_base_price",
+      "parents": [],
+      "construction_quote": "snap[\"vwap_distance\"] = (mid - snap[\"vwap\"]) / tick",
+      "construction_source": "phase7_l2_sim.py line 243; vwap from groupby lines 224-225, ffill line 235",
+      "note": "Reads mid(t) AND same-second vwap - dual exposure; label_base_price flavor per the 45-set DAG precedent (phase5_ml.py line 258).",
+      "projection_status": "direct",
+      "projection_evidence": "identical: phase7 line 243 == fixture line 261 'snap[\"vwap_distance\"] = (mid - snap[\"vwap\"]) / tick'; vwap lambda phase7 lines 224-225 == fixture lines 244-245; ffill phase7 line 235 == fixture line 254; zc tick_size 0.25 in both",
+      "projection_note": "MEASURED FACT (contaminated run1): vwap_distance holds 243,000 NaN of 338,159 rows (71.9%), scattered (positions 0-3024 NaN, first non-NaN at 3025, NaN again at the tail), while the merged+ffilled 'vwap' intermediate holds 0 NaN and mid_price holds 0 zeros/NaN. Consistent with the variable 'mid' (defined BEFORE the trades merge, on the hour-filtered index that was never reset: fixture line 189/phase7 line 145 filter without reset_index; mid at fixture line 193/phase7 line 149) being index-ALIGNED against the post-merge RangeIndex frame at assignment (fixture line 261/phase7 line 243; merge resets the index at fixture line 251/phase7 line 231). The construction text and ordering are IDENTICAL in both scripts, so this is a shared property of both builders, not a fixture divergence; projection identity is unaffected. Reported for author review."
+    },
+    {
+      "name": "bid_size_1",
+      "class": "LEAK-SOURCE",
+      "flavor": "contemporaneous_state_flow",
+      "parents": [],
+      "construction_quote": "snap = pq.read_table(str(sp)).to_pandas()  # raw snapshot column, passed through unchanged",
+      "construction_source": "phase7_l2_sim.py line 139 (raw pass-through from {sym}_snapshots_{month}.parquet)",
+      "note": "Book state at t. NOT exempt from the universal shift(1): raw_book_cols at lines 268-272 exempts only bid_size_{2..5}/ask_size_{2..5}, so bid_size_1 IS lagged at line 276 in the archived (post-fix) script.",
+      "projection_status": "direct",
+      "projection_evidence": "identical: raw pass-through from {sym}_snapshots_{month}.parquet in both (phase7 line 139, fixture line 183); lagged (not exempt) in both lag scopes"
+    },
+    {
+      "name": "ask_size_1",
+      "class": "LEAK-SOURCE",
+      "flavor": "contemporaneous_state_flow",
+      "parents": [],
+      "construction_quote": "snap = pq.read_table(str(sp)).to_pandas()  # raw snapshot column, passed through unchanged",
+      "construction_source": "phase7_l2_sim.py line 139 (raw pass-through)",
+      "note": "Same treatment as bid_size_1.",
+      "projection_status": "direct",
+      "projection_evidence": "same as bid_size_1"
+    },
+    {
+      "name": "total_bid_depth",
+      "class": "LEAK-SOURCE",
+      "flavor": "contemporaneous_state_flow",
+      "parents": [],
+      "construction_quote": "snap[\"total_bid_depth\"] = snap[bid_cols].sum(axis=1)",
+      "construction_source": "phase7_l2_sim.py line 169; bid_cols line 167 = bid_size_1..5",
+      "projection_status": "direct",
+      "projection_evidence": "identical: phase7 line 169 == fixture line 207 'snap[\"total_bid_depth\"] = snap[bid_cols].sum(axis=1)'; bid_cols comprehension phase7 line 167 == fixture line 205"
+    },
+    {
+      "name": "total_ask_depth",
+      "class": "LEAK-SOURCE",
+      "flavor": "contemporaneous_state_flow",
+      "parents": [],
+      "construction_quote": "snap[\"total_ask_depth\"] = snap[ask_cols].sum(axis=1)",
+      "construction_source": "phase7_l2_sim.py line 170; ask_cols line 168 = ask_size_1..5",
+      "projection_status": "direct",
+      "projection_evidence": "identical: phase7 line 170 == fixture line 208 'snap[\"total_ask_depth\"] = snap[ask_cols].sum(axis=1)'"
+    },
+    {
+      "name": "spread_ticks",
+      "class": "LEAK-SOURCE",
+      "flavor": "contemporaneous_state_flow",
+      "parents": [],
+      "construction_quote": "snap[\"spread_ticks\"] = snap[\"spread\"] / tick",
+      "construction_source": "phase7_l2_sim.py line 142; spread clipped line 141",
+      "note": "spread is a raw snapshot column at t.",
+      "projection_status": "direct",
+      "projection_evidence": "identical: phase7 lines 141-142 == fixture lines 185-186 'snap[\"spread\"] = snap[\"spread\"].clip(lower=0.0)\\nsnap[\"spread_ticks\"] = snap[\"spread\"] / tick'; zc tick_size 0.25 in both"
+    },
+    {
+      "name": "depth_imbalance",
+      "class": "DESCENDANT",
+      "flavor": null,
+      "parents": [
+        "total_bid_depth",
+        "total_ask_depth"
+      ],
+      "construction_quote": "snap[\"depth_imbalance\"] = ((snap[\"total_bid_depth\"] - snap[\"total_ask_depth\"]) /\n                            td.replace(0, np.nan)).fillna(0)",
+      "construction_source": "phase7_l2_sim.py lines 172-173; td line 171",
+      "projection_status": "direct",
+      "projection_evidence": "see construction_discrepancy - identical EXCEPT phase7's trailing .fillna(0)",
+      "construction_discrepancy": "CONSTRUCTION DISCREPANCY (NaN handling only): phase7_l2_sim.py lines 172-173 end with .fillna(0): 'snap[\"depth_imbalance\"] = ((snap[\"total_bid_depth\"] - snap[\"total_ask_depth\"]) /\\n                                td.replace(0, np.nan)).fillna(0)'. phase5_ml_fixture.py line 210 has NO .fillna(0): 'snap[\"depth_imbalance\"] = ((snap[\"total_bid_depth\"] - snap[\"total_ask_depth\"]) / td.replace(0, np.nan))'. Build output holds NaN where total depth == 0; phase7 would hold 0 there. Measured materiality on contaminated run1 is in t4_verification_report.json (aux)."
+    },
+    {
+      "name": "book_slope_bid",
+      "class": "LEAK-SOURCE",
+      "flavor": "contemporaneous_state_flow",
+      "parents": [],
+      "construction_quote": "snap[\"book_slope_bid\"] = (snap[\"bid_size_1\"] - snap[bid_cols[-1]]) / max(nb - 1, 1) if nb >= 2 else 0.0",
+      "construction_source": "phase7_l2_sim.py line 178",
+      "note": "Reads raw book columns at t directly (bid_size_1, bid_size_5); classified LEAK-SOURCE per the 45-set DAG, not DESCENDANT.",
+      "projection_status": "direct",
+      "projection_evidence": "identical: phase7 line 178 == fixture line 212 'snap[\"book_slope_bid\"] = (snap[\"bid_size_1\"] - snap[bid_cols[-1]]) / max(nb-1,1) if nb >= 2 else 0.0' (whitespace around nb-1 only)"
+    },
+    {
+      "name": "book_slope_ask",
+      "class": "LEAK-SOURCE",
+      "flavor": "contemporaneous_state_flow",
+      "parents": [],
+      "construction_quote": "snap[\"book_slope_ask\"] = (snap[\"ask_size_1\"] - snap[ask_cols[-1]]) / max(na - 1, 1) if na >= 2 else 0.0",
+      "construction_source": "phase7_l2_sim.py line 179",
+      "projection_status": "direct",
+      "projection_evidence": "identical: phase7 line 179 == fixture line 213"
+    },
+    {
+      "name": "depth_change_1s",
+      "class": "DESCENDANT",
+      "flavor": null,
+      "parents": [
+        "total_bid_depth",
+        "total_ask_depth"
+      ],
+      "construction_quote": "for lag in [1, 5, 30]:\n    snap[f\"depth_change_{lag}s\"] = td.diff(lag)",
+      "construction_source": "phase7_l2_sim.py lines 180-181; td = snap[\"total_bid_depth\"] + snap[\"total_ask_depth\"] line 171",
+      "projection_status": "direct",
+      "projection_evidence": "identical: phase7 lines 180-181 == fixture lines 214-215 'for lag in [1, 5, 30]:\\n    snap[f\"depth_change_{lag}s\"] = td.diff(lag)'; td = total_bid_depth + total_ask_depth phase7 line 171 == fixture line 209"
+    },
+    {
+      "name": "depth_change_5s",
+      "class": "DESCENDANT",
+      "flavor": null,
+      "parents": [
+        "total_bid_depth",
+        "total_ask_depth"
+      ],
+      "construction_quote": "snap[f\"depth_change_{lag}s\"] = td.diff(lag)",
+      "construction_source": "phase7_l2_sim.py lines 180-181",
+      "projection_status": "direct",
+      "projection_evidence": "same as depth_change_1s"
+    },
+    {
+      "name": "depth_change_30s",
+      "class": "DESCENDANT",
+      "flavor": null,
+      "parents": [
+        "total_bid_depth",
+        "total_ask_depth"
+      ],
+      "construction_quote": "snap[f\"depth_change_{lag}s\"] = td.diff(lag)",
+      "construction_source": "phase7_l2_sim.py lines 180-181",
+      "projection_status": "direct",
+      "projection_evidence": "same as depth_change_1s"
+    },
+    {
+      "name": "l1_imbalance",
+      "class": "DESCENDANT",
+      "flavor": null,
+      "parents": [
+        "bid_size_1",
+        "ask_size_1"
+      ],
+      "construction_quote": "snap[\"l1_imbalance\"] = ((snap[\"bid_size_1\"] - snap[\"ask_size_1\"]) /\n                         (snap[\"bid_size_1\"] + snap[\"ask_size_1\"]).replace(0, np.nan)).fillna(0)",
+      "construction_source": "phase7_l2_sim.py lines 174-175",
+      "projection_status": "direct",
+      "projection_evidence": "see construction_discrepancy - identical EXCEPT phase7's trailing .fillna(0)",
+      "construction_discrepancy": "CONSTRUCTION DISCREPANCY (NaN handling only): phase7_l2_sim.py lines 174-175 end with .fillna(0): 'snap[\"l1_imbalance\"] = ((snap[\"bid_size_1\"] - snap[\"ask_size_1\"]) /\\n                             (snap[\"bid_size_1\"] + snap[\"ask_size_1\"]).replace(0, np.nan)).fillna(0)'. phase5_ml_fixture.py lines 202-203 have NO .fillna(0): 'snap[\"l1_imbalance\"] = ((snap[\"bid_size_1\"] - snap[\"ask_size_1\"]) /\\n                            (snap[\"bid_size_1\"] + snap[\"ask_size_1\"]).replace(0, np.nan))'. Build output holds NaN where bid_size_1+ask_size_1 == 0; phase7 would hold 0 there. Measured materiality on contaminated run1 is in t4_verification_report.json (aux)."
+    }
+  ],
+  "unconstructible_columns": [
+    {
+      "name": "tick_direction",
+      "class": "LEAK-SOURCE",
+      "flavor": "label_base_price",
+      "parents": [],
+      "construction_quote": "snap[\"tick_direction\"] = np.sign(mid.pct_change(1)).fillna(0)",
+      "construction_source": "phase7_l2_sim.py line 156",
+      "note": "Reads mid(t). Not in the Phase 5 45-set; new classification in this manifest.",
+      "projection_status": "UNCONSTRUCTIBLE",
+      "reason": "No column of this name or equivalent construction exists in the 87-column build output. phase7_l2_sim.py line 156: 'snap[\"tick_direction\"] = np.sign(mid.pct_change(1)).fillna(0)'. The build holds mid_return_1s = mid.pct_change(1) (phase5_ml_fixture.py lines 195-196), but producing tick_direction requires applying np.sign(...).fillna(0) - a new construction, prohibited under the projection rule (selection/renaming only)."
+    },
+    {
+      "name": "dollar_volume_1s",
+      "class": "LEAK-SOURCE",
+      "flavor": "contemporaneous_state_flow",
+      "parents": [],
+      "construction_quote": "snap[\"dollar_volume_1s\"] = snap[\"dollar_volume\"].fillna(0)",
+      "construction_source": "phase7_l2_sim.py line 248; upstream line 214: trades[\"dollar_vol\"] = trades[\"size\"] * trades[\"price\"]; groupby line 223",
+      "note": "Not in the 45-set; new classification.",
+      "projection_status": "UNCONSTRUCTIBLE",
+      "reason": "No dollar-volume column or intermediate exists in the build output (grep for 'dollar' in phase5_ml_fixture.py: no hits). phase7_l2_sim.py line 214 'trades[\"dollar_vol\"] = trades[\"size\"] * trades[\"price\"]', groupby line 223 'dollar_volume=(\"dollar_vol\", \"sum\"),', line 248 'snap[\"dollar_volume_1s\"] = snap[\"dollar_volume\"].fillna(0)'. Constructing it is prohibited."
+    },
+    {
+      "name": "session_open",
+      "class": "CLEAN",
+      "flavor": null,
+      "parents": [
+        "minutes_since_open"
+      ],
+      "construction_quote": "frac = snap[\"minutes_since_open\"] / total_minutes\nsnap[\"session_open\"] = (frac < 0.1).astype(float)",
+      "construction_source": "phase7_l2_sim.py lines 161-162",
+      "note": "Deterministic function of clock time; parent is CLEAN, so class is CLEAN, not DESCENDANT. Not in the 45-set.",
+      "projection_status": "UNCONSTRUCTIBLE",
+      "reason": "No session one-hot columns exist in the build output. phase7_l2_sim.py lines 161-162: 'frac = snap[\"minutes_since_open\"] / total_minutes' / 'snap[\"session_open\"] = (frac < 0.1).astype(float)'. minutes_since_open IS in the build, but the threshold transform is a new construction, prohibited."
+    },
+    {
+      "name": "session_mid",
+      "class": "CLEAN",
+      "flavor": null,
+      "parents": [
+        "minutes_since_open"
+      ],
+      "construction_quote": "snap[\"session_mid\"] = ((frac >= 0.1) & (frac < 0.85)).astype(float)",
+      "construction_source": "phase7_l2_sim.py line 163",
+      "note": "Not in the 45-set.",
+      "projection_status": "UNCONSTRUCTIBLE",
+      "reason": "Same basis as session_open. phase7_l2_sim.py line 163: 'snap[\"session_mid\"] = ((frac >= 0.1) & (frac < 0.85)).astype(float)'. New construction, prohibited."
+    },
+    {
+      "name": "session_close",
+      "class": "CLEAN",
+      "flavor": null,
+      "parents": [
+        "minutes_since_open"
+      ],
+      "construction_quote": "snap[\"session_close\"] = (frac >= 0.85).astype(float)",
+      "construction_source": "phase7_l2_sim.py line 164",
+      "note": "Not in the 45-set.",
+      "projection_status": "UNCONSTRUCTIBLE",
+      "reason": "Same basis as session_open. phase7_l2_sim.py line 164: 'snap[\"session_close\"] = (frac >= 0.85).astype(float)'. New construction, prohibited."
+    },
+    {
+      "name": "book_imbalance_ratio",
+      "class": "DESCENDANT",
+      "flavor": null,
+      "parents": [
+        "total_bid_depth",
+        "total_ask_depth"
+      ],
+      "construction_quote": "snap[\"book_imbalance_ratio\"] = (snap[\"total_bid_depth\"] /\n                                 snap[\"total_ask_depth\"].replace(0, np.nan)).fillna(1.0)",
+      "construction_source": "phase7_l2_sim.py lines 188-189",
+      "note": "Not in the 45-set; new classification. Pure function of two contemporaneous leak sources - inherits, does not independently leak.",
+      "projection_status": "UNCONSTRUCTIBLE",
+      "reason": "phase7_l2_sim.py lines 188-189 construct it: 'snap[\"book_imbalance_ratio\"] = (snap[\"total_bid_depth\"] /\\n                                     snap[\"total_ask_depth\"].replace(0, np.nan)).fillna(1.0)'. The build output contains a column named 'book_imbalance', but it is a RAW snapshot-parquet pass-through (phase5_ml_fixture.py never constructs or touches it; it appears in the builder only inside the lag-exemption set); its construction inside the snapshot builder is not verifiable from the fixture code, so exact-construction equivalence CANNOT be verified => NOT mappable. Additionally, 'book_imbalance' is lag-EXEMPT in the corrected build (raw_book_cols, fixture.py lines 43-47 / phase7_l2_sim.py lines 268-272) whereas phase7's book_imbalance_ratio IS lagged at line 276 - different lag treatment even if values coincided. Constructing the ratio from total depths is prohibited."
+    },
+    {
+      "name": "weighted_mid",
+      "class": "LEAK-SOURCE",
+      "flavor": "label_base_price",
+      "parents": [],
+      "construction_quote": "snap[\"weighted_mid\"] = (snap[\"bid_price_1\"] * snap[\"ask_size_1\"] +\n                        snap[\"ask_price_1\"] * snap[\"bid_size_1\"]) / \\\n                       (snap[\"bid_size_1\"] + snap[\"ask_size_1\"]).replace(0, np.nan)\nsnap[\"weighted_mid\"] = (snap[\"weighted_mid\"] - mid) / tick  # distance from mid in ticks",
+      "construction_source": "phase7_l2_sim.py lines 184-187",
+      "note": "Not in the 45-set; new classification. DUAL exposure: reads raw contemporaneous book (bid/ask_price_1, bid/ask_size_1 at t) AND subtracts mid(t), the label base, at line 187. Flavor assigned label_base_price per the vwap_distance precedent; author should confirm.",
+      "projection_status": "UNCONSTRUCTIBLE",
+      "reason": "No such column in the build output. phase7_l2_sim.py lines 184-187: 'snap[\"weighted_mid\"] = (snap[\"bid_price_1\"] * snap[\"ask_size_1\"] +\\n                            snap[\"ask_price_1\"] * snap[\"bid_size_1\"]) / \\\\\\n                           (snap[\"bid_size_1\"] + snap[\"ask_size_1\"]).replace(0, np.nan)' then line 187 'snap[\"weighted_mid\"] = (snap[\"weighted_mid\"] - mid) / tick'. Requires arithmetic over raw book columns and mid - a new construction, prohibited."
+    }
+  ],
+  "counts_projected_subset": {
+    "projected_total": 28,
+    "unconstructible_total": 7,
+    "leak_source": 22,
+    "descendant": 5,
+    "clean": 1,
+    "leak_source_label_base_price": 5,
+    "leak_source_contemporaneous_state_flow": 17,
+    "direct": 26,
+    "mapped_from_intermediate": 2,
+    "unconstructible_by_class": {
+      "leak_source": 3,
+      "descendant": 1,
+      "clean": 3
+    }
+  },
+  "projection_verification": {
+    "determinism": {
+      "contaminated": {
+        "run1": "32edf4389d9ca9435cc7923a19e0730bf409023d460b378f7acdc3cba11d719a",
+        "run2": "32edf4389d9ca9435cc7923a19e0730bf409023d460b378f7acdc3cba11d719a",
+        "equal": true
+      },
+      "corrected": {
+        "run1": "db4193aa1ad88fa052599bf6714f2ba401bd99f52008a938a5f475280dc66245",
+        "run2": "db4193aa1ad88fa052599bf6714f2ba401bd99f52008a938a5f475280dc66245",
+        "equal": true
+      }
+    },
+    "self_consistency": {
+      "run1": {
+        "n_projected_cols_checked": 28,
+        "all_projected_cols_lagged": true,
+        "exempt_projected_cols": [],
+        "max_abs_diff": 0.0,
+        "worst_col": null,
+        "nan_placement_mismatches_total": 0,
+        "value_mismatches_total": 0,
+        "corrected_row0_non_nan": [],
+        "per_col_anomalies": {}
+      },
+      "run2": {
+        "n_projected_cols_checked": 28,
+        "all_projected_cols_lagged": true,
+        "exempt_projected_cols": [],
+        "max_abs_diff": 0.0,
+        "worst_col": null,
+        "nan_placement_mismatches_total": 0,
+        "value_mismatches_total": 0,
+        "corrected_row0_non_nan": [],
+        "per_col_anomalies": {}
+      }
+    },
+    "aux_nan_and_zero_denominator": {
+      "nan_counts_contaminated_run1": {
+        "mid_return_1s": 1,
+        "mid_return_5s": 5,
+        "mid_return_10s": 10,
+        "mid_return_30s": 30,
+        "vwap_distance": 243000,
+        "depth_change_1s": 1,
+        "depth_change_5s": 5,
+        "depth_change_30s": 30
+      },
+      "rows_bid1_plus_ask1_eq_0_contaminated_run1": 0,
+      "rows_total_depth_eq_0_contaminated_run1": 0
+    }
+  }
+}

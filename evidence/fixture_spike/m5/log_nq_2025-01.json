@@ -1,0 +1,25 @@
+{
+  "inst": "nq",
+  "month": "2025-01",
+  "day_start_utc": 14,
+  "day_end_utc": 22,
+  "lattice_rows": 598228,
+  "corrected_rows": 598227,
+  "contaminated_rows": 598228,
+  "gap_rows": 243,
+  "subsecond_spacing_rows": 6,
+  "same_second_as_prev_rows": 6,
+  "lattice_secs": 0.03,
+  "trades_secs": 0.45,
+  "trades_events": {
+    "trades_all": 7895621,
+    "trades_buy": 0,
+    "trades_sell": 7895621,
+    "trades_large": 16150
+  },
+  "mbo": "ABSENT \u2014 no MBO parquet for this instrument; trade classes only",
+  "mbo_secs": 0.0,
+  "mbo_events": {},
+  "total_secs": 0.49,
+  "corrected_decisionT_nonzero_cells": 0
+}

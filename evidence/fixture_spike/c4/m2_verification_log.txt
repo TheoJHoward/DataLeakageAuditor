@@ -1,0 +1,62 @@
+[PASS] tasking lines 37-52 quoted verbatim in pedigree
+[PASS] dispatch label present
+[PASS] no result-count numeral anywhere in the C4 prompt  — leaks=[]
+[PASS] 338,159 is the only measured-quantity numeral  — numeric tokens = ['0', '01', '01,', '1', '10', '2', '2025', '3', '33', '338,159', '4', '5', '500']
+[PASS] prompt states 'you have no target numbers'
+[PASS] prompt forbids t1/, f4/, *violation*, tasks/, journals
+[PASS] journal line 5 is the C4 result record  — agentId=a8b3830d5bf32c3c2, key=v2:2fa62020de954...
+[PASS] journal verdict quoted verbatim in pedigree (whitespace-normalized)
+[PASS] verdict pins polars 1.43.2
+[PASS] verdict states pandas not used
+[PASS] verdict states lattice 338,159 independently matched
+[PASS] verdict records second-method agreement
+[PASS] finding 10 carries the blindness attestation
+[PASS] line 42 imports sys
+[PASS] line 43 imports polars
+[PASS] line 52 prints the polars version
+[PASS] no pandas import anywhere in checker
+[PASS] imports are exactly sys / polars / random
+[PASS] line 47 BASE = archive processed\zc
+[PASS] reads only the three archive parquets
+[PASS] method 1 header at line 115
+[PASS] method 2 header at line 180
+[PASS] line 193 seeds the sample deterministically
+[PASS] line 194 draws 500 rows
+       docstring builder-line citations: ['L51', 'L58', 'L126', 'L162', 'L163-167', 'L171', 'L187', 'L188', 'L189', 'L225', 'L233', 'L234-239']
+[PASS] pedigree lists the docstring citation set exactly
+[PASS] T1 table = 99 data rows (33 columns x 3 blocks)  — rows=99, blocks=[('contaminated', 'decision_T'), ('corrected', 'claimed_T_prev'), ('corrected', 'decision_T')]
+[PASS] every T1 (class, side, boundary) cell is column-uniform  — all 30 cells uniform
+[PASS] T1 corrected/decision_T covers 33 columns
+[PASS] C4 table = 20 rows (10 classes x 2 boundaries)
+
+  class            boundary    T1 strict/equal    C4 strict/equal   agree   cont-C4
+  trades_all      decision_T       0/0            0/0        YES   
+  trades_all      prev_row_B   89568/20       89568/20       YES   0
+  trades_buy      decision_T       0/0            0/0        YES   
+  trades_buy      prev_row_B       0/0            0/0        YES   0
+  trades_sell     decision_T       0/0            0/0        YES   
+  trades_sell     prev_row_B   89568/20       89568/20       YES   0
+  trades_large    decision_T       0/0            0/0        YES   
+  trades_large    prev_row_B   23633/20       23633/20       YES   0
+  mbo_all         decision_T       0/0            0/0        YES   
+  mbo_all         prev_row_B  254314/29      254314/29       YES   1
+  mbo_bid_add     decision_T       0/0            0/0        YES   
+  mbo_bid_add     prev_row_B  164958/1       164958/1        YES   1
+  mbo_ask_add     decision_T       0/0            0/0        YES   
+  mbo_ask_add     prev_row_B  162753/4       162753/4        YES   1
+  mbo_bid_cancel  decision_T       0/0            0/0        YES   
+  mbo_bid_cancel  prev_row_B  135980/23      135980/23       YES   1
+  mbo_ask_cancel  decision_T       0/0            0/0        YES   
+  mbo_ask_cancel  prev_row_B  129333/22      129333/22       YES   1
+  mbo_cancel_any  decision_T       0/0            0/0        YES   
+  mbo_cancel_any  prev_row_B  179856/24      179856/24       YES   1
+[PASS] all 20 (class, boundary) cells agree exactly on strict, equal, total_rows  — 20/20
+[PASS] contaminated-minus-1 relation at prev_row_B: mbo=1, trades=0  — {'trades_all': 0, 'trades_buy': 0, 'trades_sell': 0, 'trades_large': 0, 'mbo_all': 1, 'mbo_bid_add': 1, 'mbo_ask_add': 1, 'mbo_bid_cancel': 1, 'mbo_ask_cancel': 1, 'mbo_cancel_any': 1}
+[PASS] equal counts carry no last-row contribution (contaminated == corrected)
+[PASS] row counts: T1 corrected == C4 == 338,158; T1 contaminated == 338,159
+[PASS] R2 C4 section is lines 15-19
+[PASS] R2 lines 16-18 quoted verbatim in pedigree
+
+==============================================================================
+FAILURES: 0
+ALL PEDIGREE CLAIMS VERIFIED

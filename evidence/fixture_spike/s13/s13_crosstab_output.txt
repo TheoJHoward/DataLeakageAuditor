@@ -1,0 +1,69 @@
+column_universe.csv rows: 35
+A.6.1 n=11  A.6.2 n=22 (4+18)  A.6.3 n=2  total=35
+gate names == universe names: True
+only in gate lists: []
+only in column universe: []
+
+=== 35-ROW CROSS-TAB ===
+#   column                   Y1 SOURCE class                            R11 GATE class       source bucket            COMPOSES?
+1   mid_return_1s            snapshot parquet                           OUT OF JURISDICTION  SNAPSHOT-ROOTED or CLOCK yes
+2   mid_return_5s            snapshot parquet                           OUT OF JURISDICTION  SNAPSHOT-ROOTED or CLOCK yes
+3   mid_return_10s           snapshot parquet                           OUT OF JURISDICTION  SNAPSHOT-ROOTED or CLOCK yes
+4   mid_return_30s           snapshot parquet                           OUT OF JURISDICTION  SNAPSHOT-ROOTED or CLOCK yes
+5   tick_direction           snapshot parquet                           OUT OF JURISDICTION  SNAPSHOT-ROOTED or CLOCK yes
+6   trade_volume_1s          trades parquet                             REQUIRED             TRADE-TOUCHING           yes
+7   trade_count_1s           trades parquet                             REQUIRED             TRADE-TOUCHING           yes
+8   dollar_volume_1s         trades parquet                             REQUIRED             TRADE-TOUCHING           yes
+9   minutes_since_open       clock-only                                 OUT OF JURISDICTION  SNAPSHOT-ROOTED or CLOCK yes
+10  session_open             derived-from-another-column                OUT OF JURISDICTION  SNAPSHOT-ROOTED or CLOCK yes
+11  session_mid              derived-from-another-column                OUT OF JURISDICTION  SNAPSHOT-ROOTED or CLOCK yes
+12  session_close            derived-from-another-column                OUT OF JURISDICTION  SNAPSHOT-ROOTED or CLOCK yes
+13  net_delta_1s             trades parquet                             REQUIRED             TRADE-TOUCHING           yes
+14  net_delta_5s             trades parquet                             REQUIRED             TRADE-TOUCHING           yes
+15  net_delta_10s            trades parquet                             REQUIRED             TRADE-TOUCHING           yes
+16  net_delta_30s            trades parquet                             REQUIRED             TRADE-TOUCHING           yes
+17  net_delta_60s            trades parquet                             REQUIRED             TRADE-TOUCHING           yes
+18  buy_volume_10s           trades parquet                             UNSCORED             TRADE-TOUCHING           yes
+19  sell_volume_10s          trades parquet                             REQUIRED             TRADE-TOUCHING           yes
+20  large_trade_count_10s    trades parquet                             REQUIRED             TRADE-TOUCHING           yes
+21  vwap_distance            MIXED: snapshot parquet + trades parquet   REQUIRED             TRADE-TOUCHING           yes
+22  bid_size_1               snapshot parquet                           OUT OF JURISDICTION  SNAPSHOT-ROOTED or CLOCK yes
+23  ask_size_1               snapshot parquet                           OUT OF JURISDICTION  SNAPSHOT-ROOTED or CLOCK yes
+24  total_bid_depth          snapshot parquet                           OUT OF JURISDICTION  SNAPSHOT-ROOTED or CLOCK yes
+25  total_ask_depth          snapshot parquet                           OUT OF JURISDICTION  SNAPSHOT-ROOTED or CLOCK yes
+26  book_imbalance_ratio     derived-from-another-column                UNSCORED             SNAPSHOT-ROOTED or CLOCK yes
+27  weighted_mid             snapshot parquet                           OUT OF JURISDICTION  SNAPSHOT-ROOTED or CLOCK yes
+28  spread_ticks             snapshot parquet                           OUT OF JURISDICTION  SNAPSHOT-ROOTED or CLOCK yes
+29  depth_imbalance          derived-from-another-column                OUT OF JURISDICTION  SNAPSHOT-ROOTED or CLOCK yes
+30  book_slope_bid           snapshot parquet                           OUT OF JURISDICTION  SNAPSHOT-ROOTED or CLOCK yes
+31  book_slope_ask           snapshot parquet                           OUT OF JURISDICTION  SNAPSHOT-ROOTED or CLOCK yes
+32  depth_change_1s          derived-from-another-column                OUT OF JURISDICTION  SNAPSHOT-ROOTED or CLOCK yes
+33  depth_change_5s          derived-from-another-column                OUT OF JURISDICTION  SNAPSHOT-ROOTED or CLOCK yes
+34  depth_change_30s         derived-from-another-column                OUT OF JURISDICTION  SNAPSHOT-ROOTED or CLOCK yes
+35  l1_imbalance             derived-from-another-column                OUT OF JURISDICTION  SNAPSHOT-ROOTED or CLOCK yes
+
+non-composing columns: NONE
+
+=== RECONCILIATION ===
+trade-touching (trades parquet 11 + MIXED 1) = 12
+  members: ['buy_volume_10s', 'dollar_volume_1s', 'large_trade_count_10s', 'net_delta_10s', 'net_delta_1s', 'net_delta_30s', 'net_delta_5s', 'net_delta_60s', 'sell_volume_10s', 'trade_count_1s', 'trade_volume_1s', 'vwap_distance']
+  of which REQUIRED : ['dollar_volume_1s', 'large_trade_count_10s', 'net_delta_10s', 'net_delta_1s', 'net_delta_30s', 'net_delta_5s', 'net_delta_60s', 'sell_volume_10s', 'trade_count_1s', 'trade_volume_1s', 'vwap_distance'] 11
+  of which UNSCORED : ['buy_volume_10s']
+  of which OOJ      : []
+  CHECK  12 == REQUIRED 11 + buy_volume_10s : True and the +1 is ['buy_volume_10s']
+snapshot-rooted + clock (snapshot 13 + derived 9 + clock 1) = 23
+  of which OOJ      : 22
+  of which UNSCORED : ['book_imbalance_ratio']
+  of which REQUIRED : []
+  CHECK  23 == OOJ 22 + book_imbalance_ratio : True and the +1 is ['book_imbalance_ratio']
+TOTAL 12 + 23 = 35
+
+Inside the 23: clock-rooted 4 = ['minutes_since_open', 'session_close', 'session_mid', 'session_open']
+             : book-rooted  19
+  A.6.2(a) manifest-CLEAN 4 == clock-rooted 4 : True
+  A.6.2(b) 18 == book-rooted minus book_imbalance_ratio : True
+  A.6.2(b) splits 13 snapshot-parquet + 5 derived = 18
+    derived members: ['depth_change_1s', 'depth_change_30s', 'depth_change_5s', 'depth_imbalance', 'l1_imbalance']
+    (compare C.3 Cat 1(b): 13 LEAK-SOURCE + 5 DESCENDANT = 18; DESCENDANT members are l1_imbalance, depth_imbalance, depth_change_{1,5,30}s)
+
+source-class tally: {'snapshot parquet': 13, 'trades parquet': 11, 'clock-only': 1, 'derived-from-another-column': 9, 'MIXED: snapshot parquet + trades parquet': 1}

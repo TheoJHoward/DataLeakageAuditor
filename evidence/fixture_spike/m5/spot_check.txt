@@ -1,0 +1,8 @@
+example row from verify_violating_rows.json (cl 2025-01, trades_all):
+  T_prev = 2025-01-02 13:01:11.671562   T_i = 2025-01-02 13:01:11.865879   gap_ns = 194317432
+  lattice row found in corrected frame: True
+  absorbed window = [ 2025-01-02 13:01:11 , +1s)   (== floor(T_prev))
+  floor(T_i)==wstart (same-second row): True
+  RAW trades in that window: 1
+     ts= 2025-01-02 13:01:11.914518  size= 1  side= SELL_AGGRESSOR   AFTER decision time T_i? True  (T_i + 48638830 ns)
+  => the corrected (shift(1)) row at T_i absorbs 1 trade(s) that had not yet occurred.

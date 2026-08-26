@@ -1,0 +1,77 @@
+# PRE_R9_HASHES.txt - independent pre-correction anchor for the availability declaration
+# Generated: 2026-08-12 14:17:31 UTC
+# Item X5(a). Taken BEFORE any R9/R11-R13 correction pass touched the file.
+# Source of truth: fixture_spike4vailability_declaration_DRAFT.md
+#
+# Purpose: this file, together with the byte-identical full copy
+# availability_declaration_PRE_R9.md stored beside it, is the independent anchor a
+# later verifier needs in order to prove which parts of the declaration moved during
+# the correction pass and which did not. No editing was performed by the process that
+# wrote this file.
+
+## 1. WHOLE FILE (pre-correction)
+
+  path       : fixture_spike/f4/availability_declaration_DRAFT.md
+  lines      : 1828
+  bytes      : 132242
+  md5        : f98b4d3d75d776aebcc54b6d33aaf511
+  sha256     : aab6400a003e69f204b37d36952ff3ef735cbb678b4e200fdbf33b80db2bcf8b
+
+  Snapshot copies (both byte-identical to the source at capture time):
+    fixture_spike/_snapshots/availability_declaration_PRE_R9.md   (scratchpad)
+    evidence/fixture_spike/_snapshots/availability_declaration_PRE_R9.md   (staged tree)
+
+## 2. FROZEN REGION (i) - Phase-7-added columns / T2 addendum block
+
+  Boundary convention (inherited, not invented here): the block runs from the first
+  byte of the heading line `## Phase-7-added columns [T2 addendum ...]` up to but NOT
+  including the byte at which the line beginning `**SUPERSESSION NOTE` starts. The
+  declaration text marks that note as "(outside the frozen block, per R5's 'leave the
+  T2 addendum block untouched')", so the note is excluded. This convention reproduces
+  6170 bytes, byte-identical to the three independent prior captures of the same block:
+  d1/pre_t2_block.txt, d1/post_t2_block.txt and p2/frozen_t2_before.bin
+  (all sha256 3a82ba45bb83095239f17e5169d11b5724419fe629b5ac08aee313020424ae81,
+  all md5 d4dd09b939540bdc2db33a2e13cb049e). The block is therefore UNCHANGED across
+  every round captured so far, and this snapshot continues that chain.
+
+  byte offset (start, inclusive) : 17389
+  byte offset (end, exclusive)   : 23559
+  byte length                    : 6170
+  md5                            : d4dd09b939540bdc2db33a2e13cb049e
+  sha256                         : 3a82ba45bb83095239f17e5169d11b5724419fe629b5ac08aee313020424ae81
+
+## 3. FROZEN REGION (ii) - decision-log tail
+
+  Boundary convention: from the first byte of the line beginning `## Decision log`
+  through end of file, inclusive of the file's terminating newline.
+
+  Contents at capture: DELTA R2 block (R1-R5), DELTA R5 block (R6-R8), DELTA R7 block
+  (R9), and the newly appended DELTA R9 block (R11, R12, R13). There is no R10 in the
+  file; the sequence R9 -> R11 is as-found and is not a capture defect.
+
+  byte offset (start, inclusive) : 126498
+  byte offset (end, exclusive)   : 132242
+  byte length                    : 5744
+  md5                            : 059bbb1d33e4c93c254ac5f1dabf8dae
+  sha256                         : ad8b327707ecb9627b56b9e74e757facad55fb14e87a3082470fd7398bf267e0
+
+  Prior captures of this region are NOT comparable by hash, because the tail is an
+  append-only log and has grown between rounds:
+    d1/pre_tail.txt, d1/post_tail.txt : 1105 bytes
+    p2/frozen_tail_before.bin         : 3353 bytes
+    this capture                      : 5744 bytes
+  Growth is the expected behaviour for this region; the invariant a verifier should
+  check is that the earlier bytes are a prefix of the later ones.
+
+## 4. RECONSTRUCTION
+
+  Both regions are byte-exactly recoverable from the full snapshot copy using the
+  offsets above, e.g.:
+
+    python -c "d=open('availability_declaration_PRE_R9.md','rb').read(); import sys; sys.stdout.buffer.write(d[17389:23559])"
+    python -c "d=open('availability_declaration_PRE_R9.md','rb').read(); import sys; sys.stdout.buffer.write(d[126498:])"
+
+  Marker-based recovery (find the two marker strings rather than trusting the offsets)
+  is preferred if the file is ever re-derived, and yields the same bytes.
+
+# END

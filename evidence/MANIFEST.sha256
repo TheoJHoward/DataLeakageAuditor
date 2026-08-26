@@ -1,0 +1,886 @@
+# MANIFEST.sha256 - evidence tree for the v30a availability declaration
+# Generated: 2026-08-20 23:53:18 UTC
+#
+# SCOPE. One line per committed file, in `sha256  path` form (two spaces, lowercase
+# hex, forward slashes). Paths are relative to the directory holding this manifest
+# (the `evidence/` directory of the repository), so `sha256sum -c MANIFEST.sha256`
+# run from inside `evidence/` verifies the tree as-is. The `../` lines are the
+# repository-root files the ceremony commits alongside this tree: the declaration,
+# `PRIOR_ART_VERIFICATION.md`, `PRACTICES.md` and `prereg-signing-key.asc` (the
+# ASCII-armored public key, added R69/B2.3). ALL of them must verify. Do not restate
+# their COUNT here - it read "three" while there were four; derive it:
+#     grep -cE '^[0-9a-f]{64}  \.\./' MANIFEST.sha256
+#
+# PATH RESOLUTION FOR THE DECLARATION. Relative evidence paths quoted inside
+# AVAILABILITY_DECLARATION.md (e.g. `t4\fixture_manifest_35col_DRAFT.json`,
+# `f5\DEVIATIONS_entry_SKELETON.md`) resolve relative to `evidence\fixture_spike\`.
+# Those paths were written against the scratchpad build directory named in the
+# declaration preamble; that directory is transient, `evidence\fixture_spike\` is
+# its committed replacement, and the two are byte-identical for every file listed
+# below, with the two `f4` exceptions R14 creates (next paragraph). Archive paths
+# quoted in the declaration remain under `C:\Users\ttbea\OneDrive\Desktop\MBO_2025`
+# (read-only) and are NOT reproduced here.
+#
+# R14 - SINGLE NORMATIVE COPY OF THE DECLARATION. The repository-root
+# AVAILABILITY_DECLARATION.md is the ONE normative copy; the evidence tree carries a
+# pointer plus a recorded hash, never a duplicate. `fixture_spike/f4/` accordingly
+# holds `DECLARATION_POINTER.md` and nothing else. Two consequences for this
+# manifest. (1) `f4/availability_declaration_DRAFT.md`, previously listed here as a
+# byte-duplicate of the declaration, has been DELETED from the tree. Under R18 it has
+# also been RETIRED at source, to
+# `fixture_spike\_retired\availability_declaration_DRAFT.RETIRED-2026-08-13.md`, and is
+# INERT: no build copy of the declaration exists, the repository-root file is edited in
+# place, and nothing is copied over it. The `../AVAILABILITY_DECLARATION.md` line below
+# is the sole hash of those bytes. (2) `f4/DECLARATION_POINTER.md` is the one
+# file in this manifest with no counterpart in the build directory - it is written
+# for the committed tree. Every other listed file remains byte-identical to its
+# build-directory original. The pointer's recorded hash and the
+# `../AVAILABILITY_DECLARATION.md` line are rewritten in the same pass, always; a
+# hash carried forward from an earlier sync is prohibited (R15).
+#
+# `fixture_spike/_snapshots/availability_declaration_PRE_R9.md` is NOT a second copy
+# under R14: it is a frozen historical snapshot, named for the state it froze, not
+# maintained, and never a candidate for "the current declaration".
+#
+# SIBLING BUILD DIRECTORIES. `author_review/`, `ceremony/` and `errata/` sit beside
+# `fixture_spike/` here because they sit beside it in the transient build directory
+# too - they are build records of the read-through, ceremony-preparation and errata
+# work, not of the fixture spike. Relative paths quoted between them (e.g.
+# `errata\HISTORY_lesson_line_STAGED.md` in `ceremony/COMMIT_PLAN.md`) therefore
+# resolve relative to `evidence\`, not to `evidence\fixture_spike\`. They carry no
+# normative content; `AVAILABILITY_DECLARATION.md` and `PREREG.md` remain the only
+# sources of measurement semantics.
+#
+# `../PRIOR_ART_VERIFICATION.md`. The second `../` line. This file is a repository-root
+# registration artifact, not part of the evidence tree, and it is listed for the same
+# reason the declaration is: the ceremony commits it, and two documents the tag hashes
+# (`HISTORY.md` H-34 and `DESIGN.md` §2.11) cite it by name - H-34 by sha256 as well.
+# Until this pass no manifest line covered it, so `sha256sum -c` could not tell whether
+# the file those documents cite was the file present. It can now. Whether the file also
+# takes a seventh tag-time hash is an open author decision recorded in
+# `ceremony/COMMIT_PLAN.md` §3.3; this line settles the manifest question only, and
+# takes no position on that one.
+#
+# `../PRACTICES.md`. The third `../` line, added when the file landed at the repository
+# root. It is a repository-root artifact and is explicitly NON-NORMATIVE - it binds
+# nothing, no gate verdict depends on it, and it is not part of the registration. It is
+# listed for coverage, not for authority: the ceremony commits it, the declaration points
+# into it where the v30a scrub moved a practice out, and a reader following such a pointer
+# should be able to tell whether the file present is the file the pointer was written
+# against. It takes no tag-time hash; the six-file tag hash set is unchanged by its
+# presence.
+#
+# EXCLUSIONS. Two rules were applied when relocating: no single file larger than
+# 20 MiB (20971520 bytes), and no `.pkl` file at any size. Every excluded file is
+# accounted for by path, sha256, size and a reproduction note in the
+# EXCLUDED-HASH-ONLY section at the tail of this manifest. Nothing was deleted from
+# the build directory; exclusion here means "not copied into the repository".
+#
+# COUNTS. committed files: 240 under fixture_spike/ + 8 under the sibling build
+#         directories + 3 repository-root files = 251.
+#         committed bytes: 13309008 (12655650 fixture_spike/ +
+#         342928 siblings + 310430 repository-root).
+#         excluded files: 14; excluded bytes: 1542317685.
+#
+# This manifest does not list itself.
+#
+#
+# ============================================================================
+# EXCLUDED-HASH-ONLY
+# ============================================================================
+# Present in the build directory, deliberately NOT committed. Recorded here by
+# sha256 + size so the integrity claim survives without the bytes. Lines are
+# commented out so they cannot be mistaken for verifiable entries by sha256sum.
+#
+# --- Rule: .pkl (also all >20 MiB) - F2 fixture build outputs -----------------
+#
+# These are pandas pickles of the F2 build DataFrames. Their content identity is
+# NOT the pickle sha256 (pickle bytes carry library-version state); it is the
+# canonical-CSV sha256 (`to_csv(index=False, float_format="%.12g")`, utf-8), which
+# IS committed alongside each entry as `f2/out/<stem>.sha256` and inside
+# `f2/out/<stem>.meta.json`. Both sidecars are in the committed list above, so the
+# determinism claim (run1 == run2) is verifiable from committed bytes alone.
+# Rebuild requires the committed builder `f2/fixture.py` +
+# `f2/phase5_ml_fixture.py`, the read-only archive at
+# `C:\Users\ttbea\OneDrive\Desktop\MBO_2025`, and the pinned environment recorded
+# in `c5/env_records.md` (pandas 3.0.1 / numpy 2.4.2 / pyarrow 23.0.1 /
+# Python 3.12.10).
+#
+#   sha256: 36921b5d9ca771fe6962dfa65e8ba7259d433f0807ffd0e3ebbdbd4cc8c8ac29
+#   path:   evidence/fixture_spike/f2/out/contaminated_zc_2025-01_run1.pkl
+#   bytes:  235024517
+#   repro:  rebuild from evidence/fixture_spike/ via `python f2/run_fixture.py contaminated ZC 2025-01 1`; content identity is the
+#           canonical-CSV sha256 in the committed f2/out/contaminated_zc_2025-01_run1.sha256 (= .meta.json
+#           canonical_csv_sha256), not the pickle bytes above.
+#
+#   sha256: 36921b5d9ca771fe6962dfa65e8ba7259d433f0807ffd0e3ebbdbd4cc8c8ac29
+#   path:   evidence/fixture_spike/f2/out/contaminated_zc_2025-01_run2.pkl
+#   bytes:  235024517
+#   repro:  rebuild from evidence/fixture_spike/ via `python f2/run_fixture.py contaminated ZC 2025-01 2`; content identity is the
+#           canonical-CSV sha256 in the committed f2/out/contaminated_zc_2025-01_run2.sha256 (= .meta.json
+#           canonical_csv_sha256), not the pickle bytes above.
+#
+#   sha256: 12c0ddef23cdf3f104b46afcc5882c3ad9a68590158f865132e9544839f7949f
+#   path:   evidence/fixture_spike/f2/out/corrected_zc_2025-01_run1.pkl
+#   bytes:  236380134
+#   repro:  rebuild from evidence/fixture_spike/ via `python f2/run_fixture.py corrected ZC 2025-01 1`; content identity is the
+#           canonical-CSV sha256 in the committed f2/out/corrected_zc_2025-01_run1.sha256 (= .meta.json
+#           canonical_csv_sha256), not the pickle bytes above.
+#
+#   sha256: 12c0ddef23cdf3f104b46afcc5882c3ad9a68590158f865132e9544839f7949f
+#   path:   evidence/fixture_spike/f2/out/corrected_zc_2025-01_run2.pkl
+#   bytes:  236380134
+#   repro:  rebuild from evidence/fixture_spike/ via `python f2/run_fixture.py corrected ZC 2025-01 2`; content identity is the
+#           canonical-CSV sha256 in the committed f2/out/corrected_zc_2025-01_run2.sha256 (= .meta.json
+#           canonical_csv_sha256), not the pickle bytes above.
+#
+#   sha256: 8ea9b27a92893b50351880c9f3abaa30065c862fb25e1ed7d8bb64753a703e67
+#   path:   evidence/fixture_spike/f2/out/corrected_zc_2025-08_run1.pkl
+#   bytes:  387465489
+#   repro:  rebuild from evidence/fixture_spike/ via `python f2/run_fixture.py corrected ZC 2025-08 1`; content identity is the
+#           canonical-CSV sha256 in the committed f2/out/corrected_zc_2025-08_run1.sha256 (= .meta.json
+#           canonical_csv_sha256), not the pickle bytes above.
+#
+# --- Rule: >20 MiB - T4 28-column projections ---------------------------------
+#
+# Canonical CSV projections of the F2 builds onto the constructible subset of the
+# 35-column Phase 7 model set. For these four, the file sha256 recorded below IS
+# the canonical-CSV hash, and it is independently corroborated by two committed
+# files: `t4/t4_verification_report.json` (projection.*.sha256_canonical_csv and
+# determinism.*) and `t4/fixture_manifest_35col_DRAFT.json`, and is quoted in
+# AVAILABILITY_DECLARATION.md section 17 (T4, element j). The determinism result
+# (run1 == run2 on both sides) is therefore checkable from committed bytes alone.
+#
+#   sha256: 32edf4389d9ca9435cc7923a19e0730bf409023d460b378f7acdc3cba11d719a
+#   path:   evidence/fixture_spike/t4/proj28_contaminated_run1.csv
+#   bytes:  52979654
+#   repro:  rebuild via evidence/fixture_spike/t4/t4_project.py over the F2 builds;
+#           determinism sha256 recorded in AVAILABILITY_DECLARATION.md section 17 and
+#           in the committed t4/t4_verification_report.json.
+#
+#   sha256: 32edf4389d9ca9435cc7923a19e0730bf409023d460b378f7acdc3cba11d719a
+#   path:   evidence/fixture_spike/t4/proj28_contaminated_run2.csv
+#   bytes:  52979654
+#   repro:  rebuild via evidence/fixture_spike/t4/t4_project.py over the F2 builds;
+#           determinism sha256 recorded in AVAILABILITY_DECLARATION.md section 17 and
+#           in the committed t4/t4_verification_report.json.
+#
+#   sha256: db4193aa1ad88fa052599bf6714f2ba401bd99f52008a938a5f475280dc66245
+#   path:   evidence/fixture_spike/t4/proj28_corrected_run1.csv
+#   bytes:  52979540
+#   repro:  rebuild via evidence/fixture_spike/t4/t4_project.py over the F2 builds;
+#           determinism sha256 recorded in AVAILABILITY_DECLARATION.md section 17 and
+#           in the committed t4/t4_verification_report.json.
+#
+#   sha256: db4193aa1ad88fa052599bf6714f2ba401bd99f52008a938a5f475280dc66245
+#   path:   evidence/fixture_spike/t4/proj28_corrected_run2.csv
+#   bytes:  52979540
+#   repro:  rebuild via evidence/fixture_spike/t4/t4_project.py over the F2 builds;
+#           determinism sha256 recorded in AVAILABILITY_DECLARATION.md section 17 and
+#           in the committed t4/t4_verification_report.json.
+#
+# --- Not size/pkl: repository .gitignore forbids these -------------------------
+#
+# CPython bytecode caches. The repo `.gitignore` ignores `__pycache__/` and
+# `*.pyc`, so these cannot be committed and are listed here only for completeness
+# of the build-directory accounting. They are derived byte-for-byte from committed
+# .py sources on next import and carry no evidentiary content.
+#
+#   sha256: c1d5b3e78ddbc6b2c4b7695a7c2531dbf06fdf74a2d26426f15e9f1ed768b9a4
+#   path:   evidence/fixture_spike/f2/__pycache__/fixture.cpython-312.pyc
+#   bytes:  3882
+#   repro:  regenerated automatically by CPython 3.12 on import of the committed
+#           evidence/fixture_spike/f2/fixture.py.
+#
+#   sha256: db1e303a9047509585cb5d7f8930cc4189079a024bd7d6da5678a961fb4c2578
+#   path:   evidence/fixture_spike/f2/__pycache__/phase5_ml_fixture.cpython-312.pyc
+#   bytes:  51314
+#   repro:  regenerated automatically by CPython 3.12 on import of the committed
+#           evidence/fixture_spike/f2/phase5_ml_fixture.py.
+#
+#   sha256: a22c6d061548918b61f12aff1b2be3ef017f2b9b5075ea7f25fcf26eb07cb45a
+#   path:   evidence/fixture_spike/m5/__pycache__/extend_checker.cpython-312.pyc
+#   bytes:  19761
+#   repro:  regenerated automatically by CPython 3.12 on import of the committed
+#           evidence/fixture_spike/m5/extend_checker.py.
+#
+#   sha256: 3a342742f1be5692aeb4c7a1b9709e1d637fc8d7b85106b4e9d8093fff239fff
+#   path:   evidence/fixture_spike/n1/__pycache__/n1_declared_map.cpython-312.pyc
+#   bytes:  22655
+#   repro:  regenerated automatically by CPython 3.12 on import of the committed
+#           evidence/fixture_spike/n1/n1_declared_map.py.
+#
+#
+#   sha256: c783754fa8b843aa210f0ca5233283d3d5e55b93a89c44281a2a1b800bf6f1d0
+#   path:   evidence/fixture_spike/x4/__pycache__/x4_nq_mbo_diagnostic.cpython-312.pyc
+#   bytes:  26894
+#   repro:  regenerated automatically by CPython 3.12 on import of the committed
+#           evidence/fixture_spike/x4/x4_nq_mbo_diagnostic.py.
+# ============================================================================
+# END
+
+aa435f61d0a50b87285f2a0d616cf0593277abbcc1469867ee607d945cab6443  amendment/_CI_GATE_RESULT_moved.md
+93bf1270a0ddb4538782bb17747142c9a58e93b2902081a39ec0794f9e80a740  amendment/_completion_claims.py
+5ca6ffa601ac9c9cdc8ccebd48364be2b7152da1bdfe2d8167d0b9bb2127ff9f  amendment/_D1_D8_apply.py
+13e356f8b59d23dcea0cbb0f3b15482439ea79d6fdc6c2e9ea8ca0c9c1736662  amendment/_D1b_collapse_y3.py
+227f21c5ee6be8628ed42b23da1bc4ad120073f5311019957b97846b81bca7e0  amendment/_D234_fix2.py
+b3b37fd98e6130a9fb0838a5ecd84137df7a36a6fa6d197fc4471c6059081d87  amendment/_D234_fix_hunks.py
+12b1e432ecf66922992694519e162e5a1f2afba052f25c2e1795bb811c01782b  amendment/_E1_refine_HL13.py
+25687f3ffd284db9c126b1612bd332493d3b2e8ab808e988bff969ef65bfe1c0  amendment/_E2E3_round1_reports.md
+9dbbbf0eddb51d2c829a7108ce771becd1eecfbd939775a6de217e0594230aeb  amendment/_E2E3_round1_synthesis.md
+274e7c2308ac2c4d7a56f0e02db2d0edd770193926edc3f1ce4966180f7aa555  amendment/_E3_compose.py
+4380c4fa974c7f83c77bb1d5cd534b5c0b94fa59a2662fcc5ad734c689dcd6be  amendment/_E3_compose2.py
+9e2ef405a95339390d48e6e9c367b9da0b633855c0b02fb3ae8b8f464c4d4be1  amendment/_E3_composed_sections.md
+8d3d206dbe8e4bc5a6f4bb67d704aa28d3a746ce4351fe414ac25ba613f41d17  amendment/_F2_F3_apply.py
+bcc4756634bdcf0ced894299994d5d4a6fc5f074540fd5139bab33c2fbadf0d4  amendment/_F4_F5_apply.py
+ba1036279c095d95772dceead82e3cc21a63282b353689992cf229b794fbfa9e  amendment/_F6_status_and_checks.py
+e3852ef3791e500bfc4660e9dac41309809e4a30133f2e53fd2e5abe641c46d3  amendment/_F7_reports.md
+87de67f72b97007566dd36baa90b65b04009fe6429f8ce5cf3a75a872023eb22  amendment/_F7_synthesis.md
+cdf22a200be07f6d8214ae07899232a5ab36c4f485cf5111d1f751208c41bc0e  amendment/_J1_fix.py
+25454d705343fc48b2caf29386e4ba528299421e1e493b968c0252ebbb65f947  amendment/_J1_repair.py
+dde5df2648c862b0aab594c46e98bd8ff47e172f8a32bf739e8cffddf9032834  amendment/_J1_sweep.py
+972ba0763e4d9761d604097555c96e1ca1ad520a7f88467907b867041bc4a157  amendment/_J4c_J6_reports.md
+09c45e10333a6f638a51fc8213bc1cd1cdfbf1445900b2a4f20e4fc7552f14e8  amendment/_K1_enumerate.py
+b95dfca748d4342a656f110379b8e34c9cff28a306bac0fb978006861b4625d0  amendment/_K1_enumerate2.py
+c430a4d42b791cf4c008b71965bda0371962857f29a2d17facd23fcd0a59b60e  amendment/_K1_population.json
+c430a4d42b791cf4c008b71965bda0371962857f29a2d17facd23fcd0a59b60e  amendment/_K1_population_FROZEN.json
+45208855c0e45b32e18b1975a03df36e03d435c8f3de39dcde7854570489f84a  amendment/_K2_apply_verify.py
+1773b936198dc085e206ab6ca73821b5d68e33530238f767f635a909abe23599  amendment/_K2_BLOCK_TEXT.md
+1773b936198dc085e206ab6ca73821b5d68e33530238f767f635a909abe23599  amendment/_K2_BLOCK_TEXT_as_applied.md
+bb85b96b78425e2a3e3e9b62532627440760ca0cba9abb81a6e2b6464a5cdb2a  amendment/_K2_diff_pristine_vs_applied.txt
+ea05cca3b264f1f515aa7750da832f5db36b478b48ee7273e1be671e5d76b645  amendment/_L2_verification.md
+c1de90c0f27639b5fd82c74ceac9694d4a35bb89b69bd41131a1bf0118c05183  amendment/_ledger_citations.py
+c32cb820b6212ae76ab57eba687a0a4e08943eede735e1215f9092adb60380c0  amendment/_M1_rebuild.py
+1fe1faa2cb02df5b60525d93f0d5d6aa5de022e9fe3049e35eee7621d8d84d0c  amendment/_M6_manifest_check.py
+ea090742459a5e2ad43ce70e84fb92801ae1a79ba0cda2aa7aba8d9b3e4c6e0c  amendment/_N1_N2_parity_and_growth.py
+71aa155d07d05e7bdce78fee1c38a8c7a09127d0764fd3cdc6089bc12026e711  amendment/_N2_patch.py
+bf0dacda6191b052126fe9acf47d775bea64dd7e66e097e857fd9647d3f39f58  amendment/_P1P2_narrowest_c2.py
+10629344638d09366bf7241d9d0d43ab1a7e8bdc8bedbcdf66687d6b02f974b0  amendment/_P4P8_record.py
+e101261f7bb0a9255c946b7d75de0492cdd4b88cf56cccbb5d0d69e2b84eb7f5  amendment/_P5_diagnostic_rows.py
+0df0d4ff780f5b0b02c7eb92841d9cd0c36245c30d0c455b73609032bb3923c5  amendment/_P5_reanchor.py
+e7f7f836dfa676567a87c66e2535399f056acb6c4c71e9846624d9b37391a1d8  amendment/_P7_hardfail.py
+6f48d8f7d152920ac41fc9428509c93d44a3abf442568403f2ffe3ddc3a86e9c  amendment/_POPULATION_CHANGES.md
+08d809b8429dd0e9fa172d80892ffae7337ae9ade036588fb6d155f21a747a67  amendment/_provenance.py
+bef03196ec61faafaa9f21697a9a07148a405c7db4e3d4de68b4ce9ecc9611a6  amendment/_R48_Q2Q4Q7.py
+2bbafe8e509c27cb850ef044c48083fb09ff90d21496507dd20abe9551dd72f1  amendment/_R48_Q6_J3.py
+4fd1ebae27aa5fb22aa79f984f8efed16fa3fb64559e9f00132a88b535799c5a  amendment/_R48_Q8_absence.py
+9d4e9329404ebd8b4b5411e24a99f3cec29fc527cbd2b82fcc1b25b2759a01b7  amendment/_R48_Q8_Q1_Q3.py
+11b49bf984931f37db87e37e51d7307ca74885c6d79f4cde2f4083acaf19628c  amendment/_R48_rehash.py
+7a4057a89540a608174cd8f25d6f1cbc9267aed7bf27e558470f3ab77265688a  amendment/_R48_roundstate.py
+68c07b87227689c75bff2c74ec47939c2bce55f87f27d22813e0521d70e400ff  amendment/_R49_B2_check.py
+b6940bacf8c63e26ce759e77abb81651e98916701c656dd4e382eb356cdd0057  amendment/_R49_B2_propagate.py
+63810c94f78da7c80178e557a7237026334790179f660fe48c3cabd8aaf7218e  amendment/_R49_B5_B7.py
+ad46ab77eabcba1bbfa8293463489303da18f81d45f6508d03f3a3f8e9b2420e  amendment/_R49_blockers_J3.py
+aaf9bea7114a29567c0cbf31b58e44e00854b730e6ac00d9db4f0869da9dd520  amendment/_R49_declare.py
+bc8390a1aaec9e5db6462497b3edd15f3b35829395fa2df783c26d8bebaaa7b9  amendment/_R49_declare2.py
+cdd627300d8f3894b7243116dd13a959bf64467e87e39f818b83bdba3ed1fd2e  amendment/_R49_declare3.py
+711de6b64e7aa130fdc0f6146092ec93c015e6cde7fce1733839a00450bef212  amendment/_R49_inserted.txt
+c76736ab4317c85fc0fc1f38de4a9161691a32b76bdfbe2d726a5ebcd4b8f4c8  amendment/_R49_R1_R2_J3.py
+8a2229c41d0024c1bd3d623d72090a28f7bfca8484aabfb8b304f7653f454355  amendment/_R49_R3_R7.py
+cd43f2e494856ec693d12c264abb28f53f35e1cce2a30d2ddb450ecf07e8a228  amendment/_R49_R4_record.py
+df40124e862165c1e8ad1a853832b8b1ebdb7fdc842e4270d5ba0d0a1d6321f4  amendment/_R49_R5_SC4k.py
+5229fd11848efc36235ae6a6681682a487b45bd86fa79ec2692afc56ec3e0d34  amendment/_R49_roundstate.py
+1d56495c9eadc6191cea51c239e10d0594ed52d4506656d2685ea61760c24ad6  amendment/_R49_S123.py
+a2d19b9a4edb89ed9c02f37571b4cc2180aed69c453685596ea15abcdafd3b46  amendment/_R52_X1_spans.py
+e69f7792c51d947d16c049b4c9d30719fc83aaffff386fef73b1d73b26494b7e  amendment/_R52_X2_X3.py
+5e2810b89edf61063505fddbbba790fefacd0400739c43bfae59b42fad12011c  amendment/_R53_declare.py
+6740137d8c1ba28b38762bad560b6579b4a0b519f3539552b7d64a3dd9c989a9  amendment/_R53_extend_prov.py
+6da96572f80ac019d694bcaf41482c738158555e2d9c9871ac5edbf9f5b36ac2  amendment/_R53_Y1_manifest.py
+bcc8b625a231de9b9c6b042073030770b7b3222536eaee499929e5c916f75fbb  amendment/_R53_Y1_move.py
+b2eed6364053c5330b3d3ec1b4f2cc07b84e43e358da64a21189e6a87f972565  amendment/_R54_W3.py
+1d82da517609b15ec507ca395b701370078e1a74eae2902726e9c6a2d2dae0be  amendment/_R55_A2.py
+be30c9f5246db5569a555cdbe095d961d442ff7dd3618fcea7453428dd5ae4bb  amendment/_R55_W5.py
+ce8008c099ab809fb49fc8e7185be7ce4e437546be772c845554e8a5661e8d5f  amendment/_R56_B1_sweep.py
+080932a17f3ebe14fa3060874ea3be1c4fd8614dba27c658bf173b4f54e7e450  amendment/_R56_widen.py
+e617ba2d3b8d98673cd2305773161403aa55487989f0bd414b8113ab72533205  amendment/_R57_C2_sweep.py
+cb1df5db63ed92834caaa7b9469febe8f60956c6f59439cef898ada136e2517d  amendment/_R57_W2a.py
+65a7e3e5a421af6dc525ee2009404346660da71511b7d13a7a41e3ab0793888e  amendment/_R58_W4.py
+5d05f0120dd36463b21b553249acad7189274dd2fb392fa3ed80ee455ca78516  amendment/_R59_E1_land.py
+716857962989bb0993339655bc155e39f79e328f469f0aea792d39e8aef93b6d  amendment/_R59_E1_sweep.py
+3c3d5f8ac48a1446ba762e6389e7619c7f274804422790fec2161b206c5704c5  amendment/_R59_E2_mutate.py
+8a0d17c3c78e1edefeb8c0ba40bc90830dd0da6dd93bee471f775e3e4bdd75bf  amendment/_R60_F3_staleness.py
+c24769784882e4c741c4b0c39127c71beed5324b732bc0d23c1a868a88d8ba27  amendment/_R60_W6_group1.py
+e38dce04858323974b7534d1c73d5a1350fd93f4649414d81d8580c626fc2438  amendment/_R60_W6_group2.py
+e6f66735fff5dc894856f600be9719e36b72531f65760044943c282ff36f4293  amendment/_R65_K3.py
+b346dbf0287b0384317a0e9cbf7969d5c4c0238ee76157e92761a193b125f793  amendment/_R67_A1_d4.py
+c7e71dd67662e6c117e03f2354cb81bc0ffbb6a115f73f52b42f9ee77c9e9d6a  amendment/_R67_A1_v1_shape.py
+ac897dd33d945bfe9141384571b2a4217021d810c8eb27749fd34be612dff12a  amendment/_R67_A3_sweep.py
+91361cffd7b99e697beb69d9217d6357a0e4023ddc2c4b46a6eff7083daca5fd  amendment/_R67_manifest_counts.py
+67caa9bcd3ffd39733049fb99fd65c04503c141a983a14df0681f1cd0818b452  amendment/_R67_probe_detector.py
+fd2ed2e13f0e66d5ffa21096337c1205e6422479e2d1d89df0210b222d953c62  amendment/_R67_S14_1_closure.py
+583005fad0ef4403181760fa6928443aef0cd38843b96edf96b7fff8e7b26d38  amendment/_R67_S14_3_D3.py
+fb0782a539bfb807db960bc40d44b83818b8a4ed021833527a97fca10c9df913  amendment/_R67_S15_staging.py
+58d5a88d7c297c080594492f11672e052b5c4e773526911c4147d977df201ece  amendment/_R67_S16_3_mutations.py
+89eff8a2a6156313df6e8bf09bbe62d7512553c327b91101e19358afea6d5ee1  amendment/_R67_S16_detector.py
+2c9e8606d58111da75a792689fc5282931dacba7ba6559cb9d210be8b7ddb11f  amendment/_R67_S17_3_readme_order.py
+7232b5a36f72b756c253448f2e73c1929a4f3d10a864040fa8fbfb4277210475  amendment/_R68_C25.py
+2a716f9ae865fb2b25fbd3319030bc5e3fe08fd09ef1827110178ab88df27122  amendment/_R68_D7.py
+f5acfd364dcddf5351734e6df5679c495d1e011598803557322a6f722caeb5c7  amendment/_R68_D7_valuescoped.py
+97c7fe1e4810c64defc9341de00b29c224e847ac226dc5ac093b664f715a85f5  amendment/_R68_HL19.py
+e07ef017f6a8e9b6c1b26a302adccbf7e69a56a6cbc075e459d79d98152bcf9a  amendment/_R68_HL20.py
+cef991fbc3e01c210eec948a64ababbc7a6bf6dc26f0fd99f234c3df781c9479  amendment/_R68_S21_8_negatives.sh
+88d983bb8032cdb678c696d7698a2797f6bc5cac9f7a8a956a9024fdb5064c07  amendment/_R68_S27_conversions.py
+a083a17ec30bf5d13fe01ffffa7571f2ced7a215ce4b0c4357547a23cb0f18f9  amendment/_R68_S29_stale_hashes.py
+7488c6da580ef3e660af23aeebb231553032b5e6bf6fc8ba70ff2dd5a31088a2  amendment/_R69_B1_3_per_exemption.py
+daf59821c9fdcf4c74d20c331a5ab622657f95399314563db7cfe9f2a8726c46  amendment/_R69_B1_audit.py
+b6215bac830917dd47a8c8be19c4320a629f70d68352391de9e5b5546bcefe33  amendment/_R69_B1_convert.py
+d126d8c9210e940cb33723f809804d0bdff585f11fd58747f0ea519e56e95174  amendment/_R69_B2_threeway.py
+ebc592e44a571ab47f28cc1745ae7140869f7963bea616116d83ec91a46f6b2d  amendment/_R69_B3_citations.py
+dbcfe7354db52dd7e0b237962d5ed1706bf26b381673a71520bee2e79b6b980a  amendment/_R69_D8.py
+1451977bc87c7d778fe6837c58ec853eff9bdc4edb605dd307d6b92a592385cd  amendment/_R70_B5_2_property.py
+c2a3a7e410de9a09f042e88467a34e3c7fdb6e6656ae183b801302fa71385cb6  amendment/_R70_B5_narrow.py
+cb3fb6b4946b7a85f6f37dc76bbde0afeb39addc0beb43e845aa5637a813a607  amendment/_R70_B5_numbers.py
+fb881afc328ffc0798c6631b2a967d2baea70486fbf03d3e31f2a16999bbcf02  amendment/_R70_HL21.py
+01eaf3cfdcd94f4ae38b2fdb8594dcf47e11fb7ff46a62295f2ea57ff7d16d42  amendment/_R71_S37_manifest_reverse.py
+c530efadd92b353dc2be79f14429df1abe2a71634a8a3166d04d26c73917a2cb  amendment/_R73_gen_stage1.py
+16c102e7a272249ec93252c2f0d0c8763699de3b42e70b6893a564d54bcf46f3  amendment/_R73_S49_routing.py
+6e0dcc7c4e7661ce6fc17f2773f72b648efaf54d454f8e38f04883b752cdbabf  amendment/_R73_S50_constraints.py
+05d9b09eb0a0f257435c5a2ebb60b405e6edbd4a41108b01c61e1d137d4bd0bf  amendment/_R73_S51_exempt.py
+cfef9dcbaab8e901ec81ef8dab0477227b455973f293eb2f29299691b40e2b20  amendment/_R74_S56_bringin.py
+563b55b05c5feae99972361756ecaddb8bdad3326df0592b223acb9d1de0ced3  amendment/_R74_S56_exempt.py
+8cf5fffa8a8312397928daaa3c7dae110011ef5f7badb52caa8140a3f589f08d  amendment/_R74_S56_inventory.py
+cc07fdc45102dcf9d34abc0bf8553224d24f0957efa68a7c3d7d72c0e47e8e5c  amendment/_R75_S62_move.py
+f3009a41bdaafd77364f12265d28eab6d7eeed8993da36eb9825e284cd456f35  amendment/_R76_D10.py
+67737de69738bd2c5bd8f44795cac7a8a14281ee55efc87e3f72c4de2f435599  amendment/_R77_S70_record.py
+05a69ede2dfc32b147ec85530461cb3070ee3f07572923a63a0cfe8bbeac37c2  amendment/_R80_S87_move.py
+a12fc09d0bd4822257b18666a7020d5596242141e47e568bd089e22e23dedfae  amendment/_reanchor.py
+30fb83ed86448feb933be773ab2228e4bc6a59c6285612d90df64ccf0ceea835  amendment/_reanchor2.py
+483ae6af5711d4d995b016549499e4af653e83e128e8896b8ff7e1504ffa7b34  amendment/_S7_checker_BEFORE.txt
+da7e89e33d17c04f885464031debeb6946035fdc62a1551be371aa0a0160b0b8  amendment/_S7_checker_BEFORE_clean.txt
+1e00ae6b7c80c283c5a5880c662aae1ca0b613cff7b6e10f14db4ea683928b35  amendment/_withdrawn_claims.py
+d56453545ddc7062d508309d5bf41a9753bad4779c3b7c8d5fb6fafe6eb5bd3d  amendment/_X5_assemble.py
+26d0a17e8ca8516e8442a25ac8361f92ff7092a788a0f8603014e084cb3765cb  amendment/_X5_hunks.json
+75c44b19c7bfd2f3af347267ea9195ca87ce24d347e0d2376e2d0cb5c9dc11b0  amendment/_X5_hunks_v2.json
+8b1cf98f6ca60f0da0cc78c269853cf354d9d1371a6ab12b68e233fbdd9d05a5  amendment/_X5_selfcheck.py
+b8faab3a99c9301026b4d4d0b4ddd9c1c8943c9b4cef9d2bc56c66802e0655fb  amendment/_Z4_scrub_practices.py
+6289cd460d5e5201c2fbc5a9fbd8517367f46db554ea7a8039337d3612bf95b6  amendment/apply_v30a.py
+93377cc5f7e579be7a443cf446dd64cd2346d715421ec24b96f2022dbdb537ac  amendment/APPROVAL_PACKAGE.md
+7ccc2a65f15f99e3e576d2da5f43ed813abe05c8f66ef4238cf6b7102e6865d2  amendment/BLOCK_MANIFEST.md
+087efafa88a41e488850fa3f3443f625d547ed4c738bd10e93f87a72ac99ba42  amendment/DECLARATION_SCRUB_LIST.md
+5b14e4274af6b88f695dbbba536b32372d1d882892013963fb2ce9321a61163b  amendment/external_text_sweep.py
+54aa1b2dd56aae5cf3a192dca349a1eea893263da54b23c85cd5443f022ebb2e  amendment/generate_prereg_diff.py
+386c12115885a79db3c103a88d91325425c95f2a1340b05ca5791a9fdc7d0bea  amendment/I1_ALLOCATION_TABLE.md
+5c5f6ea854c85b5dd933eb7e158fbdf80d2775938aeed300e80e7edc9728e7aa  amendment/independent_extraction_check.py
+4fb9c3fac2155acc7d2e5b3ae945943af18ed8ed4d7f6674787e02522ec75fab  amendment/J1_GATE_CRITICAL_CLASSIFICATION.md
+606c77eda24f1f69abe05f4f2536aa3dcd0d08d76a5bbac2d06c2c0093084e05  amendment/J3_C1_REDRAFT.md
+0c7627d56b1bc301026c0fda7ad8459fcd270c9481905c6165fce0b44e6da80d  amendment/K1_SCHEMA_CLAUSES.md
+6a856d4518bb0a20820aeec8f3252c3b846804257d3dee832f137e47cea011ab  amendment/K2_AMENDMENT_LEDGER.md
+0ece1d9673e7bb4b6387a42eee644883b34ce8867038a2be1d23c308cdafaf6c  amendment/K5_REPLACEMENT_CRITERION_OPTIONS.md
+91c92b93b4207a5c3cf13b0d26d370fe107c996a70661867145f039519893126  amendment/M1_CANDIDATE_C_CLAUSE.md
+99ab07822b20e2501c7b0095016146dc74cf212584d593dddd50a9a778319cb5  amendment/M1_CANDIDATE_C_CLAUSE_CORRECTED.md
+0163335313b85c5171ad08620bba0d3fc6840e7cb4502a6a1fcf93448e4e4db6  amendment/PRACTICES.md
+e5180a5806395f17a0f1ff427a44b38e10a6a832747d5842b65062b860f272a9  amendment/PRACTICES.scrubbed.md
+c5d89db16f2c1fed0c500b5729bfcd751036705230f1098376bcf272f680b0c9  amendment/PREREG_v30a_APPROVAL.diff
+9f04c01604e73056cabb287fe1b713a6cd5f7cbbf60377f902b2f8c695737186  amendment/PREREG_v30a_DIFF.md
+de8cae252397a97d4f07287e69374ef0b397c4c51a2f6c8519bcb398c1ce135b  amendment/q4/clause_diff.txt
+8e482961a552cd688c0e6837b6bed43f9f73935ed8d5fd111e5685d8284f7496  amendment/q4/diff_clauses.py
+fe74da9e2b58ee2c875963167de7cce19f41bc536b2664cba0d7653a1a18faeb  amendment/q4/part1.md
+6cf69be02bd449b4cce65ee3969c3396fe6a3b691e10b42fe2978f32dbed64d9  amendment/R66_SHIPCRITICAL_COUNT.md
+be0f275919aefb7b2d248709451a5bae18b1195b7d108ba8cee9e5066036a8b5  amendment/R67_A3_COUNT_CLASS_SWEEP.md
+fc55db8902583dcfa26ae02fa5bad76996213cb1243672425ae920934bdfa46a  amendment/R67_R23_GROUND_TRUTH.md
+07ce302adca28547e619c313f679c581c6e7c0cb5cb2b4b3f55963c50cd1bf5b  amendment/R68_S21_CHECK_CLASSIFICATION.md
+982fb3bed282dd427a43b05ca77ca35f443d6a5e2ead2c4d5d56726b78f42e86  amendment/R69_DISCLOSURE_LINES.md
+a2d8fe4b50f8b6141c84a8a61b7c7e3ad85c9d23a42c627f452fc13de94a839d  amendment/R70_B6_INSTRUMENT_DOMAIN_AUDIT.md
+3869ce357d3353b0c1d2911723c2bd3d6ed78d349a1ef8f701a0ae60563dce16  amendment/R71_S36_3_PAIR_CHECK.md
+29220fb54908b150a5349cadd27b6c9349a3337ecc97712dc6b3bc0b8651e737  amendment/R72_S43_DOES_THE_AMENDMENT_EXIST.md
+3b4ab33741b51eddf7ab632a4591c20fd7ea35161cdb307becc4b60426ecbbf5  amendment/README.md
+bfecf95e168630e8ef37d3aa2e4e2f16960420d197c292940c29d6047b98a8cf  amendment/redderive_declaration_values.py
+9fc8e436c8853d3ab215372c0a4da05b40158b67d7247f8b48908f7c37232147  amendment/SC13_SPLIT_ABC.md
+baec81f9229a81b1a1146228454b2259b549626d74ed1af591da48f4666b3e4a  amendment/SCHEMA_RECORDS.json
+62af5a77a62c71668ed8f5bc38434a20fec7866c09cd3224e57f81f1cf4841a1  amendment/SCHEMA_SET_ADOPTION.md
+32358f6dfc7f96d2ac1e97cea9b6743dde674c78ac05cc114cc42e41ca33f2dc  amendment/SCHEMA_SET_FINAL.md
+26536cb00813f6bbe042758f4f471ecf91c652f86bf18e553fa1045217d76cc1  amendment/T1_CRITERION_5_AMENDMENT.md
+ffb5259ce9b121de36127d6b2c8b236ec01458a4cc6360102ec0d9569c9d2c96  amendment/T1_T4_VERIFICATION_RESULT.md
+0226452afb9fa451f6e5ac7b36850fce03a04a58a24f2b9ce0f6846170df504b  amendment/T2_DEVIATIONS_D002_TIMING.md
+ea4069eb83df592a81a1c2431af97d7fca604ca597307eb1ab8339a44d7403f5  amendment/T3_CHAT_IDENTIFIER_SCAN.md
+d46ee19c2b86e93c58cc043bd77181649f587d1fdc74d690a8a5951a2030ae2d  amendment/T4_WAIVED_SIDE_EFFECT_CHECK.md
+6be254d3cf22023680e115181aad3b1715ebab2082c7f63023b5ed4660409a4b  amendment/traceability_check.py
+b172425481ff954c2ab1e6ea1764ca81de815c6064fe50ca92ee1e47341818b1  amendment/verify_schema_records.py
+4bc633ac2f1faa446e8891259357ac7bbcaf7bf2bbd4b8dc602ec61b00a4dabb  amendment/X5_CRITIQUES.md
+a19ef62943aac8ddff1279af3dfef513c49ee7048ef0a498ad40b6113e81b734  amendment/X5_FINAL_PREREG_DIFF.md
+2bcbd721affe84259986a8c72159aaadfedb923c80af2e6a14b8d6126dce6a6e  amendment/Y3_WAIVED_ENTRY_CONDITION.md
+2e23f1f2c1ef29c8ffd5f8ff6df24b70aa1fd1283e6206831223f97d8ba2bb5a  author_review/READ_THROUGH_PACKAGE.md
+02bfce8263076c20d7280e506082635aa47cc8a43ae7e8759fda8f6bc4e11d49  ceremony/CEREMONY_COMMANDS.md
+6c616ec01d567903578910af11cdade6d5843de84a53512e4f5b1671cff7a9a7  ceremony/COMMIT_PLAN.md
+5742af5e49de6e54ade42eb5ba76bf64914f40a0e40dc25de03a1c16f920c195  ceremony/DEVIATIONS_DRAFT.md
+e3b316c288b1da4b33fd6da34133bcce1993d22f3fd69011645649c9b239c3af  ceremony/H34_DRAFT.md
+0a967835ecb3ee7101db75dda90d6dd300748c8f91c93f37feacef404ee34c0f  errata/ERRATA_REGISTER.md
+977ca1a882242039351847b38e99ebed919da7ce3ad72dc29b5e5837599658a6  errata/HISTORY_L5_R26_FIRING_STAGED.md
+b1398eac61e5bcd81e98a07d878923c732c78ff95e679f546e9b807c552372f8  errata/HISTORY_lesson_line_S4_STAGED.md
+57bafc532232e959138e36f2fd8fac0ca741ec36745747c0a6809cbcab13b85a  errata/HISTORY_lesson_line_STAGED.md
+5a00c78d2ac755cdac672fd9125483ca66bdf590ad4778182e7931973907b981  errata/HISTORY_lessons_L14_L15_STAGED.md
+c178abea7b2b5e698407d34400e257c805ce99c55731f39579c94329dae490f0  errata/Z1_Z2_Z5_RECORDS.md
+aab6400a003e69f204b37d36952ff3ef735cbb678b4e200fdbf33b80db2bcf8b  fixture_spike/_snapshots/availability_declaration_PRE_R9.md
+d1ae29cdee0f55266ba0216daea88b5f21e25547d9c2f7724683199a2af8fa0c  fixture_spike/_snapshots/PRE_R9_HASHES.txt
+5a89516ca35faba221fb40cba6beba9762ac3f54e3f16fecbf72f2eab4e29c69  fixture_spike/b1verify/chk1.py
+65d694ad6d2b89e31a6a04fd3ce7e8548815dc794c3850ba27fa484f5efb4e55  fixture_spike/b1verify/chk2.py
+287036a507cf0696fe37f5e165409e57b6d26e53e749ef2ca20b574d217d9381  fixture_spike/b1verify/chk3.py
+9aba33ffe93c614e2467fd643940939e120cec002b811a7b3b63b18aae571740  fixture_spike/b1verify/chk8.py
+5732742f5438cb54152ae6384997a3b2721b04f56d34929ce6e1bf2bedd594d4  fixture_spike/b1verify/chk8b.py
+7f71d0b9dde2f5793c0cba7368b135e1caf546e2052a194bf285c075ff8f048f  fixture_spike/b1verify/manifest_out.txt
+8d0bff2ccadfb9593df23fe864a7059ea4c1b5f9936675a7632830572fcc7c85  fixture_spike/b1verify/out_chk1.txt
+6aa3e019055cfd5d189ee8bbe79fbd1f0089fe6878d40bc065d985633606d4ec  fixture_spike/b1verify/out_chk2.txt
+20b929ee91cdf4c6bf1ca96056a35551ecddc4d48f6c282876217c733d2bdf82  fixture_spike/b1verify/out_chk3.txt
+b94245800ece927f8ac5da17306e4974973b4f46f39db11287df9874016f87b8  fixture_spike/b1verify/out_chk8.txt
+f3228e48a1578cdc743ab3f84e02581f966aa2dac73ab784aadfc4a2b4ad3f5d  fixture_spike/b1verify/out_chk8b.txt
+81c2733d27b54fc7596d26692aa640666a5a9d1fd71af78f9fafe7fe370d190e  fixture_spike/c1/md5_match_capture.txt
+26bbfb4bfa14454019b32ef4cb0fdebed09bc606d65e1c010e86bf3c020e0436  fixture_spike/c1/md5_match_check.py
+8a922f9362d52c32dc140cf4f30a67a6716eb14c75fbf6faf1194b0ec16d11b0  fixture_spike/c1/rowcount_338159_capture.txt
+d8018ed416bc3e406cfd515dc384842dbb24700463da18d5d1eb9674a279ff1c  fixture_spike/c1/rowcount_338159_check.py
+015b2c33e26d6340028b17aee44189ef54c2749bb9c4b587bc92468501355762  fixture_spike/c1/rowcount_addendum_v4gapfill.py
+b0a24569bc8f95fef983567559181155151617d76cdb35f7cf64011aaa254e44  fixture_spike/c1/rowcount_check.py
+960eafe0587bbea99fac624c75a4f479cfb7f0b8bcccb56b175c7f4b4b75cba7  fixture_spike/c1/tagger_divergence_diff.txt
+56aa7da3033ee92e10caef9f45845d37b93dae7b5b4df9a62b0952dd8b83215a  fixture_spike/c1/tagger_logic_compare.py
+f9f34e343592f94d7f9d309c34f9efc456ae8a25d1a5414e1090041d1290a88d  fixture_spike/c1/tagger_logic_compare.txt
+bec476f775abfa4ab9569c807da78d27cfe5eb1dc99359597acccca8da64b0b2  fixture_spike/c1/tagger_survey.py
+21f164aed26416618f7f737df8ca75060d577089c647126e79e36e0b8888cc38  fixture_spike/c1/tagger_survey_capture.txt
+33f26678b0dd8795a78fea01a8825ba2b06ffc69b451d054d6449c15d9ecf105  fixture_spike/c2/aggregation_comparison.md
+aa8db9602b9ae8e1f1462020c6a7987467c527352ed7e37e6eec40384766fea7  fixture_spike/c3/compare_labels.py
+b931fc7a91f51478b8dafb6d037c5ee6c050929a380a25e998dcc4e1249943f3  fixture_spike/c3/diagnose_pc2.py
+624ccebeaaa0684a0565735a1d349a3079eff6a4b8e98b26c6436aecca30fbca  fixture_spike/c3/label_equality.csv
+7d127b044d7815e26d66fcb7fba324cb204cb6e424190579dab479149986b1c7  fixture_spike/c3/pc2_diff_rows.csv
+09307d5a568e57480bba0a27a79b56617fffefb2aef8351db7af81958dbd610b  fixture_spike/c3/pc2_diff_summary.csv
+1e4e4c0ff302e45aee106a38a9969cf0c9c63c71c829f2b724be3f4ec2f18f07  fixture_spike/c4/build_t1_c4_comparison.py
+aa16b4cd78d80fbebfa6fda421117c918a657304bf0b87f699ee45b09f3f7b9f  fixture_spike/c4/build_t1_c4_comparison_output.txt
+daa5d92f985c4183f9370378bd9d66433b7a25ecf58e7f48ecc8090aa6d9db19  fixture_spike/c4/independent_checker.py
+74fba9ffe6c98d36bbb8d49d89e8eabcf755ac3c50f83f95f241b93dd430b005  fixture_spike/c4/independent_counts.csv
+86c45f3581d07ed1eb05181c917d54c10a24ca3d1541f9eed2ad656e6163c072  fixture_spike/c4/m2_verification_log.txt
+b87f12710477aed75f8a09cc70059a93921c184103b499645af1d59f8a05ce02  fixture_spike/c4/m2_verify_pedigree.py
+57966640866f1d0dc5de3add1af9154cc44e80b549611a2585880d036faba18a  fixture_spike/c4/pedigree.md
+5d99b392c8656493ab466b05a3a139d24e3c66789961ef0050c7a2e584ee8d7c  fixture_spike/c4/t1_vs_c4_comparison.csv
+77121e149f9a512181e6af1b568a128051ef80c095843f10db7d323e861cc70d  fixture_spike/c5/env_records.md
+49da4fd70653ac3de2e74d1e458b6bf7b19184058c771bff89128f9236706405  fixture_spike/c6/a4_defect_audit.md
+2567d03653a83adbca990796a75b1a6d764d8c409b379f5cbbd27f1a5e9ca355  fixture_spike/c6/era_attribution.md
+3a82ba45bb83095239f17e5169d11b5724419fe629b5ac08aee313020424ae81  fixture_spike/d1/post_t2_block.txt
+1a860f6cfd44f363bc8ff889b79b2b541240fc993e00c2ae4c3a49d2a0638845  fixture_spike/d1/post_tail.txt
+3a82ba45bb83095239f17e5169d11b5724419fe629b5ac08aee313020424ae81  fixture_spike/d1/pre_t2_block.txt
+1a860f6cfd44f363bc8ff889b79b2b541240fc993e00c2ae4c3a49d2a0638845  fixture_spike/d1/pre_tail.txt
+41165d9b5b53bdf33781ff46477a5666d8deec73e8d7c7630fe261c8dc2a9aa2  fixture_spike/f1/compare_to_meta.py
+f421eec82c91da27e3f51e084a7becbff47ae230936e5f78ec695a65fbb32df6  fixture_spike/f1/f1_results.csv
+2b968ca2d1bbc01cfab065f34b13f8debdba0055ef477467ce91088395af7ddd  fixture_spike/f1/recompute_auc.py
+4f615dca02d61db9720c59674fa2996862c826bb589cc8a5b8209dd6a00f1a38  fixture_spike/f1/run1.csv
+4f615dca02d61db9720c59674fa2996862c826bb589cc8a5b8209dd6a00f1a38  fixture_spike/f1/run2.csv
+3a1b501342d47dfa03423973040e7411c94d39994845865bb1661ed7d16dbca7  fixture_spike/f2/check_external.py
+2103c39aa957325b5cb85eb06d414619528c042ede1524adf733b8fc1075f15c  fixture_spike/f2/check_external2.py
+eb86a42f4ea0fd271a52e0e4f76d444767961d8c5269196f5314101cd715679a  fixture_spike/f2/check_self_consistency.py
+f1a8bddf3110ec798a2b023978bc355c863bdafc3a36077542ce87b341020614  fixture_spike/f2/fixture.py
+6fc29c66fa0f46d4281198fca75dc918742b01d5fe295e82cc27102be5e426d5  fixture_spike/f2/out/contaminated_zc_2025-01_run1.meta.json
+b9113fc4d2664a257ade05cf54d419534f0086b210cf6ee938a60b3064adc21d  fixture_spike/f2/out/contaminated_zc_2025-01_run1.sha256
+1fdf03a36fe4b4e32b9f78914e1bcb72afe5caf0016f41615493774c75bdd0c2  fixture_spike/f2/out/contaminated_zc_2025-01_run2.meta.json
+b9113fc4d2664a257ade05cf54d419534f0086b210cf6ee938a60b3064adc21d  fixture_spike/f2/out/contaminated_zc_2025-01_run2.sha256
+270d923d9f9d31cbc2b51ac608be631b3963e154e737bbb4b8b5f3a5dc75a75e  fixture_spike/f2/out/corrected_zc_2025-01_run1.meta.json
+4d93bae938d57d0126b356babe09791ac484bfb46dbb294f8d612025788251c1  fixture_spike/f2/out/corrected_zc_2025-01_run1.sha256
+7238442186c70c8704e8601d6985d801beb09ed62b0094c948815cdaeb798979  fixture_spike/f2/out/corrected_zc_2025-01_run2.meta.json
+4d93bae938d57d0126b356babe09791ac484bfb46dbb294f8d612025788251c1  fixture_spike/f2/out/corrected_zc_2025-01_run2.sha256
+2cb69854ac50f8f6d43e22219b5f0175be1aecdaf0ef77ce384a9dc26bc9e4ce  fixture_spike/f2/out/corrected_zc_2025-08_run1.meta.json
+6bb53a97895759274e1e53391952a723bc9cd5e1bbe74924bff58ba63b1c3aa5  fixture_spike/f2/out/corrected_zc_2025-08_run1.sha256
+fb9760fe268833e5464f5aa796af229f239291898c4058054c4b25f06c895e99  fixture_spike/f2/phase5_ml_fixture.py
+e60e2407ac49d4120bd4b0e75ce2d2b11558dff8f42f314c7ccef8d4b2c47c7d  fixture_spike/f2/run_fixture.py
+0da59d53982188712073c9b7f5addcd66221babcd8555efabbbd0c3d3f208a1d  fixture_spike/f3/fixture_manifest_DRAFT.json
+323f827028f950f07b046196d086198d877b38a9248e0d3a878ea0a86f787ac5  fixture_spike/f4/DECLARATION_POINTER.md
+cab5346c8a18bd47e56d34279e16f473e3f8ef860f10ab9a928fce109f72f93b  fixture_spike/f5/DEVIATIONS_entry_SKELETON.md
+215fae6b7da20bd1c89c5ff5309e4e99278c497e7a423d0311da919f4a3aad58  fixture_spike/f5/v30a_ceremony_CHECKLIST.md
+5933dcea4473e280d54b9870227a826494f87aee0065b0d99c3595833cc161f5  fixture_spike/finalfix/R18_five_defect_ledger.txt
+7c66f09c336f37a7be27e09970dbdbc257dce03dbf53a70592c8be2f53a908dc  fixture_spike/m3/zero_tick_evidence.md
+fcd5e87c4c263915a68dfbf2e5aa0e3e35cf1b9a056094adb0dd53db7982963c  fixture_spike/m4/m4_mid_second_samples.py
+8b7635b2e5105d31e87b270d5f763791e392801d324375fe58c7c8e3ad223ba7  fixture_spike/m4/m4_run_output.txt
+c3009b6e062f7f754101ff5b160204358a6fc4cfda166162b99ed343b62146aa  fixture_spike/m4/m4_stamp_type.py
+d554338efe0c5481f675ed7f73e6ec7a285ae5c75f3bf590ca8b1ae797eba454  fixture_spike/m4/m4_verify_output.txt
+84eb1a3b13195d7fa57fb1bcda40633ede8adba69fd8bdc9ceb7a01e4f5b4895  fixture_spike/m4/m4_verify_stamp_type.py
+fff2d913b3ebd1b9efa94019f449b0fd0a33810fcddc41e3e7cd2d1323cb8869  fixture_spike/m4/mid_second_offsets.csv
+b7424c738677f7975413ae3d069e8b056a9d2c0a2407e521571f4c498482d741  fixture_spike/m4/mid_second_violation_rows.txt
+06c17268f38168794948ebf0e862fc80e37814ac0fa088f4439779e7955ba580  fixture_spike/m4/stamp_type_breakdown.csv
+3f1474d303eadbac21ac5f1576b2db5a193decbd86e08d7aa578ceda32f8b536  fixture_spike/m4/viol_rate_by_remaining_time.csv
+5f45348b098bfe41fa3c9076f7e73b5f193b5b4909fe7b347a82cfe13ee7998c  fixture_spike/m5/consolidate.py
+6446c1b97f039a9d96d559d758ab996b4f50e644a89b6cb8f9f48c64379885da  fixture_spike/m5/consolidate_output.txt
+adfbd39b4d395d33a975047b4f3bae685b2a6d6c9655d5f21713751f7c670521  fixture_spike/m5/corrected_decisionT_summary.csv
+9336bf8b29f022da18f665b63e83a5da3708aaee2a9812a41828d33bec771b84  fixture_spike/m5/counts_cl_2025-01.csv
+09e5e02b1f840a68fc40deff6d2b6114b3035d45c7d59e1e8fee5bec61e46cad  fixture_spike/m5/counts_cl_2025-08.csv
+95d4dafa65d5d1076c7e490f9bef78ab241404de007f0968764870c9c5565694  fixture_spike/m5/counts_es_2025-01.csv
+87e3ee2f88a127d40d9e81a314fd03781546182a56ef3c033e7fbd2b757ff606  fixture_spike/m5/counts_es_2025-08.csv
+3c21942d4960fe5c8fd9d6936258b490676ff6a039a831c0ec54a4b2891993c6  fixture_spike/m5/counts_gc_2025-01.csv
+d71837e13191788bd12aea27edf38958e5dc7f7a8246795c4e2e0afddc64f5f3  fixture_spike/m5/counts_gc_2025-08.csv
+8fc1d60ddbebe43e165a7c79985d490605252fee347e1244bc80cc9158ffea03  fixture_spike/m5/counts_he_2025-01.csv
+33d03fc13877990b6393d7e7eb7f786bbd9939cfef365474ecc087887cd46bf6  fixture_spike/m5/counts_he_2025-08.csv
+69a30555ab4ed456491214da463d600c8064d0ff796f2d8989c47a4123836e1e  fixture_spike/m5/counts_le_2025-01.csv
+5707e390c7606b83092db8bade2ac3444714f3a403dec18943c70265909bb6f7  fixture_spike/m5/counts_le_2025-08.csv
+d8818ed163490a6e48f16610cf37a544c58508fdee149a127d25553688cddd97  fixture_spike/m5/counts_nq_2025-01.csv
+3824e17cba85fc564648fcb398a20c7945e7d04701e9b512011b92e495b5aad0  fixture_spike/m5/counts_nq_2025-08.csv
+04bad0ba9a125add00e8509aba398b18009b9e296c0df3dca046c8db28f605ae  fixture_spike/m5/counts_zc_2025-01.csv
+b4d1d35608170afd3a142ab323555ed7482ee9a6ce8011e3a52d65b6d9c05c06  fixture_spike/m5/counts_zc_2025-08.csv
+791b8842f651382a31daa5ae385c645ba11c594fd622f89eccab289cd7feb6f1  fixture_spike/m5/counts_zs_2025-01.csv
+eae3cd274912a831651367ce1e18a740c25712176293ec93a847b7ddcb31195e  fixture_spike/m5/counts_zs_2025-08.csv
+c270da7649273aed6ed58afb82e3ef3891f972a9f148eed6da9cb97ded923325  fixture_spike/m5/extend_checker.py
+bc4f58e0f8bc373a74d864fe47833130d398533b772a78c160c8ae37c0668b45  fixture_spike/m5/log_cl_2025-01.json
+dc1b12f0a5182d93413be602fe237213ae1f5f89a992535509fa45bfa321b19b  fixture_spike/m5/log_cl_2025-08.json
+d77349c46647a021ff27220915ef2433c3f45c86d0fcc391ffad163c8eab97cd  fixture_spike/m5/log_es_2025-01.json
+4529b95e78c5bf6ef1bc1f0844b3567099970617687c45a10018ca89672275db  fixture_spike/m5/log_es_2025-08.json
+04dfd77ea38137c874b6c217f8f0bc5635ec6d88b04a626581c7fde231275ab2  fixture_spike/m5/log_gc_2025-01.json
+b4b47e95dc3e30c265dee6375fca769d856b9129046f9ef876efd69c7291568c  fixture_spike/m5/log_gc_2025-08.json
+f57c362fddd105d107f615ca7f971da05218cd99bfd510f957a585694413bb7a  fixture_spike/m5/log_he_2025-01.json
+6c312191007b959cb23a3c91017c5bc0bf34e70274c0407e75212958626e3bb7  fixture_spike/m5/log_he_2025-08.json
+087b9be51752f73dc6ab19e25204064e57a464d9c756bffb7ffa1525b1ccede3  fixture_spike/m5/log_le_2025-01.json
+c4581368f20fb404288a275d08c0ae02f2b1b1c6a27f27669f77a0267e496e30  fixture_spike/m5/log_le_2025-08.json
+5624ae7283bd7257e1c74bbc17f4392e0a85e195397562e7dfbd3426818605ee  fixture_spike/m5/log_nq_2025-01.json
+6756db5e1732e98b3538317bc45f086416f20bb3f0c1e4985f03617cb6888617  fixture_spike/m5/log_nq_2025-08.json
+8da16854c8540cde1c9eb77ef5492513fb43aa6114fda1548992ed7211081ce1  fixture_spike/m5/log_zc_2025-01.json
+0b0b694173dbbebe058d44926795de59a55acd071ef5a145b219beb6cd3adc4d  fixture_spike/m5/log_zc_2025-08.json
+e16b6aea1fc159c0855733ecce8ed95c4520edd62e6a4dc7debe0be7793228f9  fixture_spike/m5/log_zs_2025-01.json
+9e0c172cfab53987f04c0b5b28b8dc513e119fc4f030043f22e0be58d13e0394  fixture_spike/m5/log_zs_2025-08.json
+db378ce9f819ffca2a45c871f565e99491b830058304a78720762ddfe556c700  fixture_spike/m5/nonzero_detail_2025-01.txt
+a1a1e2ce5b16085b88b3a8f0f32b769062d470acce9ce0700fe41e1ddf47a68f  fixture_spike/m5/per_instrument_counts.csv
+228afe894b10692ad62613411c277ee543e9ca4f13c59645fc9ee68bead079cd  fixture_spike/m5/per_instrument_counts_detail.csv
+e2056218929baa5683a9f2a681131d988da3312773343271d9a06e55f1ea676c  fixture_spike/m5/probe_shapes.json
+3cdd5d1cb6a8738079f24b864842991d3935633c88a2dc5bb38fe88d8d10a73f  fixture_spike/m5/probe_shapes.py
+c9072fbcdafdcc5e57f8c17549426ffd12b72fbe2f24d023d62c17cc2ffcb344  fixture_spike/m5/probe_shapes_output.txt
+040ad0a4e979f376414475e87d07e52e5a8bec0a68c3f48c6b24483a9556695c  fixture_spike/m5/run_2025-08.txt
+5c7009e834c2c4fb1adc3dba3218b2391aee66d80bca7f9a8b045c3214180d2d  fixture_spike/m5/run_batch1.txt
+8a5823ae3d0219327422f23a7764715c89dae110a06f2a76ee2b0acc81619c42  fixture_spike/m5/run_batch2.txt
+d8650b96eae1c7cba07a46fa6fab5ece48c37b16ffec40ad88eb7b891efc4486  fixture_spike/m5/run_zc_2025-01.txt
+48e097021c3241153ce8f99e518654fa064211c24cf8aa33df10a277ec693f96  fixture_spike/m5/runtime_and_lattice_log.csv
+26c0804c77e23f73ea0c12f40f7e31825da991509febc38cce2ec960fa6442c7  fixture_spike/m5/spot_check.txt
+d719013a5e6b2ef77ea3e0d5c3d563960667f048f5c201d89d22b93ed158bcc1  fixture_spike/m5/verify_violating_rows.json
+109e642c8829a84faec3365af4d04707fc670090cc806685174c0afecd0e9d23  fixture_spike/m5/verify_violating_rows.py
+512391615b980b249caeeee4a6678073da8701b71d69355c079482ce6e9c5bdf  fixture_spike/m5/verify_violating_rows_output.txt
+ba67d442fdbc2e84de5641aebd655d0df30dd808ff9b1a11beffa290924a9f28  fixture_spike/m5/verify_zc_vs_c4.txt
+82357a354032c6f32c34393b4924469b62f7e8c38165ba85df894f3016378580  fixture_spike/n1/compare_to_m5.py
+7f7cd079b6c8795792a1b4e8b158c6db5e8fcbbbfd428db654b2323534de8f15  fixture_spike/n1/compare_to_m5_output.txt
+763ac6c8382752aff954550e759eac4c138ac976ffec6d09fc93dd289876b467  fixture_spike/n1/declared_map.csv
+7b16c06815054bd8c98acd5ff65dc11cf1d8c4d5aecfb6c4038594afe4afb0bb  fixture_spike/n1/full_map_all_boundaries.csv
+0311d35c205b3f2dd5d70baaf7bb41be9d34f64883462f943a181cc1b8b3c48d  fixture_spike/n1/lattice_profile.csv
+f1c3c0f9b0536609263a68b32ec72a37d6eee29524e6a55f90e8c782548ec5c6  fixture_spike/n1/m5_maxima_comparison.csv
+db4bf295787edd017886ad524bc462ffa3f32da6f2afd97804cf7e31b2828a3b  fixture_spike/n1/n1_declared_map.py
+915fcbcba7139389187d6f5990a529f5b565a8566978a447288dc426986ea13b  fixture_spike/n1/run_full.log
+c5b0e8a357d18820aa43e996d29be7fdab30502691e0b9d40495693fc35b015e  fixture_spike/n1/run_logs.json
+c923ad0e82e9f65782d8f5f935af93c0707bca5038b41d54a504b2705845c562  fixture_spike/n1/summarize.py
+a6d1e779b4e82c9bf65a8c1085e339d6d3ed1ad712c812f85b142f72fd789dfe  fixture_spike/n1/summarize_output.txt
+6c9312b0ad24959a129bf6c5aa4b25a80ab564c031dd3d9310be4aac62453ddd  fixture_spike/n1/summary_contaminated.csv
+ff2445b26c82394d614b12aa220bdcabd4b2f473112644f93740af40b44e8def  fixture_spike/n1/summary_corrected.csv
+8c6ed268e91e6c6d100c434b3396c02d4a4d7c8b53ed018c9f04dd95e0df3b96  fixture_spike/n1/unscored_ledger.csv
+38830f39549a8896ae14dcef40c092d8d72c8ee18836e2b9c3f335e5991668c1  fixture_spike/n2/block_overlap.csv
+a99328b05f0b44659e07494561e7cb8b76bf4ee7429ea8ee4e980720de0355b5  fixture_spike/n2/blocks.py
+c01ca2d4e2571dfec1292ec3c7d8e3ba19824308e8776cb43c6f8abf2dbe8171  fixture_spike/n2/enrich.py
+fe383b118c42e0498f870c7994a65f0b4937b2b510299f5bae6337a94745d0aa  fixture_spike/n2/inventory.py
+c52e5f94fa47751c5ecc6785419366b809066981ba5c2a259cf107e88ee0e5cb  fixture_spike/n2/inventory_run.log
+2532a74d804870bb1b5749ee34709e2155227091f7aef30754c6265f89d610d0  fixture_spike/n2/lattice_provenance.csv
+e93661106a2e486efed84c454168cc481c1eada39a44c2d99dfc646afe886b55  fixture_spike/n2/provenance_notes.md
+c3f0fd78e1f7fa053792581a5f7f3a7d784af6b04bb0c1413ff81b9dff174064  fixture_spike/n2/spacing.py
+8298d9d20bda2aa5c1815e28a0f85f2dd28f2342d4923795f2ffc142219d90dc  fixture_spike/n2/spacing_by_hour.csv
+419a9c80df0d4aef57da321fcd81a324f9156798e90b35fe9795dd259a46b317  fixture_spike/n2/spacing_classification.csv
+662d9c1249d1c1685597e705d2daed4ccda40adf9706beff5dcd93e70a02575c  fixture_spike/n3/cohort_profile.csv
+bb1d3c7c89fb41d65858f4c9f8a0722ccfa22442155b5d34881ba71f13e2e17e  fixture_spike/n3/compare_output.txt
+a6ee66e853efa4c67d00921f23a7271637d3d5da8cf098423f10d8d39039c136  fixture_spike/n3/compare_to_n1_and_m5.py
+02a5a8f3133723dcb24396e62e6e465ce96e433dbbfb9e638556c030b97dc7da  fixture_spike/n3/converse_by_instrument_month.csv
+47dfce8166a95ad90522c4c3a33fd75d38882f58839ba5bc0312a771bcc9e32c  fixture_spike/n3/exceptions.csv
+21b4a5b5c7330f01bc0910557066b6bd1413974b7b4255654f64ffb032cb9de7  fixture_spike/n3/invariants.txt
+d4003d5dafa79e5d86ca53aaa6484b6574b70e9d1f4ce19a6dacdac91aaead46  fixture_spike/n3/n3_predicate_check.py
+eaf3f7a2e723c55fc2dc5297646909949cd2d610354b5045ec671cd74304760c  fixture_spike/n3/nonzero_cells.txt
+9ba56274732c9cc4c3124e9b62998a2bda6f4df948213b6e4358e26dc2eb0e59  fixture_spike/n3/predicate_check.csv
+ed8ad34b3fda411e2a634a334a8ae1748a9784bc11f9407afe0ed873e282d357  fixture_spike/n3/run_full.log
+a7c9ea3e00df217055851928bf2dc433aa2fd55a79b6cf453a4c1587f8fa713b  fixture_spike/n3/run_logs.json
+3a82ba45bb83095239f17e5169d11b5724419fe629b5ac08aee313020424ae81  fixture_spike/p2/frozen_t2_before.bin
+6d42bada3ad82a32ca8c9b9de0ae79c00e4b250bf095ec943fe37e653076ebba  fixture_spike/p2/frozen_tail_before.bin
+d50aa08f1e170b395278626ad214037153f1e3d22b019a06a2af8f86a7bbedfd  fixture_spike/p6repro/day_edge_table_full.csv
+098941d14771b098331b52f76cf2716ce9004731712a6fbf2d77b83be54a7420  fixture_spike/p6repro/measure_day_edge_full.py
+1de7377ab8a162d23bc86462db803e0d3456979560f209bb0e933702298a942b  fixture_spike/p6repro/overall_denominator_diagnostics.csv
+2e8312a0e33bb404a342ca2ad5ed74174eeabbe915b436e19eb0ecc7fd735b6f  fixture_spike/p6repro/P6_REPRODUCIBILITY.md
+df4865264c2490fc50aa29fa6318b05879fcc2b2bfce019db09cc137944a9180  fixture_spike/r11batch/edit_ledger.py
+9b256a9c6757edfb35d862263a4c99f6cb796a57fb13c3667801222fa8b67c33  fixture_spike/r11batch/hashcheck.py
+120cf46d0f4f1bd9fd10c1a78538c4e514dad3cd9b658d306542c37c2b65bad7  fixture_spike/R2_consolidated_report.md
+8f8b4ff6daf0cdd84bfbe187ac5e244b2dbe31fddf9170a1b9bd711bf35ef564  fixture_spike/s13/s13_crosstab.py
+3a99790935f8de2ce2ced1121bfe19c8b45da8c35ea544d72a6e9e4c4111d172  fixture_spike/s13/s13_crosstab_output.txt
+5f266a1dd354bc87fb93cec8ffb419bafc764f36d0fee6aea340287343e2ddce  fixture_spike/s13/s13_derive.py
+1df22ce4be025bd608e48db227f18269c8fce97aa605674d33d6e2056a694e8b  fixture_spike/s13/s13_derive_output.txt
+1969faa7cf9d460e06b7d4a575c6a520188acff2a516637336ab14fc4ad7cbbd  fixture_spike/s13/s13_frozen_AFTER.txt
+e01e9915e737b246fb95e5bf30cf843cfd26773e6d3fef55c8840da346c5b8f4  fixture_spike/s13/s13_frozen_BEFORE.txt
+5a6a04eed66a513f6af02e55e6adf62bf25753533c9ae7d9ac13c50b22c1c8e4  fixture_spike/s13/s13_frozen_check.py
+3029e7fc503e5d068300dcd8df795e382cf6f158c86c1294a326c6e7e5c428b7  fixture_spike/s13/s13_frozen_FINAL.txt
+4293887f9f14ee2a699135dfe80a098139fb9a3d87e07d56da981d1fac0df123  fixture_spike/s13/s13_peaks.py
+bab9703dfe25b9ec6c8675a13582156bf8239fcc005862d9dd2e267e4bdf43ed  fixture_spike/s13/s13_peaks_output.txt
+9667f0cc458930479dc34c3fed3f013e06be6e6e7bfc36bcf4db025f9ba81b62  fixture_spike/s13/s13_t1.py
+6b8de7281f287010bb1c1b83f928ed08ae1097bd583e1ca3644cfba573f087d9  fixture_spike/s13/s13_t1_output.txt
+ed49d67770a26a5fe36298aca50b4a057c1019db31c6e9fc3b316b62f405bbad  fixture_spike/s13/s13_table.py
+a011603d752020bfa9333da61f2eedc51ab243c450f554e60f77df3a24a70269  fixture_spike/s13/s13_table_output.txt
+bb1cfd5309d86eacb662fbeef05780a17ae3b3517be7ada0eb2bc68412e0de41  fixture_spike/s13/s13_v1m4.py
+8d28511559157170127f29429db9775408a6a23a8f87c8fee3f9e0dc548561b8  fixture_spike/s13/s13_v1m4_output.txt
+dff7a251cee7b95c16cdf4b26b2e4841a7842cbce782d7c80e3c86d5e7f8556d  fixture_spike/s13/s13_verify_tables.py
+24feab7f69d3d31b9e09029cc26c3a5685e3218407490eec32762331dc4b4bdd  fixture_spike/s13/s13_verify_tables_output.txt
+c4638b01855f85c5fdd0a40fdc166c985501cb972cfd30fa60b461b2d36f191a  fixture_spike/t1/per_second_mbo.parquet
+689bfd8468d266499f858971c73fcebd79b4bf3bce6792a380d0e7ebca44793d  fixture_spike/t1/per_second_trades.parquet
+f8c5d1a5477102b7cc483ce66475e798bcbd38dc983e68bfec5fa4371cbeec25  fixture_spike/t1/sanity_row.txt
+04ced221041ec7159c8387718450e743190e99e2d8aa3a322b55011c30a4836b  fixture_spike/t1/t1_final_output.txt
+24b136588d96f5505add24bdb2c34b052a86edaa986f9c25cbc02f74cb8a4ded  fixture_spike/t1/t1_measure.py
+04ced221041ec7159c8387718450e743190e99e2d8aa3a322b55011c30a4836b  fixture_spike/t1/t1_run2_output.txt
+856cf6a3a5b978a67aa123044ede9ac5b2ba3a472b4b6810b20dc80911b58586  fixture_spike/t1/violation_table.csv
+e1ebaa1d2c110fc47b36782bd1642409eec45decdd3b95be9ce711e648f8a230  fixture_spike/t3/day_edge_samples.csv
+d50aa08f1e170b395278626ad214037153f1e3d22b019a06a2af8f86a7bbedfd  fixture_spike/t3/day_edge_table.csv
+d59f99425b9deb1fc14f29ba435e0b0764ec19b3599a847473a9305e62fa225c  fixture_spike/t3/measure_day_edge.py
+c228b537b8ff436282b9c35c5fb4bd913756ee297e40930dacbeb1f0d0e84ae4  fixture_spike/t4/fixture_manifest_35col_DRAFT.json
+02309de1a4ddb28a8fc9a7b8b7a80f7e41b07f46b6f5950a16e687f5f2386c02  fixture_spike/t4/t4_project.py
+c3feedb71f11bb4f8e2cfc22a16a5ebd660f1edf202e33796c0a9f109a7c9c26  fixture_spike/t4/t4_verification_report.json
+b7d9bdd1a56aee7c5610f0706ec79622a07944c87a90a5adf1862c956c9a759b  fixture_spike/v1/mean_overhang_by_class.csv
+da474d0ea093f47188078cb805100b8684e7c422b9e99c0b44ab3b7bb9923bb4  fixture_spike/v1/v1_overhang.py
+d0fb70853ffa0a244aad3c5837d56a5d1fcf8b03c45f3cfc46cb8dd0b5a78388  fixture_spike/v2/derive_reanchor_gaps.py
+11a80190f577ad772a60ef5df9d59f59bf7e57c1f72fa46877383568bd1fa269  fixture_spike/v2/reanchor_gaps.csv
+5b3f4e265356459c9aeb9dfd578bae665e7c3b95308b91af4c7e276fcb6e4f45  fixture_spike/v3/g2_dtype_witness.md
+09af0948923420e540959dec660be44d17a33768507ea1f1209b40ef77abb36e  fixture_spike/v3/schema_witness.py
+36961882c9c7fd7a16e2f2851d2f7aadc253ef04e9ed427aa2bcbaaae469e6bd  fixture_spike/v4c/one_cell_recompute.md
+9665ecb04058f7cfdece4d9c9065daa9bc44fc635041cc99c8ba1e9c129c587b  fixture_spike/v4c/one_cell_recompute.py
+0d6cd6fdd3029a2a8fc3346204348c86533b06ff5fd1b145f7ca142ed029b308  fixture_spike/v5e/v4_day_edge.md
+35f854faea400c914238f50e6d9d6fcfc5cd3b04d3325b07b5bf90b1c171f322  fixture_spike/v6/a12_audit.md
+edb8d152b5ef586eb4d5b66eede26f95850a9a2dc6e9e6c6da2e539e6cc3dfb9  fixture_spike/v7/affected_row_buckets.csv
+e3e3ac42bdf8358d9cb4f6b5133354aa6347d2cd7db411809d4c0b505cf9bcde  fixture_spike/v7/affected_row_buckets.py
+9235346b658c9756ca68fe64e10671477d821f8ba1720895b97508966d5ef5bc  fixture_spike/v7/affected_row_buckets_stdout.txt
+43af4db873ef2077c4d8262f8899507fa0e4fb1335e9771a4481d2eb59f2131b  fixture_spike/v7/affected_row_dow_verify.txt
+a168ec41690526c49b12b9e846729cfb62a019cee9a90d39eea7a792c7e71869  fixture_spike/v7/lattice_same_second_probe.csv
+07a2c25f1103c4c95612d436f4da16943d9ced071e2e4d8af76fd954be98348e  fixture_spike/v7/lattice_same_second_probe.py
+0f532bd9798fd7d6f53c4287b921aac5ddbb2a0dda3ed00ff08011f8a5a44b2a  fixture_spike/v7/probe_stdout.txt
+569555b09058038192a81928373aa124f505d219a367118be216423fd0adcaa3  fixture_spike/v7/v4_same_second_channel.md
+559a7526c5ac68f5a96d98522635beb9fed14665e86268f8e1a255670193b7d8  fixture_spike/x123/x123_pass_notes.md
+ecc1adc1d81c8b7f031721031a3d522c0e61d39001ff47a159b8ab92cb967520  fixture_spike/x4/join_soundness.md
+34f23d2b6819f7fd54200b59e474af46fa4416606d9cf55dfbeceef7e637e225  fixture_spike/x4/nq_mbo_diagnostic.csv
+2c63791eb83f37acf7a84e0134164b50f86b5f98ef57f85924a18c1bb81866e1  fixture_spike/x4/nq_mbo_diagnostic_all_boundaries.csv
+541b778f841fc207525fbee9f0554517604db1866e6c96930dc4b8f585352480  fixture_spike/x4/nq_mbo_v3_same_generation_all_boundaries.csv
+634b6849203fa6049e9c4c0106d00b51acdd862a09cd5a57edb8210270418292  fixture_spike/x4/nq_mbo_v3_same_generation_map.csv
+f23b72fb986766489291b42493b5f51e5d18a9ae8df652fe3f9f766ce9dc88b9  fixture_spike/x4/per_day_coverage.csv
+be4b5f4c716cfaf2fccdcc441467792256537815ec6243ce2fa9e04684c1ddfa  fixture_spike/x4/probe.py
+9f6eaf1bc119dad1ab6f959f7431da955f670749571af9b3a46c067362578290  fixture_spike/x4/restricted_to_v4_covered_days_v3source.csv
+f9e6893e3ddba92b4c3ba41d7c008d16d66b43ce4a6d79f22fef808fdec43314  fixture_spike/x4/restricted_to_v4_covered_days_v4source.csv
+67340cb8fd340ba8b2d13b1b32b00251aad6610a5c815f475c70ca8d79222f07  fixture_spike/x4/run_full.log
+b25d68008197b27cab4a0a5371581e0a8bbc0f2f510fe0fc6bae6bcd4b26fae0  fixture_spike/x4/run_logs.json
+4f1dc0946f5f5083f72dbb12ad0da668b9554b5787083ee41ea83615d0d9d6f1  fixture_spike/x4/soundness_a_day_coverage.csv
+e24dee76af4dceb00731f51998e65ef8175ee2d39016448128f42407ba021ac1  fixture_spike/x4/soundness_b_event_counts.csv
+80287abf7d738b93fee6766d937a145165e85c35fda9d4b39db62d0f791b0f79  fixture_spike/x4/summarize.py
+8e74e059f63e0a7a46a99e4ed6e24caddde0c536b96b56beadb7b7a4e5c9afac  fixture_spike/x4/summarize_output.txt
+1f88e26d1e3098c77f091158fadc760febc1b00ed68430a97b98b53f332f90c5  fixture_spike/x4/v4_vs_v3_count_delta.csv
+dc4afdf9a13260ee058ae7ff6274d6ccf36ecc7abfd9e7211ab4014d699e6ef9  fixture_spike/x4/x4_nq_mbo_diagnostic.py
+23ebe02552da8c0f2b7b8148258279e6308a64da7d737aaf146c91167f8faa33  fixture_spike/y1/column_universe.csv
+8811e54c8c532cd7bc307aa1ab4a4bc80ae254dc99c8b1eb8858a1df96369d49  fixture_spike/y1/trade_class_only_map.csv
+d388a542f788faf54ba67acd8b5590d0ecf4026646f995b4567ebe789c3418f5  fixture_spike/y1/y1_column_universe.py
+5dbbde12866f50e85e1aa5a206428a01e7ceabc79c3fb24f18d558f4c7c5a4ac  fixture_spike/y1/y1_column_universe_output.txt
+a18c7fd9951d20c2ddfd19f23d1313df1d9af5c74293389753f04101ce382c12  fixture_spike/y1/Y1_REPORT.md
+4b152d76895eb5b35e73a1f53640b9ce4bf799022b07915e9ad2b62a20439901  fixture_spike/y1/y1_trade_class_map.py
+bc28cb791430f8d2f218e96228efe6d96623bc7e4e1cd95257036de6ccbaa74d  fixture_spike/y1/y1_trade_class_map_output.txt
+1523382096d96d911895969e66ef13d174f18380ff22bc6cb2fb2c1faf0538c1  g5run1/a_checker_stdout.txt
+31378fa2a5b037675eb73a8011593a74f0369e534db7816a120c83d93ec7d925  g5run1/b_pytest_stdout.txt
+cb5ff030b6856625e27d91cd9d11735ae7e0946ee73815946ec2142b57c3e20f  g5run1/d_positive_control.txt
+49dd455bb7d343d33ab69ebfdb05a9b4137b374d70bafe8cad33e9091b8caa95  g5run1/d_scan_scope_output.txt
+bc70ec27789249f28d190f2fc4646275c55051ae29232725837f6a5be35ca82d  g5run1/d_scan_scope_probe.py
+aa3274c9ce9d52ab485a8948f9727ea8513158bf7bc04bc52628bd4004a6dc0d  g5run1/d_superseded_backtick_check.txt
+c16d028b5ff045ce8757ba5d1efcb15440cead1b4e930eaff30a96124d9a4f73  g5run1/RUN_LOG.txt
+4cdc9e9dc0770ea0deea32c996146997212fa8c5ce936dd12b650981c3d109d2  g5run1/tree/.pytest_cache/v/cache/nodeids
+f0829bd3a0f11b05170a5e2686b953c5def39104af0bbfa2904afb3da2f53310  g5run1/tree/AVAILABILITY_DECLARATION.md
+3845b779949767c5a1b2193111d92e6fb37360b058140253804ff2f8ff9f4fa7  g5run1/tree/HISTORY.md
+4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865  g5run2/a_checker_exit.txt
+9f30215163fb5d6d1c35baa920428b9a4ad899d0769c3e3a8d114187f4890b02  g5run2/a_checker_stdout.txt
+4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865  g5run2/b_pytest_exit.txt
+0e100ccc1b41c8076ffb9476e6044dcc9b8cda854e49bdcbb9d6fac6541c05c1  g5run2/b_pytest_stdout.txt
+d602716a0b97d187af1bce8cd097615461f9e954201debdc0f8c613c124af49c  g5run2/c_attribution_output.txt
+92c96c378bab53a45c0f2b1a035639ac81b3eb051be89c4c79d07975e68cfa24  g5run2/c_attribution_part2.txt
+e4f2caf8592680784e8ea58500c7c1a83110d413872e72961e9c1f4c794c95ce  g5run2/c_attribution_probe.py
+3d857769badc308426d456aae9ca0074971024410098b157cba4dda322197c63  g5run2/RUN_LOG.txt
+b1930e699b851e3e74cc7d0fd67954112d4dafd249e50f4f3ac1b249dbd8c4e0  g5run2/tree/.pytest_cache/v/cache/lastfailed
+4cdc9e9dc0770ea0deea32c996146997212fa8c5ce936dd12b650981c3d109d2  g5run2/tree/.pytest_cache/v/cache/nodeids
+f0829bd3a0f11b05170a5e2686b953c5def39104af0bbfa2904afb3da2f53310  g5run2/tree/AVAILABILITY_DECLARATION.md
+3845b779949767c5a1b2193111d92e6fb37360b058140253804ff2f8ff9f4fa7  g5run2/tree/HISTORY.md
+f238d74ca7670585b1bc0d34e9ae1eed2073e8edfcb16959ac535fa74b775341  g6/OPEN_FORM_CONFIRMATION.md
+7944160632a43e297d336871ae2e09ff3f8176589a9294bcd786e8c1106f6165  h3/after_stdout.txt
+e3d43f75bd11aba6d39c51a8acd0f11cd3a9a2b885bd051c1c3370ea8f8c4e3b  h3/baseline_stdout.txt
+17c8f7e5f8ddec7c2ef8771457fbde1b44347879c9fe82ddd447454c7821fa6c  h3/h3.diff
+22d3a226fa9f300f6ab7bb5f3e890ce8cc0ffb0f9be7f05caf9040c3975e1a95  h3/h3_final.diff
+ef49d3ef7057441f24d5fa3b0a2e0c5e515c7d5361cf42d1aa898baa344ba977  h3/NOTES.txt
+7f8212def37c865e0b544100693cdb935811355703112123975b237f431f2b64  h3/probe.py
+9599156a63d03f71290d1ac6e5ec3d68b079a551b7dbe2487b6708f0a5f0198e  h3/probe2.py
+bcbcce6b1c2d08501983d0bbc8b49a2c3cec93aac5e0846122fc7a2be9a895ee  h3/probe3.py
+a694dc733085e75f5a0ae24c53cdee8806bcbf409aeb5d9d22825d18cee6f2a7  h3/probe4.py
+d9893b017aa3e624c17124a4aef725da43ba05a2b29496a944f83515984895e4  killgate/CROSS_TOOL_COMPARISON.md
+7b24cb6f003b8051c32c491611982c0fc1b265a6d87dd144e73c624735f01b77  killgate/J6_SCOPED_PLAN.md
+8bfd1d4d9de6b7079c6daccc6ce31efaf9fef38988796f8fc39f2f18ad5ace4b  killgate/k6/cases/_scripts/C1_clean.py
+abeed079242ec9ded3cfd7c10fd0cf5abe23353239e0709a57b1c813eccb63a2  killgate/k6/cases/_scripts/C1_contaminated.py
+cbc1b0f58220ee8be930b4446e55bbcccdae75c86ea31bc8d003e3bb547846e1  killgate/k6/cases/_scripts/C2_clean.py
+48e60fc3efe89dcb1bab0abcefe70d74088a34b8277ed0cd5d645ebdc0832646  killgate/k6/cases/_scripts/C2_contaminated.py
+366fc60ddb4e7b2b9def1b84eea461e5baeadd97d78ae3d049491d5ec3fb5845  killgate/k6/cases/_scripts/C3_clean.py
+f06c5efb930f1a925ab45b26d75a4e571d8850ea1b40196c087356505c4583c9  killgate/k6/cases/_scripts/C3_contaminated.py
+bb1fdff0931365c19571af0b10c9050609127faa89554828d90ff4741695b956  killgate/k6/cases/_scripts/C4_clean.py
+57f4c708d13afb4f74cf3d3e0f202d7f43498f84b0b2a1bccc7e405375dc9863  killgate/k6/cases/_scripts/C4_contaminated.py
+397b7bedbc1fdf572fcd4d8754c0b350e662ea756bb6417164c85ec3c7bafb59  killgate/k6/cases/_scripts/C5_clean.py
+69e35cbc298b958d3a1557c4bd680f291e2616058bb3f5bbb9f5e072a051301d  killgate/k6/cases/_scripts/C5_contaminated.py
+7d64f26262d1c09db2544c74796a90c406946911cbc922c16d774498cd6b1968  killgate/k6/cases/_scripts/C6_clean.py
+6738e6f5c4fba1b3753626678bdf3b8ed6a75dc66936f778260be3347b5b6a5b  killgate/k6/cases/_scripts/C6_contaminated.py
+1e005619c2041ae9cda6e1fb4b9250f57e3e290ffb3a639491b71605c31bcadc  killgate/k6/cases/_scripts/C7_clean.py
+e8570e7c88529721730f8a2fa597760e5b9a8f6c35e48f21a8f126a7f76f07d6  killgate/k6/cases/_scripts/C7_contaminated.py
+755d2c042a48d16bee6460fe6b66e07269f88dd887394c4feb863cb85a39951f  killgate/k6/cases/_scripts/C8_clean.py
+ac14789d46558a8099808b027e8d2a959e02451808072d896f2cde6931878061  killgate/k6/cases/_scripts/C8_contaminated.py
+fb01082ab455ed652ff6ee8931144ce0982bb370f8604388d4e1142be8e95f46  killgate/k6/cases/C1_clean/full.csv
+be73b62ab1b28b496967d2e19aec6696c3f67c770afff6bd789c62bfd908382c  killgate/k6/cases/C1_clean/meta.json
+fb01082ab455ed652ff6ee8931144ce0982bb370f8604388d4e1142be8e95f46  killgate/k6/cases/C1_clean/raw.csv
+8ce5d18736bb243517a61e4d2256b7f736f99910a0182315401cf30457e31b44  killgate/k6/cases/C1_clean/test.csv
+5b28f18a297eefee821dd77dabdbbb9c33dfb60d1a4127becbe21e37b2ddb34c  killgate/k6/cases/C1_clean/test_idx.txt
+18d6b6ed332bd1568d3a1fb335f327a616bed8c55020c85838365f987b0e1f55  killgate/k6/cases/C1_clean/train.csv
+2eb8c89f5883414ec0f30082703e2392b015de4aa0f5ecf00dfa2200abe90041  killgate/k6/cases/C1_clean/train_idx.txt
+fb01082ab455ed652ff6ee8931144ce0982bb370f8604388d4e1142be8e95f46  killgate/k6/cases/C1_contaminated/full.csv
+7d9a62786139f4e186526c9714276d3b7460648cc5f05678217c1f63cd5bab7b  killgate/k6/cases/C1_contaminated/meta.json
+fb01082ab455ed652ff6ee8931144ce0982bb370f8604388d4e1142be8e95f46  killgate/k6/cases/C1_contaminated/raw.csv
+f340704beca911f44408ec9650966b807ca3ea9a411c79153a3b0f9af6a01687  killgate/k6/cases/C1_contaminated/test.csv
+3f71787518014b017c9bf1304997efd3d3741b27c2c55041650f4bf0f3ee1a66  killgate/k6/cases/C1_contaminated/test_idx.txt
+18d6b6ed332bd1568d3a1fb335f327a616bed8c55020c85838365f987b0e1f55  killgate/k6/cases/C1_contaminated/train.csv
+2eb8c89f5883414ec0f30082703e2392b015de4aa0f5ecf00dfa2200abe90041  killgate/k6/cases/C1_contaminated/train_idx.txt
+de03651a8185afa4693bb0cd499535327245336f4d9d988a3c4956034313fe56  killgate/k6/cases/C2_clean/full.csv
+af0a5837b88c7a52c7dc16b0c54d934b94de6ad4909fb5e7cba83d68a6502bf1  killgate/k6/cases/C2_clean/meta.json
+d6d4105bf5d08dd27dfb76c9c7d3d0b7e6983f122792bfe962d2c36ac0450f05  killgate/k6/cases/C2_clean/raw.csv
+b8467d4f81f7cd157cdc8d495aed52ee338b8981ab28e21619505cc3f4e6769b  killgate/k6/cases/C2_clean/test.csv
+989766d03beb0fa7702d4fdc0a7575d9a5f3abaea86e6022d97545f90b4060f4  killgate/k6/cases/C2_clean/test_idx.txt
+2a10310b72c09944564f9970ce76eb3b6bd0781d6df59bcb63c333dbfb14ce88  killgate/k6/cases/C2_clean/train.csv
+280382a7bcd6b30211d2a52e9186b61867691aaaf6a5f948fe3f4d5ebb87f464  killgate/k6/cases/C2_clean/train_idx.txt
+f5b905601b858d82041c25cf8f16505ed34f23767b7e90583c7e6b7754b9be54  killgate/k6/cases/C2_contaminated/full.csv
+aad22ee3cccccaeb1168efd2cf5d7a1135d993d237add73898be378ae67fbc81  killgate/k6/cases/C2_contaminated/meta.json
+d6d4105bf5d08dd27dfb76c9c7d3d0b7e6983f122792bfe962d2c36ac0450f05  killgate/k6/cases/C2_contaminated/raw.csv
+bb3af4b6da07ebfe129feb4ec3b3b090c73b8099773c3d46f64f9f4152f32d7f  killgate/k6/cases/C2_contaminated/test.csv
+989766d03beb0fa7702d4fdc0a7575d9a5f3abaea86e6022d97545f90b4060f4  killgate/k6/cases/C2_contaminated/test_idx.txt
+eb1e23e386d877dd6c4ddcdaa7ac1422aad29b34ea93e6c4a7c139ddca51857c  killgate/k6/cases/C2_contaminated/train.csv
+280382a7bcd6b30211d2a52e9186b61867691aaaf6a5f948fe3f4d5ebb87f464  killgate/k6/cases/C2_contaminated/train_idx.txt
+1c47146fa34eea6a2fd1ae19070f00cd3d758d9ad94c5b46cf59e3734caa14c9  killgate/k6/cases/C3_clean/full.csv
+06e337ca1d5ad42ac4abf6b96b24bca3efc469d09ba559dd33fac952ad5dec2d  killgate/k6/cases/C3_clean/meta.json
+f8ed29ebe54e2fbed0a57b69c9b94810b294cbec0a543f87056f47bf685b0d74  killgate/k6/cases/C3_clean/raw.csv
+dd0589abf58d404e3d0a00aa1436bceba052e306c2105323d52eabf12566c166  killgate/k6/cases/C3_clean/test.csv
+989766d03beb0fa7702d4fdc0a7575d9a5f3abaea86e6022d97545f90b4060f4  killgate/k6/cases/C3_clean/test_idx.txt
+76fdd4451949f1023677cd053aa28e279b64e9e07608a40be1132f234b061e76  killgate/k6/cases/C3_clean/train.csv
+280382a7bcd6b30211d2a52e9186b61867691aaaf6a5f948fe3f4d5ebb87f464  killgate/k6/cases/C3_clean/train_idx.txt
+bd116bb75c6217456c169835bc2343145bce3e1410f7c53821ed7734d1beb7d3  killgate/k6/cases/C3_contaminated/full.csv
+c075d7bd66324713e6f4f01999f70fd0f779f1a0d8f6c0f251f8441e423259d7  killgate/k6/cases/C3_contaminated/meta.json
+f8ed29ebe54e2fbed0a57b69c9b94810b294cbec0a543f87056f47bf685b0d74  killgate/k6/cases/C3_contaminated/raw.csv
+837ec0585249cb65122aea572d3b71baf3e9b8631bc9e6b1ee14a35d87644fa8  killgate/k6/cases/C3_contaminated/test.csv
+989766d03beb0fa7702d4fdc0a7575d9a5f3abaea86e6022d97545f90b4060f4  killgate/k6/cases/C3_contaminated/test_idx.txt
+466307d40e0e177d0e285ec04862556fe1b57630564e1009c68d13eef5fcaf44  killgate/k6/cases/C3_contaminated/train.csv
+280382a7bcd6b30211d2a52e9186b61867691aaaf6a5f948fe3f4d5ebb87f464  killgate/k6/cases/C3_contaminated/train_idx.txt
+23bdb1d9de45ebdbc621fe824d9855813b911949965ac1f70120aabab32a671b  killgate/k6/cases/C4_clean/full.csv
+b59640bdbb4ccfcdedd7bd248b1f2061248f50032babff4a5bfe85fddf98a571  killgate/k6/cases/C4_clean/meta.json
+23bdb1d9de45ebdbc621fe824d9855813b911949965ac1f70120aabab32a671b  killgate/k6/cases/C4_clean/raw.csv
+74cf2b935032c475ccc900b01189115d0790c8137dce05611b815ced930d5b7f  killgate/k6/cases/C4_clean/test.csv
+989766d03beb0fa7702d4fdc0a7575d9a5f3abaea86e6022d97545f90b4060f4  killgate/k6/cases/C4_clean/test_idx.txt
+f728359b81f7a643217808af4eba30201f4d2e2d341f2c9aa44fa17d639defea  killgate/k6/cases/C4_clean/train.csv
+280382a7bcd6b30211d2a52e9186b61867691aaaf6a5f948fe3f4d5ebb87f464  killgate/k6/cases/C4_clean/train_idx.txt
+44f45a580677e4f3894725a04fb24ba206cfc46fff20092dd512723778b4b7d4  killgate/k6/cases/C4_contaminated/full.csv
+93e7d914a55feb3fba2eb9b6bfeef9daa97ca335b411baf99e68792afd94f7a9  killgate/k6/cases/C4_contaminated/meta.json
+44f45a580677e4f3894725a04fb24ba206cfc46fff20092dd512723778b4b7d4  killgate/k6/cases/C4_contaminated/raw.csv
+1e420341b20908897db5e250f055d25dff1a036e5019ae6992075258afdb3083  killgate/k6/cases/C4_contaminated/test.csv
+989766d03beb0fa7702d4fdc0a7575d9a5f3abaea86e6022d97545f90b4060f4  killgate/k6/cases/C4_contaminated/test_idx.txt
+bc83673fd181619379d3a1282501c8cc69b3f1470b6ef25ce7a993d60131b3a2  killgate/k6/cases/C4_contaminated/train.csv
+280382a7bcd6b30211d2a52e9186b61867691aaaf6a5f948fe3f4d5ebb87f464  killgate/k6/cases/C4_contaminated/train_idx.txt
+ee939aeaa884e96370074290ae2c63b2d3533aa8b450a6727a25280369814fc8  killgate/k6/cases/C5_clean/full.csv
+46195a2d10f3fbfd54c54676c7a1248c6fab22ad0b64803fe36c041f7983f581  killgate/k6/cases/C5_clean/meta.json
+26f9df48ed370af9aee86fac490983d506bb2e80353f27ae008ca5c6afaa769a  killgate/k6/cases/C5_clean/raw.csv
+3867fa005337bbfc7a7792acd13029b13ae61d7ebf40e580d4bf0c502dd0133d  killgate/k6/cases/C5_clean/test.csv
+989766d03beb0fa7702d4fdc0a7575d9a5f3abaea86e6022d97545f90b4060f4  killgate/k6/cases/C5_clean/test_idx.txt
+7cbde5a26e209b60371b523bb387a158aebfa73ce6e2135eaf1c17845c63bd38  killgate/k6/cases/C5_clean/train.csv
+280382a7bcd6b30211d2a52e9186b61867691aaaf6a5f948fe3f4d5ebb87f464  killgate/k6/cases/C5_clean/train_idx.txt
+ed74f3228693cd471d5fde83d3ca88fb3e39bc122f0769c54ebb225b768c78bf  killgate/k6/cases/C5_contaminated/full.csv
+98f35ded5a28b43d6d7631d7542aee7fba09c22149624b0e03ea84b9dcd5465d  killgate/k6/cases/C5_contaminated/meta.json
+26f9df48ed370af9aee86fac490983d506bb2e80353f27ae008ca5c6afaa769a  killgate/k6/cases/C5_contaminated/raw.csv
+044a98b2e00ea4cd390ebd1c6e73fd5f84a0ec6b89336195d88985ba67ee42e1  killgate/k6/cases/C5_contaminated/test.csv
+989766d03beb0fa7702d4fdc0a7575d9a5f3abaea86e6022d97545f90b4060f4  killgate/k6/cases/C5_contaminated/test_idx.txt
+98c65b1bb9765df0748232fc0d10eac46cec93843797b16ccf3ba447814c208c  killgate/k6/cases/C5_contaminated/train.csv
+280382a7bcd6b30211d2a52e9186b61867691aaaf6a5f948fe3f4d5ebb87f464  killgate/k6/cases/C5_contaminated/train_idx.txt
+b42089f96b3bba783dff54467dbdd65746e511e7d32a31af5ac8f58893230499  killgate/k6/cases/C6_clean/full.csv
+14613c414c005b52927f8f0df04f8e74c32c2cfc678e451b9db73b315cd89888  killgate/k6/cases/C6_clean/meta.json
+1956ae4296c74602fde0c56215612f6ef46a45c2e13a4567d19940dd19ecb52b  killgate/k6/cases/C6_clean/raw.csv
+072a2fd9d1f3a18376f922d71f884eb4d80eaf661ef0d8f014ff03700fa45516  killgate/k6/cases/C6_clean/test.csv
+989766d03beb0fa7702d4fdc0a7575d9a5f3abaea86e6022d97545f90b4060f4  killgate/k6/cases/C6_clean/test_idx.txt
+849711d970c5662fb683ee36d376c79fab222c57684e6de2032a434b2210faac  killgate/k6/cases/C6_clean/train.csv
+280382a7bcd6b30211d2a52e9186b61867691aaaf6a5f948fe3f4d5ebb87f464  killgate/k6/cases/C6_clean/train_idx.txt
+e5966f64284b58a15089de9ec9db8a30dadbdca85fe1e1b0c21292ef01867731  killgate/k6/cases/C6_contaminated/full.csv
+e6cf44ecd5e8c583c8106c61ac62547ab1f19cbb9c59117d0f1ad4058ec615fa  killgate/k6/cases/C6_contaminated/meta.json
+1956ae4296c74602fde0c56215612f6ef46a45c2e13a4567d19940dd19ecb52b  killgate/k6/cases/C6_contaminated/raw.csv
+43a1865cc845fe784d60be856cd643e8e2619857a52d79628878a22407afbd5b  killgate/k6/cases/C6_contaminated/test.csv
+989766d03beb0fa7702d4fdc0a7575d9a5f3abaea86e6022d97545f90b4060f4  killgate/k6/cases/C6_contaminated/test_idx.txt
+48f9d8c6eca7a3afa7f5eee452bba78d1d9addac57dea0c1c85899f384fd2d1a  killgate/k6/cases/C6_contaminated/train.csv
+280382a7bcd6b30211d2a52e9186b61867691aaaf6a5f948fe3f4d5ebb87f464  killgate/k6/cases/C6_contaminated/train_idx.txt
+1c113c0c39d72ab4a5d7f8f6263acdc96086b538e66a9a5c853faf2f22dfda4b  killgate/k6/cases/C7_clean/full.csv
+1b8877ee80da4d6c2d5506d9a298defa08a5aed40cdf0610de77b13c91137ced  killgate/k6/cases/C7_clean/meta.json
+1c113c0c39d72ab4a5d7f8f6263acdc96086b538e66a9a5c853faf2f22dfda4b  killgate/k6/cases/C7_clean/raw.csv
+1dd2d7a592e4849c0e7d8d051739b57d8381fffdd694fa1dac8c7abc1878bdf3  killgate/k6/cases/C7_clean/test.csv
+989766d03beb0fa7702d4fdc0a7575d9a5f3abaea86e6022d97545f90b4060f4  killgate/k6/cases/C7_clean/test_idx.txt
+0b0724e865bfe0bba30124c9b7e5cb497582e58582fdeb22f47e5e08c7cb9706  killgate/k6/cases/C7_clean/train.csv
+280382a7bcd6b30211d2a52e9186b61867691aaaf6a5f948fe3f4d5ebb87f464  killgate/k6/cases/C7_clean/train_idx.txt
+1c113c0c39d72ab4a5d7f8f6263acdc96086b538e66a9a5c853faf2f22dfda4b  killgate/k6/cases/C7_contaminated/full.csv
+43d9d4edea4c492d59c284b21eeda6a59b1ab676e32f19275988ac6ce586df50  killgate/k6/cases/C7_contaminated/meta.json
+1c113c0c39d72ab4a5d7f8f6263acdc96086b538e66a9a5c853faf2f22dfda4b  killgate/k6/cases/C7_contaminated/raw.csv
+98b0b401f745c616b5cf3553f6fcc3d08fcbde5fa9c3b7037f48cce7124e2728  killgate/k6/cases/C7_contaminated/test.csv
+5b4f266ff5953d1cb75a733fe55a5ce305372a03e3146206cb996980f3ff43ba  killgate/k6/cases/C7_contaminated/test_idx.txt
+b334dcb892f5da4dd67a51267045800d8974cb047de259976794b3729d2b54d0  killgate/k6/cases/C7_contaminated/train.csv
+d0aeee0fdeb954d6a32407069b0efc9d66d0e9914b1386210938d373e312a709  killgate/k6/cases/C7_contaminated/train_idx.txt
+cd451069f247feedf5517dd0dfd4e9b830c8861cdab39716b6a206c91bd1fcf1  killgate/k6/cases/C8_clean/full.csv
+fc2550d4d0ca46afd07f304c21dfdfc56c4eb341dd6190285b6c21853f9d5e0e  killgate/k6/cases/C8_clean/meta.json
+cd451069f247feedf5517dd0dfd4e9b830c8861cdab39716b6a206c91bd1fcf1  killgate/k6/cases/C8_clean/raw.csv
+397fd02e28562ca9255283bb68d3eb35e36fff5b66a0027cef646d1c41264437  killgate/k6/cases/C8_clean/test.csv
+989766d03beb0fa7702d4fdc0a7575d9a5f3abaea86e6022d97545f90b4060f4  killgate/k6/cases/C8_clean/test_idx.txt
+66804d583c4656df773c27d8aa18f43f34ba9023932db8c2b88d7379d3010923  killgate/k6/cases/C8_clean/train.csv
+280382a7bcd6b30211d2a52e9186b61867691aaaf6a5f948fe3f4d5ebb87f464  killgate/k6/cases/C8_clean/train_idx.txt
+6d5e32c488934690fa0520d82026c9dfabbaba9fb3786f7140476e322196e31d  killgate/k6/cases/C8_contaminated/full.csv
+ddb3b7d6e5eb1dc0d5a0fa95e82b3a016293f4e8bb2bcbc8184c79f1ce7459b0  killgate/k6/cases/C8_contaminated/meta.json
+6d5e32c488934690fa0520d82026c9dfabbaba9fb3786f7140476e322196e31d  killgate/k6/cases/C8_contaminated/raw.csv
+b7a17d639934753bfc59f58dcc3cebc9a2a6826ba9c6c3fedeb4da6b29847612  killgate/k6/cases/C8_contaminated/test.csv
+989766d03beb0fa7702d4fdc0a7575d9a5f3abaea86e6022d97545f90b4060f4  killgate/k6/cases/C8_contaminated/test_idx.txt
+66804d583c4656df773c27d8aa18f43f34ba9023932db8c2b88d7379d3010923  killgate/k6/cases/C8_contaminated/train.csv
+280382a7bcd6b30211d2a52e9186b61867691aaaf6a5f948fe3f4d5ebb87f464  killgate/k6/cases/C8_contaminated/train_idx.txt
+6066f29e19c7e8dec2481f0bf154bb3c76ac459d1dde98497d72b24b50af460d  killgate/k6/cases/MANIFEST.json
+4aa4fe89669f5074c0d74bc307697e6272569387324c3e9fb600c13d1687cb63  killgate/k6/env/VERSIONS.txt
+8dab50228176abf15292a1a016846fc3f3858f18ec573ba93a6e891edd64d6bf  killgate/k6/harness/case_defs.py
+fa9c1eb847c196b7bc8423e60fc264b7a225c8bffe8c0d040ef5bb8fadbee785  killgate/k6/harness/make_scripts.py
+e975ba6cfa10406c5acf7fa2554e5ab519ab8444967c960cef0a08eb400e7b7c  killgate/k6/harness/materialize.py
+b5b05e4f8e490254a77f6172b94d26f57c4bb6c7e5e6b59a8a254b4905599e99  killgate/k6/harness/run_deepchecks.py
+d950c004195c2dfa415bdc94da5fed7236035bf82b002635bbd6fccd510b3d21  killgate/k6/harness/run_general.py
+86aac278b32029500e203da60912f6b31cc736deccb93254566b959b7be7e768  killgate/k6/harness/run_leakdetect.py
+003d0f08e8d36ed0a3d088a0189c9a3e92c708827714e7030e4f091fdc46c325  killgate/k6/harness/run_leakly.py
+5cb7d1ecc918f73c3463063f2f89a0b6852fd4b94366ea0f4f9e7d911cee0c62  killgate/k6/harness/score.py
+0395ecdf176d5239cdd41eafc492d3ed2c65c75f862b06cb0cbd17f8e7650dca  killgate/k6/K6_RESULTS.md
+faa3cb3ce3731d1e8694e12852a4eaa38b73bcb36cb142407eea841f5b3a0e22  killgate/k6/PRE_RUN_RECORD.md
+3279f9cdb23c949e4b8994b78483c8a6a2334ee7c567fcb7c29742a8e3490551  killgate/k6/raw/_scored.json
+3c43dbb7655c6414c4a5a45bf6fadf3ee11c90b2f3c700cb5b8d597f5ce0b40b  killgate/k6/raw/deepchecks.json
+c97889f0ac47ef4d9b395c322495236d2c36e747b9b2e1b219a944ba5ded2a5b  killgate/k6/raw/deepchecks_stdout.txt
+fa5da5ccdb0abee8e74a404558eee1a17c7bee901b0255df8804d6706c3d3258  killgate/k6/raw/leak-detect.json
+bb7dc8e3ca946311330ca7f7b22b8ce284c6fd1b7460ef19c8b04095e1eb2d87  killgate/k6/raw/leakage-analysis.json
+ce72e124411601a9768d0e2dc924096c1819b2471e3f337ec0c1284a1b461850  killgate/k6/raw/leakage-buster.json
+4f7eddef799c8a30ab8a976dddd344e9873d6b939fee017fd509848be319d959  killgate/k6/raw/leakfence.json
+336828207a06976a55a1cc9f04b2ffaa4115bfb1bb4af6ed7813de0d2d1dcc13  killgate/k6/raw/Leakly.json
+66367e93dd61c408a143453e92bc7d527e0081025dafed1f4ed68ccab335ae7c  killgate/k6/raw/omds.json
+11b45b6c45616df84bc77c1c3388d1ce691626ba79c5cf06a5661927abbf2b1f  killgate/k6/raw/temporalcv.json
+464432a6f6eec8d7ceaf7e24734ca672246f3dd0e8c77cb8e5398c5159ee6f20  killgate/k6/RESULTS_MATRIX.md
+430ff616f3027e9ac8689235d12c78f0721da5cb8bab18be58dea33edd1dd143  killgate/k6/RUN_LOG.md
+5d8fb38c881f27a39718a45e56de6509611a02fef98ca2b22294b8db775802bc  killgate/KILL_GATE_STATUS.md
+928e08f981c8b65d9d22dbccb9d2ed13614071ca4840cc4439d22a449a8a8a46  killgate/LICENCE_CHECK.md
+a1ef0dc48674fa776c25766245231e71eee1f37bb6fc2b9eadb8ad30856d0426  killgate/W2B_PROTOCOL.md
+7a9204692286119214ea9d49177e7ab3d436036dd8fcae418999242defce02d4  LARGE_ARTIFACTS_RECORD.md
+c443d96bea6a95fc542a42bd12a858aae8fa190b5c7997891378a32b7a94770b  p5probe/p5_probe.py
+e6add9c6a8f83828cfd5dd6326eb8ca063257e901152f0840aa0025afa72c350  p5probe/p5_probe_log.txt
+d6242e9bbf9f5ce103845e5bf6ecc94d622be1d6254c0e04f6fae0bbc4840d1c  p5probe/p5_probe_results.json
+29c7102d61a1f81e03a7f84fc115096876a8b0054b8782180092ed7f5b1fa3c2  p5probe/P5_RESULT.md
+07e43f8846ce9e95e453752b707cf825fd63b3e035a57a93d03aa5f806e2022d  phase1/.pytest_cache/v/cache/nodeids
+97aa0903de095b7204dd1ceb81e45a472c881cb62e877fcc7bfaf66d9555f3cd  phase1/CLAIMS_ABC_PLAN.md
+03d880ccba765e5e2dffda9fdca38cc4bc316308caee80e0a11bbf023b8bc48d  phase1/PHASE1_DELIVERY_PACKAGE.md
+a0d171656eb992b24c51a8a6a6628706e8a492415b41a1db0ec94bac54d4c5c8  phase1/PHASE1_PLAN.md
+48c07420392aba5f3b0e4197bccc9c4ce88631e7aa5a49b46de9f76ae9622023  phase1/REPO_READINESS.md
+ba19551b03700019b220f435e8e7adffd0f740cbe29f0eb4fe0538204ec9c336  session/attack_checker.py
+38dfc1133d7b707b5f2ccd9668de5782495ea98e9e3fbc7ebcc47fadb0d1d525  session/ia.txt
+90fb3b39a5fb06c94c680a30545b3703e84a501ce1307c16f7087533e36e68df  session/main_paper.txt
+a8aa4ebbc197489c467dffc74a19d71f2f6ad81f0934353ead052ecfe3b70410  session/ots_upgrade.py
+382ca49236db7b5ae3034d830723b00390107acda5f3484ec224ed67cdb0ed93  session/probe.py
+62230fb83791ed0283cba114fc95aa1e24e33e722b24861ba3d6a1e2554fb4d1  session/probe2.py
+70ba22584655c7f97b3e4085d1ad0e21d5c13309507da878c0f45c09665d2536  session/probe_suppression.py
+c9770bd0468c681ee0d96b6276d93f021af4e1b0d83f50d648f452aace560881  session/ROUND_STATE.md
+6603d216c4d11ab3cf33efa44150de07e47a2428c641441cd405e030c7b06af4  work/base_checker.txt
+01c2b2f8e82b29ea14d6479d0f8a78b80161d3d3c8ba532c08b77dee654de5e0  work/load.py
+4d9c160864c86d3fd43a556cbaad3c7dfa761f407a298ac07278bf83daa71b37  amendment/block_reachability_check.py
+b0477ec0c01131999d6f2c15dcf1924c57ad68ee313658b639bfa4dac2e26fe3  amendment/target_resolvability_check.py
+1192279e3f377757ad2b87b201cfff9d82a977437cda27328335521f66dc21ed  amendment/INSERTION_POINT_READS.md
+f6f0ab807dfd9d706c111b71e747c5ebde3c1596885daecc161d95cdd32c8557  amendment/CLAIM_ENUMERATION.md
+4d91f6350e6b1183b61903e8a3cf3281c60976ff4ea6c5899af886ba5a138eff  session/DEFERRED_ITEMS.md
+fde67b9a8b9a0dbb92c8feae6798b43057b89e6047cca793431d9650289335f9  ceremony/APPROVAL_RECORD.md
+eabef45b052105fac1dd700bbfc75d2ca6c1b9f9d616772ef8539aeac0db7788  ceremony/AUTHOR_FIVE.md
+84679bdf19465fb4633a903dc0cd3af3725a66856c0236f10651282b3dacd525  ceremony/COMMIT_ACCOUNTING.md
+f6196ec0261de47c144a033595aaa52cef9b5f515eb7589322c051e909087762  ceremony/F3_MANIFEST_REVIEW_PACKAGE.md
+887e045bdedd6e8e9367a7dfaca680870526da13206e25b01bee4317680cbd5b  ceremony/F3_MANIFEST_VERIFICATION.md
+10b65a00651b6e8c79db26a7eab165361e0bb9122d746806f987996eefb2bb42  ../AVAILABILITY_DECLARATION.md
+4ec50cbbb4466115760196896e796436f92d96e7252361166421e8939557ffa6  ../PRIOR_ART_VERIFICATION.md
+33e0ab03c39667c596bd4c2463276a69d87001c18123b0316a6f68af11a39fb1  ../PRACTICES.md
+76d5a7004ca280b7e57cf3429ddbe22a75fd9e6289e2b4402951ec8f96e03d25  ../prereg-signing-key.asc

@@ -1,0 +1,92 @@
+wrote C:\Users\ttbea\AppData\Local\Temp\claude\C--Users-ttbea-OneDrive-Desktop-MBO-2025-4mon--2026-01\8b1d67a4-ce4f-4c55-b09d-1c72e7b6b5e1\scratchpad\fixture_spike\y1\column_universe.csv 35 rows
+Counter({'snapshot parquet': 13, 'trades parquet': 11, 'derived-from-another-column': 9, 'clock-only': 1, 'MIXED: snapshot parquet + trades parquet': 1})
+mbo_fed=YES count: 0
+
+ 1 mid_return_1s            snapshot parquet                       L152-153
+     | for lag in [1, 5, 10, 30]:
+     | snap[f"mid_return_{lag}s"] = mid.pct_change(lag)
+ 2 mid_return_5s            snapshot parquet                       L152-153
+     | for lag in [1, 5, 10, 30]:
+     | snap[f"mid_return_{lag}s"] = mid.pct_change(lag)
+ 3 mid_return_10s           snapshot parquet                       L152-153
+     | for lag in [1, 5, 10, 30]:
+     | snap[f"mid_return_{lag}s"] = mid.pct_change(lag)
+ 4 mid_return_30s           snapshot parquet                       L152-153
+     | for lag in [1, 5, 10, 30]:
+     | snap[f"mid_return_{lag}s"] = mid.pct_change(lag)
+ 5 tick_direction           snapshot parquet                       L156
+     | snap["tick_direction"] = np.sign(mid.pct_change(1)).fillna(0)
+ 6 trade_volume_1s          trades parquet                         L246
+     | snap["trade_volume_1s"] = snap["trade_volume"].fillna(0)
+ 7 trade_count_1s           trades parquet                         L247
+     | snap["trade_count_1s"] = snap["trade_count"].fillna(0)
+ 8 dollar_volume_1s         trades parquet                         L248
+     | snap["dollar_volume_1s"] = snap["dollar_volume"].fillna(0)
+ 9 minutes_since_open       clock-only                             L159
+     | snap["minutes_since_open"] = (snap["hour_utc"] - ds) * 60 + snap["timestamp"].dt.minute
+10 session_open             derived-from-another-column            L162
+     | snap["session_open"] = (frac < 0.1).astype(float)
+11 session_mid              derived-from-another-column            L163
+     | snap["session_mid"] = ((frac >= 0.1) & (frac < 0.85)).astype(float)
+12 session_close            derived-from-another-column            L164
+     | snap["session_close"] = (frac >= 0.85).astype(float)
+13 net_delta_1s             trades parquet                         L238-239
+     | for w in [1, 5, 10, 30, 60]:
+     | snap[f"net_delta_{w}s"] = snap["net_delta"].rolling(w, min_periods=1).sum()
+14 net_delta_5s             trades parquet                         L238-239
+     | for w in [1, 5, 10, 30, 60]:
+     | snap[f"net_delta_{w}s"] = snap["net_delta"].rolling(w, min_periods=1).sum()
+15 net_delta_10s            trades parquet                         L238-239
+     | for w in [1, 5, 10, 30, 60]:
+     | snap[f"net_delta_{w}s"] = snap["net_delta"].rolling(w, min_periods=1).sum()
+16 net_delta_30s            trades parquet                         L238-239
+     | for w in [1, 5, 10, 30, 60]:
+     | snap[f"net_delta_{w}s"] = snap["net_delta"].rolling(w, min_periods=1).sum()
+17 net_delta_60s            trades parquet                         L238-239
+     | for w in [1, 5, 10, 30, 60]:
+     | snap[f"net_delta_{w}s"] = snap["net_delta"].rolling(w, min_periods=1).sum()
+18 buy_volume_10s           trades parquet                         L240
+     | snap["buy_volume_10s"] = snap["buy_volume"].rolling(10, min_periods=1).sum()
+19 sell_volume_10s          trades parquet                         L241
+     | snap["sell_volume_10s"] = snap["sell_volume"].rolling(10, min_periods=1).sum()
+20 large_trade_count_10s    trades parquet                         L242
+     | snap["large_trade_count_10s"] = snap["large_trade_count"].rolling(10, min_periods=1).sum()
+21 vwap_distance            MIXED: snapshot parquet + trades parquet L243
+     | snap["vwap_distance"] = (mid - snap["vwap"]) / tick
+22 bid_size_1               snapshot parquet                       L139
+     | snap = pq.read_table(str(sp)).to_pandas()
+23 ask_size_1               snapshot parquet                       L139
+     | snap = pq.read_table(str(sp)).to_pandas()
+24 total_bid_depth          snapshot parquet                       L169
+     | snap["total_bid_depth"] = snap[bid_cols].sum(axis=1)
+25 total_ask_depth          snapshot parquet                       L170
+     | snap["total_ask_depth"] = snap[ask_cols].sum(axis=1)
+26 book_imbalance_ratio     derived-from-another-column            L188-189
+     | snap["book_imbalance_ratio"] = (snap["total_bid_depth"] /
+     | snap["total_ask_depth"].replace(0, np.nan)).fillna(1.0)
+27 weighted_mid             snapshot parquet                       L184-187
+     | snap["weighted_mid"] = (snap["bid_price_1"] * snap["ask_size_1"] +
+     | snap["ask_price_1"] * snap["bid_size_1"]) / \
+     | (snap["bid_size_1"] + snap["ask_size_1"]).replace(0, np.nan)
+     | snap["weighted_mid"] = (snap["weighted_mid"] - mid) / tick  # distance from mid in ticks
+28 spread_ticks             snapshot parquet                       L142
+     | snap["spread_ticks"] = snap["spread"] / tick
+29 depth_imbalance          derived-from-another-column            L172-173
+     | snap["depth_imbalance"] = ((snap["total_bid_depth"] - snap["total_ask_depth"]) /
+     | td.replace(0, np.nan)).fillna(0)
+30 book_slope_bid           snapshot parquet                       L178
+     | snap["book_slope_bid"] = (snap["bid_size_1"] - snap[bid_cols[-1]]) / max(nb - 1, 1) if nb >= 2 else 0.0
+31 book_slope_ask           snapshot parquet                       L179
+     | snap["book_slope_ask"] = (snap["ask_size_1"] - snap[ask_cols[-1]]) / max(na - 1, 1) if na >= 2 else 0.0
+32 depth_change_1s          derived-from-another-column            L180-181
+     | for lag in [1, 5, 30]:
+     | snap[f"depth_change_{lag}s"] = td.diff(lag)
+33 depth_change_5s          derived-from-another-column            L180-181
+     | for lag in [1, 5, 30]:
+     | snap[f"depth_change_{lag}s"] = td.diff(lag)
+34 depth_change_30s         derived-from-another-column            L180-181
+     | for lag in [1, 5, 30]:
+     | snap[f"depth_change_{lag}s"] = td.diff(lag)
+35 l1_imbalance             derived-from-another-column            L174-175
+     | snap["l1_imbalance"] = ((snap["bid_size_1"] - snap["ask_size_1"]) /
+     | (snap["bid_size_1"] + snap["ask_size_1"]).replace(0, np.nan)).fillna(0)

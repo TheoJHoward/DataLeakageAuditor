@@ -1,0 +1,33 @@
+{
+  "inst": "gc",
+  "month": "2025-08",
+  "day_start_utc": 13,
+  "day_end_utc": 22,
+  "lattice_rows": 692042,
+  "corrected_rows": 692041,
+  "contaminated_rows": 692042,
+  "gap_rows": 139481,
+  "subsecond_spacing_rows": 139135,
+  "same_second_as_prev_rows": 74485,
+  "lattice_secs": 0.06,
+  "trades_secs": 0.24,
+  "trades_events": {
+    "trades_all": 1834438,
+    "trades_buy": 0,
+    "trades_sell": 1834438,
+    "trades_large": 8261
+  },
+  "mbo_rows": 45430824,
+  "mbo_builder_path": "SMALL",
+  "mbo_secs": 2.4,
+  "mbo_events": {
+    "mbo_all": 45430824,
+    "mbo_bid_add": 9032801,
+    "mbo_ask_add": 9028120,
+    "mbo_bid_cancel": 9006301,
+    "mbo_ask_cancel": 9005241,
+    "mbo_cancel_any": 18011542
+  },
+  "total_secs": 2.69,
+  "corrected_decisionT_nonzero_cells": 9
+}

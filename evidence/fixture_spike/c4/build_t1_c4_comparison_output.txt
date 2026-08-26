@@ -1,0 +1,55 @@
+﻿T1 ('mbo_all', 'contaminated', 'decision_T'): 3 column(s) all identical -> strict=254315 equal=29 total=338159
+T1 ('mbo_all', 'corrected', 'claimed_T_prev'): 3 column(s) all identical -> strict=254314 equal=29 total=338158
+T1 ('mbo_all', 'corrected', 'decision_T'): 3 column(s) all identical -> strict=0 equal=0 total=338158
+T1 ('mbo_ask_add', 'contaminated', 'decision_T'): 3 column(s) all identical -> strict=162754 equal=4 total=338159
+T1 ('mbo_ask_add', 'corrected', 'claimed_T_prev'): 3 column(s) all identical -> strict=162753 equal=4 total=338158
+T1 ('mbo_ask_add', 'corrected', 'decision_T'): 3 column(s) all identical -> strict=0 equal=0 total=338158
+T1 ('mbo_ask_cancel', 'contaminated', 'decision_T'): 3 column(s) all identical -> strict=129334 equal=22 total=338159
+T1 ('mbo_ask_cancel', 'corrected', 'claimed_T_prev'): 3 column(s) all identical -> strict=129333 equal=22 total=338158
+T1 ('mbo_ask_cancel', 'corrected', 'decision_T'): 3 column(s) all identical -> strict=0 equal=0 total=338158
+T1 ('mbo_bid_add', 'contaminated', 'decision_T'): 3 column(s) all identical -> strict=164959 equal=1 total=338159
+T1 ('mbo_bid_add', 'corrected', 'claimed_T_prev'): 3 column(s) all identical -> strict=164958 equal=1 total=338158
+T1 ('mbo_bid_add', 'corrected', 'decision_T'): 3 column(s) all identical -> strict=0 equal=0 total=338158
+T1 ('mbo_bid_cancel', 'contaminated', 'decision_T'): 3 column(s) all identical -> strict=135981 equal=23 total=338159
+T1 ('mbo_bid_cancel', 'corrected', 'claimed_T_prev'): 3 column(s) all identical -> strict=135980 equal=23 total=338158
+T1 ('mbo_bid_cancel', 'corrected', 'decision_T'): 3 column(s) all identical -> strict=0 equal=0 total=338158
+T1 ('mbo_cancel_any', 'contaminated', 'decision_T'): 1 column(s) all identical -> strict=179857 equal=24 total=338159
+T1 ('mbo_cancel_any', 'corrected', 'claimed_T_prev'): 1 column(s) all identical -> strict=179856 equal=24 total=338158
+T1 ('mbo_cancel_any', 'corrected', 'decision_T'): 1 column(s) all identical -> strict=0 equal=0 total=338158
+T1 ('trades_all', 'contaminated', 'decision_T'): 11 column(s) all identical -> strict=89568 equal=20 total=338159
+T1 ('trades_all', 'corrected', 'claimed_T_prev'): 11 column(s) all identical -> strict=89568 equal=20 total=338158
+T1 ('trades_all', 'corrected', 'decision_T'): 11 column(s) all identical -> strict=0 equal=0 total=338158
+T1 ('trades_buy', 'contaminated', 'decision_T'): 2 column(s) all identical -> strict=0 equal=0 total=338159
+T1 ('trades_buy', 'corrected', 'claimed_T_prev'): 2 column(s) all identical -> strict=0 equal=0 total=338158
+T1 ('trades_buy', 'corrected', 'decision_T'): 2 column(s) all identical -> strict=0 equal=0 total=338158
+T1 ('trades_large', 'contaminated', 'decision_T'): 2 column(s) all identical -> strict=23633 equal=20 total=338159
+T1 ('trades_large', 'corrected', 'claimed_T_prev'): 2 column(s) all identical -> strict=23633 equal=20 total=338158
+T1 ('trades_large', 'corrected', 'decision_T'): 2 column(s) all identical -> strict=0 equal=0 total=338158
+T1 ('trades_sell', 'contaminated', 'decision_T'): 2 column(s) all identical -> strict=89568 equal=20 total=338159
+T1 ('trades_sell', 'corrected', 'claimed_T_prev'): 2 column(s) all identical -> strict=89568 equal=20 total=338158
+T1 ('trades_sell', 'corrected', 'decision_T'): 2 column(s) all identical -> strict=0 equal=0 total=338158
+T1 corrected/decision_T column coverage: 33 columns (expect 33)
+trades_all      decision_T T1      0/0  vs C4      0/0   AGREE
+trades_all      prev_row_B T1  89568/20 vs C4  89568/20  AGREE  cont_strict-prev_row_B_strict = 0
+trades_buy      decision_T T1      0/0  vs C4      0/0   AGREE
+trades_buy      prev_row_B T1      0/0  vs C4      0/0   AGREE  cont_strict-prev_row_B_strict = 0
+trades_sell     decision_T T1      0/0  vs C4      0/0   AGREE
+trades_sell     prev_row_B T1  89568/20 vs C4  89568/20  AGREE  cont_strict-prev_row_B_strict = 0
+trades_large    decision_T T1      0/0  vs C4      0/0   AGREE
+trades_large    prev_row_B T1  23633/20 vs C4  23633/20  AGREE  cont_strict-prev_row_B_strict = 0
+mbo_all         decision_T T1      0/0  vs C4      0/0   AGREE
+mbo_all         prev_row_B T1 254314/29 vs C4 254314/29  AGREE  cont_strict-prev_row_B_strict = 1
+mbo_bid_add     decision_T T1      0/0  vs C4      0/0   AGREE
+mbo_bid_add     prev_row_B T1 164958/1  vs C4 164958/1   AGREE  cont_strict-prev_row_B_strict = 1
+mbo_ask_add     decision_T T1      0/0  vs C4      0/0   AGREE
+mbo_ask_add     prev_row_B T1 162753/4  vs C4 162753/4   AGREE  cont_strict-prev_row_B_strict = 1
+mbo_bid_cancel  decision_T T1      0/0  vs C4      0/0   AGREE
+mbo_bid_cancel  prev_row_B T1 135980/23 vs C4 135980/23  AGREE  cont_strict-prev_row_B_strict = 1
+mbo_ask_cancel  decision_T T1      0/0  vs C4      0/0   AGREE
+mbo_ask_cancel  prev_row_B T1 129333/22 vs C4 129333/22  AGREE  cont_strict-prev_row_B_strict = 1
+mbo_cancel_any  decision_T T1      0/0  vs C4      0/0   AGREE
+mbo_cancel_any  prev_row_B T1 179856/24 vs C4 179856/24  AGREE  cont_strict-prev_row_B_strict = 1
+
+ALL 20 (class,boundary) cells exact T1-vs-C4 agreement: True
+contaminated-minus relation at prev_row_B: mbo classes {'mbo_all': 1, 'mbo_bid_add': 1, 'mbo_ask_add': 1, 'mbo_bid_cancel': 1, 'mbo_ask_cancel': 1, 'mbo_cancel_any': 1}  trades classes {'trades_all': 0, 'trades_buy': 0, 'trades_sell': 0, 'trades_large': 0}
+wrote C:\Users\ttbea\AppData\Local\Temp\claude\C--Users-ttbea-OneDrive-Desktop-MBO-2025-4mon--2026-01\8b1d67a4-ce4f-4c55-b09d-1c72e7b6b5e1\scratchpad\fixture_spike\c4\t1_vs_c4_comparison.csv

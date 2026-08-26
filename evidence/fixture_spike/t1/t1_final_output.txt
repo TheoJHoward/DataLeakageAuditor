@@ -1,0 +1,69 @@
+contaminated shape: (338159, 87)  corrected shape: (338159, 87)
+{
+ "rows": 338159,
+ "spacing_exact_1s": 338130,
+ "spacing_gt_1s(re-anchor/gap)": 28,
+ "spacing_lt_1s": 0,
+ "spacing_nonpositive": 0,
+ "max_gap_s": 329401.0,
+ "min_gap_s": 1.0,
+ "rows_mid_second(T>floor)": 16775,
+ "rows_on_second_boundary(T==floor)": 321384,
+ "dup_ts_floor_vs_prev_row": 0
+}
+{'trades_all': 397457, 'trades_buy': 0, 'trades_sell': 397457, 'trades_large': 75606, 'mbo_all': 8272769, 'mbo_bid_add': 1239887, 'mbo_ask_add': 1223790, 'mbo_bid_cancel': 1219431, 'mbo_ask_cancel': 1212634, 'mbo_cancel_any': 2432065}
+per-second trades: seconds = 137492  total events = 397457
+per-second mbo:    seconds = 464199  total events = 8272769
+rows whose prev-row spacing != 1s: 28
+  corrected decision_T strict on gap rows only [trades_all]: 0
+corrected decision_T (strict,equal) restricted to re-anchor/gap rows: {'trades_all': [0, 0], 'trades_buy': [0, 0], 'trades_sell': [0, 0], 'trades_large': [0, 0], 'mbo_all': [0, 0], 'mbo_bid_add': [0, 0], 'mbo_ask_add': [0, 0], 'mbo_bid_cancel': [0, 0], 'mbo_ask_cancel': [0, 0], 'mbo_cancel_any': [0, 0]}
+violation_table.csv written: (99, 12)
+
+PER-CLASS SUMMARY (one line per class x side x boundary):
+trades_all       contaminated decision_T     strict=  89568 equal=  20 total=338159 frac=0.2649 worst_ms=999.997
+trades_all       corrected    decision_T     strict=      0 equal=   0 total=338158 frac=0.0000 worst_ms=0.000
+trades_all       corrected    claimed_T_prev strict=  89568 equal=  20 total=338158 frac=0.2649 worst_ms=999.997
+trades_buy       contaminated decision_T     strict=      0 equal=   0 total=338159 frac=0.0000 worst_ms=0.000
+trades_buy       corrected    decision_T     strict=      0 equal=   0 total=338158 frac=0.0000 worst_ms=0.000
+trades_buy       corrected    claimed_T_prev strict=      0 equal=   0 total=338158 frac=0.0000 worst_ms=0.000
+trades_sell      contaminated decision_T     strict=  89568 equal=  20 total=338159 frac=0.2649 worst_ms=999.997
+trades_sell      corrected    decision_T     strict=      0 equal=   0 total=338158 frac=0.0000 worst_ms=0.000
+trades_sell      corrected    claimed_T_prev strict=  89568 equal=  20 total=338158 frac=0.2649 worst_ms=999.997
+trades_large     contaminated decision_T     strict=  23633 equal=  20 total=338159 frac=0.0699 worst_ms=999.955
+trades_large     corrected    decision_T     strict=      0 equal=   0 total=338158 frac=0.0000 worst_ms=0.000
+trades_large     corrected    claimed_T_prev strict=  23633 equal=  20 total=338158 frac=0.0699 worst_ms=999.955
+mbo_all          contaminated decision_T     strict= 254315 equal=  29 total=338159 frac=0.7521 worst_ms=1000.000
+mbo_all          corrected    decision_T     strict=      0 equal=   0 total=338158 frac=0.0000 worst_ms=0.000
+mbo_all          corrected    claimed_T_prev strict= 254314 equal=  29 total=338158 frac=0.7521 worst_ms=1000.000
+mbo_bid_add      contaminated decision_T     strict= 164959 equal=   1 total=338159 frac=0.4878 worst_ms=999.996
+mbo_bid_add      corrected    decision_T     strict=      0 equal=   0 total=338158 frac=0.0000 worst_ms=0.000
+mbo_bid_add      corrected    claimed_T_prev strict= 164958 equal=   1 total=338158 frac=0.4878 worst_ms=999.996
+mbo_ask_add      contaminated decision_T     strict= 162754 equal=   4 total=338159 frac=0.4813 worst_ms=999.999
+mbo_ask_add      corrected    decision_T     strict=      0 equal=   0 total=338158 frac=0.0000 worst_ms=0.000
+mbo_ask_add      corrected    claimed_T_prev strict= 162753 equal=   4 total=338158 frac=0.4813 worst_ms=999.999
+mbo_bid_cancel   contaminated decision_T     strict= 135981 equal=  23 total=338159 frac=0.4021 worst_ms=999.998
+mbo_bid_cancel   corrected    decision_T     strict=      0 equal=   0 total=338158 frac=0.0000 worst_ms=0.000
+mbo_bid_cancel   corrected    claimed_T_prev strict= 135980 equal=  23 total=338158 frac=0.4021 worst_ms=999.998
+mbo_ask_cancel   contaminated decision_T     strict= 129334 equal=  22 total=338159 frac=0.3825 worst_ms=1000.000
+mbo_ask_cancel   corrected    decision_T     strict=      0 equal=   0 total=338158 frac=0.0000 worst_ms=0.000
+mbo_ask_cancel   corrected    claimed_T_prev strict= 129333 equal=  22 total=338158 frac=0.3825 worst_ms=1000.000
+mbo_cancel_any   contaminated decision_T     strict= 179857 equal=  24 total=338159 frac=0.5319 worst_ms=1000.000
+mbo_cancel_any   corrected    decision_T     strict=      0 equal=   0 total=338158 frac=0.0000 worst_ms=0.000
+mbo_cancel_any   corrected    claimed_T_prev strict= 179856 equal=  24 total=338158 frac=0.5319 worst_ms=1000.000
+
+(d) sample n=2000: newest-second-max == window-max mismatches: 0; w5 violation indicator != w1 indicator: 0
+corrected[t] == contaminated[t-1] mismatches (sample n=5000): {'net_delta_1s': 0, 'net_delta_5s': 0, 'event_rate_10s': 0, 'vwap_distance': 0, 'buy_volume_10s': 0, 'order_flow_accel': 0, 'total_events': 0, 'vwap': 0}
+
+total strict-violating rows (trades_all, contaminated, decision_T): 89568
+row index: 168919
+row stamp T: 2025-01-16 16:59:20
+row ts_floor (joined second): 2025-01-16 16:59:20
+raw trades in joined second:
+                            ts_event   price  size  aggressor_side  signed_vol  after_T
+193037 2025-01-16 16:59:20.128299325  476.25     5  SELL_AGGRESSOR  4294967291     True
+sum signed_vol over second = 4294967291 ; pkl net_delta_1s at row = 4294967291.0 ; pkl net_delta at row = 4294967291.0
+max trade ts in second = 2025-01-16 16:59:20.128299325 ; overhang past T (ms) = 128.299325
+corrected pkl net_delta_1s at row i+1 = 4294967291.0  (should equal contaminated row i)
+corrected row i+1 stamp = 2025-01-16 16:59:21
+
+DONE

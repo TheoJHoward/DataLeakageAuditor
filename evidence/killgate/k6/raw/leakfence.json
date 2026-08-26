@@ -1,0 +1,410 @@
+[
+  {
+    "tool": "leakfence",
+    "version": "0.5.0",
+    "case": "C1",
+    "side": "contaminated",
+    "config": {
+      "entry_points": [
+        "audit_split",
+        "check_duplicates"
+      ],
+      "subject": null,
+      "strict": false,
+      "allow_index_reuse": false
+    },
+    "status": "ran",
+    "fired_labels": [
+      "global_preprocessing",
+      "index_overlap"
+    ],
+    "detail": {
+      "index_overlap": "20 index(es) appear in both train_idx and test_idx: [0, 2, 4, 6, 8, 10, 12, 14, 16, 18]...",
+      "_duplicate_groups_n": 0,
+      "_duplicate_violations_n": 0,
+      "global_preprocessing": "{'path': 'clf', 'stateful': True}",
+      "_lint_pipeline_raw": "[{'path': 'scaler', 'stateful': True}, {'path': 'clf', 'stateful': True}]"
+    }
+  },
+  {
+    "tool": "leakfence",
+    "version": "0.5.0",
+    "case": "C1",
+    "side": "clean",
+    "config": {
+      "entry_points": [
+        "audit_split",
+        "check_duplicates"
+      ],
+      "subject": null,
+      "strict": false,
+      "allow_index_reuse": false
+    },
+    "status": "ran",
+    "fired_labels": [
+      "global_preprocessing"
+    ],
+    "detail": {
+      "_duplicate_groups_n": 0,
+      "_duplicate_violations_n": 0,
+      "global_preprocessing": "{'path': 'clf', 'stateful': True}",
+      "_lint_pipeline_raw": "[{'path': 'scaler', 'stateful': True}, {'path': 'clf', 'stateful': True}]"
+    }
+  },
+  {
+    "tool": "leakfence",
+    "version": "0.5.0",
+    "case": "C2",
+    "side": "contaminated",
+    "config": {
+      "entry_points": [
+        "audit_split",
+        "check_duplicates"
+      ],
+      "subject": null,
+      "strict": false,
+      "allow_index_reuse": false
+    },
+    "status": "ran",
+    "fired_labels": [
+      "global_preprocessing"
+    ],
+    "detail": {
+      "_duplicate_groups_n": 0,
+      "_duplicate_violations_n": 0,
+      "global_preprocessing": "{'path': 'clf', 'stateful': True}",
+      "_lint_pipeline_raw": "[{'path': 'scaler', 'stateful': True}, {'path': 'clf', 'stateful': True}]"
+    }
+  },
+  {
+    "tool": "leakfence",
+    "version": "0.5.0",
+    "case": "C2",
+    "side": "clean",
+    "config": {
+      "entry_points": [
+        "audit_split",
+        "check_duplicates"
+      ],
+      "subject": null,
+      "strict": false,
+      "allow_index_reuse": false
+    },
+    "status": "ran",
+    "fired_labels": [
+      "global_preprocessing"
+    ],
+    "detail": {
+      "_duplicate_groups_n": 0,
+      "_duplicate_violations_n": 0,
+      "global_preprocessing": "{'path': 'clf', 'stateful': True}",
+      "_lint_pipeline_raw": "[{'path': 'scaler', 'stateful': True}, {'path': 'clf', 'stateful': True}]"
+    }
+  },
+  {
+    "tool": "leakfence",
+    "version": "0.5.0",
+    "case": "C3",
+    "side": "contaminated",
+    "config": {
+      "entry_points": [
+        "audit_split",
+        "check_duplicates"
+      ],
+      "subject": null,
+      "strict": false,
+      "allow_index_reuse": false
+    },
+    "status": "ran",
+    "fired_labels": [
+      "global_preprocessing"
+    ],
+    "detail": {
+      "_duplicate_groups_n": 0,
+      "_duplicate_violations_n": 0,
+      "global_preprocessing": "{'path': 'clf', 'stateful': True}",
+      "_lint_pipeline_raw": "[{'path': 'scaler', 'stateful': True}, {'path': 'clf', 'stateful': True}]"
+    }
+  },
+  {
+    "tool": "leakfence",
+    "version": "0.5.0",
+    "case": "C3",
+    "side": "clean",
+    "config": {
+      "entry_points": [
+        "audit_split",
+        "check_duplicates"
+      ],
+      "subject": null,
+      "strict": false,
+      "allow_index_reuse": false
+    },
+    "status": "ran",
+    "fired_labels": [
+      "global_preprocessing"
+    ],
+    "detail": {
+      "_duplicate_groups_n": 0,
+      "_duplicate_violations_n": 0,
+      "global_preprocessing": "{'path': 'clf', 'stateful': True}",
+      "_lint_pipeline_raw": "[{'path': 'scaler', 'stateful': True}, {'path': 'clf', 'stateful': True}]"
+    }
+  },
+  {
+    "tool": "leakfence",
+    "version": "0.5.0",
+    "case": "C4",
+    "side": "contaminated",
+    "config": {
+      "entry_points": [
+        "audit_split",
+        "check_duplicates"
+      ],
+      "subject": null,
+      "strict": false,
+      "allow_index_reuse": false
+    },
+    "status": "ran",
+    "fired_labels": [
+      "duplicate_rows",
+      "global_preprocessing"
+    ],
+    "detail": {
+      "duplicate_rows": "2 rows share identical content: (24, 224), straddles train/test",
+      "_duplicate_groups_n": 25,
+      "_duplicate_violations_n": 25,
+      "global_preprocessing": "{'path': 'clf', 'stateful': True}",
+      "_lint_pipeline_raw": "[{'path': 'scaler', 'stateful': True}, {'path': 'clf', 'stateful': True}]"
+    }
+  },
+  {
+    "tool": "leakfence",
+    "version": "0.5.0",
+    "case": "C4",
+    "side": "clean",
+    "config": {
+      "entry_points": [
+        "audit_split",
+        "check_duplicates"
+      ],
+      "subject": null,
+      "strict": false,
+      "allow_index_reuse": false
+    },
+    "status": "ran",
+    "fired_labels": [
+      "duplicate_rows",
+      "global_preprocessing"
+    ],
+    "detail": {
+      "duplicate_rows": "2 rows share identical content: (24, 124)",
+      "_duplicate_groups_n": 25,
+      "_duplicate_violations_n": 25,
+      "global_preprocessing": "{'path': 'clf', 'stateful': True}",
+      "_lint_pipeline_raw": "[{'path': 'scaler', 'stateful': True}, {'path': 'clf', 'stateful': True}]"
+    }
+  },
+  {
+    "tool": "leakfence",
+    "version": "0.5.0",
+    "case": "C5",
+    "side": "contaminated",
+    "config": {
+      "entry_points": [
+        "audit_split",
+        "check_duplicates"
+      ],
+      "subject": null,
+      "strict": false,
+      "allow_index_reuse": false
+    },
+    "status": "ran",
+    "fired_labels": [
+      "global_preprocessing"
+    ],
+    "detail": {
+      "_duplicate_groups_n": 0,
+      "_duplicate_violations_n": 0,
+      "global_preprocessing": "{'path': 'clf', 'stateful': True}",
+      "_lint_pipeline_raw": "[{'path': 'scaler', 'stateful': True}, {'path': 'clf', 'stateful': True}]"
+    }
+  },
+  {
+    "tool": "leakfence",
+    "version": "0.5.0",
+    "case": "C5",
+    "side": "clean",
+    "config": {
+      "entry_points": [
+        "audit_split",
+        "check_duplicates"
+      ],
+      "subject": null,
+      "strict": false,
+      "allow_index_reuse": false
+    },
+    "status": "ran",
+    "fired_labels": [
+      "global_preprocessing"
+    ],
+    "detail": {
+      "_duplicate_groups_n": 0,
+      "_duplicate_violations_n": 0,
+      "global_preprocessing": "{'path': 'clf', 'stateful': True}",
+      "_lint_pipeline_raw": "[{'path': 'scaler', 'stateful': True}, {'path': 'clf', 'stateful': True}]"
+    }
+  },
+  {
+    "tool": "leakfence",
+    "version": "0.5.0",
+    "case": "C6",
+    "side": "contaminated",
+    "config": {
+      "entry_points": [
+        "audit_split",
+        "check_duplicates"
+      ],
+      "subject": null,
+      "strict": false,
+      "allow_index_reuse": false
+    },
+    "status": "ran",
+    "fired_labels": [
+      "duplicate_rows"
+    ],
+    "detail": {
+      "duplicate_rows": "4 rows share identical content: (0, 1, 2, 3)",
+      "_duplicate_groups_n": 1,
+      "_duplicate_violations_n": 1,
+      "_lint_pipeline_error": "ValueError: Input X contains NaN.\nLogisticRegression does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values"
+    }
+  },
+  {
+    "tool": "leakfence",
+    "version": "0.5.0",
+    "case": "C6",
+    "side": "clean",
+    "config": {
+      "entry_points": [
+        "audit_split",
+        "check_duplicates"
+      ],
+      "subject": null,
+      "strict": false,
+      "allow_index_reuse": false
+    },
+    "status": "ran",
+    "fired_labels": [
+      "duplicate_rows"
+    ],
+    "detail": {
+      "duplicate_rows": "5 rows share identical content: (0, 1, 2, 3, 4)",
+      "_duplicate_groups_n": 1,
+      "_duplicate_violations_n": 1,
+      "_lint_pipeline_error": "ValueError: Input X contains NaN.\nLogisticRegression does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values"
+    }
+  },
+  {
+    "tool": "leakfence",
+    "version": "0.5.0",
+    "case": "C7",
+    "side": "contaminated",
+    "config": {
+      "entry_points": [
+        "audit_split",
+        "check_duplicates"
+      ],
+      "subject": "group_id",
+      "strict": false,
+      "allow_index_reuse": false
+    },
+    "status": "ran",
+    "fired_labels": [
+      "global_preprocessing",
+      "group_overlap"
+    ],
+    "detail": {
+      "group_overlap": "40 subject(s) in both train and test: [0, 1, 10, 11, 12, 13, 14, 15, 16, 17]. Fine for within/cross-session, a leak for cross-subject. Pass paradigm to judge it.",
+      "_duplicate_groups_n": 0,
+      "_duplicate_violations_n": 0,
+      "global_preprocessing": "{'path': 'clf', 'stateful': True}",
+      "_lint_pipeline_raw": "[{'path': 'scaler', 'stateful': True}, {'path': 'clf', 'stateful': True}]"
+    }
+  },
+  {
+    "tool": "leakfence",
+    "version": "0.5.0",
+    "case": "C7",
+    "side": "clean",
+    "config": {
+      "entry_points": [
+        "audit_split",
+        "check_duplicates"
+      ],
+      "subject": "group_id",
+      "strict": false,
+      "allow_index_reuse": false
+    },
+    "status": "ran",
+    "fired_labels": [
+      "global_preprocessing"
+    ],
+    "detail": {
+      "_duplicate_groups_n": 0,
+      "_duplicate_violations_n": 0,
+      "global_preprocessing": "{'path': 'clf', 'stateful': True}",
+      "_lint_pipeline_raw": "[{'path': 'scaler', 'stateful': True}, {'path': 'clf', 'stateful': True}]"
+    }
+  },
+  {
+    "tool": "leakfence",
+    "version": "0.5.0",
+    "case": "C8",
+    "side": "contaminated",
+    "config": {
+      "entry_points": [
+        "audit_split",
+        "check_duplicates"
+      ],
+      "subject": null,
+      "strict": false,
+      "allow_index_reuse": false
+    },
+    "status": "ran",
+    "fired_labels": [
+      "global_preprocessing"
+    ],
+    "detail": {
+      "_duplicate_groups_n": 0,
+      "_duplicate_violations_n": 0,
+      "global_preprocessing": "{'path': 'clf', 'stateful': True}",
+      "_lint_pipeline_raw": "[{'path': 'scaler', 'stateful': True}, {'path': 'clf', 'stateful': True}]"
+    }
+  },
+  {
+    "tool": "leakfence",
+    "version": "0.5.0",
+    "case": "C8",
+    "side": "clean",
+    "config": {
+      "entry_points": [
+        "audit_split",
+        "check_duplicates"
+      ],
+      "subject": null,
+      "strict": false,
+      "allow_index_reuse": false
+    },
+    "status": "ran",
+    "fired_labels": [
+      "global_preprocessing"
+    ],
+    "detail": {
+      "_duplicate_groups_n": 0,
+      "_duplicate_violations_n": 0,
+      "global_preprocessing": "{'path': 'clf', 'stateful': True}",
+      "_lint_pipeline_raw": "[{'path': 'scaler', 'stateful': True}, {'path': 'clf', 'stateful': True}]"
+    }
+  }
+]

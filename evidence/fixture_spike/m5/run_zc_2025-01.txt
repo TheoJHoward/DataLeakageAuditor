@@ -1,0 +1,41 @@
+{"inst": "zc", "month": "2025-01", "day_start_utc": 14, "day_end_utc": 19, "lattice_rows": 338159, "corrected_rows": 338158, "contaminated_rows": 338159, "gap_rows": 28, "subsecond_spacing_rows": 0, "same_second_as_prev_rows": 0, "lattice_secs": 0.03}
+C:\Users\ttbea\AppData\Local\Temp\claude\C--Users-ttbea-OneDrive-Desktop-MBO-2025-4mon--2026-01\8b1d67a4-ce4f-4c55-b09d-1c72e7b6b5e1\scratchpad\fixture_spike\m5\extend_checker.py:103: DeprecationWarning: `is_in` with a collection of the same datatype is ambiguous and deprecated.
+Please use `implode` to return to previous behavior.
+
+See https://github.com/pola-rs/polars/issues/22149 for more information.
+  agg = q.collect(engine=engine)
+C:\Users\ttbea\AppData\Local\Temp\claude\C--Users-ttbea-OneDrive-Desktop-MBO-2025-4mon--2026-01\8b1d67a4-ce4f-4c55-b09d-1c72e7b6b5e1\scratchpad\fixture_spike\m5\extend_checker.py:106: DeprecationWarning: In Polars 2.0, the default behavior for `empty_as_null` will change to `False`. To keep the current behavior, explicitly set `empty_as_null=True`.
+  s = agg[f"eq_{c}"].explode().drop_nulls().unique()
+C:\Users\ttbea\AppData\Local\Temp\claude\C--Users-ttbea-OneDrive-Desktop-MBO-2025-4mon--2026-01\8b1d67a4-ce4f-4c55-b09d-1c72e7b6b5e1\scratchpad\fixture_spike\m5\extend_checker.py:119: DeprecationWarning: `is_in` with a collection of the same datatype is ambiguous and deprecated.
+Please use `implode` to return to previous behavior.
+
+See https://github.com/pola-rs/polars/issues/22149 for more information.
+  f = f.with_columns(pl.col("T").is_in(eq).alias("ev_at_T"))
+C:\Users\ttbea\AppData\Local\Temp\claude\C--Users-ttbea-OneDrive-Desktop-MBO-2025-4mon--2026-01\8b1d67a4-ce4f-4c55-b09d-1c72e7b6b5e1\scratchpad\fixture_spike\m5\extend_checker.py:121: DeprecationWarning: `is_in` with a collection of the same datatype is ambiguous and deprecated.
+Please use `implode` to return to previous behavior.
+
+See https://github.com/pola-rs/polars/issues/22149 for more information.
+  f = f.with_columns(pl.col("Tprev").is_in(eq).alias("ev_at_Tprev"))
+{"inst": "zc", "month": "2025-01", "day_start_utc": 14, "day_end_utc": 19, "lattice_rows": 338159, "corrected_rows": 338158, "contaminated_rows": 338159, "gap_rows": 28, "subsecond_spacing_rows": 0, "same_second_as_prev_rows": 0, "lattice_secs": 0.03, "trades_secs": 0.08, "trades_events": {"trades_all": 397457, "trades_buy": 0, "trades_sell": 397457, "trades_large": 75606}, "mbo_rows": 8272769, "mbo_builder_path": "SMALL", "mbo_secs": 0.49, "mbo_events": {"mbo_all": 8272769, "mbo_bid_add": 1239887, "mbo_ask_add": 1223790, "mbo_bid_cancel": 1219431, "mbo_ask_cancel": 1212634, "mbo_cancel_any": 2432065}, "total_secs": 0.6, "corrected_decisionT_nonzero_cells": 0}
+shape: (30, 10)
+┌────────────┬─────────┬──────────────┬──────────────┬───┬───────┬────────┬────────────┬───────────┐
+│ instrument ┆ month   ┆ class        ┆ side         ┆ … ┆ equal ┆ rows   ┆ gap_strict ┆ gap_equal │
+│ ---        ┆ ---     ┆ ---          ┆ ---          ┆   ┆ ---   ┆ ---    ┆ ---        ┆ ---       │
+│ str        ┆ str     ┆ str          ┆ str          ┆   ┆ i64   ┆ i64    ┆ i64        ┆ i64       │
+╞════════════╪═════════╪══════════════╪══════════════╪═══╪═══════╪════════╪════════════╪═══════════╡
+│ zc         ┆ 2025-01 ┆ trades_all   ┆ corrected    ┆ … ┆ 0     ┆ 338158 ┆ 0          ┆ 0         │
+│ zc         ┆ 2025-01 ┆ trades_all   ┆ corrected    ┆ … ┆ 20    ┆ 338158 ┆ null       ┆ null      │
+│ zc         ┆ 2025-01 ┆ trades_buy   ┆ corrected    ┆ … ┆ 0     ┆ 338158 ┆ 0          ┆ 0         │
+│ zc         ┆ 2025-01 ┆ trades_buy   ┆ corrected    ┆ … ┆ 0     ┆ 338158 ┆ null       ┆ null      │
+│ zc         ┆ 2025-01 ┆ trades_sell  ┆ corrected    ┆ … ┆ 0     ┆ 338158 ┆ 0          ┆ 0         │
+│ …          ┆ …       ┆ …            ┆ …            ┆ … ┆ …     ┆ …      ┆ …          ┆ …         │
+│ zc         ┆ 2025-01 ┆ mbo_bid_add  ┆ contaminated ┆ … ┆ 1     ┆ 338159 ┆ null       ┆ null      │
+│ zc         ┆ 2025-01 ┆ mbo_ask_add  ┆ contaminated ┆ … ┆ 4     ┆ 338159 ┆ null       ┆ null      │
+│ zc         ┆ 2025-01 ┆ mbo_bid_canc ┆ contaminated ┆ … ┆ 23    ┆ 338159 ┆ null       ┆ null      │
+│            ┆         ┆ el           ┆              ┆   ┆       ┆        ┆            ┆           │
+│ zc         ┆ 2025-01 ┆ mbo_ask_canc ┆ contaminated ┆ … ┆ 22    ┆ 338159 ┆ null       ┆ null      │
+│            ┆         ┆ el           ┆              ┆   ┆       ┆        ┆            ┆           │
+│ zc         ┆ 2025-01 ┆ mbo_cancel_a ┆ contaminated ┆ … ┆ 24    ┆ 338159 ┆ null       ┆ null      │
+│            ┆         ┆ ny           ┆              ┆   ┆       ┆        ┆            ┆           │
+└────────────┴─────────┴──────────────┴──────────────┴───┴───────┴────────┴────────────┴───────────┘
+wrote C:\Users\ttbea\AppData\Local\Temp\claude\C--Users-ttbea-OneDrive-Desktop-MBO-2025-4mon--2026-01\8b1d67a4-ce4f-4c55-b09d-1c72e7b6b5e1\scratchpad\fixture_spike\m5\counts_zc_2025-01.csv

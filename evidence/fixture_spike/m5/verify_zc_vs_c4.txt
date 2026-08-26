@@ -1,0 +1,48 @@
+shape: (20, 11)
+┌────────────────┬────────────┬────────┬──────────────┬───┬────────────┬──────┬──────┬──────┐
+│ class          ┆ boundary   ┆ strict ┆ strict_count ┆ … ┆ total_rows ┆ S_ok ┆ E_ok ┆ R_ok │
+│ ---            ┆ ---        ┆ ---    ┆ ---          ┆   ┆ ---        ┆ ---  ┆ ---  ┆ ---  │
+│ str            ┆ str        ┆ i64    ┆ i64          ┆   ┆ i64        ┆ bool ┆ bool ┆ bool │
+╞════════════════╪════════════╪════════╪══════════════╪═══╪════════════╪══════╪══════╪══════╡
+│ trades_all     ┆ decision_T ┆ 0      ┆ 0            ┆ … ┆ 338158     ┆ true ┆ true ┆ true │
+│ trades_all     ┆ prev_row_B ┆ 89568  ┆ 89568        ┆ … ┆ 338158     ┆ true ┆ true ┆ true │
+│ trades_buy     ┆ decision_T ┆ 0      ┆ 0            ┆ … ┆ 338158     ┆ true ┆ true ┆ true │
+│ trades_buy     ┆ prev_row_B ┆ 0      ┆ 0            ┆ … ┆ 338158     ┆ true ┆ true ┆ true │
+│ trades_sell    ┆ decision_T ┆ 0      ┆ 0            ┆ … ┆ 338158     ┆ true ┆ true ┆ true │
+│ trades_sell    ┆ prev_row_B ┆ 89568  ┆ 89568        ┆ … ┆ 338158     ┆ true ┆ true ┆ true │
+│ trades_large   ┆ decision_T ┆ 0      ┆ 0            ┆ … ┆ 338158     ┆ true ┆ true ┆ true │
+│ trades_large   ┆ prev_row_B ┆ 23633  ┆ 23633        ┆ … ┆ 338158     ┆ true ┆ true ┆ true │
+│ mbo_all        ┆ decision_T ┆ 0      ┆ 0            ┆ … ┆ 338158     ┆ true ┆ true ┆ true │
+│ mbo_all        ┆ prev_row_B ┆ 254314 ┆ 254314       ┆ … ┆ 338158     ┆ true ┆ true ┆ true │
+│ mbo_bid_add    ┆ decision_T ┆ 0      ┆ 0            ┆ … ┆ 338158     ┆ true ┆ true ┆ true │
+│ mbo_bid_add    ┆ prev_row_B ┆ 164958 ┆ 164958       ┆ … ┆ 338158     ┆ true ┆ true ┆ true │
+│ mbo_ask_add    ┆ decision_T ┆ 0      ┆ 0            ┆ … ┆ 338158     ┆ true ┆ true ┆ true │
+│ mbo_ask_add    ┆ prev_row_B ┆ 162753 ┆ 162753       ┆ … ┆ 338158     ┆ true ┆ true ┆ true │
+│ mbo_bid_cancel ┆ decision_T ┆ 0      ┆ 0            ┆ … ┆ 338158     ┆ true ┆ true ┆ true │
+│ mbo_bid_cancel ┆ prev_row_B ┆ 135980 ┆ 135980       ┆ … ┆ 338158     ┆ true ┆ true ┆ true │
+│ mbo_ask_cancel ┆ decision_T ┆ 0      ┆ 0            ┆ … ┆ 338158     ┆ true ┆ true ┆ true │
+│ mbo_ask_cancel ┆ prev_row_B ┆ 129333 ┆ 129333       ┆ … ┆ 338158     ┆ true ┆ true ┆ true │
+│ mbo_cancel_any ┆ decision_T ┆ 0      ┆ 0            ┆ … ┆ 338158     ┆ true ┆ true ┆ true │
+│ mbo_cancel_any ┆ prev_row_B ┆ 179856 ┆ 179856       ┆ … ┆ 338158     ┆ true ┆ true ┆ true │
+└────────────────┴────────────┴────────┴──────────────┴───┴────────────┴──────┴──────┴──────┘
+ALL corrected cells match C4: True cells= 20
+gap-subset match: True
+
+contaminated decision_T (M5) vs C4 corrected prev_row_B (expect MBO +1, trades +0):
+shape: (10, 8)
+┌────────────────┬────────┬───────┬────────┬──────────────┬─────────────┬──────────────┬─────────────┐
+│ class          ┆ strict ┆ equal ┆ rows   ┆ strict_count ┆ equal_count ┆ delta_strict ┆ delta_equal │
+│ ---            ┆ ---    ┆ ---   ┆ ---    ┆ ---          ┆ ---         ┆ ---          ┆ ---         │
+│ str            ┆ i64    ┆ i64   ┆ i64    ┆ i64          ┆ i64         ┆ i64          ┆ i64         │
+╞════════════════╪════════╪═══════╪════════╪══════════════╪═════════════╪══════════════╪═════════════╡
+│ trades_all     ┆ 89568  ┆ 20    ┆ 338159 ┆ 89568        ┆ 20          ┆ 0            ┆ 0           │
+│ trades_buy     ┆ 0      ┆ 0     ┆ 338159 ┆ 0            ┆ 0           ┆ 0            ┆ 0           │
+│ trades_sell    ┆ 89568  ┆ 20    ┆ 338159 ┆ 89568        ┆ 20          ┆ 0            ┆ 0           │
+│ trades_large   ┆ 23633  ┆ 20    ┆ 338159 ┆ 23633        ┆ 20          ┆ 0            ┆ 0           │
+│ mbo_all        ┆ 254315 ┆ 29    ┆ 338159 ┆ 254314       ┆ 29          ┆ 1            ┆ 0           │
+│ mbo_bid_add    ┆ 164959 ┆ 1     ┆ 338159 ┆ 164958       ┆ 1           ┆ 1            ┆ 0           │
+│ mbo_ask_add    ┆ 162754 ┆ 4     ┆ 338159 ┆ 162753       ┆ 4           ┆ 1            ┆ 0           │
+│ mbo_bid_cancel ┆ 135981 ┆ 23    ┆ 338159 ┆ 135980       ┆ 23          ┆ 1            ┆ 0           │
+│ mbo_ask_cancel ┆ 129334 ┆ 22    ┆ 338159 ┆ 129333       ┆ 22          ┆ 1            ┆ 0           │
+│ mbo_cancel_any ┆ 179857 ┆ 24    ┆ 338159 ┆ 179856       ┆ 24          ┆ 1            ┆ 0           │
+└────────────────┴────────┴───────┴────────┴──────────────┴─────────────┴──────────────┴─────────────┘

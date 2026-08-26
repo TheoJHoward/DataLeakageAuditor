@@ -1,0 +1,25 @@
+=== every 'superseded' in AVAILABILITY_DECLARATION.md, with backtick test ===
+(the deletion_certificate scan is CODE-CONTEXT ONLY: symbol must sit inside `backticks`)
+
+L81  code-context=False
+    "R6, PROVISIONAL until the prereg-v30a tag is signed. R5's pending status is superseded. The"
+L228  code-context=False
+    'exists on disk. For **cl, es, gc, nq, zc, zs** the fixture-path file is the **superseded'
+L395  code-context=False
+    'That status is superseded. **Working resolution R6 (file tail, verbatim) declares the'
+L862  code-context=False
+    '`weighted_mid` is superseded **for `weighted_mid` only**; every other flavor, every CLASS'
+L933  code-context=False
+    'earlier "field OUTSTANDING" reading correct; that reading is superseded, and the lock-time'
+L1836  code-context=False
+    'six the fixture file is the generation the archive itself superseded —'
+L2188  code-context=False
+    '(`n1\\compare_to_m5_output.txt`). M5 is not superseded as the *reason*: it is the measurement'
+L2254  code-context=False
+    "**PREMISE CORRECTION — R12's stated reason is superseded by X4's own search, and this is the"
+L3417  code-context=False
+    'the affected benchmark regenerated as a new version under §6.4 with the superseded results'
+L3684  code-context=False
+    '- **R13.** weighted_mid: the f3 manifest is NOT edited. Evidence artifacts are never adjusted toward a decision. The declaration records the disagreem'
+
+WOULD the deletion_certificate scan flag the declaration if in scope? 0 finding(s)

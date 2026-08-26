@@ -1,0 +1,123 @@
+ITEM G5 (RUN 1) — CI GATE RE-RUN AGAINST CURRENT TREE
+=====================================================
+Date: 2026-08-14   Python 3.12.10   pytest 9.1.1
+Repo: C:\Users\ttbea\OneDrive\Desktop\MBO_2025(4mon)+2026-01
+
+ISOLATION METHOD (repo never written to)
+----------------------------------------
+Repo root already carried .pytest_cache/ and */__pycache__ from prior runs,
+so an in-place run would have written into it. Ran in a scratch copy instead:
+
+  git archive HEAD | tar -x -C <scratch>/tree
+  cp {AVAILABILITY_DECLARATION.md,DESIGN.md,HISTORY.md} <scratch>/tree/
+
+The three cp's are REQUIRED: `git archive HEAD` yields the COMMITTED blobs,
+but those three files are dirty in the working tree and are exactly the edits
+under test. Copying them makes the scratch tree == the CURRENT WORKING TREE.
+
+Verified byte-identical (sha256) before running, 13/13 MATCH:
+  PREREG.md DESIGN.md HISTORY.md AVAILABILITY_DECLARATION.md
+  VALIDATED_CONFIG.toml PARKING_LOT.md README.md DEVIATIONS.md
+  tools/check_registration.py protocol/runtime_reference.py
+  tests/registration/{traces.py,EXPECTED_OUTPUTS.md,test_checker.py}
+
+(a) CHECKER
+-----------
+Invocation verified by reading tools/check_registration.py:815-823
+  --stage {prereg,implementation,release}  required=True
+  --root PATH                              default=ROOT
+
+EXACT COMMAND (cwd = <scratch>/tree):
+  python tools/check_registration.py --stage prereg
+
+EXIT CODE: 0        RESULT: PASS
+14/14 prereg checks PASS. 2 notes (declared exemptions REG15, PARK9).
+8 checks correctly deferred to implementation/release stages.
+Full stdout: a_checker_stdout.txt
+
+(b) TEST SUITE
+--------------
+No root pytest.ini/pyproject/setup.cfg/tox.ini. conftest.py lives at
+tests/registration/conftest.py and does sys.path setup via parents[2],
+so the suite runs from the repo root with the plain path form.
+
+EXACT COMMAND (cwd = <scratch>/tree):
+  python -m pytest tests/registration -q
+
+SUMMARY LINE: 137 passed in 0.89s
+PASS 137 / FAIL 0 / ERROR 0 / SKIP 0        EXIT CODE: 0
+Matches the historical figure of 137 exactly.
+Full stdout: b_pytest_stdout.txt
+
+(c) FAILURES
+------------
+NONE. Nothing to diagnose. The DESIGN.md §2.11 rewrite, HISTORY.md
+H-L12/H-L13/H-34, and the declaration edits break no gate.
+
+(d) SINGLE-SOURCE SCAN SCOPE — GAP CONFIRMED EMPIRICALLY
+--------------------------------------------------------
+CONFIRMED: the scan does NOT flag AVAILABILITY_DECLARATION.md, because it
+never reads it. Cause, tools/check_registration.py:451-452 —
+
+    def check_single_source(root: Path) -> list[Finding]:
+        path = root / "DESIGN.md"
+
+The target is a hardcoded single filename. Same pattern in the sibling scans,
+which iterate a hardcoded 2-tuple:
+  line 304 (_scan_code_symbols):     for name in ("PREREG.md", "DESIGN.md"):
+  line 389 (check_banned_vocabulary): for name in ("PREREG.md", "DESIGN.md"):
+
+EMPIRICAL PROOF (d_scan_scope_probe.py -> d_scan_scope_output.txt):
+instrumented Path.read_text and ran the entire --stage prereg battery.
+Files opened: DESIGN.md x4, PARKING_LOT.md x1, PREREG.md x11,
+VALIDATED_CONFIG.toml x2, protocol/runtime_reference.py x1.
+AVAILABILITY_DECLARATION.md opened 0 times. Also: grep for "AVAILABILITY"
+across tools/ tests/ protocol/ returns zero hits.
+
+GAP IS STRUCTURAL BUT CURRENTLY BENIGN
+Applied check_single_source's OWN rules to the declaration's 3684 lines:
+  single-source rule hits ......... 0
+  state-enumeration hits (>=3) .... 0
+  banned-vocabulary terms ......... 0 of 6
+  deletion_certificate hits ....... 0
+Probe validated against positive control: same machinery fires 11 hits on
+PREREG.md (8x the "divide-sign formula" rule, 2x comparison-regime, 1x
+valid-finding), so 0 is a true zero, not a broken probe.
+
+Token detail in the declaration: 'divide sign' 0, not_applicable 0,
+completed 0, incomplete 0, short_circuited 0, promotion_status 0,
+unsupported 1. 'superseded' appears 10x (a DELETED_SYMBOL) but all 10 are
+plain-English prose, none inside backticks — and _scan_code_symbols is
+code-context only, matching the checker's own comment at lines 296-298.
+Notably declaration L3417 ("the superseded results") is almost verbatim the
+homograph that comment cites as intentionally not a violation.
+See d_superseded_backtick_check.txt.
+
+NET: were the declaration added to scan scope today, it would produce zero
+new findings. The gate would still pass. The gap is a coverage hole, not an
+active failure.
+
+END STATE (re-read after the run)
+---------------------------------
+git status --porcelain identical to session start:
+   M AVAILABILITY_DECLARATION.md / M DESIGN.md / M HISTORY.md
+  ?? .claude/ / ?? evidence/ / ?? tagmsg.txt
+Repo cache dirs still mtime Aug 7-8 (pre-existing); the Aug 14 16:06 caches
+landed in scratch. No git state-changing command was run. PREREG.md not read
+for modification and not edited.
+
+Live doc sha256 after run:
+  PREREG.md                    f0a8f00164c217a40f87a4dc9fee6193ee7e4e125c68e3ecc84863fd6e2c7cc6
+  DESIGN.md                    39a944c1cef2f4cea8cac3d84648ecec5407997ee010ef4e33ea6131cd0dcc00
+  HISTORY.md                   3845b779949767c5a1b2193111d92e6fb37360b058140253804ff2f8ff9f4fa7
+  AVAILABILITY_DECLARATION.md  f0829bd3a0f11b05170a5e2686b953c5def39104af0bbfa2904afb3da2f53310
+
+ARTIFACTS IN THIS DIRECTORY
+---------------------------
+  a_checker_stdout.txt            (a) full checker stdout
+  b_pytest_stdout.txt             (b) full pytest stdout
+  d_scan_scope_probe.py           (d) read_text instrumentation probe
+  d_scan_scope_output.txt         (d) probe output
+  d_positive_control.txt          (d) probe validation + token census
+  d_superseded_backtick_check.txt (d) all 10 'superseded' uses, context-tested
+  tree/                           scratch copy of the current working tree

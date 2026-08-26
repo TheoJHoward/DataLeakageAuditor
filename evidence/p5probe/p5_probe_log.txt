@@ -1,0 +1,12 @@
+[19:30:42] generating mbo agg master from archive (read-only) ...
+[19:30:43] agg master written: 464,199 rows
+[19:30:43] staged baseline: 0 perturbed mid_price cells (of 1,262,191 parquet rows)
+[19:30:44] staged pertA_intrasession: 637,707 perturbed mid_price cells (of 1,262,191 parquet rows)
+[19:30:44] staged pertB_sessionboundary: 690,071 perturbed mid_price cells (of 1,262,191 parquet rows)
+[19:31:11] built from data_baseline: 338,159 frame rows in 26.8s
+[19:31:38] built from data_baseline: 338,159 frame rows in 26.5s
+[19:31:38] determinism re-witness: 0 differing cells across ALL columns (expect 0)
+[19:32:04] built from data_pertA_intrasession: 338,159 frame rows in 26.4s
+[19:32:04] variant A: pos_cut=167,159/338,159 | PRE-CUT feature diffs cont=0 corr=0 | pre-cut label diffs cont=105 | post-cut sample diffs=171874 | other pre-cut diffs=0
+[19:32:31] built from data_pertB_sessionboundary: 338,159 frame rows in 26.4s
+[19:32:31] variant B: pos_cut=159,959/338,159 | PRE-CUT feature diffs cont=0 corr=0 | pre-cut label diffs cont=105 | post-cut sample diffs=178666 | other pre-cut diffs=0

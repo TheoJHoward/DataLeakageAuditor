@@ -1,0 +1,9 @@
+## Decision log — working resolutions (DELTA R2, 2026-08-10; PROVISIONAL until the prereg-v30a tag is signed)
+
+Recorded here per DELTA R2 instruction; NOT in any locked file. Verbatim from the delta:
+
+- **R1. ties:** registered default `available` stands. The declaration reports contaminated-side counts under both branches (strict counts plus the 49 exactly-equal events).
+- **R2. boundary:** the declaration states the measured boundary floor(t−1)+1s as the true information boundary of the corrected features. The t−1 wording is retired as a claim and kept only as the historical contract text that was violated.
+- **R3. 35-column:** accepted as a documented-unverifiable assumption (basis: F3 manifest 9/9 agreement). T4 is unblocked by this.
+- **R4. as-built defects (buy classifier, uint32 wrap):** recorded as documented as-built behavior. f2-backed claims split into timing-structural (supported — event-to-row timing, overhang counts, the corrected-side zero) vs value-dependent (qualified).
+- **R5. weighted_mid:** still AMBIGUOUS-PENDING-AUTHOR. Leave the T2 addendum block untouched.

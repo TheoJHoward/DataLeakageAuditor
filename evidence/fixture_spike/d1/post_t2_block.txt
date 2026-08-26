@@ -1,0 +1,55 @@
+## Phase-7-added columns [T2 addendum — DRAFT, author review required]
+
+Added by item T2 of "Phase 0 addendum 3: pre-amendment closure checks". Scope: the nine
+columns Phase 7 feeds (`ALL_L2_FEATURES`, `phase7_l2_sim.py` lines 73-108) that are absent
+from the Phase 5 45-column set. Registered column_role vocabulary (PREREG.md line 205,
+verbatim): "per-column rule: `at_timestamp`, `at_bar_close`, `at_source_timestamp` (naming
+the source column), `always`, or an explicit availability column".
+
+**PRE-LAG vs POST-LAG:** none of the nine appears in `EXEMPT_COLS` (line 266: timestamp,
+mid_price, month, ts_floor, hour_utc), in `label_cols` (line 267: fwd_move_ticks_*), or in
+`raw_book_cols` (lines 268-272), so all nine are in `feature_cols` (line 275) and are lagged
+by line 276 `snap[feature_cols] = snap[feature_cols].shift(1)`. Every role below describes
+the RAW constructed column; the value FED to the models at row `T` is the lagged one (the
+row `T-1` construction).
+
+| Column | Declared role (raw construction) | Construction evidence (phase7_l2_sim.py, verbatim) |
+|---|---|---|
+| tick_direction | `at_bar_close` (snapshot lattice; reads the row's own mid) | line 156: `snap["tick_direction"] = np.sign(mid.pct_change(1)).fillna(0)`; mid line 149: `mid = snap["mid_price"].replace(0, np.nan)`. In-code comment line 155 "# tick direction = sign of prior 1s return" is true only POST-shift; pre-shift the value at row t reads mid(t). |
+| trade_volume_1s | `at_bar_close` — **approximation**, mirroring §4's Phase 5 trade-column row: true availability is `at_source_timestamp` (source column `ts_floor`; the aggregate over wall-clock second `[ts_floor, ts_floor+1s)` completes at `ts_floor + 1s`, which can lie strictly AFTER the row stamp `T` — §3 misalignment) | line 246: `snap["trade_volume_1s"] = snap["trade_volume"].fillna(0)`; upstream full-second groupby lines 216-226, specifically line 221: `trade_volume=("size", "sum")`; `trades["ts_floor"] = trades["ts_event"].dt.floor("1s")` line 206; merge line 231: `snap = snap.merge(tagg, on="ts_floor", how="left")`. If the trades parquet is absent the column is constant 0.0 (lines 250-255). |
+| trade_count_1s | same as trade_volume_1s | line 247: `snap["trade_count_1s"] = snap["trade_count"].fillna(0)`; groupby line 220: `trade_count=("size", "count")` |
+| dollar_volume_1s | same as trade_volume_1s | line 248: `snap["dollar_volume_1s"] = snap["dollar_volume"].fillna(0)`; upstream line 214: `trades["dollar_vol"] = trades["size"] * trades["price"]`; groupby line 223: `dollar_volume=("dollar_vol", "sum")` |
+| session_open | `always` (deterministic clock function of the row's own timestamp; §4 precedent: minutes_since_open. Candidate alternative reading `at_timestamp` exists in the vocabulary; the draft's precedent for clock-only columns is `always`.) | lines 159-162: `snap["minutes_since_open"] = (snap["hour_utc"] - ds) * 60 + snap["timestamp"].dt.minute`; `total_minutes = (de - ds) * 60`; `frac = snap["minutes_since_open"] / total_minutes`; `snap["session_open"] = (frac < 0.1).astype(float)`; hour_utc line 144: `snap["hour_utc"] = snap["timestamp"].dt.hour` |
+| session_mid | `always` (same basis) | line 163: `snap["session_mid"] = ((frac >= 0.1) & (frac < 0.85)).astype(float)` |
+| session_close | `always` (same basis) | line 164: `snap["session_close"] = (frac >= 0.85).astype(float)` |
+| book_imbalance_ratio | `at_bar_close` (snapshot lattice; pure function of the same row's depth sums) | lines 188-189: `snap["book_imbalance_ratio"] = (snap["total_bid_depth"] / snap["total_ask_depth"].replace(0, np.nan)).fillna(1.0)`; parents lines 169-170: `snap["total_bid_depth"] = snap[bid_cols].sum(axis=1)`, `snap["total_ask_depth"] = snap[ask_cols].sum(axis=1)` |
+| weighted_mid | `at_bar_close` (snapshot lattice; reads the same row's raw book AND subtracts the same row's mid) | lines 184-187: `snap["weighted_mid"] = (snap["bid_price_1"] * snap["ask_size_1"] + snap["ask_price_1"] * snap["bid_size_1"]) / (snap["bid_size_1"] + snap["ask_size_1"]).replace(0, np.nan)`; then `snap["weighted_mid"] = (snap["weighted_mid"] - mid) / tick  # distance from mid in ticks` |
+
+**Recorded quirk (fact, not resolved):** session_open/mid/close (and their parent
+minutes_since_open) are deterministic clock functions with role `always`, yet they are NOT
+in the shift exemption, so the FED session flags at row `T` are the row `T-1` flags
+(line 276). hour_utc itself IS exempt (line 266) but is not a fed feature.
+
+**DAG cross-check against `f3\fixture_manifest_DRAFT.json`** (classes there describe PRE-LAG
+construction semantics per that manifest's `classification_basis`):
+
+- tick_direction — manifest LEAK-SOURCE / label_base_price: **AGREE** (line 156 reads
+  mid(t), the label base of `fwd_move_ticks_*` per lines 193-195).
+- trade_volume_1s, trade_count_1s, dollar_volume_1s — manifest LEAK-SOURCE /
+  contemporaneous_state_flow: **AGREE** (full-second aggregates of the row's own wall-clock
+  second, lines 216-226 + 231 + 246-248).
+- session_open, session_mid, session_close — manifest CLEAN, parent minutes_since_open:
+  **AGREE** (lines 159-164, clock-only).
+- book_imbalance_ratio — manifest DESCENDANT, parents total_bid_depth / total_ask_depth:
+  **AGREE** (lines 188-189 read only the two depth sums; no independent raw read).
+- weighted_mid — manifest LEAK-SOURCE: **AGREE on class** (lines 184-186 read raw same-row
+  book columns directly — an independent leak, not inherited). The FLAVOR is the manifest's
+  own flagged judgment call and is **AMBIGUOUS-PENDING-AUTHOR (flavor only; class and
+  column_role are not ambiguous)**: the `label_base_price` reading rests on line 187
+  `(snap["weighted_mid"] - mid) / tick` — the same "(X - mid)/tick" form as vwap_distance
+  (line 243), whose flavor is label_base_price in both the 45-set DAG and the F3 manifest;
+  the `contemporaneous_state_flow` reading rests on lines 184-186 reading
+  bid_price_1/ask_price_1/bid_size_1/ask_size_1 at t — the same raw-book exposure as
+  book_slope_bid/ask (lines 178-179), whose flavor is contemporaneous_state_flow. Both
+  readings are presented; neither is resolved here.
+

@@ -1,0 +1,460 @@
+{
+  "C1_contaminated": {
+    "full.csv": "fb01082ab455ed652ff6ee8931144ce0982bb370f8604388d4e1142be8e95f46",
+    "meta.json": "7d9a62786139f4e186526c9714276d3b7460648cc5f05678217c1f63cd5bab7b",
+    "raw.csv": "fb01082ab455ed652ff6ee8931144ce0982bb370f8604388d4e1142be8e95f46",
+    "test.csv": "f340704beca911f44408ec9650966b807ca3ea9a411c79153a3b0f9af6a01687",
+    "test_idx.txt": "3f71787518014b017c9bf1304997efd3d3741b27c2c55041650f4bf0f3ee1a66",
+    "train.csv": "18d6b6ed332bd1568d3a1fb335f327a616bed8c55020c85838365f987b0e1f55",
+    "train_idx.txt": "2eb8c89f5883414ec0f30082703e2392b015de4aa0f5ecf00dfa2200abe90041",
+    "_meta": {
+      "features": [
+        "f0",
+        "f1",
+        "f2",
+        "f3"
+      ],
+      "target": "target",
+      "group": null,
+      "time": null,
+      "truth": "20 declared-test indices are also declared-train (set overlap)",
+      "case": "C1",
+      "side": "contaminated",
+      "type": "T1",
+      "detector_row": "L1.1",
+      "n_rows": 400,
+      "n_train": 200,
+      "n_test": 220,
+      "n_index_overlap": 20
+    }
+  },
+  "C1_clean": {
+    "full.csv": "fb01082ab455ed652ff6ee8931144ce0982bb370f8604388d4e1142be8e95f46",
+    "meta.json": "be73b62ab1b28b496967d2e19aec6696c3f67c770afff6bd789c62bfd908382c",
+    "raw.csv": "fb01082ab455ed652ff6ee8931144ce0982bb370f8604388d4e1142be8e95f46",
+    "test.csv": "8ce5d18736bb243517a61e4d2256b7f736f99910a0182315401cf30457e31b44",
+    "test_idx.txt": "5b28f18a297eefee821dd77dabdbbb9c33dfb60d1a4127becbe21e37b2ddb34c",
+    "train.csv": "18d6b6ed332bd1568d3a1fb335f327a616bed8c55020c85838365f987b0e1f55",
+    "train_idx.txt": "2eb8c89f5883414ec0f30082703e2392b015de4aa0f5ecf00dfa2200abe90041",
+    "_meta": {
+      "features": [
+        "f0",
+        "f1",
+        "f2",
+        "f3"
+      ],
+      "target": "target",
+      "group": null,
+      "time": null,
+      "truth": "disjoint declared split",
+      "case": "C1",
+      "side": "clean",
+      "type": "T1",
+      "detector_row": "L1.1",
+      "n_rows": 400,
+      "n_train": 200,
+      "n_test": 200,
+      "n_index_overlap": 0
+    }
+  },
+  "C2_contaminated": {
+    "full.csv": "f5b905601b858d82041c25cf8f16505ed34f23767b7e90583c7e6b7754b9be54",
+    "meta.json": "aad22ee3cccccaeb1168efd2cf5d7a1135d993d237add73898be378ae67fbc81",
+    "raw.csv": "d6d4105bf5d08dd27dfb76c9c7d3d0b7e6983f122792bfe962d2c36ac0450f05",
+    "test.csv": "bb3af4b6da07ebfe129feb4ec3b3b090c73b8099773c3d46f64f9f4152f32d7f",
+    "test_idx.txt": "989766d03beb0fa7702d4fdc0a7575d9a5f3abaea86e6022d97545f90b4060f4",
+    "train.csv": "eb1e23e386d877dd6c4ddcdaa7ac1422aad29b34ea93e6c4a7c139ddca51857c",
+    "train_idx.txt": "280382a7bcd6b30211d2a52e9186b61867691aaaf6a5f948fe3f4d5ebb87f464",
+    "_meta": {
+      "features": [
+        "f0",
+        "f1",
+        "f2",
+        "f3"
+      ],
+      "target": "target",
+      "group": null,
+      "time": null,
+      "truth": "StandardScaler fitted on pooled train+test",
+      "case": "C2",
+      "side": "contaminated",
+      "type": "T2",
+      "detector_row": "L1.2",
+      "n_rows": 400,
+      "n_train": 200,
+      "n_test": 200,
+      "n_index_overlap": 0
+    }
+  },
+  "C2_clean": {
+    "full.csv": "de03651a8185afa4693bb0cd499535327245336f4d9d988a3c4956034313fe56",
+    "meta.json": "af0a5837b88c7a52c7dc16b0c54d934b94de6ad4909fb5e7cba83d68a6502bf1",
+    "raw.csv": "d6d4105bf5d08dd27dfb76c9c7d3d0b7e6983f122792bfe962d2c36ac0450f05",
+    "test.csv": "b8467d4f81f7cd157cdc8d495aed52ee338b8981ab28e21619505cc3f4e6769b",
+    "test_idx.txt": "989766d03beb0fa7702d4fdc0a7575d9a5f3abaea86e6022d97545f90b4060f4",
+    "train.csv": "2a10310b72c09944564f9970ce76eb3b6bd0781d6df59bcb63c333dbfb14ce88",
+    "train_idx.txt": "280382a7bcd6b30211d2a52e9186b61867691aaaf6a5f948fe3f4d5ebb87f464",
+    "_meta": {
+      "features": [
+        "f0",
+        "f1",
+        "f2",
+        "f3"
+      ],
+      "target": "target",
+      "group": null,
+      "time": null,
+      "truth": "scaler fitted on train only",
+      "case": "C2",
+      "side": "clean",
+      "type": "T2",
+      "detector_row": "L1.2",
+      "n_rows": 400,
+      "n_train": 200,
+      "n_test": 200,
+      "n_index_overlap": 0
+    }
+  },
+  "C3_contaminated": {
+    "full.csv": "bd116bb75c6217456c169835bc2343145bce3e1410f7c53821ed7734d1beb7d3",
+    "meta.json": "c075d7bd66324713e6f4f01999f70fd0f779f1a0d8f6c0f251f8441e423259d7",
+    "raw.csv": "f8ed29ebe54e2fbed0a57b69c9b94810b294cbec0a543f87056f47bf685b0d74",
+    "test.csv": "837ec0585249cb65122aea572d3b71baf3e9b8631bc9e6b1ee14a35d87644fa8",
+    "test_idx.txt": "989766d03beb0fa7702d4fdc0a7575d9a5f3abaea86e6022d97545f90b4060f4",
+    "train.csv": "466307d40e0e177d0e285ec04862556fe1b57630564e1009c68d13eef5fcaf44",
+    "train_idx.txt": "280382a7bcd6b30211d2a52e9186b61867691aaaf6a5f948fe3f4d5ebb87f464",
+    "_meta": {
+      "features": [
+        "f0",
+        "f20",
+        "f2",
+        "f8",
+        "f3"
+      ],
+      "target": "target",
+      "group": null,
+      "time": null,
+      "truth": "univariate feature selection scored on pooled train+test",
+      "case": "C3",
+      "side": "contaminated",
+      "type": "T3",
+      "detector_row": "L1.3",
+      "n_rows": 400,
+      "n_train": 200,
+      "n_test": 200,
+      "n_index_overlap": 0
+    }
+  },
+  "C3_clean": {
+    "full.csv": "1c47146fa34eea6a2fd1ae19070f00cd3d758d9ad94c5b46cf59e3734caa14c9",
+    "meta.json": "06e337ca1d5ad42ac4abf6b96b24bca3efc469d09ba559dd33fac952ad5dec2d",
+    "raw.csv": "f8ed29ebe54e2fbed0a57b69c9b94810b294cbec0a543f87056f47bf685b0d74",
+    "test.csv": "dd0589abf58d404e3d0a00aa1436bceba052e306c2105323d52eabf12566c166",
+    "test_idx.txt": "989766d03beb0fa7702d4fdc0a7575d9a5f3abaea86e6022d97545f90b4060f4",
+    "train.csv": "76fdd4451949f1023677cd053aa28e279b64e9e07608a40be1132f234b061e76",
+    "train_idx.txt": "280382a7bcd6b30211d2a52e9186b61867691aaaf6a5f948fe3f4d5ebb87f464",
+    "_meta": {
+      "features": [
+        "f0",
+        "f5",
+        "f20",
+        "f1",
+        "f7"
+      ],
+      "target": "target",
+      "group": null,
+      "time": null,
+      "truth": "selection scored on train only",
+      "case": "C3",
+      "side": "clean",
+      "type": "T3",
+      "detector_row": "L1.3",
+      "n_rows": 400,
+      "n_train": 200,
+      "n_test": 200,
+      "n_index_overlap": 0
+    }
+  },
+  "C4_contaminated": {
+    "full.csv": "44f45a580677e4f3894725a04fb24ba206cfc46fff20092dd512723778b4b7d4",
+    "meta.json": "93e7d914a55feb3fba2eb9b6bfeef9daa97ca335b411baf99e68792afd94f7a9",
+    "raw.csv": "44f45a580677e4f3894725a04fb24ba206cfc46fff20092dd512723778b4b7d4",
+    "test.csv": "1e420341b20908897db5e250f055d25dff1a036e5019ae6992075258afdb3083",
+    "test_idx.txt": "989766d03beb0fa7702d4fdc0a7575d9a5f3abaea86e6022d97545f90b4060f4",
+    "train.csv": "bc83673fd181619379d3a1282501c8cc69b3f1470b6ef25ce7a993d60131b3a2",
+    "train_idx.txt": "280382a7bcd6b30211d2a52e9186b61867691aaaf6a5f948fe3f4d5ebb87f464",
+    "_meta": {
+      "features": [
+        "f0",
+        "f1",
+        "f2",
+        "f3"
+      ],
+      "target": "target",
+      "group": null,
+      "time": null,
+      "truth": "25 exact duplicate rows spanning the train/test boundary",
+      "case": "C4",
+      "side": "contaminated",
+      "type": "T4",
+      "detector_row": "L1.4a",
+      "n_rows": 400,
+      "n_train": 200,
+      "n_test": 200,
+      "n_index_overlap": 0
+    }
+  },
+  "C4_clean": {
+    "full.csv": "23bdb1d9de45ebdbc621fe824d9855813b911949965ac1f70120aabab32a671b",
+    "meta.json": "b59640bdbb4ccfcdedd7bd248b1f2061248f50032babff4a5bfe85fddf98a571",
+    "raw.csv": "23bdb1d9de45ebdbc621fe824d9855813b911949965ac1f70120aabab32a671b",
+    "test.csv": "74cf2b935032c475ccc900b01189115d0790c8137dce05611b815ced930d5b7f",
+    "test_idx.txt": "989766d03beb0fa7702d4fdc0a7575d9a5f3abaea86e6022d97545f90b4060f4",
+    "train.csv": "f728359b81f7a643217808af4eba30201f4d2e2d341f2c9aa44fa17d639defea",
+    "train_idx.txt": "280382a7bcd6b30211d2a52e9186b61867691aaaf6a5f948fe3f4d5ebb87f464",
+    "_meta": {
+      "features": [
+        "f0",
+        "f1",
+        "f2",
+        "f3"
+      ],
+      "target": "target",
+      "group": null,
+      "time": null,
+      "truth": "25 exact duplicate rows within train only",
+      "case": "C4",
+      "side": "clean",
+      "type": "T4",
+      "detector_row": "L1.4a",
+      "n_rows": 400,
+      "n_train": 200,
+      "n_test": 200,
+      "n_index_overlap": 0
+    }
+  },
+  "C5_contaminated": {
+    "full.csv": "ed74f3228693cd471d5fde83d3ca88fb3e39bc122f0769c54ebb225b768c78bf",
+    "meta.json": "98f35ded5a28b43d6d7631d7542aee7fba09c22149624b0e03ea84b9dcd5465d",
+    "raw.csv": "26f9df48ed370af9aee86fac490983d506bb2e80353f27ae008ca5c6afaa769a",
+    "test.csv": "044a98b2e00ea4cd390ebd1c6e73fd5f84a0ec6b89336195d88985ba67ee42e1",
+    "test_idx.txt": "989766d03beb0fa7702d4fdc0a7575d9a5f3abaea86e6022d97545f90b4060f4",
+    "train.csv": "98c65b1bb9765df0748232fc0d10eac46cec93843797b16ccf3ba447814c208c",
+    "train_idx.txt": "280382a7bcd6b30211d2a52e9186b61867691aaaf6a5f948fe3f4d5ebb87f464",
+    "_meta": {
+      "features": [
+        "f0",
+        "f1",
+        "f2",
+        "risk_score"
+      ],
+      "target": "target",
+      "group": null,
+      "time": null,
+      "truth": "feature 'risk_score' is computed from the same-row label",
+      "case": "C5",
+      "side": "contaminated",
+      "type": "T5",
+      "detector_row": "L2a",
+      "n_rows": 400,
+      "n_train": 200,
+      "n_test": 200,
+      "n_index_overlap": 0
+    }
+  },
+  "C5_clean": {
+    "full.csv": "ee939aeaa884e96370074290ae2c63b2d3533aa8b450a6727a25280369814fc8",
+    "meta.json": "46195a2d10f3fbfd54c54676c7a1248c6fab22ad0b64803fe36c041f7983f581",
+    "raw.csv": "26f9df48ed370af9aee86fac490983d506bb2e80353f27ae008ca5c6afaa769a",
+    "test.csv": "3867fa005337bbfc7a7792acd13029b13ae61d7ebf40e580d4bf0c502dd0133d",
+    "test_idx.txt": "989766d03beb0fa7702d4fdc0a7575d9a5f3abaea86e6022d97545f90b4060f4",
+    "train.csv": "7cbde5a26e209b60371b523bb387a158aebfa73ce6e2135eaf1c17845c63bd38",
+    "train_idx.txt": "280382a7bcd6b30211d2a52e9186b61867691aaaf6a5f948fe3f4d5ebb87f464",
+    "_meta": {
+      "features": [
+        "f0",
+        "f1",
+        "f2",
+        "risk_score"
+      ],
+      "target": "target",
+      "group": null,
+      "time": null,
+      "truth": "feature 'risk_score' uses the previous row's label",
+      "case": "C5",
+      "side": "clean",
+      "type": "T5",
+      "detector_row": "L2a",
+      "n_rows": 400,
+      "n_train": 200,
+      "n_test": 200,
+      "n_index_overlap": 0
+    }
+  },
+  "C6_contaminated": {
+    "full.csv": "e5966f64284b58a15089de9ec9db8a30dadbdca85fe1e1b0c21292ef01867731",
+    "meta.json": "e6cf44ecd5e8c583c8106c61ac62547ab1f19cbb9c59117d0f1ad4058ec615fa",
+    "raw.csv": "1956ae4296c74602fde0c56215612f6ef46a45c2e13a4567d19940dd19ecb52b",
+    "test.csv": "43a1865cc845fe784d60be856cd643e8e2619857a52d79628878a22407afbd5b",
+    "test_idx.txt": "989766d03beb0fa7702d4fdc0a7575d9a5f3abaea86e6022d97545f90b4060f4",
+    "train.csv": "48f9d8c6eca7a3afa7f5eee452bba78d1d9addac57dea0c1c85899f384fd2d1a",
+    "train_idx.txt": "280382a7bcd6b30211d2a52e9186b61867691aaaf6a5f948fe3f4d5ebb87f464",
+    "_meta": {
+      "features": [
+        "win5"
+      ],
+      "target": "target",
+      "group": null,
+      "time": "t",
+      "truth": "trailing 5-bar mean INCLUDES the decision bar t, which the declared availability model marks unavailable at decision time (one bar of reach)",
+      "case": "C6",
+      "side": "contaminated",
+      "type": "T6",
+      "detector_row": "L3.1",
+      "n_rows": 400,
+      "n_train": 200,
+      "n_test": 200,
+      "n_index_overlap": 0
+    }
+  },
+  "C6_clean": {
+    "full.csv": "b42089f96b3bba783dff54467dbdd65746e511e7d32a31af5ac8f58893230499",
+    "meta.json": "14613c414c005b52927f8f0df04f8e74c32c2cfc678e451b9db73b315cd89888",
+    "raw.csv": "1956ae4296c74602fde0c56215612f6ef46a45c2e13a4567d19940dd19ecb52b",
+    "test.csv": "072a2fd9d1f3a18376f922d71f884eb4d80eaf661ef0d8f014ff03700fa45516",
+    "test_idx.txt": "989766d03beb0fa7702d4fdc0a7575d9a5f3abaea86e6022d97545f90b4060f4",
+    "train.csv": "849711d970c5662fb683ee36d376c79fab222c57684e6de2032a434b2210faac",
+    "train_idx.txt": "280382a7bcd6b30211d2a52e9186b61867691aaaf6a5f948fe3f4d5ebb87f464",
+    "_meta": {
+      "features": [
+        "win5"
+      ],
+      "target": "target",
+      "group": null,
+      "time": "t",
+      "truth": "trailing 5-bar mean ends at t-1; every cell read is available at decision time",
+      "case": "C6",
+      "side": "clean",
+      "type": "T6",
+      "detector_row": "L3.1",
+      "n_rows": 400,
+      "n_train": 200,
+      "n_test": 200,
+      "n_index_overlap": 0
+    }
+  },
+  "C7_contaminated": {
+    "full.csv": "1c113c0c39d72ab4a5d7f8f6263acdc96086b538e66a9a5c853faf2f22dfda4b",
+    "meta.json": "43d9d4edea4c492d59c284b21eeda6a59b1ab676e32f19275988ac6ce586df50",
+    "raw.csv": "1c113c0c39d72ab4a5d7f8f6263acdc96086b538e66a9a5c853faf2f22dfda4b",
+    "test.csv": "98b0b401f745c616b5cf3553f6fcc3d08fcbde5fa9c3b7037f48cce7124e2728",
+    "test_idx.txt": "5b4f266ff5953d1cb75a733fe55a5ce305372a03e3146206cb996980f3ff43ba",
+    "train.csv": "b334dcb892f5da4dd67a51267045800d8974cb047de259976794b3729d2b54d0",
+    "train_idx.txt": "d0aeee0fdeb954d6a32407069b0efc9d66d0e9914b1386210938d373e312a709",
+    "_meta": {
+      "features": [
+        "f0",
+        "f1",
+        "f2"
+      ],
+      "target": "target",
+      "group": "group_id",
+      "time": null,
+      "truth": "group_id values appear in both train and test",
+      "case": "C7",
+      "side": "contaminated",
+      "type": "T7",
+      "detector_row": "L3.2",
+      "n_rows": 400,
+      "n_train": 200,
+      "n_test": 200,
+      "n_index_overlap": 0
+    }
+  },
+  "C7_clean": {
+    "full.csv": "1c113c0c39d72ab4a5d7f8f6263acdc96086b538e66a9a5c853faf2f22dfda4b",
+    "meta.json": "1b8877ee80da4d6c2d5506d9a298defa08a5aed40cdf0610de77b13c91137ced",
+    "raw.csv": "1c113c0c39d72ab4a5d7f8f6263acdc96086b538e66a9a5c853faf2f22dfda4b",
+    "test.csv": "1dd2d7a592e4849c0e7d8d051739b57d8381fffdd694fa1dac8c7abc1878bdf3",
+    "test_idx.txt": "989766d03beb0fa7702d4fdc0a7575d9a5f3abaea86e6022d97545f90b4060f4",
+    "train.csv": "0b0724e865bfe0bba30124c9b7e5cb497582e58582fdeb22f47e5e08c7cb9706",
+    "train_idx.txt": "280382a7bcd6b30211d2a52e9186b61867691aaaf6a5f948fe3f4d5ebb87f464",
+    "_meta": {
+      "features": [
+        "f0",
+        "f1",
+        "f2"
+      ],
+      "target": "target",
+      "group": "group_id",
+      "time": null,
+      "truth": "split is by group_id; no group spans the split",
+      "case": "C7",
+      "side": "clean",
+      "type": "T7",
+      "detector_row": "L3.2",
+      "n_rows": 400,
+      "n_train": 200,
+      "n_test": 200,
+      "n_index_overlap": 0
+    }
+  },
+  "C8_contaminated": {
+    "full.csv": "6d5e32c488934690fa0520d82026c9dfabbaba9fb3786f7140476e322196e31d",
+    "meta.json": "ddb3b7d6e5eb1dc0d5a0fa95e82b3a016293f4e8bb2bcbc8184c79f1ce7459b0",
+    "raw.csv": "6d5e32c488934690fa0520d82026c9dfabbaba9fb3786f7140476e322196e31d",
+    "test.csv": "b7a17d639934753bfc59f58dcc3cebc9a2a6826ba9c6c3fedeb4da6b29847612",
+    "test_idx.txt": "989766d03beb0fa7702d4fdc0a7575d9a5f3abaea86e6022d97545f90b4060f4",
+    "train.csv": "66804d583c4656df773c27d8aa18f43f34ba9023932db8c2b88d7379d3010923",
+    "train_idx.txt": "280382a7bcd6b30211d2a52e9186b61867691aaaf6a5f948fe3f4d5ebb87f464",
+    "_meta": {
+      "features": [
+        "f0",
+        "f1",
+        "f2",
+        "f3"
+      ],
+      "target": "target",
+      "group": null,
+      "time": null,
+      "truth": "test half drawn from a shifted subpopulation (mean +2.5, scale x2)",
+      "case": "C8",
+      "side": "contaminated",
+      "type": "T8",
+      "detector_row": "L3.3",
+      "n_rows": 400,
+      "n_train": 200,
+      "n_test": 200,
+      "n_index_overlap": 0
+    }
+  },
+  "C8_clean": {
+    "full.csv": "cd451069f247feedf5517dd0dfd4e9b830c8861cdab39716b6a206c91bd1fcf1",
+    "meta.json": "fc2550d4d0ca46afd07f304c21dfdfc56c4eb341dd6190285b6c21853f9d5e0e",
+    "raw.csv": "cd451069f247feedf5517dd0dfd4e9b830c8861cdab39716b6a206c91bd1fcf1",
+    "test.csv": "397fd02e28562ca9255283bb68d3eb35e36fff5b66a0027cef646d1c41264437",
+    "test_idx.txt": "989766d03beb0fa7702d4fdc0a7575d9a5f3abaea86e6022d97545f90b4060f4",
+    "train.csv": "66804d583c4656df773c27d8aa18f43f34ba9023932db8c2b88d7379d3010923",
+    "train_idx.txt": "280382a7bcd6b30211d2a52e9186b61867691aaaf6a5f948fe3f4d5ebb87f464",
+    "_meta": {
+      "features": [
+        "f0",
+        "f1",
+        "f2",
+        "f3"
+      ],
+      "target": "target",
+      "group": null,
+      "time": null,
+      "truth": "test half drawn from the same distribution",
+      "case": "C8",
+      "side": "clean",
+      "type": "T8",
+      "detector_row": "L3.3",
+      "n_rows": 400,
+      "n_train": 200,
+      "n_test": 200,
+      "n_index_overlap": 0
+    }
+  }
+}

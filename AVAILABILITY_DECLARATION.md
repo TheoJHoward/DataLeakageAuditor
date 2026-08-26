@@ -1,5 +1,19 @@
 # AvailabilityModel declaration — fixture reconstruction
 
+## LINE REFERENCES IN THIS FILE — WHICH REGISTRATION VERSION THEY MEAN (R95/§146.2)
+
+**Unqualified `PREREG.md` line numbers in records predating 25 August 2026 are v30 line numbers.**
+A line reference written before the v30a amendment was applied refers to the registration version
+current at that record's date, and is **correct as history**. The v30a amendment inserted 981 lines
+after `PREREG.md` line 99, so **every v30 line number above 99 differs from its v30a position** —
+`git show prereg-v30:PREREG.md` recovers the registered v30 text byte-exact and is where such a
+reference resolves.
+
+**They are deliberately NOT renumbered.** Renumbering a dated record falsifies what was cited when,
+which is the one thing the record exists to preserve. Where this file quotes registered text, it
+quotes it verbatim beside the line number, so a reader can verify the quotation against the tag
+without needing the number to resolve in the current file.
+
 ## DRAFT — AUTHOR REVIEW REQUIRED
 
 Status: DRAFT. Nothing in this file is a registered declaration. Every element below is a
@@ -73,10 +87,12 @@ pass changes at the top level, stated here once:
    information boundary `floor(t-1) + 1s` as the normative contract. It is stated in §1 and
    nowhere else; §10 is its evidence section. The historical "through time t-1" contract text
    survives only as the quoted claim that measurement violated.
-2. **The gate scores against a declared ground-truth map on BOTH sides** (working resolution
-   R9, verbatim at the file tail). The corrected side is described throughout as
-   **CHARACTERIZED, never clean**. §13 is that map; §C enumerates it side-relatively; §A walks
-   PREREG.md §6.2 element by element and marks each SATISFIED or AMENDED.
+2. **The gate scores against a declared ground-truth map on BOTH sides** — `PREREG.md` §6.2
+   criterion 3 as amended [SC-3], cited and not restated; working resolution R9 (verbatim at
+   the file tail) is the record of its adoption for this fixture. The corrected side is
+   described throughout as **CHARACTERIZED, never clean** (SC-3(g)). §13 is that map; §C
+   enumerates it side-relatively; §A walks PREREG.md §6.2 element by element and marks each
+   SATISFIED or AMENDED.
 3. **weighted_mid FLAVOR is RESOLVED** — `contemporaneous_state_flow`, by working resolution
    R6, PROVISIONAL until the prereg-v30a tag is signed. R5's pending status is superseded. The
    frozen T2 addendum block still reads AMBIGUOUS-PENDING-AUTHOR because it is the measurement
@@ -91,7 +107,9 @@ the N1 declared map (`n1\`), the N3 cohort predicate (`n3\`), and the N2 lattice
 round (`n2\`); the M5 falsification sweep (`m5\`) is cited as the measurement that forced R9.
 
 Schema source (normative, read-only): PREREG.md §2.3 (`AvailabilityModel` table, lines
-199-212), §2.4 (`label_availability`, lines 218-225), comparator table lines 190-193, at
+199-212), §2.4 (`label_availability`, lines 218-225), comparator table lines 190-193, and
+§2.9 [SC-1] (what a reconstructed declaration fixes, and what it may not leave open — the
+schema every Part I element below supplies data under), at
 `C:\Users\ttbea\OneDrive\Desktop\MBO_2025(4mon)+2026-01\PREREG.md`.
 
 Fixture: Phase 5/7 ZC pipeline, archive `C:\Users\ttbea\OneDrive\Desktop\MBO_2025` (read-only).
@@ -139,8 +157,10 @@ THE BOUNDARY IN THIS FILE:**
 > wall-clock second joined to the previous lattice row. Not "through snapshot `t-1`", and not
 > "through time `t-1`".
 
-This is the MEASURED boundary of the corrected (post-fix) features, and the declaration states
-the measured boundary rather than the intended one. The corrected row stamped `t` carries the
+This is the MEASURED boundary of the corrected (post-fix) features. It is declared as the
+measured value, with the documented (intended) value recorded beside it below and the artifact
+each was read from named — the form `PREREG.md` §2.9 SC-1(a) (measured, not intended) requires;
+the rule is cited, not restated. The corrected row stamped `t` carries the
 previous row's construction, and that construction's trade/MBO aggregates cover the whole
 wall-clock second `[floor(t-1), floor(t-1)+1s)`; because lattice stamps are generally off
 wall-clock boundaries (§2), that window's end can lie strictly after `t-1`. §10 is the
@@ -231,8 +251,9 @@ record, and the last four are load-bearing for §13's map:
   `transfer\data\` is covered by `checksums.txt` (transitively attested, 24 files), and for cl
   and es no manifest covers the v3 generation at all. Evidence:
   `n2\provenance_notes.md` §(e) and its table; `n2\lattice_provenance.csv`.
-- **Generation-naming rule (M1/N2), binding on every row count in this file:** whenever a
-  lattice row count appears, name the count, the path, the generation and the sha256. ZC
+- **Generation naming (M1/N2), as practised on every row count in this file** (the naming form
+  is recorded in `PRACTICES.md` P-02; the provenance obligation it applies is `PREREG.md`
+  §8.6's): the count, the path, the generation and the sha256 are named together. ZC
   2025-01 = **338,159 rows** is
   `processed\zc\zc_snapshots_2025-01.parquet` filtered to UTC hours [14,19), generation
   **v3_pre_gapfill**, sha256 `46aa7639f3eb92ad7cfafecb78983340e83409f104b1fbf06d4c479078729b46`
@@ -423,7 +444,11 @@ zero only when the user supplies the declaration.
   profile default).**
 - **AMENDED — label availability is POSITIONAL, not `T + h` seconds.** The prior draft wrote
   `a(y_T) = T + h` seconds on the lattice. That is false wherever the frame is not contiguous
-  at 1 s. The declared value is:
+  at 1 s. **The horizon term's UNIT is declared here as positional (rows on the filtered
+  frame) — the unit statement `PREREG.md` §2.9 SC-1(d) requires of the declaration for every
+  term it supplies to §2.4's registered formula. That the substitution of this unit for the
+  duration reading is class C is SC-1(d)'s and the amended registration's, not this file's
+  (cited, not restated).** The declared value is:
 
   > **`a(y_t)` = the realization time of the PAIRED ROW's mid — the `timestamp` of the row h
   > POSITIONS after row `t` on the filtered frame, plus publication delay 0.**
@@ -444,15 +469,17 @@ counts, exactly:
 
 1. **They are DECLARED.** Their availability is the positional value above — next-session
    realization, up to 3d 19:31:00. They are not an undeclared corner.
-2. **They are IN the scored population.** They are not excluded, not masked, and not given a
-   separate denominator. All 2,100 carry REAL label values — **zero NaN** (§11); the only NaN
-   source in the frame is the month tail, exactly h rows per horizon.
-3. **Findings on them are adjudicated by the declared map like any other row** (R9). A detector
-   finding on a cross-boundary row is required if the map's cell predicts a violation there,
-   is a false positive if the map excludes it, and is unscored if the cell is unscored. Being a
-   cross-boundary row is, by itself, neither a licence for a finding nor a defence against one.
-4. **No separate label-availability criterion is created for them.** This declaration adds no
-   new gate criterion; §6.2's four criteria as amended in §A are the whole gate.
+2. **They are IN the scored population** — a declared subclass of it, under `PREREG.md` §6.2
+   SC-3(c) (the map covers the whole declared scored population; cited, not restated). All
+   2,100 carry REAL label values — **zero NaN** (§11); the only NaN source in the frame is the
+   month tail, exactly h rows per horizon.
+3. **Findings on them are adjudicated by the declared map (§13) like any other row** — the
+   disposition `PREREG.md` §6.2 SC-3(b)–(c) registers for every unit of the scored population,
+   structurally awkward subclasses included (cited, not restated; working resolution R9 is the
+   record of its adoption for this fixture).
+4. **No separate label-availability criterion exists for them.** A declaration creates no gate
+   object (`PREREG.md` §0.2.1 SC-9(a), cited); §A walks the four §6.2 criteria as amended,
+   which SC-9(a) names as the whole gate.
 
 Caveats recorded as fact:
 - **The day-edge label rows are NOT removed downstream, and they are ENRICHED** — the earlier
@@ -523,7 +550,8 @@ on the label-base-reader flavor, not on the shift(1) absence per se.
 ## 7. Remaining schema elements (outside this item's six, listed for completeness)
 
 - `availability_fn`: none declared.
-- `panel_mask_scope`: global — locked by PREREG.md line 210, not fixture-specific.
+- `panel_mask_scope`: global — locked by `PREREG.md` **§2.3's `panel_mask_scope` row**, not fixture-specific.
+  *(Converted from a line number at R95/§146.4: this points a CURRENT reader at CURRENT text, so it must survive the next insertion. §17.2's remedy is an anchor, not a renumber.)*
 - `panel_rule_scope`: default (per entity); fixture models are per-instrument, so no
   cross-entity comparison arises. Not evidenced further.
 - `embargo`: none declared anywhere in the archive that this item examined.
@@ -567,8 +595,11 @@ Part; they are PROVISIONAL until the prereg-v30a tag is signed.
 > restricted-map justification, the both-maps publication obligation, and the non-zero check,
 > §13(i)). They are not appended to the decision log: the tail is an append-only record frozen
 > byte-identical by this item and by every item after it, and appending to it is not this
-> pass's authority. Their status is the same as R1-R13's — PROVISIONAL until the tag is signed —
-> and §D.3's interpretation rule binds them exactly as it binds the recorded ones.
+> pass's authority. Their authority as working resolutions is `PREREG.md` §0.2.1 SC-9(d)'s
+> (working-resolution authority is uniform, and supersession is ordered), cited here and not
+> restated. Their status is the same as R1-R13's — PROVISIONAL until the tag is signed — and the
+> interpretation rule SC-9(e) registers (see §D.3) reaches them exactly as it reaches the
+> recorded ones.
 >
 > **The same applies to delta-issued items S1-S4**, under which the symmetry pass records
 > **§14 / §14.1** (S1 — the fed-column restriction applied to the CONTAMINATED side, both
@@ -581,11 +612,11 @@ Part; they are PROVISIONAL until the prereg-v30a tag is signed.
 > They are likewise **NOT appended to the tail**, are cited by number where they are exercised,
 > and carry the same PROVISIONAL status.
 
-Where a later resolution
-supersedes an earlier one — R6 over R5's pending status, R9 over the old "corrected-side zero",
-R11 over the manifest-derived criterion-1 denominator, R12 over the "no NQ MBO data exists"
-claim, and §13(h)'s PREMISE CORRECTION over R12's own stated reason (on measured evidence) — the
-later one governs and the earlier text stands as the record.
+The supersession order among these resolutions — R6 over R5's pending status, R9 over the old
+"corrected-side zero", R11 over the manifest-derived criterion-1 denominator, R12 over the "no
+NQ MBO data exists" claim, and §13(h)'s PREMISE CORRECTION over R12's own stated reason (on
+measured evidence) — is this file's record under `PREREG.md` §0.2.1 SC-9(d) (working-resolution
+authority and supersession; cited, not restated).
 
 Carried forward from Part I into the v30a draft: `decision_time` (section 1 DECLARED value —
 which now states the measured boundary `floor(t-1)+1s` and is the ONLY statement of the
@@ -601,6 +632,10 @@ Part I section 6 records the ties ambiguity as measured; R1 resolves it.
 **Placed first in Part II because every later section depends on it. It renumbers nothing:**
 §A-§F and the numeric sections 8-18 keep their identifiers, and no cross-reference written
 before this pass changes.
+
+> *Instance data.* This section and §8 together are the fixture-composition enumeration
+> `PREREG.md` §6.2 SC-2(a) requires — the artifacts that constitute the fixture, by side, with
+> provenance — plus the lattice bridge between the measuring artifact and the scored one.
 
 **The problem this section fixes.** This file contains TWO pre/post pairs, and the earlier text
 slid between them — most visibly in the header's Fixture paragraph, corrected above. They are
@@ -675,14 +710,15 @@ generators are absent from the archive (§0.4).
 | Reference AUC trio (the retired anchor's replacement) | §A.1 | **B** |
 | The 35-column universe whose partition is frozen | §A.6, §D.1 item 2 | **B**'s column universe under R3, classed by construction evidence from the lineage |
 
-**Reading rule, binding on this file and on any gate report.** A measurement made on Artifact A
-may be quoted as ground truth for Artifact B **only** through the lattice bridge above, and must
-name the artifact it was measured on. **A measurement claim that names neither artifact is not
-auditable and may not be published** — with one admissible third case, which must be stated
-rather than left implicit: a measurement **of the archive itself**, belonging to neither artifact
-(§16's unverifiable-assumption record and §F's method measurements are the only instances in this
-file, and both say so in place). Every measurement section below carries an explicit
-`MEASURED ON ARTIFACT A`, `SCORED ON ARTIFACT B`, or archive-level line for exactly this reason.
+**Reading convention followed throughout this file** (the artifact-naming practice is recorded
+in `PRACTICES.md` P-10; the provenance obligation it sharpens is `PREREG.md` §8.6's). A
+measurement made on Artifact A is quoted as ground truth for Artifact B **only** through the
+lattice bridge above, and names the artifact it was measured on — with one admissible third
+case, stated rather than left implicit: a measurement **of the archive itself**, belonging to
+neither artifact (§16's unverifiable-assumption record and §F's method measurements are the only
+instances in this file, and both say so in place). Every measurement section below carries an
+explicit `MEASURED ON ARTIFACT A`, `SCORED ON ARTIFACT B`, or archive-level line for exactly
+this reason.
 
 ### §0.4 — The asymmetry, resolved (item Y1)
 
@@ -728,8 +764,9 @@ accounts for the post-fix side's CL/ES/HE/LE prediction files at all, and the pr
 64 prediction files against 63 meta rows (Y1 §4.3).
 
 **WHY THIS MATTERS — the licence of §9 depends on it.** §9 reads the pre/post AUC delta as a
-**feature-availability-only** effect. That licence requires the two sides to differ in
-availability and in **nothing else**. **A column-set change is not an availability change.** If
+**feature-availability-only** effect. That licence is bounded by `PREREG.md` §6.2 SC-2(c) (the
+pre/post licence is bounded) — cited, not restated — and the column universe is what the bound
+turns on here. If
 Artifact B's two sides did not share one column universe — if, say, the pre-fix side really were
 a 45-column MBO-reading build — then the delta would confound a *change of columns* with a
 *change of when columns are knowable*, and **the feature-availability-only licence would fail
@@ -763,8 +800,9 @@ state, tier licence, or acceptance criterion | **not resolve under this registra
 anything that changes what a published number means". Line 95 (verbatim): "**Class C requires
 an amended registration**, committed and externally timestamped **before the affected detector
 is implemented or evaluated** — a `prereg-v30a` tag, not a restart, and not a `DEVIATIONS.md`
-entry standing alone." Every AMENDED entry below is a class C amendment carried by this
-registration.
+entry standing alone." The class of every AMENDED entry below is the amended registration's to
+state — `PREREG.md` §0.2.1 lines 93 and 95 and its v30a amendments block govern it; this walk
+asserts nothing about class on its own authority (`PRACTICES.md` P-13).
 
 ---
 
@@ -780,8 +818,11 @@ registration.
 **OLD:** the pair (0.957, 0.675) with an acceptance interval of ±0.010 absolute, as the anchor
 the fixture pair must reproduce.
 
-**NEW:** the anchor is **retired and replaced** by the recomputed ZC **LightGBM** trio, computed
-directly from the stored per-row predictions of the declared fixture pair (§8):
+**NEW:** the registered pair is **retired** by the amended registration — `PREREG.md` §6.2
+"Reference AUC anchor — v30a, operative", with SC-2(d) (a reference anchor is constituted by
+recomputation, not by transcription); cited, not restated. What this declaration supplies under
+it is the **enumerated anchor-entry set**: the recomputed ZC **LightGBM** trio, computed directly
+from the stored per-row predictions of the declared fixture pair (§8):
 
 | Horizon | Pre-fix (contaminated) | Post-fix (corrected) | n rows |
 |---|---|---|---|
@@ -790,9 +831,12 @@ directly from the stored per-row predictions of the declared fixture pair (§8):
 | 30s | 0.856419 | 0.679288 | 745,656 |
 
 Source: `f1\f1_results.csv`, column `recomputed_auc`, rows `pre/ZC/LightGBM/{5s,10s,30s}`
-(lines 50-52) and `post/ZC/LightGBM/{5s,10s,30s}` (lines 114-116).
+(lines 50-52) and `post/ZC/LightGBM/{5s,10s,30s}` (lines 114-116). *(This table is the
+declaration's SC-2(d) anchor-entry set — one entry per declared horizon and side, each naming
+its provenance; the tolerance is the registered ±0.010 per entry.)*
 
-**Why the old anchor cannot stand, stated plainly:**
+**Why the old anchor cannot stand, stated plainly** *(evidence for the amendment — instance; the
+rule it instantiates is SC-2(d))*:
 
 1. **No single horizon satisfies the old interval on both sides.** Against 0.957 ± 0.010 on the
    pre-fix side and 0.675 ± 0.010 on the post-fix side: 5s passes pre (|0.966244 − 0.957| =
@@ -800,12 +844,21 @@ Source: `f1\f1_results.csv`, column `recomputed_auc`, rows `pre/ZC/LightGBM/{5s,
    fails pre by 0.1006 and passes post (|0.679288 − 0.675| = 0.004288). There is no horizon at
    which the registered pair is reproduced. Keeping the interval would fail the gate on a
    fixture whose pair is otherwise exactly as registered.
-2. **The model family changes: XGBoost → LightGBM.** The original documented protocol names
-   XGBoost (`MASTER_FINDINGS\preregistration_v4.txt` line 273 "2. XGBoost (gradient boosted
-   trees)"; line 284 records its hyperparameters). The declared trio above is LightGBM.
-   `f1\f1_results.csv` carries both families across 128 rows (32 rows each for
-   pre/LightGBM, pre/XGBoost, post/LightGBM, post/XGBoost); the declaration names LightGBM and
-   states so rather than leaving the family implicit.
+2. **The registered anchor names no model family; this declaration names one.** *(Corrected 21
+   August 2026, R48/Q4. This item previously read "**The model family changes: XGBoost →
+   LightGBM**", asserting that the original documented protocol named XGBoost. **That claim is
+   false against its own cited source.** `MASTER_FINDINGS\preregistration_v4.txt` names **six
+   fixed architectures**, with line 272 "1. LightGBM (gradient boosted trees)" immediately
+   **above** line 273 "2. XGBoost (gradient boosted trees)", and records hyperparameters for
+   both. **LightGBM was in the registered protocol from the start. No family changed.** The
+   error was a justification citing a source that does not say what was claimed.)* Registered
+   `PREREG.md` line 445 states the pair 0.957/0.675 and **names no architecture, horizon or
+   instrument**, so the configuration it was computed under is **not recoverable from the
+   registered text**. The declared trio above is ZC / LightGBM and says so rather than leaving
+   the configuration implicit. `f1\f1_results.csv` carries both families across 128 rows (32
+   rows each for pre/LightGBM, pre/XGBoost, post/LightGBM, post/XGBoost). **This item is a
+   disclosure about under-specification in the registered text, not a discrepancy in the
+   fixture**; the ground for the amendment is item 1, which does not depend on it.
 3. **The RE-EVALUATE class makes the recomputation authoritative, not merely alternative.** The
    fixture is the stored-prediction pair (§8): 64 parquets per side, each carrying `pred_score`
    and `true_label` per row. AUC over those columns is a pure function of bytes already on
@@ -814,6 +867,32 @@ Source: `f1\f1_results.csv`, column `recomputed_auc`, rows `pre/ZC/LightGBM/{5s,
    where meta exists it agrees (`flag_gt_5e-5` False on all 95 matched rows, §8). So the
    recomputation does not contradict the record — it supersedes it in precision, and it is the
    only form of the number that can be audited from the fixture itself.
+
+4. **REGISTERED EX ANTE — the post-fix trio has no originating counterpart, and none can
+   exist.** *(Registered 21 August 2026, R48/Q7: **before any Phase 1 measurement**, and stated as
+   a ground, never as a tolerance discovered after a miss (§7.0).)* The **pre-fix** entries have an
+   originating counterpart in **Phase 6** —
+   `results\pc2_all_phases\phase6\second_pc\phase6_main_summary.csv`, keyed
+   (`instrument`, `architecture`, `horizon_s`, `tier`), rows ZC / LightGBM / L2: **0.9662 /
+   0.9400 / 0.8564** at 5s / 10s / 30s. The declared trio reproduces them to **|Δ| ≤ 4.4e-5**.
+   The **post-fix** entries have **no originating counterpart anywhere in the archive, and none
+   can exist**: the universal-lag correction that *defines* the post-fix side was first applied in
+   **Phase 7 itself**, so no prior experiment ever measured that side. The absence is a property
+   of the experimental record, not of this declaration's diligence. **Where a gate limb compares a
+   declared entry against a figure an originating experiment recorded, the three post-fix entries
+   take that limb's no-counterpart branch on this registered ground, and on no other.**
+
+**Phase 7 re-derived; it did not transcribe.** *(Determined 21 August 2026, R48/Q5.)* All 32 Phase 6
+L2 cells appear in `results\phase7\l2_model_meta.csv` byte-identical, **including `shuffle_mean`**.
+That is not evidence of copying: `phase7_l2_sim.py` trains its own models, reads no Phase 6 output
+(its eight `phase6` references are all to a rerun mode that **writes**), Phase 6 stored **no
+prediction files at all** so Phase 7's 64 parquets cannot be copies, and the shuffle mean is
+computed over **fixed seeds [42, 123, 456]** via `RandomState(seed).permutation` — deterministic by
+construction, so identity across a seeded re-run is expected. Recomputing AUC from Phase 7's own
+`zc_LightGBM_5s_predictions.parquet` gives **0.966244**, matching the declared entry to 2.5e-7.
+**Not established:** no Phase 6 script survives on disk, so whether the two runs shared seeds and
+parameters — and hence whether the agreement is deterministic identity or independent convergence
+— cannot be settled from the artifacts.
 
 The `full` mode clause of line 445 is unaffected and stands.
 
@@ -831,14 +910,16 @@ fed. Its `counts` block (read this pass): `independently_leaking_sources: 25`, `
 `descendant: 6`, `clean: 4`, `total_fed_to_phase7: 35`, `not_fed_to_phase7: 19`, with the
 leak-source flavor split `label_base_price: 7` / `contemporaneous_state_flow: 18`.
 
-> **THIS COUNT CARRIES NO GATE ARITHMETIC (working resolution R11).** PREREG.md line 446 is a
-> **manifest-content** requirement: the manifest must record the DAG and the count. It is
-> satisfied by the manifest recording 25. **The criterion-1 denominator is a different object
-> and derives from the DECLARED MAP, not from these construction classes** — see §A.6 and
-> §D.1. The manifest's leak-source classification is **provenance context**: it says how a
-> column was built, not whether the map declares a violation on it on the scored side under
-> the declared tie branch. Reading 25 as N was the contradiction R11 resolves; **N is 11**
-> (§A.6). Both numbers are in this file and neither is left to be inferred.
+> **THIS COUNT CARRIES NO GATE ARITHMETIC** — `PREREG.md` §6.2 SC-4(a) (the denominator is
+> derived from the declared map, by the rule registered there), cited and not restated; working
+> resolution R11 is the record of its adoption for this fixture. PREREG.md line 446 is a
+> **manifest-content**
+> requirement: the manifest must record the DAG and the count. It is satisfied by the manifest
+> recording 25 *(instance: manifest content, line 446)*. The manifest's leak-source
+> classification is **provenance context**: it says how a column was built, not whether the
+> map declares a violation on it on the scored side under the declared tie branch. Reading 25
+> as N was the contradiction R11 resolves; **N is 11** (§A.6). Both numbers are in this file
+> and neither is left to be inferred.
 
 **The flavor split, stated BOTH ways (working resolution R13).** The manifest and the
 declaration disagree on exactly one column's FLAVOR, and the disagreement is recorded rather
@@ -850,8 +931,10 @@ than removed:
 | `contemporaneous_state_flow` | **18** | **19** (incl. `weighted_mid`) |
 | leak_source total | 25 | 25 |
 
-- **The manifest is NOT edited.** `f3\fixture_manifest_DRAFT.json` is an evidence artifact of a
-  dated measurement round. **Evidence artifacts are never adjusted toward a decision** (R13).
+- **The manifest is NOT edited** — `PREREG.md` §0.2.1 SC-9(b) (evidence artifacts are never
+  adjusted toward a decision), cited and not restated; working resolution R13 is the record of
+  its application to this artifact. `f3\fixture_manifest_DRAFT.json` is an evidence artifact of
+  a dated measurement round.
   Editing its `flavor` field to agree with R6 would make the artifact appear to have measured
   what a later resolution decided, and would destroy the only record of what the F3 round
   actually judged.
@@ -862,9 +945,11 @@ than removed:
   `weighted_mid` is superseded **for `weighted_mid` only**; every other flavor, every CLASS
   assignment (including `weighted_mid`'s own LEAK-SOURCE class, which was never ambiguous),
   the parent lists, and all four `counts` totals stand exactly as the manifest records them.
-- **Nothing in the gate turns on the split.** Flavor enters no criterion, no denominator and no
-  count that the gate consumes; it is reported because a reader comparing the two artifacts
-  would otherwise find an unexplained 7-vs-6 and be entitled to distrust both.
+- **Nothing in the gate turns on the split** — the flavor split is a classification of the
+  scored set other than the registered derivation, and `PREREG.md` §6.2 SC-4(a) governs what
+  such a classification may carry (cited, not restated); the split is reported because a reader
+  comparing the two artifacts would otherwise find an unexplained 7-vs-6 and be entitled to
+  distrust both.
 
 **Why F3 governs and not T4.** `t4\fixture_manifest_35col_DRAFT.json` reports
 `counts_projected_subset`: `projected_total: 28`, `unconstructible_total: 7`, `leak_source: 22`,
@@ -874,8 +959,9 @@ selection/renaming-only projection rule (§17), not a property of the fixture th
 The gate's fixture is the stored-prediction pair, whose feature set is the full 35 columns under
 working resolution R3 (§16 item 1). **The declaration therefore governs on 25 and records 22 as
 the reconstruction-limited subset**; both numbers appear in this file and neither is left to be
-inferred. Any gate report quoting a leaking-source count must name which of the two scopes it
-counts under — that is a declared reporting obligation, not a convention.
+inferred. Every quotation of a leaking-source count in this file names which of the two scopes
+it counts under (`PRACTICES.md` P-20; `PREREG.md` §6.2 SC-4(a), last sentence, carries the
+report-side requirement and is cited).
 
 ---
 
@@ -904,17 +990,19 @@ withdrawn. It is replaced as follows:
 **OLD (registered, PREREG.md line 450, verbatim):** "**Contamination availability class**
 recorded in the manifest."
 
-**NEW:** the contamination availability class is **recorded in this availability declaration**,
-which the `prereg-v30a` tag message hashes as its sixth file (§D.2), and is frozen at the tag
-by §D.1. The manifest is not the locus and is not edited.
+**NEW:** the contamination availability class is **recorded in this availability declaration** —
+the recording locus `PREREG.md` §6.2 "Contamination availability class — v30a, operative"
+registers, with SC-9(b) (cited, not restated); the declared class above is that clause's
+instance. This file is hashed in the `prereg-v30a` tag message (§D.2) and frozen at the tag by
+§D.1. The manifest is not the locus and is not edited.
 
 **Why this substitute, and why it is not weaker (class C under PREREG.md line 93):**
 
 1. **The manifest cannot take the field without becoming something it is not.**
    `f3\fixture_manifest_DRAFT.json` is an evidence artifact of a dated measurement round.
    Writing a *declaration* into it would make a measurement record carry a decision — precisely
-   what working resolution R13 forbids in the neighbouring case ("evidence artifacts are never
-   adjusted toward a decision"). The registered wording assumed one artifact where this fixture
+   what `PREREG.md` §0.2.1 SC-9(b) forbids (cited; working resolution R13 applied it in the
+   neighbouring case). The registered wording assumed one artifact where this fixture
    has two: a measurement manifest and a declaration.
 2. **The substitute binds harder than the original.** The manifest is hashed in no tag message.
    This declaration is hashed in the v30a tag message (§D.2's sixth hash) and its contents are
@@ -927,9 +1015,11 @@ by §D.1. The manifest is not the locus and is not edited.
    looking for it in the manifest is routed here by this section, which is itself hashed.
 
 **What this amendment does NOT do.** It does not remove the obligation to record the class —
-the class is recorded, verbatim, above. It does not license recording any *other* registered
-manifest content outside the manifest: line 446's ground-truth DAG and independent-leak count
-remain manifest content and are satisfied there (§A.2). And it does not retroactively make the
+the class is recorded, verbatim, above. Its scope limit — one element's locus moves and nothing
+else — is stated in the amended clause itself (`PREREG.md` §6.2, "This clause moves the locus of
+one element and nothing else") and in SC-9(b); this file restates neither: line 446's
+ground-truth DAG and independent-leak count remain manifest content and are satisfied there
+(§A.2). And it does not retroactively make the
 earlier "field OUTSTANDING" reading correct; that reading is superseded, and the lock-time
 obligation it generated is discharged in §D.2.
 
@@ -958,30 +1048,28 @@ is an amendment. It is amended here, explicitly, and not waived.**
 **OLD:** a sliced fixture variant, produced by the same padded slicer as user-facing slice
 auditing, is part of the §6.2 acceptance fixture.
 
-**NEW, in three binding parts:**
+**NEW — registered as `PREREG.md` §6.2 "Sliced variant — v30a, operative", with SC-2(a), SC-2(e)
+(moving an element between phases) and SC-3(f) (a derived subset inherits its cells); the clause
+is cited, not restated.** What this declaration supplies under it, in three parts:
 
-1. **Locus moved.** The sliced variant is **not** part of the v30a Phase 0 acceptance fixture.
-   The fixture the v30a gate is evaluated on is exactly §8's stored-prediction pair.
-2. **Obligation re-registered, not deleted.** The sliced variant becomes a **Phase 1 CI
-   obligation, due at the first CI run that exercises the padded slicer** and before any
-   user-facing slice auditing is published. It must be produced by that same padded slicer,
-   with its slice boundaries declared.
-3. **Its scoring rule is declared NOW, ex ante, so it cannot be chosen after seeing a result.**
-   Under the amended criterion 3 (§A.8) a slice inherits the map cells its rows fall in: each
-   slice is scored against the `n1\declared_map.csv` cells it selects, findings the selected
-   cells predict are required, findings they exclude are false positives, and cells the map
-   does not cover are unscored. **A slice of a CHARACTERIZED side is never treated as clean**,
-   and a slice may not be reported as a pass on the strength of containing only unscored cells.
+1. **Locus.** The fixture the v30a gate is evaluated on is exactly §8's stored-prediction pair
+   (SC-2(a)'s enumeration); no sliced variant is part of it.
+2. **The re-registered obligation's due event**, as the clause names it: the first CI run that
+   exercises the padded slicer, before any user-facing slice auditing is published — produced by
+   that same padded slicer, with its slice boundaries declared.
+3. **The cells a slice will be scored against:** the `n1\declared_map.csv` cells its rows
+   select (§13), under `PREREG.md` §6.2 criterion 3 as amended (SC-3) and SC-3(f). The scoring
+   rule is the registered one; it is not restated here.
 
 **Why this is class C and not class A.** It changes which artifacts the acceptance criteria are
 evaluated on, and therefore what a published fixture number means — PREREG.md line 93's
 definition exactly. It is carried by this registration under line 95.
 
-**What this amendment does NOT do.** It does not delete slice auditing, does not exempt the
-slicer from CI, and does not permit the Phase 1 obligation to be discharged by a
-`DEVIATIONS.md` entry or by a working resolution — §D.3 forbids a decision-log entry from
-weakening a locked obligation, and this obligation is now locked by §D.1. Dropping it later is
-a further class C amendment.
+**What this amendment does NOT do.** It does not delete slice auditing and does not exempt the
+slicer from CI. How the re-registered obligation may and may not be discharged — and that
+dropping it is a further class C amendment — is `PREREG.md` §0.2.1 SC-9(c) (a locked obligation
+is discharged only by being met or by being amended), cited and not restated; the obligation is
+frozen under §D.1.
 
 ---
 
@@ -1000,7 +1088,29 @@ predate it.
 
 > **Reconstruction happens in Phase 0, before the cross-tool comparison** (§9.2).
 
-**SATISFIED.** This whole file is a Phase 0 product; no cross-tool comparison has been run.
+**SATISFIED AS TO ORDERING. THE COMPARISON THAT RAN DOES NOT SATISFY §9.2.**
+
+*(Corrected 21 August 2026, R48/Q2. This paragraph previously read: "**SATISFIED.** This whole file
+is a Phase 0 product; no cross-tool comparison has been run." The second clause was false when
+written. The correction is recorded here rather than by silent replacement.)*
+
+**Line 448's ordering holds.** This whole file is a Phase 0 product, and the reconstruction it
+records preceded the cross-tool comparison.
+
+**A cross-tool comparison WAS executed on 14 August 2026** — eleven tools over eight hand-written
+cases and their eight clean paired controls, 88 tool × case cells — with the case set authored,
+materialised and hashed **before the first tool ran** (29.261 s, corroborated independently of the
+clock by a hash chain: 112 declared case hashes recomputed, 0 mismatches, 0 unresolved).
+
+**It does not satisfy §9.2, and §9.2 remains un-run in its registered form.** §9.2 requires the
+comparison set "committed with this protocol"; the set is in no commit, appears nowhere in git
+history, and the tagged tree of `prereg-v30` is fixed at 20 paths — so that clause is **breached and
+uncurable for this tag**. **The acceptance-fixture half of §9.2 was not run.** **§10.1 criterion 3
+therefore remains unevaluated for every rostered tool**, and the kill-gate verdict rests on
+criterion 1. The run is **unverified by any party that did not perform it**; no result of it is
+cited load-bearing anywhere in this declaration.
+
+Recorded in full at `DEVIATIONS.md` **D-003**.
 
 **Registered text, PREREG.md line 449 (verbatim):**
 
@@ -1032,57 +1142,86 @@ and PREREG.md line 468 (verbatim):
 > Top-k presence does not satisfy criterion 1. An alias satisfies it only if recorded before the run.
 
 **SATISFIED.** The criterion-1 violation set is enumerated side-relatively and post-lag in §C,
-by column. **The denominator derives from the DECLARED MAP (`n1\declared_map.csv`), not from
-the manifest's construction classes** — working resolution R11, verbatim at the file tail. The
+by column. **The criterion-1 denominator is the object `PREREG.md` §6.2 SC-4(a)–(b) registers —
+the REQUIRED class, derived from the declared map (`n1\declared_map.csv`) by the registered
+predicates, and not from the manifest's construction classes** (cited, not restated); working
+resolution R11, verbatim at the file tail, is the record of its adoption for this fixture. The
 earlier draft's implicit denominator was the manifest's 25 independently-leaking sources; that
 was the contradiction the P2 verifier found, because line 446's count is a statement about how
-columns were BUILT and criterion 1 is a statement about what the map DECLARES VIOLATING on the
+columns were BUILT and the registered predicate reads what the map DECLARES VIOLATING on the
 scored side under the declared tie branch. **The manifest's leak-source classification is
-provenance context and carries no gate arithmetic** (§A.2).
+provenance context and carries no gate arithmetic** (§A.2; SC-4(a)).
 
-**The three classes are mutually exclusive, exhaustive over the 35 fed columns, and each is
-ENUMERATED BY NAME.** No class is defined as a residue and no class is stated as a bare count;
-a count that cannot be written out as a list is a count nobody can audit.
+**The three classes are published as `PREREG.md` §6.2 SC-4(b) and SC-4(f) require** (exactly
+three classes, exhaustive over the declared scored set; publication discipline — cited, not
+restated): exhaustive over the 35 fed columns, each **ENUMERATED BY NAME** in §A.6.1–§A.6.3,
+none defined as a residue or stated as a bare count, with the partition check printed in
+§A.6.4.
 
-#### A.6.0 — DERIVATION RULE. **The enumeration below is what the rule yields.**
+#### A.6.0 — DERIVATION, BY CITATION. **The enumeration below is what the registered rule yields.**
 
-Each column's class is determined by a single rule applied to its construction and its gate
-status. The rule, stated verbatim so it can be re-applied when a column changes construction:
+Each column's class is derived by the registered rule — the class predicates `PREREG.md` SC-4(b)
+registers, under SC-4(c)'s precedence — applied to the column's declared construction and gate
+status. This section states no rule of its own (`PREREG.md` SC-4(a), SC-9(a)): per class it cites
+the `PREREG.md` row that carries the predicate, and per column the table below states the class
+assigned and the declared ground on which the column satisfies that predicate. Re-derivation when a
+column changes construction re-applies the cited rows to the column's new facts (SC-4(h)). Where a
+column's ground satisfies more than one row, SC-4(c)'s registered precedence decides — UNSCORED
+wins — and the table says so for that column. The citations:
 
-- **REQUIRED** iff its construction carries the wall-clock `ts_floor` join **and** it is not
-  degenerate-constant.
-- **OUT OF JURISDICTION** iff its construction reads only same-row book/clock values,
-  availability-legal at the boundary instant under R1's `ties: available`.
-- **UNSCORED** iff it is degenerate-constant **or** unconstructible under T4.
+- **REQUIRED** — predicate: `PREREG.md` SC-4(b), row REQUIRED, cited and not restated. Declared
+  ground, per column in the table below: its construction carries the wall-clock `ts_floor` join,
+  which is the violation §C declares on it on the scored side under R1.
+- **OUT OF JURISDICTION** — predicate: `PREREG.md` SC-4(b), row OUT OF JURISDICTION, cited and not
+  restated. Declared ground, per column: its construction reads only same-row — read as
+  within-lattice, reading note below — book/clock values, each read availability-legal at the
+  boundary instant under R1's `ties: available` (§A.6.2).
+- **UNSCORED** — predicate: `PREREG.md` SC-4(b), row UNSCORED, cited and not restated, on a ground
+  `PREREG.md` SC-4(e) registers. Declared ground, per column: degenerate-constant, or
+  unconstructible under T4 (gate status EXCLUDED on the gate-scored fixture; §A.6.3).
 
-Three reading notes fix the rule's edges on the 35-column set. Each is a re-statement of
-material already in this section, made explicit here because otherwise the rule leaves a
-column ambiguously classed:
+Three reading notes fix the reading at each edge on the 35-column set, as `PREREG.md` §6.2
+SC-4(d) requires the declaration to do ex ante. Each states the declared fact the cited row is
+applied to, and which registered reading it is applied under; none states a rule of its own:
 
-- **Precedence when clauses conflict.** UNSCORED wins. A column whose construction reads a
-  merged `ts_floor` aggregate but is identically constant on the fixture (`buy_volume_10s`)
-  satisfies both the REQUIRED first clause and the UNSCORED first limb; the enumeration
-  classes it UNSCORED because a dead-zero column carries no evidence, and leaving it in
-  REQUIRED would make criterion 1 unsatisfiable for a reason unrelated to detection
-  (§A.6.3, first bullet).
-- **"Same-row book/clock" is read as "within-lattice book/clock", not literally single-row.**
-  A same-lattice lagged read (`depth[t] - depth[t-5s]`, `mid[t] / mid[t-1s]`) reads two rows
-  of the same book/clock column but carries no `ts_floor` join to a trade aggregate. Each
+- **Precedence.** Registered at `PREREG.md` SC-4(c) (precedence, registered — UNSCORED wins) and
+  cited, not restated. On this fixture it decides exactly one column: `book_imbalance_ratio`
+  satisfies the OUT OF JURISDICTION predicate (a pure function of the same row's two depth sums)
+  **and** the UNSCORED predicate on the unresolved-lag ground (T4-EXCLUDED, §C.4(c)); SC-4(c)
+  resolves it to UNSCORED, per §A.6.3 and frozen §D.1 item 2. `buy_volume_10s` reads a merged
+  `ts_floor` aggregate but is identically constant on the fixture; it satisfies the UNSCORED
+  predicate on the degenerate-unit ground `PREREG.md` SC-4(e) registers (§A.6.3, first bullet),
+  and is recorded under the same precedence so the table has one answer per column.
+- **"Same-row book/clock" is read as "within-lattice book/clock", not literally single-row** —
+  the registered reading `PREREG.md` SC-4(d)(i) (the locality reading), cited. Declared fact: a
+  same-lattice lagged read (`depth[t] - depth[t-5s]`, `mid[t] / mid[t-1s]`) reads two rows of
+  the same book/clock column and carries no `ts_floor` join to a trade aggregate; each
   constituent read is availability-legal at its own timestamp under R1's `ties: available`
-  (§A.6.2's explicit basis; PREREG.md 190-197). These pass OUT OF JURISDICTION.
+  (§A.6.2's explicit basis; PREREG.md 190-197). These are OUT OF JURISDICTION.
 - **"Unconstructible under T4" is read as "gate status EXCLUDED under T4 applied to the
-  gate-scored fixture", not as "F2-rebuild-unconstructible".** The F2 rebuild's seven
-  selection/renaming-only unconstructibles (§17) are not gate-unscored; that reading would
-  silently drop `dollar_volume_1s` (rule-REQUIRED) and `tick_direction` (rule-OUT OF
-  JURISDICTION) out of the arithmetic, contradicting R11. §A.6.3's closing paragraph states
-  this precisely; the rule inherits it verbatim.
+  gate-scored fixture", not as "F2-rebuild-unconstructible"** — the registered reading
+  `PREREG.md` SC-4(d)(ii) (the unconstructibility reading), cited. Declared fact: the F2
+  rebuild's seven selection/renaming-only unconstructibles (§17) are not gate-unscored; the
+  reading SC-4(d)(ii) forbids would silently drop `dollar_volume_1s` (REQUIRED) and
+  `tick_direction` (OUT OF JURISDICTION) out of the arithmetic, contradicting R11. §A.6.3's
+  closing paragraph states the application.
 
-**Column-by-column application (all 35 fed columns).** The class each column would be
-placed in by the rule above is shown alongside the sub-section where the frozen enumeration
-lists it. Any disagreement between the rule-derived class and the frozen class is a
-stop-and-report; there is none this pass.
+**Column-by-column application (all 35 fed columns) — the per-unit derivation `PREREG.md`
+SC-4(a) requires the declaration to show.** The class the cited rows yield for each column is
+shown alongside the sub-section where the frozen enumeration lists it. A disagreement between
+the derived class and the frozen class would be a stop-and-report under `PREREG.md` SC-4(i)
+(cited); there is none this pass.
 
-| # | Column | Rule-derived class | Clause satisfied | Frozen at |
+> **Reading the "construction" column, per §0.3's artifact rule.** These 35 are Artifact-B fed
+> columns, and Y1 traces all 35 to `phase7_l2_sim.py`. Where a row cites a bare line number or a
+> `phase5_ml.py` line, it names the **lineage** construction (Part I's citation base, §0.1) —
+> the same construction exists in the Phase 7 builder, and the `ts_floor` join the rule turns on
+> is present in BOTH generations, so no row's class depends on which file is read. The trade
+> rollups are `phase5_ml.py` L253/L255/L257/L258 ≡ `phase7_l2_sim.py` L238-239/L241/L242/L243,
+> with the trades merge at `phase5_ml.py` L248 ≡ `phase7_l2_sim.py` L231. Rows that cite
+> `phase7_l2_sim.py` explicitly are Phase-7-only columns with no lineage counterpart.
+
+| # | Column | Class (SC-4(b) row cited) | Declared ground | Frozen at |
 |---|---|---|---|---|
 | 1  | `net_delta_1s`          | REQUIRED | `ts_floor` merge on `net_delta` (`phase5_ml.py` L253) | A.6.1 #1 |
 | 2  | `net_delta_5s`          | REQUIRED | same L253 rolling(5)                                       | A.6.1 #2 |
@@ -1117,16 +1256,17 @@ stop-and-report; there is none this pass.
 | 31 | `mid_return_30s`        | OUT OF JURISDICTION | within-lattice `mid` reads                              | A.6.2 (b) |
 | 32 | `tick_direction`        | OUT OF JURISDICTION | sign of within-lattice `mid` change                     | A.6.2 (b) |
 | 33 | `weighted_mid`          | OUT OF JURISDICTION | same-row bid/ask weighting                              | A.6.2 (b) |
-| 34 | `buy_volume_10s`        | UNSCORED (*degenerate-constant clause*) | L231 aggressor classifier matches none of the parquet's aggressor values → column identically 0 | A.6.3 |
-| 35 | `book_imbalance_ratio`  | UNSCORED (*T4-unconstructible clause*)  | construction not verified equivalent from fixture code; gate status EXCLUDED (§C.4(c), §17 item 6) | A.6.3 |
+| 34 | `buy_volume_10s`        | UNSCORED (SC-4(e), degenerate unit) | `phase5_ml.py` L231 (= `phase7_l2_sim.py` L207) aggressor classifier matches none of the parquet's aggressor values → column identically 0 | A.6.3 |
+| 35 | `book_imbalance_ratio`  | UNSCORED (SC-4(e), unresolved lag)  | construction not verified equivalent from fixture code; gate status EXCLUDED (§C.4(c), §17 item 6) | A.6.3 |
 
-**What the rule yields.** REQUIRED (rows 1-11): 11. OUT OF JURISDICTION (rows 12-33): 22 —
+**What the cited rows yield.** REQUIRED (rows 1-11): 11. OUT OF JURISDICTION (rows 12-33): 22 —
 4 clock-function (rows 12-15) + 18 book/lattice (rows 16-33). UNSCORED (rows 34-35): 2.
 Total 35. This matches the sub-sections' enumerations column by column and matches the
-partition check in §A.6.4. **If a future column changes construction (for example,
-`book_imbalance_ratio` becomes constructible per §C.4(c)), its class must be re-derived by
-this rule and the change recorded as an amendment in the usual way; the enumeration is the
-current output of the rule, not a substitute for it.**
+partition check in §A.6.4. **Re-derivation on a construction change, and the standing of this
+enumeration as the current output of the registered rule and never a substitute for it, are
+`PREREG.md` SC-4(h)'s (re-derivation is mandatory, and moving a unit is an amendment) — cited,
+not restated. On this fixture the live case is `book_imbalance_ratio` becoming constructible per
+§C.4(c); its class is then re-derived under SC-4(h) and the change is a class C amendment.**
 
 #### A.6.1 — REQUIRED (the criterion-1 denominator). **N = 11.**
 
@@ -1152,35 +1292,46 @@ corrected side in the 18 of §13(b).
 | 10 | `trade_count_1s` | groupby L220, assign L247 | `trades_all` |
 | 11 | `dollar_volume_1s` | L214 + groupby L223, assign L248 | `trades_all` |
 
-**N = 11**, being the length of that list. A correct detector must produce at least one
-**primary** runtime finding attributed to each of the eleven, on the side and in the
-instrument-months where the map declares the violation. Line 468 binds: top-k presence does not
-satisfy it, and an alias satisfies it only if recorded before the run.
+**N = 11**, being the length of that list — the only quantity that is N under `PREREG.md` §6.2
+SC-4(b) (cited). *(The table above is the REQUIRED list SC-4(f)1 requires, enumerated by name;
+its "Governing map class" column is the ground on which each unit satisfies the cited row.)*
+What a finding on each of the eleven must be — at least one **primary** runtime finding, on the
+side, in the cells and on the ground the map declares — is `PREREG.md` §6.2 criterion 1 with
+SC-5(b) (attribution is to the ground, not to the name), cited and not restated. PREREG.md
+line 468 binds: top-k presence does not satisfy it, and an alias satisfies it only if recorded
+before the run.
 
 Two notes that keep the list honest:
 
 - **`vwap_distance` is REQUIRED for its `vwap` term, not for its `mid` term.** Its
-  `(X - mid)/tick` form also makes it a label-base reader; that character is L2a's and is
-  neither credited nor penalized here (§C.3). Its availability violation is the merged
-  wall-clock-second aggregate, which is a §C.1 join-family violation like the other ten.
-  **It is the fixture's SOLE dual-ground column — the only MIXED-source column of the 35 — and
-  the full statement of what that means for this entry is §C.5**, which must be read with this
-  row: the REQUIRED finding is specifically the **forward-join** finding (`ts_floor` trade
-  window, `phase7_l2_sim.py` L224-225 / L231 / L235), and **an availability-class finding on its
-  same-row `mid[t]` read (L149) is OUT OF JURISDICTION and does NOT satisfy this entry.** Naming
-  the right column on the wrong ground does not satisfy criterion 1. Per R16's discipline the
-  column still carries **one gate class only — REQUIRED** (§C.5's comparison table).
-- **No MBO-derived column is in the list, and that is a scope fact, not an omission.** Phase 7
+  `(X - mid)/tick` form also makes it a label-base reader; that character is assigned to L2a
+  in §C.3 — the detector-jurisdiction assignment `PREREG.md` §6.2 SC-5(e) requires the
+  declaration to make, with SC-5(e)'s consequence for this gate (cited, not restated). Its
+  availability violation is the merged wall-clock-second aggregate, which is a §C.1 join-family
+  violation like the other ten. **It is the fixture's SOLE dual-ground column — the only
+  MIXED-source column of the 35 — and the full statement of what that means for this entry is
+  §C.5**, which must be read with this row: the violating ground is the **forward-join** ground
+  (`ts_floor` trade window, `phase7_l2_sim.py` L224-225 / L231 / L235), the same-row `mid[t]`
+  read (L149) is the legal ground, and **which of the two a finding must be on to satisfy this
+  entry is `PREREG.md` §6.2 SC-5(b) (attribution is to the ground, not to the name) — cited,
+  not restated.** Under `PREREG.md` SC-4(g) (one gate class per unit) the column carries **one
+  gate class only — REQUIRED** (§C.5's comparison table; R16 is the working resolution that
+  applied the same discipline to `book_imbalance_ratio`).
+- **No MBO-derived column is in the list, and that is a scope fact, not an omission** *(instance:
+  a fact about the named scored set `ALL_L2_FEATURES`, SC-4(j))*. Phase 7
   feeds no MBO columns at all (§4's Phase 7 difference, §C.1's scope note), so the map's six
   `mbo_*` classes characterise the fixture's MBO stream against the lattice without attaching
   to any fed column. `trade_count_10s` is likewise absent because Phase 7 drops it.
 
 #### A.6.2 — OUT OF JURISDICTION (22 columns)
 
-Declared availability-legal at the boundary instant under R1's `ties: available`. **An
-availability-class finding on any of them is a FALSE POSITIVE.** They enter no criterion-1
-denominator and carry no required finding. Two sub-groups, because their false-positive routes
-differ:
+Declared availability-legal at the boundary instant under R1's `ties: available` — the declared
+ground on which each satisfies `PREREG.md` §6.2 SC-4(b), row OUT OF JURISDICTION (cited). **The
+gate consequence of an availability-class finding on any of them — a declared false positive —
+is `PREREG.md` §6.2 SC-5(c)'s (the false-positive consequence attaches to the out-of-jurisdiction
+class and to no other), cited and not restated.** *(The two lists below are the OUT OF
+JURISDICTION enumeration SC-4(f)1 requires, by name.)* Two sub-groups, because their
+false-positive routes differ:
 
 **(a) Manifest-CLEAN columns — 4. Route: criterion 2 (contaminated side) and the amended
 criterion 3 (corrected side).** `minutes_since_open`, `session_open`, `session_mid`,
@@ -1198,47 +1349,55 @@ criterion 3 (corrected side).** `minutes_since_open`, `session_open`, `session_m
 > PREREG.md line 460 (verbatim): "2. No **manifest-clean** source column receives **any runtime
 > finding of any tier, primary or secondary**, on `fixture_contaminated`." Its scope is
 > manifest-CLEAN columns. The 18 above are manifest LEAK-SOURCE or DESCENDANT, so **criterion 2
-> cannot receive them** — routing them there was the error R11 deletes in §C.3. A finding on
-> one of them is a false positive **by this declaration**, recorded as such in the gate report,
-> and it is not converted into a criterion-2 failure.
+> has no landing site for them** — routing them there was the error R11 deletes in §C.3. What
+> happens to a finding on one of them instead — a declared false positive, recorded as such, and
+> not a criterion-2 failure — is `PREREG.md` §6.2 SC-5(c), cited and not restated.
 
 **Their label-base character is real and is assigned to L2a.** `tick_direction`, `weighted_mid`
 (and `vwap_distance`, which is REQUIRED for a different reason) sit at `mid(t)`, the base
-`fwd_move_ticks_*` measures from. **An L2a label-base finding on them is neither credited nor
-penalized by this availability gate.**
+`fwd_move_ticks_*` measures from. **This is the detector-jurisdiction assignment `PREREG.md`
+§6.2 SC-5(e) (jurisdiction between detectors is declared, and a boundary cuts both ways)
+requires the declaration to make before any detector runs; its consequence for this gate is
+SC-5(e)'s, cited and not restated** (§C.3 states the assignment in full).
 
 #### A.6.3 — UNSCORED (2 columns, plus a cell-level member)
 
-Requires no finding and forbids none; enters no denominator, contributes to no rate, and
-**cannot be reported as a pass**.
+Gate class UNSCORED — `PREREG.md` §6.2 SC-4(b), row UNSCORED, and §7.7 SC-6(a) (the `unscored`
+state: its semantics and gate consequences), cited and not restated. What this declaration
+supplies is SC-6(b)'s unscored ledger: at unit level, the two columns below, each with its
+ground; at cell level, the 72 cells of §13(g).
 
 - **`buy_volume_10s` — degenerate constant.** `phase5_ml.py` L231's `isin(["B","Buy","buy"])`
   matches none of the parquet's `BUY_AGGRESSOR`/`SELL_AGGRESSOR`/`UNKNOWN` values, so the column
   is identically 0 and the `trades_buy` map class is 0 strict / 0 equal in all 96 of its cells
-  on both sides (§C.4(a)). A dead-zero column cannot carry a finding for a reason connected to
-  availability, and leaving it in would make criterion 1 unsatisfiable for a reason unrelated to
-  detection. Must be named in the gate report as **EXCLUDED**, never as MISSED.
+  on both sides (§C.4(a)). It is a degenerate unit that cannot carry a finding of the scored
+  class — the first exclusion ground `PREREG.md` §6.2 SC-4(e) registers (cited, not restated).
+  Its reporting as **EXCLUDED** rather than MISSED is `PREREG.md` §7.8 SC-11(g)'s (cited;
+  `PRACTICES.md` P-47 records the vocabulary practice).
 - **`book_imbalance_ratio` — gate status EXCLUDED, lag treatment UNRESOLVED** (§C.4(c), §17
-  item 6). **It carries ONE gate class and one only — UNSCORED (working resolution R16).** That
-  it WOULD be OUT OF JURISDICTION if it were constructible is recorded as a fact in §C.3
-  category 2 and is **not applied**: a column carrying two frozen classes violates "no field
-  answers two questions". Reinstating it changes the criterion-1 denominator and is class C.
+  item 6) — the second exclusion ground `PREREG.md` SC-4(e) registers. **It carries ONE gate
+  class and one only — UNSCORED** (`PREREG.md` §6.2 SC-4(g), one gate class per unit — cited;
+  working resolution R16 is the record of its application). That it WOULD be OUT OF
+  JURISDICTION if it were constructible is recorded as a fact in §C.3 category 2 and is **not
+  applied**. Reinstatement is governed by `PREREG.md` SC-4(e) and SC-4(h) (class C), cited.
 - **Cell-level: the 72 `UNSCORED_FOR_LACK_OF_DATA` map cells** (nq's six MBO classes x 6 months
-  x 2 sides, §13(g), §13(h)). These are **cells, not columns**; because Phase 7 feeds no MBO
-  column, none of the 35 fed columns is put into UNSCORED by them. Recorded here so the class
-  is complete and so nq's MBO absence is never read as a column-level pass.
+  x 2 sides, §13(g), §13(h)). These are **cells, not columns** — the two levels `PREREG.md` §7.7
+  SC-6(c) (two levels, and they do not collapse) keeps apart, cited: because Phase 7 feeds no
+  MBO column, none of the 35 fed columns is put into UNSCORED by them. Recorded here so the
+  ledger is complete at both levels.
 
-**R11's third UNSCORED limb, read precisely.** R11 names "unconstructibles" as UNSCORED. That
-must be read as *columns whose gate status is declared EXCLUDED*, which on this fixture is
-`book_imbalance_ratio` alone. The 7 UNCONSTRUCTIBLE columns of §17 are unconstructible **in the
-F2 rebuild's selection/renaming-only projection**, not in the fixture the gate scores — the gate
-scores the stored-prediction pair over the full 35 columns under R3 (§A.2, §16 item 1). Reading
-§17's seven as gate-unscored would silently drop `dollar_volume_1s` and `tick_direction` out of
-the arithmetic, which is the opposite of what R11 does. **`dollar_volume_1s` is REQUIRED
+**R11's third UNSCORED limb, read under `PREREG.md` §6.2 SC-4(d)(ii) (the unconstructibility
+reading; cited).** R11 names "unconstructibles" as UNSCORED; on this fixture the columns whose
+gate status is declared EXCLUDED is `book_imbalance_ratio` alone. The 7 UNCONSTRUCTIBLE columns
+of §17 are unconstructible **in the F2 rebuild's selection/renaming-only projection**, not in the
+fixture the gate scores — the gate scores the stored-prediction pair over the full 35 columns
+under R3 (§A.2, §16 item 1). Reading §17's seven as gate-unscored is the reading SC-4(d)(ii)
+forbids: it would silently drop `dollar_volume_1s` and `tick_direction` out of the arithmetic,
+the opposite of what R11 does. **`dollar_volume_1s` is REQUIRED
 (A.6.1 #11); `tick_direction`, `weighted_mid`, `session_open`, `session_mid`, `session_close`
 are OUT OF JURISDICTION (A.6.2); only `book_imbalance_ratio` is UNSCORED.**
 
-#### A.6.4 — PARTITION CHECK (must be reproduced by any gate report)
+#### A.6.4 — PARTITION CHECK (printed here as `PREREG.md` §6.2 SC-4(f)3 requires)
 
 | Class | Count |
 |---|---|
@@ -1250,9 +1409,14 @@ are OUT OF JURISDICTION (A.6.2); only `book_imbalance_ratio` is UNSCORED.**
 11 + 22 + 2 = **35** = `f3\fixture_manifest_DRAFT.json` `counts.total_fed_to_phase7`. **No
 column appears in two classes and no fed column is missing from all three** — checked column by
 column against the manifest's 35-entry `columns` array this pass. The check is printed here, in
-the declaration, because a partition asserted but not shown is a partition nobody verified.
+the declaration, as `PREREG.md` §6.2 SC-4(f)3 requires (cited; `PRACTICES.md` P-51 records the
+shown-not-asserted practice). *(Instance: the counts in this table are the lengths of the
+enumerated lists in §A.6.1–§A.6.3; what freezes is the lists, `PREREG.md` SC-8(b).)*
 
 #### A.6.5 — CROSS-TABULATION of the TWO partitions: Y1 SOURCE class x R11 GATE class (item S2)
+
+> *Instance data.* A consistency check over the SC-4 partition of §A.6.1–§A.6.4; it derives
+> nothing, changes no class, and is not a gate object.
 
 **What this is, and why it is not redundant with §A.6.4.** The 35 fed columns are cut twice by
 two independent instruments. **Cut 1 — the Y1 SOURCE partition** (`y1\column_universe.csv`, 35
@@ -1380,7 +1544,9 @@ the restricted map drops no adjudicating cell. Derivation script and output:
 > 2. No **manifest-clean** source column receives **any runtime finding of any tier, primary or secondary**, on `fixture_contaminated`.
 
 **SATISFIED and unchanged.** The manifest-clean set is the 4 clean columns of
-`f3\fixture_manifest_DRAFT.json` (`counts.clean: 4`). Two declared dispositions bear on it and
+`f3\fixture_manifest_DRAFT.json` (`counts.clean: 4`) *(instance: the units criterion 2 scopes;
+under `PREREG.md` SC-5(c) these are the units that route to it)*. Two declared dispositions bear
+on it and
 are recorded in §C.4: the **session-flag staleness** quirk (§C.4(b)) is a documented artifact of
 the shift and licenses **no** finding, on either side; and `book_imbalance_ratio` (§C.4(c)) is
 gate-status **EXCLUDED**. Neither weakens the criterion — both remove a route by which a
@@ -1394,17 +1560,22 @@ non-availability artifact could be scored as one.
 
 > 3. **No runtime finding of any tier, primary or secondary**, appears on `fixture_corrected`.
 
-**OLD (quoted from R9, file tail, verbatim):** "no findings on any corrected column".
+**OLD (registered line 461, quoted above):** no runtime finding of any tier on `fixture_corrected`.
 
-**NEW (quoted from R9, file tail, verbatim):** "detector findings must match the declared
-per-side, per-class, per-instrument-month violation map; findings the map predicts are required,
-findings it excludes are false positives, cells the map does not cover are unscored."
+**NEW: `PREREG.md` §6.2 criterion 3 as amended — "Runtime findings on every fixture side are
+scored against the fixture's DECLARED GROUND-TRUTH MAP — v30a, operative" [SC-3].** The
+criterion, its three dispositions (SC-3(b)) and its scope limits are registered there and are
+cited, not restated; working resolution R9 (file tail, verbatim) is the record of its adoption
+for this fixture, and R9's rationale — "the tool's own coverage principle (silence and belief
+never convert into a pass) applied to its own exam" — is recorded as such. **What this
+declaration supplies under SC-3:** the map artifact and its declared schema (§13(a),
+`n1\declared_map.csv`); the cell key, named — (side, instrument, month, class); the declared
+violation classes (the ten of §13(a)); the declared scored population and its subclasses (§5's
+2,100 cross-boundary rows among them); the per-cell expected findings (§13(b)–(c), §C); the
+unscored ledger (§13(g)); and the reporting re-aggregation with its delta (§13(i)).
 
-**Rationale, recorded (R9, verbatim):** "the tool's own coverage principle (silence and belief
-never convert into a pass) applied to its own exam." And: "The corrected side is described
-throughout as CHARACTERIZED, never clean."
-
-**What forced it.** The M5 falsification sweep (`m5\`) extended the corrected-side check beyond
+**What forced it** *(instance: the measurement that forced the amendment; SC-3's supersession
+marker names its genus)*. The M5 falsification sweep (`m5\`) extended the corrected-side check beyond
 ZC 2025-01 and **falsified the assumption that the corrected side is clean** — see §13(f). The
 corrected side carries strictly-post-decision absorption in **18 of 48** instrument-months, up
 to **111,334 of 580,944 rows (19.16%)** on zc 2025-09 (`n1\summary_corrected.csv`). Criterion 3
@@ -1412,10 +1583,10 @@ as written would fail the gate on a correctly-behaving detector that reports a r
 the fixture really contains. That is a semantic gap in the acceptance criterion — class C by
 PREREG.md line 93 — and it is amended, not waived.
 
-**What the amendment does NOT do.** It does not lower the bar. A finding on a corrected-side
-cell the map marks zero is still a false positive and still fails the gate. It does not create
-an unscored escape hatch either: the 72 unscored cells (§13(g)) are named as unscored, never as
-clean, and they license no pass. The map is declared and frozen before any detector runs (§D.1).
+**What the amendment does NOT do** is registered at `PREREG.md` §6.2 SC-3(h) (the amendment
+does not lower the bar) and is cited, not restated. On this fixture: the 72 unscored cells
+(§13(g)) are ledgered by name and ground; the map is declared here and frozen at the tag by §D.1
+item 3 under SC-8, before any detector runs.
 
 ---
 
@@ -1425,16 +1596,16 @@ clean, and they license no pass. The map is declared and frozen before any detec
 
 > 4. Silent under the identity control on both.
 
-**SATISFIED, with one declaration that must be stated explicitly or the criterion is unsafe:**
+**SATISFIED, with the sentinel enumeration `PREREG.md` §6.2 SC-5(f) (declared sentinels under
+the identity control) requires the declaration to make ex ante — cited, not restated:**
 
-> **SENTINEL STATEMENT.** The wrapped `net_delta` values in this fixture — magnitudes near
-> 4.29e9, e.g. the observed **4294967291** for a trade of `size` 5 (2^32 − 5) — are **DATA
-> CONTENT, not findings.** They are the as-built product of an uncast uint32 negation (§15) and
-> are present identically on BOTH sides. The identity control must remain silent on them. A
-> detector that fires on the magnitude, the sign, or the 2^32 signature of these values has
-> produced a **false positive under criterion 4**, not a detection — availability is a question
-> about *when* a cell is knowable, and these values are equally knowable, and equally wrong, at
-> every instant on both sides.
+> **SENTINEL, declared ex ante.** The wrapped `net_delta` values in this fixture — magnitudes near
+> 4.29e9, e.g. the observed **4294967291** for a trade of `size` 5 (2^32 − 5) — are the as-built
+> product of an uncast uint32 negation (§15) and are present identically on BOTH sides.
+> **Signature:** magnitude ≈ 2^32 − k for a trade of `size` k; the sign; the 2^32 wrap. Their
+> gate disposition — an as-built artefact present identically on every side — is SC-5(f)'s,
+> cited and not restated: availability is a question about *when* a cell is knowable, and these
+> values are equally knowable, and equally wrong, at every instant on both sides.
 
 Evidence for the sentinel: `t1\t1_final_output.txt` lines 61-67 (the wrapped value observed in
 the f2 rebuild); §15 for the defect's provenance and the C5 verdict that the ORIGINAL runs
@@ -1450,41 +1621,53 @@ generations, it cannot differentiate them, which is precisely why it must not be
 reconstructed declaration:". **Line 472 (verbatim):** "> **k of N** labelled leaking sources
 received at least one primary PROVEN finding **attributed to that source**." **Line 476
 (verbatim):** "**It is published as a count, never as a decimal or percentage**, and it is
-identified as a descriptive fixture outcome rather than a performance rate." **Line 480
-(verbatim):** "**Ordering, locked:** tune on the development corpus → freeze the candidate
+identified as a descriptive fixture outcome rather than a performance rate." **PREREG.md line
+480 (verbatim):** "**Ordering, locked:** tune on the development corpus → freeze the candidate
 configuration → run the fixture gate → tag the same unchanged configuration, or stop. Defaults
 may not be altered after observing a fixture result."
 
 **SATISFIED, all five, carried unchanged.** Three consequences this declaration must honour and
 does.
 
-1. **N is 11**, and it is the REQUIRED list of §A.6.1, not the manifest's independent-leak
-   count. Line 472's "**k of N** labelled leaking sources" is published against that
-   denominator. **N = 25 is withdrawn as the gate's N** — 25 is line 446's manifest DAG count
-   and carries no gate arithmetic (§A.2, working resolution R11).
+1. **N is 11** — the length of the REQUIRED list of §A.6.1, which `PREREG.md` §6.2 SC-4(b)
+   makes the only quantity that is N (cited). Line 472's "**k of N** labelled leaking sources"
+   is published against it. **N = 25 is withdrawn as the gate's N** — 25 is line 446's manifest
+   DAG count and carries no gate arithmetic (§A.2; SC-4(a); working resolution R11).
 2. **The proof count is published as a count, with its scope named**, per line 476 — and under
-   §A.6 "scope" now means the class: a report must say "k of N = 11 REQUIRED columns"; must
-   separately report **false positives on the 22 OUT OF JURISDICTION columns** (§A.6.2 — that
-   class and no other bears the false-positive consequence); and must separately report
-   **findings on the UNSCORED class, which are NOT false positives** — per §C.3 Category 2,
-   §C.4(c) ("no finding on it counts for or against any criterion"), §A.6.3 and frozen §D.1
-   item 2, a finding on an UNSCORED column counts neither for nor against any criterion and is
-   reported as an unscored observation. Never fold any of the three classes into another, and
-   never carry the false-positive consequence beyond the 22.
-3. **The locked ordering of line 480 binds this file** — §D.1 freezes the map, the partition,
-   and every gate-consumed number at the tag, so no number here can be moved after a fixture
-   result is observed.
+   §A.6 "scope" means the class: k of N = 11 REQUIRED columns; false positives on the 22 OUT OF
+   JURISDICTION columns reported separately, that class and no other bearing the consequence
+   (`PREREG.md` §6.2 SC-5(c), cited); findings on the UNSCORED class reported separately as
+   unscored observations and not as false positives, the three classes never folded into one
+   another (`PREREG.md` §7.7 SC-6(d), cited; §C.3 Category 2, §C.4(c), §A.6.3 and frozen §D.1
+   item 2 are where this fixture's UNSCORED members are named). Each of those is a citation,
+   not a restatement.
+3. **The locked ordering of line 480 binds this file** — `PREREG.md` §6.2 SC-8(a) (everything
+   the gate consumes freezes at the tag) is its enforcement, cited; §D.1 is the exhaustive
+   enumeration of frozen objects SC-8(a) requires this declaration to supply, so no number here
+   can be moved after a fixture result is observed.
 
 ---
 
 ### A.11 — Walk summary
+
+**The Line column holds v30 line numbers, as of the `prereg-v30` tag (R95/§148.1).** The v30a
+positions differ — the amendment inserted 981 lines after line 99 — and the numbers here are **not**
+renumbered, because the walk records which *registered* elements were amended and renumbering would
+falsify that record. Resolve them with `git show prereg-v30:PREREG.md`.
+
+**Why line 478 has no row, and keeps none (§148.2).** It is the one non-blank §6.2 line this walk
+does not cover. **A row is not added now**: a walk row asserts a verdict reached by walking, and no
+walk of that line happened. The line is handled instead by **specific disclosure at D-STALE**, by
+line and by quotation. Adding a row would assert a walk that did not occur, which is the defect this
+table exists to prevent.
+
 
 | §6.2 element | Line | Verdict |
 |---|---|---|
 | Reference AUC 0.957/0.675, ±0.010 | 445 | **AMENDED (class C)** — retired; LightGBM trio governs |
 | Ground-truth column DAG + independent-leak count | 446 | SATISFIED — count 25, F3 scope governing; **no gate arithmetic attached** (R11); flavor split stated both ways (R13) |
 | Declaration reconstructed, evidence before tuning | 447 | SATISFIED |
-| Reconstruction in Phase 0, before cross-tool | 448 | SATISFIED |
+| Reconstruction in Phase 0, before cross-tool | 448 | SATISFIED **as to ordering** — but see §A.5: a cross-tool comparison ran 14 Aug 2026 and does **not** satisfy §9.2 (commitment clause breached and uncurable; acceptance-fixture half not run; criterion 3 unevaluated). D-003. |
 | Semantic-ambiguity clause | 449 | SATISFIED — clause does not fire |
 | Contamination availability class in manifest | 450 | **SATISFIED BY SUBSTITUTE (class C)** — locus amended to this declaration, hashed in the tag |
 | Sliced variant for CI | 451 | **AMENDED (class C)** — off the Phase 0 fixture; re-registered as a Phase 1 CI obligation with its scoring rule declared ex ante |
@@ -1497,20 +1680,24 @@ does.
 | k-of-N proof count, published as a count | 470-476 | SATISFIED — **N = 11** |
 | Ordering, locked | 480 | SATISFIED — enforced by §D.1 |
 
-**Four amendments (445, 450, 451, 461). NO registered §6.2 element is left NOT MET, and none is
-left "outstanding".** Every element is now either SATISFIED as registered, AMENDED with the old
-text quoted and the new text stated, or SATISFIED BY SUBSTITUTE with the substitute named and
-shown to bind at least as hard. Everything not in the amended four stands exactly as registered.
-All four amendments are class C under PREREG.md line 93 and are carried by this registration
-under line 95; all are PROVISIONAL until the `prereg-v30a` tag is signed.
+**Four §6.2 sites are amended in this walk (445, 450, 451, 461). The ledger of record for what
+the amendment comprises is the amended registration's own v30a amendments block (`PREREG.md`);
+this table is a walk summary, not that ledger (`PRACTICES.md` P-61).** NO registered §6.2
+element is left NOT MET, and none is left "outstanding". Every element is now either SATISFIED
+as registered, AMENDED with the old text quoted and the new text cited to its registered site,
+or SATISFIED BY SUBSTITUTE with the substitute named and shown to bind at least as hard.
+Everything not amended stands exactly as registered. The class of each amendment is `PREREG.md`
+§0.2.1 line 93's and it is carried under line 95; all are PROVISIONAL until the `prereg-v30a`
+tag is signed.
 
 ---
 
-### A.12 — "Waived", defined for §10.2's replacement-criterion floor (finding RS-3) — **class C amendment content added by v30a**
+### A.12 — "Waived" — defined at `PREREG.md` §10.2 [SC-12]; this subsection records the gap that forced it (finding RS-3) and corroborates
 
-**Outside §6.2 and stated here because the walk is where amendment content lives.** This
-subsection defines one word. It adds a defining clause to a locked floor that uses the word
-without one; it changes no threshold, exempts nothing, and narrows nothing.
+**Outside §6.2 and kept in the walk because the walk is where the gap was found.** This
+subsection defines nothing. The defining clause is registered at `PREREG.md` §10.2 [SC-12] and
+is cited here, not restated; what follows is the record of the gap, and what this declaration
+supplies and corroborates under SC-12.
 
 **Registered text, PREREG.md line 1035 (verbatim):**
 
@@ -1520,69 +1707,44 @@ Context, PREREG.md line 1033 (verbatim), which is what that floor floors:
 
 > On a Phase 0 finding of ambiguity: **record it, pause runtime development, commit and timestamp a class C amendment carrying the complete replacement criterion — unit, threshold, and denominator — and only then begin Phase 1 development or inspect the development corpus.** No `DEVIATIONS.md`-only criterion, and no development-corpus access until the branch is resolved (§10.0).
 
-**The gap (RS-3).** "Waived" appears in the floor with no defining clause anywhere in the
-registration. It appears once more, at PREREG.md line 855, as a **detector-case coverage
+**The gap (RS-3), as found.** "Waived" appeared in the floor with no defining clause anywhere in
+the registration. It appeared once more, at PREREG.md line 855, as a **detector-case coverage
 state** in §7.7's vocabulary table — also undefined. An undefined term inside a floor that
 exists to stop criteria being dropped silently is the exact shape of a term that gets read
-permissively later. **The two runtime detectors the floor governs are L2a and L3.1** (PREREG.md
-lines 318, 320; line 1039 names "both of L2a/L3.1's combinations").
+permissively later. That gap is closed by the amended registration, not by this file.
 
-**DEFINITION, declared.**
+**Where the definition lives, and what it carries — cited, not restated.** `PREREG.md` §10.2
+[SC-12] registers the defining clause of "waived" (its head and limbs (i)–(v)), the rule that
+it may not be invoked, and the seven limits on what the definition does not permit; §7.7's
+pointer beneath the coverage-state table makes that definition govern the word wherever it
+appears. This subsection adds nothing to SC-12 and claims no authority over it.
 
-> A runtime detector is **WAIVED** with respect to a criterion when the criterion is written,
-> configured, or reported in any way that makes the detector's own result incapable of changing
-> the criterion's outcome. Concretely, a detector is waived if any of the following holds:
-> **(i)** it is excluded from the criterion's denominator; **(ii)** it is in the denominator but
-> its findings are not required to be non-empty for a pass, so its contribution is optional;
-> **(iii)** the criterion can be satisfied by the other detector's output alone; **(iv)** its
-> threshold is set at a level it meets without executing, or by construction; or **(v)** its
-> cases are reported under §7.7's `waived` coverage state rather than executed to a terminal
-> result.
+**What this declaration supplies under SC-12, and what it corroborates:**
 
-**WHAT INVOKING IT REQUIRES: nothing, because it may not be invoked.** The floor is a
-prohibition, not a permission with conditions. **There is no procedure by which either runtime
-detector may be waived in a §10.2 replacement criterion.** A replacement criterion that waives
-one is *weaker than the floor* and is out of specification on its face; it does not become
-admissible by being recorded, disclosed, justified, or approved. Changing that requires amending
-line 1035 itself — a further class C amendment, committed and timestamped before the affected
-detector is implemented or evaluated (PREREG.md line 95).
+1. **Which detectors the floor governs is not this declaration's to choose** — `PREREG.md` SC-12
+   and SC-13c(c3) pin the governed set to §7.1's two runtime metric rows and line 1039's "both
+   of L2a/L3.1's combinations". This file's statement that the two runtime detectors are L2a
+   and L3.1 (PREREG.md lines 318, 320) is corroboration of that registered set, not its source.
+2. **On this fixture a cell with no data is `unscored`, not "waived"** — the case SC-12 item (4)
+   governs. The 72 such cells are ledgered by name and missing path (§13(g), `n1\unscored_ledger.csv`;
+   §A.6.3), which is the entry condition `PREREG.md` §7.7 SC-6(b) requires; their gate
+   disposition is SC-6(a)'s, cited.
+3. **The replacement criterion's unit, threshold, and denominator are not supplied by this
+   file.** Where §6.2 line 449's ambiguity branch has fired and been recorded, `PREREG.md`
+   §10.2 [SC-13a], [SC-13b] and [SC-13c] register them; whether the branch fires for this
+   fixture is the reading of line 449 recorded at §A.5, on which see K4_SCRUB_DIFF.md (row
+   28). Nothing in this subsection bears on that question.
 
-**WHAT THIS DEFINITION DOES NOT PERMIT — stated so it cannot be read as a general escape:**
-
-1. **It is not an escape hatch of any kind.** The definition creates no exception, no
-   "justified waiver", no reviewer-approved waiver and no time-limited waiver. It exists only
-   to make a prohibition checkable.
-2. **It does not reach any other criterion.** It defines the word for §10.2's
-   replacement-criterion floor and for §7.7's coverage state. It says nothing about §6.2's four
-   acceptance criteria, and it may not be cited to soften them.
-3. **"Experimental" is not "waived", and may not become it.** §10.2 criterion 3 can ship a
-   detector or mode marked experimental and exclude it from `assert_no_proven_leakage()`. That
-   changes how findings are *labelled and asserted on*; it does not remove the detector from a
-   replacement criterion's denominator. A criterion that drops a detector *because* it was
-   marked experimental has waived it.
-4. **"No data" is not "waived".** A cell with no data is **UNSCORED**: ledgered by name and
-   path, entering no denominator, contributing to no rate, and **never reported as a pass**
-   (§13(g), §A.6.3). The detector is still scored wherever data exists. Converting an unscored
-   cell into a pass is the failure mode R9's rationale names, and doing it at the level of a
-   whole detector is a waiver.
-5. **A working resolution or `DEVIATIONS.md` entry cannot do it.** §D.3 forbids a decision-log
-   interpretation from weakening a locked obligation, and PREREG.md line 1033 forbids a
-   `DEVIATIONS.md`-only criterion outright.
-6. **Per-combination waiving is still waiving.** Line 1039 applies gates per combination;
-   dropping a detector from one combination's criterion while scoring it in another waives it
-   for that combination, and is class C.
-7. **It does not license anything after tuning.** The whole floor exists ex ante — line 1035's
-   own closing sentence: a criterion chosen because it works after tuning is a criterion shaped
-   by tuning.
-
-**Status:** class C amendment content added by v30a, PROVISIONAL until the `prereg-v30a` tag is
-signed, and frozen by §D.1 thereafter. It is an *addition of a defining clause*, and by §D.3's
-rule it resolves toward the stronger reading: every ambiguity in "waived" is resolved against
-the party that would benefit from dropping a detector.
+**Status** (bookkeeping; `PRACTICES.md` P-65): SC-12 is class C amendment content carried by the
+amended registration, PROVISIONAL until the `prereg-v30a` tag is signed and frozen under
+`PREREG.md` SC-8 thereafter; any reading of it is governed by SC-9(e).
 
 ## 8. Fixture identity (element a)
 
-> **SCORED ON ARTIFACT B** (§0.2). This section IS Artifact B's identity statement.
+> **SCORED ON ARTIFACT B** (§0.2). This section IS Artifact B's identity statement — the
+> artifact enumeration `PREREG.md` §6.2 SC-2(a) requires (the fixture, by side, with
+> provenance), with the reference-anchor entries SC-2(d) requires and the declared exclusion
+> SC-2(b) governs.
 
 **The v30a acceptance fixture is the Phase 7 universal-lag pre/post pair, MAIN prediction
 set, RE-EVALUATE class:**
@@ -1629,14 +1791,12 @@ timestamps in all 32 pairs. Any use would require timestamp-intersection framing
 `c3\label_equality.csv` (pc2_ts rows, lines 66-97), `c3\pc2_diff_summary.csv`,
 `c3\pc2_diff_rows.csv`; consolidated in `R2_consolidated_report.md` C3 section.
 
-**The exclusion is HARD, and admitting the set later is a class C amendment.** The pc2
-timestamped variant set is excluded from the declared fixture, from every number in this file,
-and from every gate denominator. It is named only so that its absence is auditable. **Any
-future use of it — in the gate, in a slice, as a robustness check, or as a supplementary
-report — changes the fixture the acceptance criteria are evaluated on, and therefore changes
-what a published number means. That is class C under PREREG.md line 93 and requires an amended
-registration under line 95.** It may not be admitted by a DEVIATIONS entry, by an orchestrator
-decision, or by a working resolution recorded in this file's tail.
+**The exclusion is HARD — `PREREG.md` §6.2 SC-2(b) (changing the composition is class C — never
+a deviation, never a working resolution), cited and not restated.** The pc2 timestamped variant
+set is a declared exclusion under SC-2(a)–(b): outside the declared fixture and outside every
+number in this file, and named only so that its absence is auditable. Any future use of it — in
+the gate, in a slice, as a robustness check, or as a supplementary report — is the composition
+change SC-2(b) governs.
 
 ## 9. Shared label vector — the feature-availability-only licence (element b)
 
@@ -1647,10 +1807,11 @@ decision, or by a working resolution recorded in this file's tail.
 
 All 64 main-set pairs are bit-exact identical on `true_label`, `fwd_move_ticks`, AND
 `mid_price_t` (raw-bytes comparison after dtype/length checks): one shared label vector per
-pair. This is the licence for reading the pre/post AUC delta as a feature-availability-only
-effect — labels, label bases, and evaluation populations are identical across sides, so
-nothing but feature availability differs. Evidence: `c3\label_equality.csv` lines 2-65
-(all 64 rows True/True/True, no first_diff_index).
+pair. This is the measured basis on which the pre/post AUC delta is read as a
+feature-availability-only effect — labels, label bases, and evaluation populations are
+identical across sides (the interpretation practice is recorded in `PRACTICES.md` P-68; the
+fixture-admission bound it rests on is `PREREG.md` §6.2 SC-2(c)'s, §0.4). Evidence:
+`c3\label_equality.csv` lines 2-65 (all 64 rows True/True/True, no first_diff_index).
 
 ## 10. EVIDENCE for §1's declared boundary — measurement of the corrected features' information boundary (element c; R2)
 
@@ -1659,7 +1820,8 @@ nothing but feature availability differs. Evidence: `c3\label_equality.csv` line
 
 **This section states no rule.** §1 carries the single normative statement of the boundary
 (`floor(t-1) + 1s`). This section is its evidence: what was measured, on what, against which
-comparator, and how the cross-checks line up.
+comparator, and how the cross-checks line up — the measurement and artifact record `PREREG.md`
+§2.9 SC-1(a) requires beside a declared measured value (instance).
 
 **What was measured.** On ZC 2025-01 (lattice 338,159 rows = `processed\zc\zc_snapshots_2025-01.parquet`
 under UTC hours [14,19), generation **v3_pre_gapfill**, sha256
@@ -1696,8 +1858,8 @@ measurement.** The corrected row `t` *is* the contaminated row `t-1`, shifted on
 (§17 verifies this bit-exactly: corrected[t] == contaminated[t-1] on all 28 projected columns,
 max_abs_diff 0.0). So asking "does corrected row `t` absorb events after `t-1`?" is the same
 question as "does contaminated row `t-1` absorb events after its own stamp?", re-indexed. The
-two count sets agree because they must. Treating their agreement as independent corroboration
-would be double-counting one measurement, and this declaration does not do so. The genuinely
+two count sets agree because they must, and this declaration does not count their agreement as
+independent corroboration (`PRACTICES.md` P-70). The genuinely
 independent confirmations are C4's blind re-derivation (different library, unread T1 outputs,
 lattice re-derived from the snapshots parquet plus the builder filter) and N1's reproduction of
 every M5 cell.
@@ -1899,15 +2061,16 @@ the same two columns exist for all 96 side x instrument-month cells in `n1\decla
   mbo_all 29; sub-classes overlap — the month-wide totals are the trades_all/mbo_all
   values).
 
-**The 49 exactly-equal events are NON-VIOLATIONS under the declared branch, and they enter no
-detection denominator.** Under `ties: available` a cell with `a(j,c) == d(i)` is available.
-The 49 (20 trade + 29 MBO, ZC 2025-01) therefore do not violate, are not required findings, are
-not eligible findings, and do not appear in the criterion-1 denominator, the eligibility
-denominators of PREREG.md §7.4, or any rate. A detector that fires on one of them has produced a
-**false positive** under the declared branch. They are published only as the both-branch
-disclosure above, which is **informational** (§D.1): it exists so that a reader can see exactly
-what the tie choice moved, and it may not be re-scored as findings without changing the tie
-declaration, which is class C after the tag.
+**The 49 exactly-equal events are NON-VIOLATIONS under the declared branch.** Under
+`PREREG.md` §2.3's comparator, `ties: available` row (cited), a cell with `a(j,c) == d(i)` is
+available; the 49 (20 trade + 29 MBO, ZC 2025-01) therefore do not violate and are not required
+findings, and a detector that fires on one of them has produced a **false positive** under the
+declared branch. They are published only as the both-branch disclosure above, which is an
+**informational disclosure** in the sense of `PREREG.md` §2.9 SC-1(f) (one comparator branch is
+scored; cited, not restated): it exists so that a reader can see exactly what the tie choice
+moved. Re-scoring it as findings would change the tie declaration, which is class C after the
+tag (§D.1 item 1). *(Instance: this section supplies the declared `ties` branch SC-1(f)
+requires, with the figures under the non-declared branch labelled as informational.)*
 
 **PRIMARY artifact for contaminated `decision_T`: T1.** `t1\violation_table.csv`, columns
 `strictly_after_count` and `equal_count`, contaminated `decision_T` rows. Reproduced
@@ -1941,9 +2104,13 @@ both fixture sides, not against an assumed-clean corrected side."
 
 ### (a) What the map is, and where it lives
 
-**Artifact: `n1\declared_map.csv`.** One row per scored cell, schema
+**Artifact: `n1\declared_map.csv`** — the map artifact with its declared schema that `PREREG.md`
+§6.2 SC-3(a) (what the map is) requires; cited, not restated. **Cell key, declared and named:**
+(`side`, `instrument`, `month`, `class`) — the unit this declaration partitions the fixture
+into. One row per scored cell, schema
 `side, instrument, month, class, boundary, strict_count, equal_count, rows, scored_flag,
-missing_path`. Read this pass: **984 rows** = **960 declared-class cells** (2 sides x 8
+missing_path`, the last two being the field that records whether the cell is scored and its
+ground. Read this pass: **984 rows** = **960 declared-class cells** (2 sides x 8
 instruments x 6 months x 10 classes) **plus 24 rows carrying the 11th diagnostic class**
 `mbo_all_rows`. Of the 960: **888 `SCORED`** and **72 `UNSCORED_FOR_LACK_OF_DATA`**; the 24
 diagnostic rows are flagged `SCORED_DIAGNOSTIC_11TH_CLASS`. Boundary is `decision_T` on every
@@ -1953,9 +2120,10 @@ row. Scope: 8 instruments (cl, es, gc, he, le, nq, zc, zs) x 6 months (2025-01, 
 **The declared 10 classes** are trades_all, trades_buy, trades_sell, trades_large, mbo_all,
 mbo_bid_add, mbo_ask_add, mbo_bid_cancel, mbo_ask_cancel, mbo_cancel_any.
 
-> **CLASS-SET RULE, binding.** `mbo_all_rows` is an **11th diagnostic class and is NOT one of
-> the declared 10.** Any statement of the form "max across classes" in this file or in any gate
-> report **must name the class set it maximises over.** Two M5-quoted maxima came from the
+> **CLASS SET — declared as `PREREG.md` §6.1 SC-10(c) (diagnostic classes are not declared
+> classes) requires; cited, not restated.** `mbo_all_rows` is an **11th diagnostic class and is
+> NOT one of the declared 10**; every statement of the form "max across classes" in this file
+> names the class set it maximises over, as SC-10(c) requires. Two M5-quoted maxima came from the
 > diagnostic class and differ from the declared-10 maximum: **cl 2025-01 corrected strict —
 > 54,341 over the M5 class set (`mbo_all_rows`) vs 53,249 over the declared 10 (`mbo_all`)**;
 > **es 2025-01 corrected equal — 6 over the M5 class set (`mbo_all_rows`) vs 4 over the declared
@@ -1979,8 +2147,9 @@ corrected rows = 19.16%** (`max_strict_frac` 0.191643) on class `mbo_all`, and z
 peak under BOTH metrics.
 
 **THE RANKING BELOW IS BY RATE**, i.e. by `max_strict_frac` = `max_strict` / `rows`, descending.
-**The metric is named because the rate order and the absolute-count order are different orders**,
-and any list of these cells that does not name its metric is unreadable. `argmax_strict` is
+**The metric is named because the rate order and the absolute-count order are different orders**
+(`PRACTICES.md` P-77; for the peaks themselves the requirement is `PREREG.md` §6.1
+SC-10(d)(4)'s). *(Instance: per-cell map data, SC-3(a).)* `argmax_strict` is
 `mbo_all` on all 18 and `classes_scored` is 10 on all 18. Derived from
 `n1\summary_corrected.csv` (rows with `max_strict` > 0), reproduced cell-for-cell with zero
 disagreement by `y1\trade_class_only_map.csv` (`max_strict_declared10`, `rows`, side =
@@ -2026,13 +2195,15 @@ strict-positive cells above. That leaves **13 instrument-months with zero strict
 over the classes that are SCORED for them**. 18 + 17 + 13 = 48.
 
 > **"Clean on both branches" is WITHDRAWN as a pass claim for the six nq months (working
-> resolution R12).** The arithmetic above is a measurement and stands; the *label* does not.
-> Zero-over-scored-classes is not the same predicate as zero-over-the-declared-10, and for nq
-> the two differ by six unscored classes per month. The 13 rows below are therefore listed as
-> **measured-zero over their scored classes**, with the scored-class count named on every row.
+> resolution R12)** — `PREREG.md` §7.8 SC-11(f) (a zero over a partial population is not a zero
+> over the population) governs and is cited, not restated. The arithmetic above is a
+> measurement and stands; the *label* does not. For nq, zero-over-scored-classes and
+> zero-over-the-declared-10 differ by six unscored classes per month. The 13 rows below are
+> therefore listed as **measured-zero over their scored classes**, with the scored-class count
+> named on every row — the population each zero is zero over, which SC-11(f) requires named.
 > Seven of the thirteen are zero over all ten declared classes; six — every nq month — are zero
-> over four. **No row in this table may be quoted as a pass, and the six nq rows may not be
-> quoted as evidence of cleanliness at all.**
+> over four. **What a row of such a table may be quoted as is SC-11(f)'s, cited; the six nq
+> rows in particular are not evidence of cleanliness.**
 
 **The 13 measured-zero instrument-months, named, with their scored-class count:**
 
@@ -2116,8 +2287,10 @@ tightest are zs 2025-08 mbo_all at **−3 ns** and le 2025-11 mbo_all at **−5 
 time by nanoseconds, but it does end before it.
 
 **The predicate is checkable from the lattice alone — no event data.** It reads only the
-`timestamp` column of the snapshot frame. That is what makes it usable as a **declared cohort
-definition** in §C rather than as a post-hoc description. `n3\cohort_profile.csv` also records
+`timestamp` column of the snapshot frame. That is what satisfies `PREREG.md` §6.2 SC-8(c) (ex
+ante means checkable before any detector runs — cited, not restated) for the **declared cohort
+definition** in §C; this predicate and its coverage are the declared cohort SC-8(c) requires
+regenerable from the declared inputs alone. `n3\cohort_profile.csv` also records
 **0 non-monotonic rows and 0 floor-decreasing rows** across all 48 instrument-months, so the
 cohort is well-defined everywhere. Cross-checks: `n3\compare_output.txt` — 456 of 456 cells
 matched against `n1\declared_map.csv` with 0 disagreements; 151 of 151 matched against M5 with 0
@@ -2193,24 +2366,27 @@ would in addition require a cross-generation join whose counts report the genera
 well as the fixture (§13(b), §13(h)). **Any statement of this cause that says "no NQ MBO data
 exists", or that says same-generation NQ MBO data is absent, is wrong and is withdrawn.**
 
-**Gate consequence, declared:** an unscored cell **requires no finding and forbids none**. It
-enters no denominator, contributes to no rate, and **cannot be reported as a pass**. A gate
-report that counts the 72 as "clean" — or that quietly folds them into a corrected-side
-cleanliness statement — has converted absence of data into evidence, which is the failure mode
-R9's rationale names ("silence and belief never convert into a pass"). Whenever nq appears in
-any table in this file or in any gate output, it must carry the **TRADES-CLASSES-ONLY** label
-together with the correct reason: **no MBO file at the fixture path `processed\nq\`** — where
-`get_data_dir` resolves because `C:\MBO_data` is absent — and never "no data exists" and never
-"no same-generation MBO data". Same-generation MBO **does** exist, at
+**Gate consequence:** `PREREG.md` §7.7 SC-6(a) and SC-6(e) (the `unscored` state at cell level;
+the pass prohibition is absolute), with §6.2 SC-3(b) — cited, not restated. What this
+declaration supplies is SC-6(b)'s cell-level unscored ledger: the 72 cells above, by name, with
+their ground (no MBO file at the fixture path) and missing path (`n1\unscored_ledger.csv`),
+frozen at the tag (§D.1 item 3). R9's rationale ("silence and belief never convert into a pass")
+is the working resolution that recorded the principle for this fixture. **Labelling practice for
+nq in this file** (`PRACTICES.md` P-83): every appearance of nq in a table carries the
+**TRADES-CLASSES-ONLY** label together with the correct reason — **no MBO file at the fixture
+path `processed\nq\`**, where `get_data_dir` resolves because `C:\MBO_data` is absent — never
+"no data exists" and never "no same-generation MBO data". Same-generation MBO **does** exist, at
 `pc2_transfer\processed\nq\nq_mbo_{month}.parquet`, a path the builder never reads; adopting
-either that family or the v4 family into the acceptance denominator is class C. The
-TRADES-CLASSES-ONLY label is required on every such appearance regardless.
+either that family or the v4 family into the acceptance arithmetic is the class C move
+`PREREG.md` §6.1 SC-10(b) governs.
 
 ### (h) NON-GATED DIAGNOSTIC — the NQ cross-generation MBO measurement (item X4)
 
-**This subsection is NOT part of the gate. Nothing in it enters any acceptance criterion, any
-denominator, any rate, or the §D.1 freeze as a gate-consumed number.** It is separated from
-(a)-(g) for exactly that reason, and it is labelled at every point of use.
+**This subsection is declared NOT PART OF THE GATE — the marking `PREREG.md` §6.1 SC-10(a) (a
+declaration may carry data the gate does not consume, if it says so in terms) requires, under
+SC-10(b)'s condition on the exemption; cited, not restated.** It is separated from (a)-(g) for
+exactly that reason, excluded from the §D.1 freeze (item 6), and labelled at every point of use
+*(instance: non-gated data, marked)*.
 
 **What it is.** §13(g) records that nq's six MBO classes are unscored because **the fixture path
 `processed\nq\` holds no MBO file of any generation** — not because the archive lacks NQ MBO, and
@@ -2230,8 +2406,9 @@ the v3 fixture lattice, on the same strict/equal/`decision_T` definitions as the
   v4 lattice does not, so a v4-event / v3-lattice join reports a quantity that mixes the
   overhang with the generation mismatch. It is a diagnostic of *whether an MBO overhang is
   present at all* on nq, not a measurement of the fixture's own MBO overhang.
-- **Moving it into the acceptance denominator later is class C** (PREREG.md line 93), not a
-  working resolution and not a `DEVIATIONS.md` entry.
+- **Moving it into the acceptance arithmetic later is class C** — `PREREG.md` §6.1 SC-10(b)
+  (the exemption is conditional), cited; not a working resolution and not a `DEVIATIONS.md`
+  entry.
 
 **Results (folded in by the orchestrator, 2026-08-12, from item X4; artifacts under `x4\`).**
 
@@ -2308,8 +2485,12 @@ Artifacts: `x4\nq_mbo_diagnostic.csv` (the mandated deliverable), `x4\join_sound
 
 ### (i) BOTH MAPS, published side by side — the full-class map AS MEASURED and the fixture-universe-restricted map (R17(ii))
 
-**The obligation, stated first.** Delta-issued working resolution **R17(ii)** requires both maps
-to be published side by side with the delta explicit. **Neither replaces the other.** The
+**The obligation, stated first.** Both maps are published side by side with the delta explicit
+and neither replaces the other — `PREREG.md` §6.2 SC-3(e) (one scoring key, and only one),
+cited and not restated; delta-issued working resolution **R17(ii)** is the record of its
+adoption for this fixture (`PRACTICES.md` P-87 records the publication practice). *(Instance:
+the restricted map below is the reporting re-aggregation, with its delta, that SC-3(e)
+governs.)* The
 full-class map is the measurement and is what `n1\declared_map.csv` contains; the restricted map
 is a re-aggregation of that same artifact over a narrower class set, adding no new measurement
 and changing no cell. Source for the restricted figures: `y1\trade_class_only_map.csv` (96 rows
@@ -2336,11 +2517,10 @@ and changing no cell. Source for the restricted figures: `y1\trade_class_only_ma
 > fixture's column universe is the four **trade** classes — `trades_all`, `trades_buy`,
 > `trades_sell`, `trades_large`.
 
-**This justification makes no reference to what the restriction does to any count, and none may
-be added to it.** R17(i) requires the criterion to stand on the column universe by itself,
-because a restriction adopted for its effect on a number is a restriction shaped by that number
-— the same failure PREREG.md line 480 forbids in the large. The counts are stated below, as a
-separate factual matter, and are not part of the reason.
+**This justification makes no reference to what the restriction does to any count** — the form
+`PREREG.md` §6.2 SC-8(d) (a scope choice is justified independently of its effect on any
+number) requires; cited, not restated. R17(i) is the working resolution that applied it here.
+The counts are stated below, as a separate factual matter, and are not part of the reason.
 
 **MAP 1 vs MAP 2 — CORRECTED SIDE.**
 
@@ -2409,9 +2589,9 @@ different cell as well as a smaller number, and roughly a threefold fall in rate
 moves: no cell changes sign, no unscored cell becomes scored, and the 72 unscored cells of
 §13(g) are unaffected in either map.
 
-**What the restricted map IS and IS NOT, so the two are never confused.** It is a **REPORTING
-object**, published to satisfy R17(ii) and to make §13(j)'s quotation rules checkable. **It is
-NOT a second scoring key, and it changes no adjudication.** The gate continues to score against
+**What the restricted map IS, so the two are never confused.** It is a **REPORTING object** in
+the sense of `PREREG.md` §6.2 SC-3(e) (one scoring key, and only one — cited, not restated),
+published under R17(ii) and to make §13(j)'s quotation rules checkable. The gate scores against
 `n1\declared_map.csv` as frozen by §D.1 item 3, and no cell that adjudicates a fed-column
 finding is dropped by the restriction — because **every one of the eleven REQUIRED columns is
 already governed by a `trades_*` class** (§A.6.1's third table column: `trades_all` on nine,
@@ -2429,7 +2609,8 @@ L206/L231), so a row whose absorbed window overhangs its own stamp overhangs it 
 event stream that has an event in that window. The MBO stream is denser and therefore populates
 the overhang window more often and more sharply, which is why the magnitudes fall — but the
 cells where an overhang exists at all are a property of the lattice, and they do not move.
-**An all-zero return would have been a FINDING, not a pass:** it would have meant that the
+**An all-zero return would have been a FINDING, not a pass** — `PREREG.md` §7.8 SC-11(e) (an
+unexpected all-zero is a finding, not a pass), cited: on this fixture it would have meant that the
 corrected-side violations recorded in §13(b) were carried entirely by an event source no fixture
 column consumes, and that no fixture column violates anywhere on the corrected side — which
 would have put criterion 1's REQUIRED list, and the discrimination framing of the corrected
@@ -2462,25 +2643,26 @@ may be quoted **for**.
    higher-resolution view of ONE mechanism, not a second mechanism — which is also why §13(i)'s
    restricted map returns the same 18 cells.
 
-**They must NEVER again be quoted as:**
+**What they may never be quoted as is registered at `PREREG.md` §6.1 SC-10(d) (four forbidden
+uses of non-gate data) and is cited, not restated. Applied to this fixture, the four read:**
 
-1. **Evidence about any fed column, in either direction.** An `mbo_*` class being strict-positive
-   in a cell says nothing about whether any of the 35 columns violates in that cell, and its
-   being zero says nothing about any column being clean. They attach to no column at all.
-2. **Any criterion-1 arithmetic** — no denominator, no REQUIRED finding, no `k of N` term.
-   §A.6.1 already excludes them; Y1 confirms there is no route by which they could enter, and
-   N = 11 is re-derived unchanged against the columns the fixture actually contains (§A.6.4).
-3. **Any unqualified "X of 48" headline.** Where the sentence is about the fixture's FED
-   columns, the class set is the four trade classes: **18/48 strict corrected (unchanged), but
-   11/48 equal-non-zero and 2/48 equal-only — not 35 and 17** (§13(i)).
-4. **Any unqualified "max strict" or "max equal" — and any peak stated without naming its
-   METRIC.** The published corrected peak — zc 2025-09, 111,334, 19.16% — is an `mbo_all`
-   figure. Restricted to the fed columns (trade classes), the peak differs by metric and both
-   must be named: the **RATE peak is zc 2025-10 — 34,492 of 634,445 corrected rows, 5.44%**;
-   the **ABSOLUTE peak is gc 2025-10 — 37,913 of 772,447 corrected rows, 4.91%**. Neither is
-   "the" peak. §13(a)'s class-set rule already requires the class set to be named on every "max
-   across classes"; after Y1 that rule is load-bearing, not housekeeping, and it is extended
-   here: **a peak is quoted with its class set AND its metric, or it is not quoted.**
+1. **(SC-10(d)(1) — evidence about a fed column.)** An `mbo_*` class being strict-positive in a
+   cell says nothing about whether any of the 35 columns violates in that cell, and its being
+   zero says nothing about any column being clean. They attach to no column at all.
+2. **(SC-10(d)(2) — criterion-1 arithmetic.)** §A.6.1 contains no `mbo_*` column; Y1 confirms
+   there is no route by which one could enter, and N = 11 is re-derived unchanged against the
+   columns the fixture actually contains (§A.6.4).
+3. **(SC-10(d)(3) — an unqualified headline over the scored population.)** Where the sentence
+   is about the fixture's FED columns, the class set is the four trade classes: **18/48 strict
+   corrected (unchanged), but 11/48 equal-non-zero and 2/48 equal-only — not 35 and 17**
+   (§13(i)).
+4. **(SC-10(d)(4) — an unqualified peak.)** The published corrected peak — zc 2025-09, 111,334,
+   19.16% — is an `mbo_all` figure. Restricted to the fed columns (trade classes), the peak
+   differs by metric, and both are named: the **RATE peak is zc 2025-10 — 34,492 of 634,445
+   corrected rows, 5.44%**; the **ABSOLUTE peak is gc 2025-10 — 37,913 of 772,447 corrected
+   rows, 4.91%**. Neither is "the" peak. §13(a)'s class-set statement (SC-10(c)) names the class
+   set on every "max across classes"; SC-10(d)(4) adds the metric, and after Y1 that is
+   load-bearing, not housekeeping.
    (Derivation: `y1\trade_class_only_map.csv`, corrected rows, `max_strict_trade_only` over
    `rows`; top five by rate are zc 2025-10 5.44%, zc 2025-09 5.27%, gc 2025-10 4.91%,
    zc 2025-08 4.29%, zs 2025-08 3.81%.)
@@ -2495,9 +2677,10 @@ whose MBO content is opposite:
 > Any reasoning that treats "the 35-set" as the bounce-free set would reach the opposite MBO
 > conclusion. The sets are disjoint in exactly the way that matters here.
 
-**Consequence for this file and for any gate report:** "the 35-column set" always means
-`ALL_L2_FEATURES` (`phase7_l2_sim.py` lines 73-108), never `BOUNCE_FREE_FEATURES`. Any future
-re-derivation must name the constant, not the length. The `feature_set` values `Full` / `BFree`
+**The named constant `PREREG.md` §6.2 SC-4(j) (the scored set is named, not counted) requires
+the declaration to declare — cited, not restated:** "the 35-column set" in this file means
+`ALL_L2_FEATURES` (`phase7_l2_sim.py` lines 73-108), never `BOUNCE_FREE_FEATURES`; any
+re-derivation names that constant under SC-4(j). The `feature_set` values `Full` / `BFree`
 that the 45-set result families carry (§0.4 item 2) are exactly where a reader would otherwise
 pick up the wrong 35.
 
@@ -2509,20 +2692,26 @@ pick up the wrong 35.
 > exactly the join of the two artifacts, which is why the join is stated at the top of it.
 
 **Everything in this section is stated POST-LAG** — about the value actually FED to the model at
-row `t`, not about the raw construction. On the contaminated side the fed value is the row's own
-construction; on the corrected side it is the row `t-1` construction (`phase7_l2_sim.py` line
-276). And **everything is stated SIDE-RELATIVELY**: the same column name is a violation on one
-side and, on the other side, a violation only on a declared cohort. There is no side-independent
-list of leaking columns in this fixture, and writing one would be a category error.
+row `t`, not about the raw construction: the representation `PREREG.md` §2.9 SC-1(b) requires
+named, and the one SC-3(d) requires the map stated in. On the contaminated side the fed value is
+the row's own construction; on the corrected side it is the row `t-1` construction
+(`phase7_l2_sim.py` line 276). And **everything is stated SIDE-RELATIVELY**, as `PREREG.md`
+§6.2 SC-3(d) (the map is stated in the terms the declaration declares) requires — cited, not
+restated: the same column name is a violation on one side and, on the other side, a violation
+only on a declared cohort; this fixture has no side-independent list of leaking columns.
+*(Instance: the tables of C.1 and C.2 are the side-relative enumeration SC-3(d) requires, with
+the declared cohort SC-8(c) requires checkable pre-run.)*
 
 **The comparator, pinned.** Under PREREG.md lines 190-193 the comparator evaluates
-`a(j,c) <= d(i)` with `a` the **`at_source_timestamp` truth** — for the join families below,
-`ts_floor + 1s`, the instant the wall-clock-second aggregate completes. The
-**`at_bar_close` role recorded in §4 and in the T2 addendum is an APPROXIMATION only**: it names
-where the value sits on the lattice, not when it became knowable. **`at_bar_close` is never
-scored against.** Any gate arithmetic that used `at_bar_close` as the availability instant for a
-join-family column would score the fixture against the wrong comparator and would find the
-contaminated side clean.
+`a(j,c) <= d(i)`; the declared availability instant for the join families below is the
+**`at_source_timestamp` truth** — `ts_floor + 1s`, the instant the wall-clock-second aggregate
+completes. The **`at_bar_close` role recorded in §4 and in the T2 addendum is declared an
+APPROXIMATION of that instant** — it names where the value sits on the lattice, not when it
+became knowable — which is the statement `PREREG.md` §2.9 SC-1(c) (a role is a position, not an
+availability instant) requires the declaration to make, and under which the approximating role
+is not the scored instant; cited, not restated. On this fixture, scoring `at_bar_close` as the
+availability instant for a join-family column would find the contaminated side clean — which is
+why the declaration is made here, in terms.
 
 ### C.1 — Contaminated side: the ts_floor-overhang family, BY COLUMN
 
@@ -2622,26 +2811,28 @@ Basis: **R1's `ties: available`** (registered default, PREREG.md lines 190-197).
 stamped `T` contains events strictly before `T` (§3, `process_mbo.py` 354-363), so such a cell's
 information content is realized before `T` while its stamp equals `T`; with `d(i) = T`,
 `a = T <= d = T` admits it. **These 27 constructions are not availability violations on either
-side.** That is the AVAILABILITY DECLARATION and it covers all 27. **Its GATE CONSEQUENCE does
-not, so the consequence is stated PER CATEGORY below and no column carries two:** an
-availability-class finding is a **FALSE POSITIVE on the 22 OUT OF JURISDICTION columns of §A.6.2
-ONLY** — Category 1 below, being the 4 manifest-CLEAN columns plus the 18 of this list that
-Category 1(b) enumerates. Two carve-outs, each following an already-issued resolution rather than
-making a new one:
+side.** That is the AVAILABILITY DECLARATION and it covers all 27. **An availability declaration
+about a unit and the unit's gate class are different objects — `PREREG.md` §6.2 SC-4(g) (one
+gate class per unit), cited — so the gate class is stated PER CATEGORY below and no column
+carries two.** The false-positive consequence attaches to the **22 OUT OF JURISDICTION columns
+of §A.6.2 ONLY** — `PREREG.md` §6.2 SC-5(c), cited — Category 1 below, being the 4
+manifest-CLEAN columns plus the 18 of this list that Category 1(b) enumerates. Two carve-outs,
+each following an already-issued resolution rather than making a new one:
 
 - **Category 2 — `book_imbalance_ratio` is UNSCORED (working resolution R16), and a finding on it
-  is NOT a false positive.** §C.4(c), verbatim: "no finding on it counts for or against any
-  criterion"; §A.6.3: "It carries ONE gate class and one only — UNSCORED"; and frozen §D.1 item 2
-  places it in UNSCORED alongside `buy_volume_10s`. **Scoring a finding on it as a false positive
-  would contradict that frozen class assignment.** That it WOULD be OUT OF JURISDICTION if it
-  were constructible is recorded at §A.6.3 and at Category 2 below, and is **not applied**.
-- **Category 3 — the 8 not-fed columns hold NO gate class whatever, so a finding on one of them
-  is not scored at all — not as a false positive, not as anything else.** Per Category 3 below,
-  the gate **does not adjudicate them**: they are outside the fixture's column universe and enter
-  no class of the 35-column partition, no denominator and no criterion.
+  is not a false positive** (`PREREG.md` §7.7 SC-6(d), findings on `unscored` units — cited).
+  §A.6.3: "It carries ONE gate class and one only — UNSCORED"; frozen §D.1 item 2 places it in
+  UNSCORED alongside `buy_volume_10s`. **Scoring a finding on it as a false positive would
+  contradict that frozen class assignment.** That it WOULD be OUT OF JURISDICTION if it were
+  constructible is recorded at §A.6.3 and at Category 2 below, and is **not applied**.
+- **Category 3 — the 8 not-fed columns hold NO gate class whatever** (`PREREG.md` §6.2 SC-4(g),
+  last sentence — an unfed unit holds no gate class; cited): the gate **does not adjudicate
+  them**, because they are outside the fixture's column universe (Category 3 below).
 - **Category 4 — the REQUIRED 11 are not in this list at all**, and a finding on one of them is
   REQUIRED, not a false positive (§A.6.1). Stated here so that all four categories' gate
-  consequences appear together, per-category, with no column carrying two.
+  consequences appear together, per-category, with no column carrying two. *(Instance: the
+  category lists below are the declared facts on which each unit satisfies its cited SC-4(b)
+  row.)*
 
 **Scoping check, performed against §A.6.2, §A.6.3, §C.4(c) and frozen §D.1 item 2 before this
 passage was written:** the 22 is §A.6.2's count and list; the `book_imbalance_ratio` carve-out
@@ -2666,8 +2857,9 @@ this pass against `f3\fixture_manifest_DRAFT.json` — its 35-entry `columns` ar
 
 **CATEGORY 1 — OUT OF JURISDICTION: 22 columns of the 35-column partition. VERIFIED COUNT: 22.**
 Source: §A.6.2, cross-checked against the manifest's `class` field on each name. Declared
-availability-legal at the boundary instant under R1's `ties: available`; an availability-class
-finding on any of them is a FALSE POSITIVE. Two sub-groups, kept apart because their
+availability-legal at the boundary instant under R1's `ties: available` — the ground on which
+each satisfies `PREREG.md` SC-4(b), row OUT OF JURISDICTION; the false-positive consequence is
+SC-5(c)'s (cited). Two sub-groups, kept apart because their
 false-positive routes differ, **not** because they are different classes:
 
 - **(a) Manifest-CLEAN — 4:** `minutes_since_open`, `session_open`, `session_mid`,
@@ -2691,19 +2883,20 @@ COUNT: 1.** Derived independently of Category 1 and it is **not** a member of it
   **lag treatment differs** — lag-exempt in the corrected build against lagged in
   `phase7_l2_sim.py` (§17 item 6, §C.4(c); `t4\fixture_manifest_35col_DRAFT.json`,
   `unconstructible_columns`). Nothing in this spike resolves which treatment the stored
-  predictions were produced under. **A column whose lag treatment is unresolved cannot be
-  scored under ANY reading** — not under either tie branch, not under either comparator, not on
-  either side. Its gate status is **EXCLUDED**, and it enters no denominator.
+  predictions were produced under. Its lag treatment is therefore declared **UNRESOLVED** — the
+  second exclusion ground `PREREG.md` §6.2 SC-4(e) (grounds for exclusion are declared, and
+  declared pre-run) registers; cited, not restated. Its gate status is **EXCLUDED** on that
+  ground, and its gate class is UNSCORED (§A.6.3).
 - **Recorded fact, NOT applied: it WOULD be OUT OF JURISDICTION if it were constructible.** Its
   construction is a pure function of the same row's two depth sums (manifest `class` =
   `DESCENDANT`, parents `total_bid_depth` / `total_ask_depth`; `phase7_l2_sim.py` lines 188-189),
   so on the availability question alone it sits exactly where Category 1(b) sits. **That fact is
   recorded and is not acted on.** Assigning it both classes would put one column in two frozen
-  classes at once, and **a column carrying two frozen classes violates "no field answers two
-  questions"**. R16 resolves it to ONE class: UNSCORED. §D.1 item 2 freezes it there, alongside
-  `buy_volume_10s`.
-- Reinstating it changes the criterion-1 denominator and is **class C**; the lag question must
-  be resolved first.
+  classes at once, which `PREREG.md` §6.2 SC-4(g) (one gate class per unit; §0.2.1 line 79)
+  forbids — cited. R16 resolves it to ONE class: UNSCORED. §D.1 item 2 freezes it there,
+  alongside `buy_volume_10s`.
+- Reinstatement is **class C** (`PREREG.md` SC-4(e), SC-4(h) — cited); the lag question must be
+  resolved first.
 
 **CATEGORY 3 — the 8 Phase-5-only columns: OUTSIDE THE FIXTURE'S COLUMN UNIVERSE. VERIFIED
 COUNT: 8.** `depth_pctile_60s`, `depth_pctile_300s`, `mid_return_60s`, `mid_return_300s`,
@@ -2711,17 +2904,18 @@ COUNT: 8.** `depth_pctile_60s`, `depth_pctile_300s`, `mid_return_60s`, `mid_retu
 the manifest's 19-entry `not_fed_to_phase7_models` array and absent from its 35-entry `columns`
 array. **This is a FOURTH category and is never folded into OUT OF JURISDICTION.** OUT OF
 JURISDICTION is a *gate class held by a fed column*; these eight are **not fed at all** and
-therefore hold **no gate class whatever** — they enter no class of the 35-column partition, no
-denominator, and no criterion. Declaring them "out of jurisdiction" would imply the gate
-adjudicates them and declines; it does not adjudicate them, because the fixture does not contain
-them. (The other 11 not-fed columns are the 10 MBO-derived Phase 5 columns plus
+therefore hold **no gate class whatever** — `PREREG.md` §6.2 SC-4(g), last sentence (an unfed
+unit holds no gate class, and calling it out of jurisdiction would imply adjudication), cited
+and not restated. The fixture does not contain them, so the gate does not adjudicate them. (The
+other 11 not-fed columns are the 10 MBO-derived Phase 5 columns plus
 `trade_count_10s` — likewise outside the fixture's column universe; see §13(i), §13(j).)
 
 **CATEGORY 4 — REQUIRED: the 11. VERIFIED COUNT: 11.** `net_delta_1s`, `net_delta_5s`,
 `net_delta_10s`, `net_delta_30s`, `net_delta_60s`, `sell_volume_10s`, `large_trade_count_10s`,
 `vwap_distance`, `trade_volume_1s`, `trade_count_1s`, `dollar_volume_1s` (§A.6.1). All eleven
-verified present in the manifest's 35-entry `columns` array. Derived from the DECLARED MAP under
-R11, not from the manifest's construction classes. Re-derived against the fixture's actual column
+verified present in the manifest's 35-entry `columns` array. Derived from the declared map by
+the registered predicates (`PREREG.md` SC-4(a)–(b); working resolution R11), not from the
+manifest's construction classes. Re-derived against the fixture's actual column
 sources by Y1: all eleven are trades-parquet-fed (`vwap_distance` additionally snapshot-fed for
 its `mid` term) and **none is MBO-fed**, so **N is unchanged at 11**.
 
@@ -2735,9 +2929,10 @@ which is the second member of the UNSCORED class and belongs to none of the four
 > **Category 3's 8 are OUTSIDE this arithmetic entirely** — they are 8 of the 19 not-fed
 > columns, and adding them to any of the four totals is the error this passage exists to stop.
 
-**None of the four categories enters the criterion-1 denominator except Category 4**, which is
-the denominator. The availability declaration stated above is unaffected by any of this
-bookkeeping, and so is the 11 + 22 + 2 = 35 partition arithmetic of §A.6.4.
+**Category 4 is the criterion-1 denominator** — the REQUIRED list, whose length is N under
+`PREREG.md` §6.2 SC-4(b) (cited); Categories 1, 2 and 3 are not in it. The availability
+declaration stated above is unaffected by any of this bookkeeping, and so is the 11 + 22 + 2 =
+35 partition arithmetic of §A.6.4.
 
 > **DELETED THIS PASS (working resolution R11): the clause that routed these columns to
 > criterion 2.** **Referent, stated so the four-category passage above cannot be read into it:
@@ -2754,41 +2949,47 @@ bookkeeping, and so is the 11 + 22 + 2 = 35 partition arithmetic of §A.6.4.
 > 2 could never receive a finding on one of them and the routing was inoperative text that
 > looked like a rule.
 >
-> **What happens instead, declared:**
+> **What happens instead — the routing `PREREG.md` §6.2 SC-5 (adjudication routing) registers,
+> cited limb by limb and not restated; this file supplies the units each limb applies to:**
 > 1. **An availability-class finding on any of the 22 OUT OF JURISDICTION columns (§A.6.2) is a
->    FALSE POSITIVE by this declaration** — recorded as such, by name, in the gate report. It is
->    not converted into a criterion-2 failure, and it is not silently dropped either. **The scope
->    is the 22, NOT the 27-column list this note is about**, and the two carve-outs stated at the
+>    declared FALSE POSITIVE** — `PREREG.md` SC-5(c) — recorded as such, by name, in the gate
+>    report; not a criterion-2 failure, and not silently dropped either. **The scope is the 22,
+>    NOT the 27-column list this note is about**, and the two carve-outs stated at the
 >    availability declaration above bind here identically: `book_imbalance_ratio` is UNSCORED
->    (R16, §A.6.3, §C.4(c), frozen §D.1 item 2) and a finding on it counts neither for nor against
->    any criterion; the 8 not-fed columns hold no gate class whatever and the gate does not
->    adjudicate them.
+>    (R16, §A.6.3, §C.4(c), frozen §D.1 item 2; SC-6(d)); the 8 not-fed columns hold no gate
+>    class whatever and the gate does not adjudicate them (SC-4(g)).
 > 2. **On the corrected side a false positive on one of those same 22 is also a criterion-3
->    failure**, because the amended criterion 3 (§A.8) scores every corrected-side finding against
->    the declared map and the map declares no violation on those columns. That limb of the old
+>    failure** — `PREREG.md` SC-5(d) (the double charge where the criteria are independent) with
+>    SC-3(b): the amended criterion 3 (§A.8) scores every corrected-side finding against the
+>    declared map and the map declares no violation on those columns. That limb of the old
 >    sentence was correct and survives. It carries the same scope: neither carve-out in item 1
 >    routes to criterion 3 either.
-> 3. **A finding about their LABEL-BASE character belongs to L2a**, and is **neither credited
->    nor penalized** by this availability gate — see the paragraph immediately below.
-> 4. **The four manifest-CLEAN columns are a different case and DO route to criterion 2**:
->    `minutes_since_open`, `session_open`, `session_mid`, `session_close` (§A.6.2(a)). Criterion
->    2 is exactly in scope for them, which is why the two sub-groups are kept apart.
+> 3. **A finding about their LABEL-BASE character belongs to L2a** — the jurisdiction assignment
+>    `PREREG.md` SC-5(e) requires, with SC-5(e)'s consequence for this gate — see the paragraph
+>    immediately below.
+> 4. **The four manifest-CLEAN columns are a different case and DO route to criterion 2** —
+>    `PREREG.md` SC-5(c), the units the declaration declares clean: `minutes_since_open`,
+>    `session_open`, `session_mid`, `session_close` (§A.6.2(a)). Criterion 2 is exactly in scope
+>    for them, which is why the two sub-groups are kept apart.
 
 **Their label-base character is a real property, and it is assigned elsewhere.** `tick_direction`
 (reads `mid(t)`, the label base), `vwap_distance` and `weighted_mid` (both of the
 `(X - mid)/tick` form) sit at `mid(t)`, which is exactly what `fwd_move_ticks_*` measures FROM
 (`phase5_ml.py` lines 216-219; `phase5_audit.py` line 101, verbatim: "The label predicts
-direction FROM mid[t]."). **That character is assigned to L2a jurisdiction and is OUTSIDE this
-availability gate.** This declaration neither scores it nor denies it: it is not an availability
-question under the declared tie branch, and routing it here would let a label-base finding
-masquerade as an availability finding, corrupting both counts. (Note the asymmetry R1 accepts:
+direction FROM mid[t]."). **That character is assigned to L2a jurisdiction — the ex-ante
+detector-jurisdiction assignment `PREREG.md` §6.2 SC-5(e) (jurisdiction between detectors is
+declared, and a boundary cuts both ways) requires the declaration to make; its consequence for
+this gate is SC-5(e)'s, cited and not restated (§A.6.2 states the same assignment and is the
+second site of it).** It is not an availability question under the declared tie branch. (Note
+the asymmetry R1 accepts:
 under `ties: available` the fixture's standing as an availability-violation exemplar rests on the
 C.1/C.2 join families, not on the shift(1) absence per se — Part I §6 states the same thing from
 the other direction.)
 
 ### C.4 — Column-level gate dispositions, declared before any run
 
-**(a) `buy_volume_10s` — EXCLUDED from the criterion-1 denominator. Degenerate constant.**
+**(a) `buy_volume_10s` — EXCLUDED, on the degenerate-unit ground `PREREG.md` §6.2 SC-4(e)
+registers (cited). Degenerate constant.**
 `phase5_ml.py` line 231 `is_buy = trades["aggressor_side"].isin(["B","Buy","buy"])` matches none
 of the actual parquet values (BUY_AGGRESSOR / SELL_AGGRESSOR / UNKNOWN; `isin` is exact
 case-sensitive equality), so line 234 `trades["buy_vol"] = np.where(is_buy, trades["size"], 0)`
@@ -2796,21 +2997,21 @@ is identically 0 and line 254's rolling sum is identically 0. Same defect at
 `phase7_l2_sim.py` line 207 (§15). Independently visible in the map: the **`trades_buy` class is
 0 strict and 0 equal in every one of its 96 cells, on BOTH sides** (`n3\predicate_check.csv`
 per-class total `trades_buy` `strict_viol` = 0 over 48 cells; `n1\declared_map.csv` `trades_buy`
-rows). **A dead-zero column cannot carry an availability finding for an availability reason**,
-and leaving it in the denominator would make criterion 1 unsatisfiable for a reason unrelated to
-detection. It is declared out, before any run, and must be named in the gate report as EXCLUDED
-rather than as MISSED.
+rows). It is a degenerate unit that cannot carry a finding of the scored class — the first
+exclusion ground SC-4(e) registers, with SC-4(e)'s own reason; cited, not restated. It is
+declared out here, before any run (SC-4(e); SC-8(c)); its reporting as EXCLUDED rather than as
+MISSED is `PREREG.md` §7.8 SC-11(g)'s (cited; `PRACTICES.md` P-47).
 
 **(b) Session-flag staleness — a DOCUMENTED QUIRK. It licenses NO corrected-side finding.**
 `session_open`, `session_mid`, `session_close` (and their parent `minutes_since_open`) are
 deterministic clock functions with column_role `always`, yet they are not in `EXEMPT_COLS`
 (`phase7_l2_sim.py` line 266), so line 276 lags them: the FED session flag at row `t` is the
-row `t-1` flag (T2 addendum, "Recorded quirk"). This is **staleness, not unavailability** — a
-value from the past is always available, and the comparator asks whether a cell was knowable by
-`d(i)`, which a `t-1` clock flag trivially was. **Declared: this quirk licenses NO finding on
-`session_open` / `session_mid` / `session_close` on the corrected side**; a detector that reports
-one has produced a false positive under the amended criterion 3. Recorded as a documented
-as-built property so it cannot later be re-read as a discovery.
+row `t-1` flag (T2 addendum, "Recorded quirk"). This is **staleness, not unavailability** —
+`PREREG.md` §2.9 SC-1(e) (staleness is not unavailability), cited and not restated: a `t-1`
+clock flag was knowable by `d(i)`. **Declared fact: the lagged session flags on the corrected
+side are a documented as-built property of this fixture**, recorded here so it cannot later be
+re-read as a discovery; what a finding resting on that staleness is, on either side, is
+SC-1(e)'s.
 
 **(c) `book_imbalance_ratio` — lag discrepancy UNRESOLVED; gate status EXCLUDED.**
 T4 records that the fixture build's `book_imbalance` column is a raw snapshot-parquet
@@ -2818,19 +3019,23 @@ pass-through whose construction cannot be verified equivalent from the fixture c
 **its lag treatment differs — lag-exempt in the corrected build vs lagged in `phase7_l2_sim.py`**
 (§17 item 6; `t4\fixture_manifest_35col_DRAFT.json`, `unconstructible_columns`). Nothing in this
 spike resolves which treatment the stored predictions were produced under. **The discrepancy is
-recorded as UNRESOLVED and the column's gate status is EXCLUDED** — which costs nothing, since
-it is already one of the 7 UNCONSTRUCTIBLE columns of the 28-column projection. It enters no
-denominator on either side, and no finding on it counts for or against any criterion. If it is
-ever reinstated the lag question must be resolved first, and reinstatement changes the
-criterion-1 denominator — class C.
+recorded as UNRESOLVED and the column's gate status is EXCLUDED** — the second exclusion ground
+`PREREG.md` §6.2 SC-4(e) registers (cited) — which costs nothing, since it is already one of the
+7 UNCONSTRUCTIBLE columns of the 28-column projection. Its gate class is UNSCORED (§A.6.3;
+SC-4(b), §7.7 SC-6(a)). If it is ever reinstated the lag question must be resolved first, and
+reinstatement is class C (SC-4(e), SC-4(h)).
 
 **Summary of declared exclusions:** `buy_volume_10s` (degenerate constant) and
 `book_imbalance_ratio` (unresolved lag, already unconstructible). Everything else enumerated in
-C.1 and C.2 is IN. The exclusions are declared here, pre-run, and are frozen at the tag by §D.1.
+C.1 and C.2 is IN. The exclusions are declared here, pre-run, each on a ground `PREREG.md` §6.2
+SC-4(e) registers, and are frozen at the tag by §D.1 (SC-8(a)–(c)) — this is the
+declared-exclusions data SC-4(e) and SC-8(b) require: the named unit and its ground.
 
 ### C.5 — `vwap_distance`: the SOLE dual-ground column — REQUIRED on ONE ground, OUT OF JURISDICTION on the other (item S3)
 
-**Why this column gets its own subsection.** Of the 35 fed columns, `vwap_distance` is the
+**Why this column gets its own subsection** *(instance: the unit with two grounds that
+`PREREG.md` §6.2 SC-5(b) requires the declaration to name, with which ground governs)*. Of the
+35 fed columns, `vwap_distance` is the
 **only MIXED one** — the only column whose construction reads **both** raw files
 (`y1\column_universe.csv` row 21, `source_class` = "MIXED: snapshot parquet + trades parquet";
 §A.6.5 row 21). Every other column is single-sourced, so for every other column "which ground is
@@ -2867,34 +3072,35 @@ in the cells where the map declares it non-zero, that the finding must be adjudi
 The `mid` term contributes **nothing** to its REQUIRED status; strip the `vwap` term and the
 column would not be REQUIRED at all.
 
-**(c) THE REQUIRED FINDING IS SPECIFICALLY THE FORWARD-JOIN FINDING, so a detector must fire on
-THAT ground.** Criterion 1 asks for **at least one primary runtime finding attributed to
-`vwap_distance`** on the side and in the instrument-months where the map declares the violation
-(PREREG.md line 459; §A.6.1). **A finding that satisfies it must be a finding about the absorbed
-wall-clock-second trade window** — the `ts_floor` overhang. A detector that flags
-`vwap_distance` for reading the decision row's own mid has **not** produced the required
-finding, even though it has named the right column: it has named the right column on the wrong
-ground, and criterion 1 is not satisfied by column name alone.
+**(c) THE VIOLATING GROUND IS THE FORWARD-JOIN GROUND, and which ground a finding must be on is
+registered.** Criterion 1 asks for **at least one primary runtime finding attributed to
+`vwap_distance`** (PREREG.md line 459; §A.6.1); which ground satisfies that is `PREREG.md` §6.2
+SC-5(b) (attribution is to the ground, not to the name) — cited, not restated. On this column
+the violating ground is the absorbed wall-clock-second trade window — the `ts_floor` overhang —
+and the same-row `mid` read is the legal ground. A detector that flags `vwap_distance` for
+reading the decision row's own mid has named the right column on the wrong ground; SC-5(b)
+says what that is worth.
 
 **(d) AN AVAILABILITY-CLASS FINDING ON ITS SAME-ROW BOOK READ IS OUT OF JURISDICTION AND IS NOT
 THE REQUIRED FINDING.** The `mid[t]` read is declared availability-legal under R1 (ground 1
 above). An availability-class finding raised against **that** ground is the same kind of finding
-that §A.6.2 declares a **FALSE POSITIVE** on the 22, and it neither satisfies criterion 1 nor
-substitutes for the finding (c) requires. **It must be recorded on its own ground, not credited
-to the column's REQUIRED status.** Separately and outside this gate: the `(X - mid)/tick` form
-also makes the column a **label-base reader**, since `fwd_move_ticks_*` measures from `mid[t]`
-(`phase5_ml.py` 216-219; `phase5_audit.py` 101). **That character belongs to L2a** and is
-**neither credited nor penalized here** (§A.6.1's note, §C.3). Three characters, three
-dispositions, no double-counting: forward join → REQUIRED; same-row mid, availability class →
-out of jurisdiction, false positive if raised as an availability violation; same-row mid, label
-base → L2a, outside this gate entirely.
+that §A.6.2 declares a **FALSE POSITIVE** on the 22; how it is recorded, and that it is not
+credited to the column's REQUIRED status, is `PREREG.md` SC-5(b) (cited). Separately and outside
+this gate: the `(X - mid)/tick` form also makes the column a **label-base reader**, since
+`fwd_move_ticks_*` measures from `mid[t]` (`phase5_ml.py` 216-219; `phase5_audit.py` 101).
+**That character is assigned to L2a** (§A.6.1's note, §C.3), the assignment `PREREG.md` SC-5(e)
+requires, with SC-5(e)'s consequence (cited). Three characters, three dispositions, no
+double-counting — the instance SC-5(b) and SC-5(e) are applied to: forward join → REQUIRED;
+same-row mid, availability class → out of jurisdiction, false positive if raised as an
+availability violation; same-row mid, label base → L2a, outside this gate entirely.
 
 **THE FRAME: THIS IS R16's TREATMENT OF `book_imbalance_ratio`, APPLIED TO A COLUMN THAT CARRIES
 TWO GROUNDS RATHER THAN TWO CANDIDATE CLASSES.** R16 faced a column for which **two frozen gate
 CLASSES** were each defensible — OUT OF JURISDICTION on the availability question, UNSCORED on
 the unresolved-lag question — and resolved it to **ONE class only**, recording the other as a
-fact that is *not applied*, because **"a column carrying two frozen classes violates 'no field
-answers two questions'"** (§A.6.3, §C.3 category 2). The same discipline governs here, and the
+fact that is *not applied*, because a column carrying two frozen classes is what `PREREG.md`
+§6.2 SC-4(g) (one gate class per unit; §0.2.1 line 79) forbids (§A.6.3, §C.3 category 2). The
+same discipline governs here, and the
 distinction between the two cases is the point:
 
 | | `book_imbalance_ratio` (R16) | `vwap_distance` (this subsection) |
@@ -2904,9 +3110,9 @@ distinction between the two cases is the point:
 | resulting gate class | **UNSCORED**, one class only | **REQUIRED**, one class only |
 | what is recorded but not applied | that it WOULD be OUT OF JURISDICTION if constructible | that its `mid` term IS availability-legal, and that an availability finding on that term is out of jurisdiction |
 
-**AND THAT IS WHY IT SITS IN EXACTLY ONE GATE CLASS DESPITE THE DUAL GROUND.** A column's gate
-class is a statement about **what the gate does with a finding**, and the gate needs exactly one
-answer per column. `vwap_distance` has two grounds but only one of them can produce an
+**AND THAT IS WHY IT SITS IN EXACTLY ONE GATE CLASS DESPITE THE DUAL GROUND.** What a column's
+gate class *is* — and that the gate needs exactly one answer per column — is `PREREG.md` §6.2
+SC-4(g)'s (cited, not restated). `vwap_distance` has two grounds but only one of them can produce an
 availability violation, so the two grounds do **not** generate two classes — they generate one
 class plus one recorded-and-not-applied fact, which is the shape R16 established. **It appears
 once in §A.6.4's partition, in REQUIRED, and in no other class**; §A.6.5's cross-tabulation
@@ -2918,7 +3124,9 @@ second class on the strength of the `mid` term is making exactly the move R16 fo
 > **MEASURED ON ARTIFACT A** (§0.1) — the ZC 2025-01 lineage lattice and its event parquets.
 
 > **BOTH VERSIONS, PUBLISHED SIDE BY SIDE — THE FED-COLUMN RESTRICTION APPLIED SYMMETRICALLY
-> (delta-issued item S1).** §13(i) applies the fixture-universe restriction to the CORRECTED side
+> (delta-issued item S1).** *(Instance: per-cell map data on the contaminated side, with its
+> reporting re-aggregation and delta — SC-3(a), SC-3(e); peaks carry class set and metric,
+> SC-10(d)(4).)* §13(i) applies the fixture-universe restriction to the CORRECTED side
 > and publishes both maps. **Y1's premise is side-independent** — no fixture column consumes the
 > MBO event source, on either side — so the same restriction governs THIS section, whose
 > published headline (75.21%, the `total_events` family) has until now been an `mbo_*` figure.
@@ -3047,27 +3255,25 @@ strict-positive in **48 of 48** instrument-months under BOTH class sets (§13(i)
 sides remain separated by one to three orders of magnitude in the restricted map exactly as in
 the full one.
 
-**FORBIDDEN USE — §13(j)'s rules, applied to THIS side verbatim.** §13(j) states them for the
-corrected side. Y1's premise is side-independent, so they bind here identically, and they are
-restated in this section's own terms so that a reader of §14 alone cannot miss them. The six
-`mbo_*` classes remain SCORED cells of `n1\declared_map.csv`; every count in PROFILE 1 stands as
-measured; **what changes is only what they may be quoted FOR.**
+**FORBIDDEN USE — `PREREG.md` §6.1 SC-10(d) (four forbidden uses of non-gate data), cited for
+THIS side and not restated (SC-10(e): one copy; the declaration restates the rules for no
+side).** §13(j) applies them to the corrected side; Y1's premise is side-independent, so they
+bind here identically. The six `mbo_*` classes remain SCORED cells of `n1\declared_map.csv`;
+every count in PROFILE 1 stands as measured; **what changes is only what they may be quoted
+FOR.** The contaminated-side instance of each registered use — the figures, not the rule:
 
-1. **PROFILE 1's MBO bullet is not evidence about any fed column, in either direction.**
-   `mbo_all` at 75.21% says nothing about whether any of the 35 columns violates in this cell,
-   and had it been zero it would have said nothing about any column being clean. **It attaches
-   to no column at all.**
-2. **No criterion-1 arithmetic may be built on it** — no denominator, no REQUIRED finding, no
-   `k of N` term. **N = 11 and is unchanged** (§A.6.1, §A.6.4, §A.6.5); Y1 confirms there is no
-   route by which an `mbo_*` figure could enter it.
-3. **No unqualified "X of 48" headline.** Where the sentence is about the fixture's FED columns
-   the class set is the four `trades_*` classes. On the contaminated side the **strict** cell
-   count does not move — **48 / 48 under both class sets** — but the **equal** arithmetic does:
-   **equal-non-zero 42 / 48 → 23 / 48** (§13(i)). Quoting 42 as a fed-column fact is precisely
-   the error this rule stops.
-4. **No unqualified "max strict" or "max equal", and NO peak quoted without BOTH its class set
-   AND its metric.** Restated for the contaminated side (`y1\trade_class_only_map.csv`,
-   contaminated rows, `max_strict_trade_only` / `max_strict_declared10` over `rows`):
+1. **(SC-10(d)(1).)** PROFILE 1's MBO bullet attaches to no column at all: `mbo_all` at 75.21%
+   says nothing about whether any of the 35 columns violates in this cell, and had it been zero
+   it would have said nothing about any column being clean.
+2. **(SC-10(d)(2).)** **N = 11 and is unchanged** (§A.6.1, §A.6.4, §A.6.5); Y1 confirms there is
+   no route by which an `mbo_*` figure could enter criterion-1 arithmetic.
+3. **(SC-10(d)(3).)** Where the sentence is about the fixture's FED columns the class set is the
+   four `trades_*` classes. On the contaminated side the **strict** cell count does not move —
+   **48 / 48 under both class sets** — but the **equal** arithmetic does: **equal-non-zero 42 /
+   48 → 23 / 48** (§13(i)). Quoting 42 as a fed-column fact is the error SC-10(d)(3) stops.
+4. **(SC-10(d)(4).)** The contaminated-side peaks, each with its class set AND its metric
+   (`y1\trade_class_only_map.csv`, contaminated rows, `max_strict_trade_only` /
+   `max_strict_declared10` over `rows`):
    - **full-class RATE peak — es 2025-12, 613,447 / 620,108 = 98.93%, class `mbo_all`;**
    - **full-class ABSOLUTE peak — gc 2025-10, 646,575 of 772,448 rows = 83.70%, class
      `mbo_all`;**
@@ -3083,12 +3289,27 @@ measured; **what changes is only what they may be quoted FOR.**
      88.17%**; **ABSOLUTE — es 2025-01, 514,323 of 605,290 rows = 84.97%**; both classes
      `trades_all` ≡ `trades_sell`.
 
-   **None of those six figures is "the" peak, and none may be quoted without its class set and
-   its metric.**
+   **None of those six figures is "the" peak; each is quoted with its class set and its metric
+   (SC-10(d)(4)).**
+
+   **Summary-level peaks for this side — the EX-NQ figures** (`PRACTICES.md` P-111 records the
+   summary-level quotation practice; the per-cell requirement is `PREREG.md` SC-10(d)(4)'s).
+   nq's restricted peak (90.83%, nq 2025-01) is a **COVERAGE ARTIFACT**: nq's restricted and
+   full-class figures coincide only because nq has **no MBO classes to drop**, not because the
+   restriction spared it. **A summary-level statement of the restricted contaminated peak in
+   this file and in §14.1 therefore quotes the EX-NQ peak: RATE es 2025-11, 484,420 / 549,424 =
+   88.17%; ABSOLUTE es 2025-01, 514,323 of 605,290 rows = 84.97%; both classes `trades_all` ≡
+   `trades_sell`.** The nq figure appears only as a per-cell entry carrying its
+   TRADES-CLASSES-ONLY label and its coverage-artifact reason, not as the restricted
+   contaminated headline. Quoting 90.83% as the peak is the same error §13(j) item 4 stops on
+   the corrected side. *(This paragraph resolves the tension a verifier found between the
+   preceding sentence and the summary in §14.1: "none is the peak" governs PER-CELL quotation,
+   where every figure carries its class set and metric; this paragraph governs SUMMARY-LEVEL
+   quotation in this file, where a single peak is named and the coverage artifact is not it.)*
 5. **`trades_buy` is 0 strict and 0 equal in all 48 contaminated cells** (§C.4(a), §15), so the
    restricted contaminated surface is carried by **three live classes, not four** — the same note
-   §13(i) attaches to the corrected side. A gate report may not describe the restricted
-   contaminated surface as a four-class surface without it.
+   §13(i) attaches to the corrected side; a headline over it names that partition (`PREREG.md`
+   SC-10(c), cited).
 
 ### 14.1 — The same restriction across all 48 contaminated cells (a declared scope step-out)
 
@@ -3163,8 +3384,11 @@ cell where "the restriction changed nothing".
 Strict-positive cells: **48 / 48 restricted, 48 / 48 full-class** — the restriction moves no cell
 off zero and none onto it, the contaminated-side analogue of §13(i)'s "same 18 cells" on the
 corrected side. Equal-non-zero: **23 / 48 restricted vs 42 / 48 full-class**. Restricted strict
-RATE spans **8.76%** (he 2025-09) to **90.83%** (nq 2025-01, TRADES-CLASSES-ONLY; **88.17%**,
-es 2025-11, excluding nq), median **21.66%**; full-class strict rate spans **25.45%**
+RATE spans **8.76%** (he 2025-09) to a summary-level peak of **88.17%** (es 2025-11, 484,420 /
+549,424 — the EX-NQ peak, which §14 item 4's summary-level paragraph names here; the unqualified
+maximum is **90.83%**, nq 2025-01, TRADES-CLASSES-ONLY, a coverage artifact and not the
+headline), median **21.66%**. The summary-level restricted **ABSOLUTE** peak is **es 2025-01,
+514,323 of 605,290 rows = 84.97%**, classes `trades_all` ≡ `trades_sell`. Full-class strict rate spans **25.45%**
 (le 2025-11) to **98.93%** (es 2025-12, class `mbo_all`), median **63.08%** — the same
 0.2545-0.9893 range §13(c) publishes, unchanged. The per-cell delta runs **0.00 pp** (all six nq
 cells, for the coverage reason above) to **48.72 pp** (**zc 2025-01 — the largest of all 48**);
@@ -3210,7 +3434,9 @@ any pipeline product.
 net_delta_30s, net_delta_60s (corrupted if wrapped), buy_volume_10s (dead-zero),
 sell_volume_10s (redundant with total volume).
 
-**Claims split per R4:**
+**Claims split per R4** (the evidence-accounting practice is recorded in `PRACTICES.md` P-113;
+criterion 4's treatment of the same defect is `PREREG.md` §6.2 SC-5(f), via the sentinel of
+§A.9 — this section's defect record is that sentinel's instance):
 
 - **Timing-structural — SUPPORTED:** event-to-row timing, the overhang counts
   (sections 10 and 14), and the per-cell counts of the declared ground-truth map (section 13).
@@ -3250,7 +3476,9 @@ observed in the rebuild).
 > item 3 is an unverifiable fact about the source copies **Artifact A**'s lineage physically
 > read. Nothing here is a measurement on either artifact.
 
-Assumptions the declaration RELIES ON that no archive record can verify; recorded as such:
+Assumptions the declaration RELIES ON that no archive record can verify, recorded as such (the
+disclosure practice is `PRACTICES.md` P-115; the three items are this fixture's own premises and
+stay here in full):
 
 1. **The 35-column set for the main-PC pair (R3).** The stored main-set predictions carry
    no feature manifest; the assumption that they were produced from `ALL_L2_FEATURES` (the
@@ -3286,8 +3514,10 @@ Assumptions the declaration RELIES ON that no archive record can verify; recorde
 > informative about B and also what makes 7 columns unconstructible: they exist in B's universe
 > and not in A's build output.
 
-Projection of the F2 fixture builds onto the 35-column Phase 7 model set, selection or
-renaming only (nothing synthesized), run under R3:
+Projection of the F2 fixture builds onto the 35-column Phase 7 model set, under the
+selection-or-renaming-only method (`PRACTICES.md` P-117 — a rebuild method practice; the
+rebuild is outside the gate-scored fixture, `PREREG.md` §6.2 SC-4(d)(ii)), run under R3
+*(instance: the F2 rebuild's projection result)*:
 
 - **28 of 35 columns constructible:** 26 direct name matches + 2 verified intermediate
   mappings (trade_volume_1s mapped-from `trade_volume`; trade_count_1s mapped-from
@@ -3359,7 +3589,52 @@ registration under PREREG.md line 95:**
    UNSCORED_FOR_LACK_OF_DATA, 24 diagnostic); the cohort predicate and its coverage
    (§13(d), §C.2); the reference AUC trio of §A.1; the criterion-1 column enumeration of §C.1
    and §C.2; the declared exclusions of §C.4 (`buy_volume_10s`, `book_imbalance_ratio`); the
-   fixture identity and the pc2 exclusion (§8); the boundary `floor(t-1)+1s` (§1).
+   fixture identity and the pc2 exclusion (§8); the boundary `floor(t-1)+1s` (§1); **and the F3
+   fixture manifest, pinned by path and by bytes** —
+   `evidence\fixture_spike\f3\fixture_manifest_DRAFT.json`, sha256
+   `0da59d53982188712073c9b7f5addcd66221babcd8555efabbbd0c3d3f208a1d`, 27,284 bytes.
+
+   **And the code the manifest's meaning depends on, pinned with it (R102/§180.1):**
+   `phase7_l2_sim.py`, sha256 `c659d3ac167a13afb52651d4521ecc9fd5c8fabd59fd2d712eb4afa5b4669665`, **949 lines, 41,745 bytes**, resident in the archive at
+   `results\pc2_all_phases\_scripts\scripts\` and **NOT in the repository**. §D.1 pinned
+   the manifest's bytes; the manifest's **meaning** - what each class asserts about what a
+   column reads - rests entirely on that file, and nothing pinned it. A frozen manifest
+   whose semantics can move underneath it is not frozen.
+
+   **Why the manifest is in this list at all (R99/§167.1).** `PREREG.md` SC-4(k2) reads its **named
+   list of columns classed as leaking sources** and says so in terms: *"Because the gate now reads
+   that list, the manifest is an object the gate consumes: the declaration enumerates it in the
+   SC-8(a) freeze, and its recorded status is not `DRAFT` at the tag."* It is therefore a gate input,
+   and a gate input outside the freeze is the thing this list exists to prevent. **Pinned by SHA-256
+   and not only by filename**, so the freeze names the bytes: a same-named file with different
+   contents is a different gate input.
+
+   **Why F3 and not T4 (R99/§167.2).** This declaration already settles it — *"Why F3 governs and not
+   T4"* — and `t4\fixture_manifest_35col_DRAFT.json` settles it from its own side: its
+   `derived_from` field names the F3 manifest as its source, and it carries a **projection**
+   (`projected_columns`, `unconstructible_columns`) rather than a classification. Only F3 carries the
+   `LEAK-SOURCE` / `DESCENDANT` / `CLEAN` classes SC-4(k2) reads. **T4 is not in this freeze and does
+   not belong in it.**
+
+   **AUTHOR SIGN-OFF.** The author signed off on the F3 fixture manifest on 26 August 2026, over the
+   verification at `evidence/ceremony/F3_MANIFEST_VERIFICATION.md`; the 25 LEAK-SOURCE
+   names are a gate input alterable only by Class C.
+
+   **Hash chain.** Verification was performed against `8fd3bb5a771af72d…`; the only later change was
+   §179.3's `classification_basis` restatement, under which all 35 classifications were
+   verified unchanged; the frozen bytes are `0da59d5398218871…`.
+
+   **On the filename (R99/§167.5). The name ends `DRAFT` and is DELIBERATELY NOT CHANGED.** What
+   SC-4(k2) requires is that the manifest's **recorded status** is not `DRAFT` at the tag — the
+   `manifest_status` field, not the filename. The path is load-bearing in at least four places: this
+   pin, the ceremony's C2.5 gate, the evidence manifest's own line, and this declaration's other
+   citations of it. **Renaming a gate input's identity immediately before a tag buys tidiness and
+   risks every reference to it.** The mismatch is recorded here instead, so no reader infers
+   draft-ness from the name: **after the author's review the file is not a draft, and its name still
+   says so.**
+
+   **The status is NOT flipped by this entry.** Freezing which bytes are the gate input and
+   confirming those bytes are correct are two different acts; the second is the author's.
 4. **The class-set rule of §13(a)** — that `mbo_all_rows` is diagnostic and not one of the
    declared 10, and that any "max across classes" names its class set.
 5. **The four §6.2 amendments and the §10.2 definition**, as written: §A.1 (reference AUC),
@@ -3452,6 +3727,108 @@ to publish two) and what R9 does in the large (replacing an unsatisfiable criter
 scored map rather than with a waiver). Stated as a rule so that the next entry cannot do the
 opposite by precedent. The tail's existing entries R1-R9 and R11-R13 are frozen byte-identical;
 this rule governs anything appended after them.
+
+#### D.3 entries — the registered hash-set language, read (R67/§14.3)
+
+`PREREG.md` specifies the tag message's hash block in two places, written when the set was
+smaller. **Neither is edited** — both are registered text. They fall into two **distinct**
+categories, and collapsing them would hide the difference that matters.
+
+**(i) `PREREG.md` §11 item 3 — a FLOOR, satisfied and exceeded. NOT violated.**
+Registered text: *"SHA-256 of `PREREG.md`, `DESIGN.md`, and `HISTORY.md` as committed in the tag
+message and the README."* It carries **no "only" and no "exactly"**, so it states a minimum, and a
+superset satisfies it. **Over-delivery is strictly stronger**, so §0.2.1's "an amendment weaker
+than the thing it amends is not one" is *satisfied* here rather than strained. The executed
+`prereg-v30` tag already carried five, and v30a carries six; both include item 3's three. **A reader
+who takes item 3 as exhaustive would conclude the v30 tag over-delivered.** That reading is
+available on the text, and it is not a defect — it describes a tag that carried more than it had
+to. The reading applied here is the floor reading; a reader is free to disagree with it.
+
+**(ii) `PREREG.md` line 97 (§0.2.1) — NOT a floor. A closed quantifier that lost its referent.**
+Registered text: *"An amendment inherits §11's integrity chain in full: signed tag, **both** file
+hashes in the tag message, external timestamp receipt committed, repository publicly reachable at
+lock."* **"Both" is a closed quantifier over exactly two things.** It is not a minimum, and it
+cannot be read as one without changing the word. It was written when the block held two files;
+`HISTORY.md` and the two tooling files joined later, and at that moment "both" lost its referent.
+**Consequence, stated precisely:** the two files' hashes **are** in the tag message, so line 97 is
+**not violated** — but it **supplies no rule for the files added since** and **does not govern the
+current set**. The governing enumeration is `$FILES` at `CEREMONY_COMMANDS.md` §3.2; line 97 governs
+its own two and nothing else. *(This is the same conclusion working resolution R7 reached, and R7's
+own basis for it — that "both" is "a stale count predating `HISTORY.md` and the tooling files
+joining the block" — is recorded as a class A mechanical fact.)*
+
+**(iii) Working resolution R7 — STANDS UNAMENDED. There is no contradiction with §D.2.**
+R7 reads: *"**R7. hash-count:** the v30a tag message carries ALL FIVE hashes, matching the
+prereg-v30 tag as executed."* Read as a totality claim, that is false of a six-line message and
+would put R7 against §D.2, which the same file hashes. **It is not a totality claim.** The survey at
+R67/§14.2 resolved it by structure rather than by intent:
+
+- **The predicate is true.** "Carries ALL FIVE hashes" is satisfied by any set **containing** those
+  five, and the clause *"matching the prereg-v30 tag as executed"* fixes "FIVE" to the v30 five.
+  A six-file set containing them satisfies it exactly.
+- **The totality reading comes from the LABEL, not the predicate.** `hash-count:` is a topic tag.
+  **Every label in that block is a topic tag** — R1 `ties`, R2 `boundary`, R3 `35-column`, R4
+  `as-built defects`, R5 `weighted_mid`, R6 `weighted_mid flavor`, R7 `hash-count`, R8 `H-entry`.
+  In each, the label names the QUESTION and the body supplies the ANSWER; **no label asserts a
+  predicate its body does not.** The closest case is R4, whose label carries a *referent* (which
+  defects) rather than a predicate — which is what a topic tag does.
+- **The decisive structural evidence: half the block has no labels at all.** R9, R11, R12 and R13
+  are recorded as bare `**R9.**`, `**R11.**` and carry their referents in the body. If labels were
+  normative, dropping them would drop content; their absence is only intelligible if the label is
+  an optional convenience tag.
+- **Corroborated independently and earlier:** §D.3's own rule paragraph above already describes R7
+  as *"reading 'both' as the executed five, not as a licence to publish two"* — the inheritance
+  reading, written before this survey and not derived from it.
+
+**So R7 stands, §D.2's inheritance reading is the literal reading, and nothing is edited.** The
+verbatim block is not amended under any branch: it is a transcript of an author delta, and editing
+it would falsify the word "verbatim" that introduces it.
+
+**What this class of defect actually was.** None of (i)–(iii) is arithmetically wrong. The defect
+was **structural**: the set was asserted independently in many places instead of derived once, and
+independent assertions drift apart — at R67 the same set carried **five different values** across
+registered text, this declaration and the ceremony package. The remedy is not a corrected numeral
+but a single authority plus a detector: `$FILES` at `CEREMONY_COMMANDS.md` §3.2, enforced by
+`tools/check_registration.py`'s `hash_set_single_source` check, whose D5/D6 exemptions point back
+at these three entries by name.
+
+### D.4 — The signing key, stated here so it is TIMESTAMPED and not merely asserted (R69/B2.2)
+
+**DECLARED: the `prereg-v30a` tag is signed by the OpenPGP key whose primary fingerprint is**
+
+```
+991F 5331 C584 CE5E AF7D  6939 B29C F0E8 4711 9AD7
+```
+
+**Why this belongs in THIS file and not only in the tag message.** The tag message asserts the
+fingerprint, but a tag message is only as good as the signature over it — a message asserting a
+fingerprint proves nothing about which key signed it, since the signer writes both. This file is
+one of the six the tag message hashes, and the commit it is committed in is the commit
+OpenTimestamps stamps. **So a fingerprint stated here is covered by the signature AND carries an
+external Bitcoin-anchored timestamp**, which the tag message's own copy does not add.
+
+**The verification chain this creates is three-way, deliberately mirroring §D.2's C2d-2 pattern:**
+
+| leg | value | read from |
+|---|---|---|
+| 1 | the key that actually made the signature | `git verify-tag --raw`'s `[GNUPG:] VALIDSIG` **last field** (the PRIMARY key fingerprint, so a subkey signature still resolves here) |
+| 2 | the fingerprint the tag message asserts | the signed tag body's `Key fingerprint = ` line |
+| 3 | the fingerprint this declaration states | the block above |
+
+**All three must agree, and C1b halts if they do not.** Two legs agreeing proves less than it
+appears to: legs 1 and 2 together only establish that the signer was internally consistent.
+
+**The key material itself ships.** `prereg-signing-key.asc` at the repository root is the
+ASCII-armored public key, so the tagged tree carries the key a verifier needs. **It is deliberately
+NOT added to the six-file hash list** — §14.1(b) holds: that list is a citation device, and the
+commit tree already fixes every tracked file. **SIX is not reopened by this.**
+
+**WHAT THIS DOES NOT ESTABLISH, stated plainly rather than left to inference.** Every leg above is
+INTERNAL to this repository. Together they prove that the key which signed the tag is the key this
+registration names — **they do not prove who holds that key.** Key-to-person binding cannot be
+established by any repository-local check, because an attacker who could rewrite the tag could
+rewrite all three legs. **That binding rests entirely on the key's publication outside this
+repository, and §12's disclosure states where.**
 
 ## §E. Gate protocol input surface — what a detector receives, and what it never receives
 

@@ -1,0 +1,59 @@
+C1 (b) 338,159 row-count re-derivation
+run_utc: 2026-08-12T00:11:32.932445+00:00
+pandas 3.0.1 / pyarrow 23.0.1
+
+input parquet: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\processed\zc\zc_snapshots_2025-01.parquet
+  size_bytes: 15919599
+
+filter source: C:\Users\ttbea\AppData\Local\Temp\claude\C--Users-ttbea-OneDrive-Desktop-MBO-2025-4mon--2026-01\8b1d67a4-ce4f-4c55-b09d-1c72e7b6b5e1\scratchpad\fixture_spike\f2\phase5_ml_fixture.py
+  line  58:     "zc": {"tick_size": 0.25, "matching": "ProRata", "day_start_utc": 14, "day_end_utc": 19, "ct_ratio": 1.53},
+  line 179:     ds, de = meta["day_start_utc"], meta["day_end_utc"]
+  line 184:     snap["timestamp"] = pd.to_datetime(snap["timestamp"])
+  line 187:     snap = snap.sort_values("timestamp").reset_index(drop=True)
+  line 188:     snap["hour_utc"] = snap["timestamp"].dt.hour
+  line 189:     snap = snap[(snap["hour_utc"] >= ds) & (snap["hour_utc"] < de)].copy()
+
+constants read from source: ds=day_start_utc=14, de=day_end_utc=19
+predicate: (hour_utc >= 14) & (hour_utc < 19)
+
+rows in parquet (unfiltered): 1,262,191
+timestamp dtype as stored: datetime64[ns]
+timestamp min: 2025-01-02 12:00:01.199155501
+timestamp max: 2025-01-31 19:19:59.983800025
+
+rows kept after filter: 338,159
+rows dropped:           924,032
+
+per-hour breakdown of kept rows:
+  hour 14 UTC: 37,801
+  hour 15 UTC: 75,600
+  hour 16 UTC: 75,600
+  hour 17 UTC: 75,600
+  hour 18 UTC: 73,558
+  sum of breakdown: 338,159
+
+derivation: 1,262,191 total rows -> hour_utc in [14,19) -> 338,159 rows
+expected: 338,159  |  derived: 338,159  |  verdict: MATCH
+
+==============================================================================
+ADDENDUM - competing generation of the same month on disk
+run_utc: 2026-08-12T00:15:40.167205+00:00
+==============================================================================
+Same predicate (hour_utc in [14,19)) applied to both files.
+
+PRE-GAPFILL (the C1 file)
+  path: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\processed\zc\zc_snapshots_2025-01.parquet
+  size_bytes: 15919599
+  mtime_utc: 2026-04-02T21:31:53.929382+00:00
+  rows total: 1,262,191
+  rows in [14,19): 338,159
+  ts min/max: 2025-01-02 12:00:01.199155501 / 2025-01-31 19:19:59.983800025
+
+v4_gapfill (later build)
+  path: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\processed\zc\v4_gapfill\zc_snapshots_2025-01.parquet
+  size_bytes: 18328075
+  mtime_utc: 2026-04-17T03:58:32.005419+00:00
+  rows total: 1,346,274
+  rows in [14,19): 378,000
+  ts min/max: 2025-01-02 12:00:01.199155501 / 2025-01-31 19:19:59.983800025
+

@@ -195,20 +195,20 @@ Refinement returns `(reach, basis)`. **Which procedure runs, and therefore which
 
 ### 2.11 Prior art
 
-| | `leak-detect` | here |
-|---|---|---|
-| Basis of the cut | row position | declared per-cell availability |
-| Current-bar inclusion | invisible | detectable, reach ≈ one bar |
-| Legitimate lagged label | flagged (false positive) | clean |
-| Forward-filled exogenous column | wrong clock | `at_source_timestamp` |
-| Boundary instant | undefined | explicit `ties` comparator |
-| Probe points | one, default midpoint | many cohorts, profile-aware |
-| Determinism guard | none | required; licenses the comparison |
-| Dtype artifacts | unhandled | aligned, per-column equivalence control, tier consequence |
-| Silence claim | whole side of the cut | one cohort, stated |
-| Validation | example notebook | acceptance fixture + four unseen generated partitions + a visible conformance regression suite |
+| | `leak-detect` | `leakage-buster` | here |
+|---|---|---|---|
+| Basis of the cut | row position | dataset-level audit (target correlation, CV-strategy appropriateness) | declared per-cell availability |
+| Current-bar inclusion | invisible | invisible (no user callable to probe) | detectable, reach ≈ one bar |
+| Legitimate lagged label | flagged (false positive) | not addressed | clean |
+| Forward-filled exogenous column | wrong clock | not addressed | `at_source_timestamp` |
+| Boundary instant | undefined | undefined; time check is split-granular | explicit `ties` comparator |
+| Probe points | one, default midpoint | n/a — no runtime probe | many cohorts, profile-aware |
+| Determinism guard | none | n/a | required; licenses the comparison |
+| Dtype artifacts | unhandled | n/a | aligned, per-column equivalence control, tier consequence |
+| Silence claim | whole side of the cut | leakage-family coverage (~6 of 8), not per-column | one cohort, stated |
+| Validation | example notebook | unit tests; user supplies dataframe, target, CV strategy | acceptance fixture + four unseen generated partitions + a visible conformance regression suite |
 
-The availability basis is the one difference in kind. The rest is hardening.
+The availability basis is the one difference in kind from `leak-detect`. `leakage-buster` is in a different taxonomy — dataset-level audit rather than runtime probe — so most rows read *n/a* or *not addressed* against its column (details recorded in `PRIOR_ART_VERIFICATION.md` under the append-only entry list). The rest is hardening.
 
 ### 2.12 Why static analysis can't do this
 
@@ -543,4 +543,4 @@ Guarantees implemented here are locked in `PREREG.md` §8: the report never says
 
 **Hazard specific to this project.** Models trained on the same corpus share its blind spots, and the modal error in that corpus *is* the rolling window that silently includes the current bar. A panel of models will unanimously approve a leaking window. The controls in §4 and the availability model exist because model consensus cannot catch the error this tool is built to catch.
 
-**Review lessons are recorded in `HISTORY.md`** (**H-L1** through **H-L11**). They are process history, not implementation guidance, and an implementer needs none of them to build the tool correctly.
+**Review lessons are recorded in `HISTORY.md` as the `H-L` review-lesson series** (open range; the list grows as lessons are appended, and this cross-reference does not enumerate the current tail so appending a lesson cannot desynchronize this document). They are process history, not implementation guidance, and an implementer needs none of them to build the tool correctly.

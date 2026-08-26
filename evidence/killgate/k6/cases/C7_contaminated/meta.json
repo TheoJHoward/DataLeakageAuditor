@@ -1,0 +1,19 @@
+{
+  "features": [
+    "f0",
+    "f1",
+    "f2"
+  ],
+  "target": "target",
+  "group": "group_id",
+  "time": null,
+  "truth": "group_id values appear in both train and test",
+  "case": "C7",
+  "side": "contaminated",
+  "type": "T7",
+  "detector_row": "L3.2",
+  "n_rows": 400,
+  "n_train": 200,
+  "n_test": 200,
+  "n_index_overlap": 0
+}

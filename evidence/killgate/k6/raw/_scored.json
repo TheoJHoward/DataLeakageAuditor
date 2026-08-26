@@ -1,0 +1,376 @@
+{
+  "leak-detect": {
+    "C1": [
+      "ABST",
+      "ineligible (declared before run, item 4)"
+    ],
+    "C2": [
+      "ABST",
+      "ineligible (declared before run, item 4)"
+    ],
+    "C3": [
+      "ABST",
+      "ineligible (declared before run, item 4)"
+    ],
+    "C4": [
+      "ABST",
+      "ineligible (declared before run, item 4)"
+    ],
+    "C5": [
+      "MISS",
+      "fired on BOTH sides (false alarm on the clean control)"
+    ],
+    "C6": [
+      "MISS",
+      "silent on the contaminated side"
+    ],
+    "C7": [
+      "ABST",
+      "ineligible (declared before run, item 4)"
+    ],
+    "C8": [
+      "ABST",
+      "ineligible (declared before run, item 4)"
+    ]
+  },
+  "deepchecks": {
+    "C1": [
+      "HIT",
+      ""
+    ],
+    "C2": [
+      "ABST",
+      "ineligible (declared before run, item 4)"
+    ],
+    "C3": [
+      "ABST",
+      "ineligible (declared before run, item 4)"
+    ],
+    "C4": [
+      "HIT",
+      ""
+    ],
+    "C5": [
+      "HIT",
+      ""
+    ],
+    "C6": [
+      "MISS",
+      "silent on the contaminated side"
+    ],
+    "C7": [
+      "ABST",
+      "ineligible (declared before run, item 4)"
+    ],
+    "C8": [
+      "HIT",
+      ""
+    ]
+  },
+  "leakage-buster": {
+    "C1": [
+      "MISS",
+      "silent on the contaminated side"
+    ],
+    "C2": [
+      "ABST",
+      "ineligible (declared before run, item 4)"
+    ],
+    "C3": [
+      "ABST",
+      "ineligible (declared before run, item 4)"
+    ],
+    "C4": [
+      "MISS",
+      "silent on the contaminated side"
+    ],
+    "C5": [
+      "HIT",
+      ""
+    ],
+    "C6": [
+      "ABST",
+      "crash: internal detector exception Detector error: target_leakage"
+    ],
+    "C7": [
+      "MISS",
+      "fired on BOTH sides (false alarm on the clean control)"
+    ],
+    "C8": [
+      "ABST",
+      "ineligible (declared before run, item 4)"
+    ]
+  },
+  "Leakly": {
+    "C1": [
+      "ABST",
+      "ineligible (declared before run, item 4)"
+    ],
+    "C2": [
+      "MISS",
+      "silent on the contaminated side"
+    ],
+    "C3": [
+      "MISS",
+      "silent on the contaminated side"
+    ],
+    "C4": [
+      "ABST",
+      "ineligible (declared before run, item 4)"
+    ],
+    "C5": [
+      "MISS",
+      "silent on the contaminated side"
+    ],
+    "C6": [
+      "MISS",
+      "silent on the contaminated side"
+    ],
+    "C7": [
+      "ABST",
+      "ineligible (declared before run, item 4)"
+    ],
+    "C8": [
+      "ABST",
+      "ineligible (declared before run, item 4)"
+    ]
+  },
+  "leakage-analysis": {
+    "C1": [
+      "ABST",
+      "crash: IR generation failed (irgen.py:373 visit_Subscript AssertionError)"
+    ],
+    "C2": [
+      "ABST",
+      "crash: IR generation failed (irgen.py:373 visit_Subscript AssertionError)"
+    ],
+    "C3": [
+      "ABST",
+      "crash: IR generation failed (irgen.py:373 visit_Subscript AssertionError)"
+    ],
+    "C4": [
+      "ABST",
+      "crash: IR generation failed (irgen.py:373 visit_Subscript AssertionError)"
+    ],
+    "C5": [
+      "ABST",
+      "ineligible (declared before run, item 4)"
+    ],
+    "C6": [
+      "ABST",
+      "ineligible (declared before run, item 4)"
+    ],
+    "C7": [
+      "ABST",
+      "ineligible (declared before run, item 4)"
+    ],
+    "C8": [
+      "ABST",
+      "ineligible (declared before run, item 4)"
+    ]
+  },
+  "LeakageDetector2.0": {
+    "C1": [
+      "ABST",
+      "not programmatically runnable (VS Code extension, no headless entry point)"
+    ],
+    "C2": [
+      "ABST",
+      "not programmatically runnable (VS Code extension, no headless entry point)"
+    ],
+    "C3": [
+      "ABST",
+      "not programmatically runnable (VS Code extension, no headless entry point)"
+    ],
+    "C4": [
+      "ABST",
+      "not programmatically runnable (VS Code extension, no headless entry point)"
+    ],
+    "C5": [
+      "ABST",
+      "ineligible (declared before run, item 4)"
+    ],
+    "C6": [
+      "ABST",
+      "ineligible (declared before run, item 4)"
+    ],
+    "C7": [
+      "ABST",
+      "ineligible (declared before run, item 4)"
+    ],
+    "C8": [
+      "ABST",
+      "ineligible (declared before run, item 4)"
+    ]
+  },
+  "OMDS": {
+    "C1": [
+      "MISS",
+      "silent on the contaminated side"
+    ],
+    "C2": [
+      "HIT",
+      ""
+    ],
+    "C3": [
+      "ABST",
+      "ineligible (declared before run, item 4)"
+    ],
+    "C4": [
+      "ABST",
+      "ineligible (declared before run, item 4)"
+    ],
+    "C5": [
+      "ABST",
+      "ineligible (declared before run, item 4)"
+    ],
+    "C6": [
+      "ABST",
+      "ineligible (declared before run, item 4)"
+    ],
+    "C7": [
+      "ABST",
+      "ineligible (declared before run, item 4)"
+    ],
+    "C8": [
+      "ABST",
+      "ineligible (declared before run, item 4)"
+    ]
+  },
+  "temporalcv": {
+    "C1": [
+      "MISS",
+      "silent on the contaminated side"
+    ],
+    "C2": [
+      "ABST",
+      "ineligible (declared before run, item 4)"
+    ],
+    "C3": [
+      "ABST",
+      "ineligible (declared before run, item 4)"
+    ],
+    "C4": [
+      "ABST",
+      "ineligible (declared before run, item 4)"
+    ],
+    "C5": [
+      "ABST",
+      "ineligible (declared before run, item 4)"
+    ],
+    "C6": [
+      "MISS",
+      "silent on the contaminated side"
+    ],
+    "C7": [
+      "ABST",
+      "ineligible (declared before run, item 4)"
+    ],
+    "C8": [
+      "ABST",
+      "ineligible (declared before run, item 4)"
+    ]
+  },
+  "leakfence": {
+    "C1": [
+      "HIT",
+      ""
+    ],
+    "C2": [
+      "MISS",
+      "fired on BOTH sides (false alarm on the clean control)"
+    ],
+    "C3": [
+      "ABST",
+      "ineligible (declared before run, item 4)"
+    ],
+    "C4": [
+      "MISS",
+      "fired on BOTH sides (false alarm on the clean control)"
+    ],
+    "C5": [
+      "ABST",
+      "ineligible (declared before run, item 4)"
+    ],
+    "C6": [
+      "ABST",
+      "ineligible (declared before run, item 4)"
+    ],
+    "C7": [
+      "HIT",
+      ""
+    ],
+    "C8": [
+      "ABST",
+      "ineligible (declared before run, item 4)"
+    ]
+  },
+  "leakr": {
+    "C1": [
+      "ABST",
+      "R toolchain could not be installed (machine-wide install requires administrator elevation; user-scope installer not published)"
+    ],
+    "C2": [
+      "ABST",
+      "ineligible (declared before run, item 4)"
+    ],
+    "C3": [
+      "ABST",
+      "ineligible (declared before run, item 4)"
+    ],
+    "C4": [
+      "ABST",
+      "R toolchain could not be installed (machine-wide install requires administrator elevation; user-scope installer not published)"
+    ],
+    "C5": [
+      "ABST",
+      "R toolchain could not be installed (machine-wide install requires administrator elevation; user-scope installer not published)"
+    ],
+    "C6": [
+      "ABST",
+      "ineligible (declared before run, item 4)"
+    ],
+    "C7": [
+      "ABST",
+      "ineligible (declared before run, item 4)"
+    ],
+    "C8": [
+      "ABST",
+      "ineligible (declared before run, item 4)"
+    ]
+  },
+  "bioLeak": {
+    "C1": [
+      "ABST",
+      "ineligible (declared before run, item 4)"
+    ],
+    "C2": [
+      "ABST",
+      "ineligible (declared before run, item 4)"
+    ],
+    "C3": [
+      "ABST",
+      "ineligible (declared before run, item 4)"
+    ],
+    "C4": [
+      "ABST",
+      "ineligible (declared before run, item 4)"
+    ],
+    "C5": [
+      "ABST",
+      "R toolchain could not be installed (machine-wide install requires administrator elevation; user-scope installer not published)"
+    ],
+    "C6": [
+      "ABST",
+      "ineligible (declared before run, item 4)"
+    ],
+    "C7": [
+      "ABST",
+      "ineligible (declared before run, item 4)"
+    ],
+    "C8": [
+      "ABST",
+      "ineligible (declared before run, item 4)"
+    ]
+  }
+}

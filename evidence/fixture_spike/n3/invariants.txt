@@ -1,0 +1,40 @@
+invariant same_second_viol<=cohort_size violated in 0 cells
+invariant strict==same_second+exception violated in 0 cells
+
+per-class totals across all 48 instrument-months:
+shape: (11, 5)
+┌────────────────┬─────────────┬──────────────────┬────────────────┬───────┐
+│ class          ┆ strict_viol ┆ same_second_viol ┆ exception_viol ┆ cells │
+│ ---            ┆ ---         ┆ ---              ┆ ---            ┆ ---   │
+│ str            ┆ i64         ┆ i64              ┆ i64            ┆ u32   │
+╞════════════════╪═════════════╪══════════════════╪════════════════╪═══════╡
+│ mbo_all        ┆ 1018244     ┆ 1018244          ┆ 0              ┆ 42    │
+│ mbo_cancel_any ┆ 753964      ┆ 753964           ┆ 0              ┆ 42    │
+│ mbo_bid_add    ┆ 661460      ┆ 661460           ┆ 0              ┆ 42    │
+│ mbo_ask_add    ┆ 659154      ┆ 659154           ┆ 0              ┆ 42    │
+│ mbo_bid_cancel ┆ 590527      ┆ 590527           ┆ 0              ┆ 42    │
+│ mbo_ask_cancel ┆ 584982      ┆ 584982           ┆ 0              ┆ 42    │
+│ trades_sell    ┆ 342857      ┆ 342857           ┆ 0              ┆ 48    │
+│ trades_all     ┆ 342857      ┆ 342857           ┆ 0              ┆ 48    │
+│ mbo_all_rows   ┆ 313079      ┆ 313079           ┆ 0              ┆ 12    │
+│ trades_large   ┆ 38306       ┆ 38306            ┆ 0              ┆ 48    │
+│ trades_buy     ┆ 0           ┆ 0                ┆ 0              ┆ 48    │
+└────────────────┴─────────────┴──────────────────┴────────────────┴───────┘
+
+cells with strict_viol>0, grouped by instrument-month (max over classes):
+  count of such cells: 168 ; distinct instrument-months: 18
+
+worst headroom outside cohort (5 tightest cells):
+shape: (5, 5)
+┌────────────┬─────────┬─────────────┬──────────────────────────────┬──────────────────────────────┐
+│ instrument ┆ month   ┆ class       ┆ noncohort_rows_with_absorbed ┆ max_ts_event_minus_T_outside │
+│ ---        ┆ ---     ┆ ---         ┆ _e…                          ┆ _c…                          │
+│ str        ┆ str     ┆ str         ┆ ---                          ┆ ---                          │
+│            ┆         ┆             ┆ i64                          ┆ i64                          │
+╞════════════╪═════════╪═════════════╪══════════════════════════════╪══════════════════════════════╡
+│ zs         ┆ 2025-08 ┆ mbo_all     ┆ 269272                       ┆ -3                           │
+│ zs         ┆ 2025-08 ┆ mbo_ask_add ┆ 178812                       ┆ -3                           │
+│ le         ┆ 2025-11 ┆ mbo_all     ┆ 175859                       ┆ -5                           │
+│ le         ┆ 2025-11 ┆ mbo_bid_add ┆ 113080                       ┆ -5                           │
+│ le         ┆ 2025-01 ┆ mbo_all     ┆ 215483                       ┆ -11                          │
+└────────────┴─────────┴─────────────┴──────────────────────────────┴──────────────────────────────┘

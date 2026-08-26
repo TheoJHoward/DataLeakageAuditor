@@ -1,0 +1,35 @@
+>
+> **(k) THE REQUIRED LIST IS NON-EMPTY, AND THE DENOMINATOR IS RECONCILED AGAINST THE MANIFEST.**
+>
+> **(k1) THE FLOOR.** The declared scored set and the REQUIRED list are enumerated by name **before
+> any detector runs** and are **non-empty on every declared side**. **If either is empty on any
+> declared side, criterion 1 is not discharged and the outcome is STOP** — lifted only by
+> supplementing the declaration with declared, enumerated units for that side and re-freezing under
+> §11's integrity chain; never by scoring criterion 1 on the remaining side, never by suppressing the
+> empty side's gate, and never by a `DEVIATIONS.md` entry or a working resolution. **Non-emptiness is
+> the whole floor, and deliberately so:** any minimum above zero would be a threshold chosen from the
+> distribution this fixture already exhibits, which §7.0 forbids. A floor that cannot be set without
+> looking at the data is not set.
+>
+> **(k2) THE RECONCILIATION.** The REQUIRED list is published alongside a **per-unit reconciliation
+> against the manifest's independently-leaking-source list** (§6.2 line 446). **Every unit the
+> manifest records as a leaking source that this derivation does not class REQUIRED is named**, with
+> **the registered predicate of (b) that produced its class** and the declared facts on which it
+> satisfies that predicate. A difference stated as a count, a total, or a summary of where the
+> differences "mostly" sit does not satisfy this limb; the unit is named or it is not reconciled.
+>
+> **(k3) THE RECONCILIATION IS A DISCLOSURE, NOT A CLASSIFICATION.** **A reconciliation published
+> under this limb is a disclosure, not a classification entering a criterion, denominator, or count**
+> (a). It derives nothing, changes no class, and no quantity appearing in it is N. This sentence is
+> load-bearing: without it (a) forbids the very comparison that makes the denominator auditable, and
+> the limb would contradict the clause it sits in.
+>
+> **(k4) WHAT MAKES THIS LIMB FAIL** — stated because SC-8(g) requires every gate item to state it.
+> This limb fails where the REQUIRED list is empty on a declared side; **or where the reconciliation
+> is absent**; or where any difference in it is unnamed, or is named without the registered predicate
+> that produced its class. **This is a live gate item and not a regression guard (SC-8(g)(a)): it can
+> fail on an artifact that is behaving correctly, and on the fixture as declared at the date of this
+> amendment it is UNSATISFIED.** The declaration publishes a per-unit cross-tabulation of the
+> construction-SOURCE cut against the gate cut, which is a different pair of partitions; it publishes
+> no per-unit reconciliation against the manifest's leaking-source list. The difference the limb
+> would surface is **fourteen units**.

@@ -1,0 +1,173 @@
+====================================================================================================
+CLAUSE SC-1
+  [REGISTERS] IDENTICAL (normalized)
+  [INSERTION POINT] IDENTICAL (normalized)
+  [SUPERSESSION MARKER] IDENTICAL (normalized)
+  [THE CLAUSE] DIFFERS:
+      replace: ...it may not leave open — [-v30a**-] {+v30a [SC-1]**+}
+  [DATA THE DECLARATION] IDENTICAL (normalized)
+  [ROWS COVERED] IDENTICAL (normalized)
+====================================================================================================
+CLAUSE SC-2
+  [REGISTERS] IDENTICAL (normalized)
+  [INSERTION POINT] IDENTICAL (normalized)
+  [SUPERSESSION MARKER] IDENTICAL (normalized)
+  [THE CLAUSE] DIFFERS:
+      replace: ...> **The acceptance fixture's composition — [-v30a**-] {+v30a [SC-2]**+}
+  [DATA THE DECLARATION] IDENTICAL (normalized)
+  [ROWS COVERED] IDENTICAL (normalized)
+====================================================================================================
+CLAUSE SC-3
+  [REGISTERS] IDENTICAL (normalized)
+  [INSERTION POINT] IDENTICAL (normalized)
+  [SUPERSESSION MARKER] IDENTICAL (normalized)
+  [THE CLAUSE] DIFFERS:
+      replace: ...fixture's DECLARED GROUND-TRUTH MAP — v30a, [-operative.**-] {+operative. [SC-3]**+}
+  [DATA THE DECLARATION] IDENTICAL (normalized)
+  [ROWS COVERED] IDENTICAL (normalized)
+====================================================================================================
+CLAUSE SC-4
+  [REGISTERS] IDENTICAL (normalized)
+  [INSERTION POINT] IDENTICAL (normalized)
+  [SUPERSESSION MARKER] IDENTICAL (normalized)
+  [THE CLAUSE] DIFFERS:
+      replace: ...partition rule that constitutes it — [-v30a**-] {+v30a [SC-4]**+}
+  [DATA THE DECLARATION] IDENTICAL (normalized)
+  [ROWS COVERED] IDENTICAL (normalized)
+====================================================================================================
+CLAUSE SC-5
+  [REGISTERS] IDENTICAL (normalized)
+  [INSERTION POINT] IDENTICAL (normalized)
+  [SUPERSESSION MARKER] IDENTICAL (normalized)
+  [THE CLAUSE] DIFFERS:
+      replace: ...> **Adjudication routing — [-v30a**-] {+v30a [SC-5]**+}
+  [DATA THE DECLARATION] IDENTICAL (normalized)
+  [ROWS COVERED] IDENTICAL (normalized)
+====================================================================================================
+CLAUSE SC-6
+  [REGISTERS] IDENTICAL (normalized)
+  [INSERTION POINT] DIFFERS:
+      insert: ...**Two, and both are required** (see [--] {+K1+}
+  [SUPERSESSION MARKER] IDENTICAL (normalized)
+  [THE CLAUSE] DIFFERS:
+      replace: ...> **`unscored` — a coverage state, [-v30a**-] {+v30a [SC-6]**+}
+      replace: ...was registered without one — see [-SC-12 and finding F-6.)*-] {+SC-12.)*+}
+  [DATA THE DECLARATION] IDENTICAL (normalized)
+  [ROWS COVERED] IDENTICAL (normalized)
+====================================================================================================
+CLAUSE SC-7
+  [REGISTERS] IDENTICAL (normalized)
+  [INSERTION POINT] IDENTICAL (normalized)
+  [SUPERSESSION MARKER] IDENTICAL (normalized)
+  [THE CLAUSE] DIFFERS:
+      replace: ...> **The gate's input surface — [-v30a**-] {+v30a [SC-7]**+}
+  [DATA THE DECLARATION] IDENTICAL (normalized)
+  [ROWS COVERED] IDENTICAL (normalized)
+====================================================================================================
+CLAUSE SC-8
+  [REGISTERS] IDENTICAL (normalized)
+  [INSERTION POINT] IDENTICAL (normalized)
+  [SUPERSESSION MARKER] IDENTICAL (normalized)
+  [THE CLAUSE] DIFFERS:
+      replace: ...what "declared ex ante" requires — [-v30a**-] {+v30a [SC-8]**+}
+  [DATA THE DECLARATION] IDENTICAL (normalized)
+  [ROWS COVERED] DIFFERS:
+      insert: ...126 as INTEGRITY → PREREG (see [--] {+K1+}
+====================================================================================================
+CLAUSE SC-9
+  [REGISTERS] IDENTICAL (normalized)
+  [INSERTION POINT] IDENTICAL (normalized)
+  [SUPERSESSION MARKER] IDENTICAL (normalized)
+  [THE CLAUSE] DIFFERS:
+      replace: ...**Integrity of a declared instance — [-v30a**-] {+v30a [SC-9]**+}
+  [DATA THE DECLARATION] IDENTICAL (normalized)
+  [ROWS COVERED] DIFFERS:
+      insert: ...content of row 138's R13 (see [--] {+K1+}
+====================================================================================================
+CLAUSE SC-10
+  [REGISTERS] IDENTICAL (normalized)
+  [INSERTION POINT] DIFFERS:
+      insert: ...immediately below the five-bodies table. **See [--] {+K1+}
+  [SUPERSESSION MARKER] IDENTICAL (normalized)
+  [THE CLAUSE] DIFFERS:
+      replace: ...> **Declared non-gated data — [-v30a**-] {+v30a [SC-10]**+}
+  [DATA THE DECLARATION] IDENTICAL (normalized)
+  [ROWS COVERED] IDENTICAL (normalized)
+====================================================================================================
+CLAUSE SC-11
+  [REGISTERS] IDENTICAL (normalized)
+  [INSERTION POINT] IDENTICAL (normalized)
+  [SUPERSESSION MARKER] IDENTICAL (normalized)
+  [THE CLAUSE] DIFFERS:
+      replace: ...> **The all-zero control — [-v30a**-] {+v30a [SC-11]**+}
+  [DATA THE DECLARATION] IDENTICAL (normalized)
+  [ROWS COVERED] IDENTICAL (normalized)
+====================================================================================================
+CLAUSE SC-12
+  [REGISTERS] IDENTICAL (normalized)
+  [INSERTION POINT] IDENTICAL (normalized)
+  [SUPERSESSION MARKER] IDENTICAL (normalized)
+  [THE CLAUSE] DIFFERS:
+      - **THE CLAUSE.** *(Generic form; H1's H7 text is compatible and is the drafting basis. The one change from H7 is that the detector names are not hard-coded — the floor names "the runtime detectors" and the declaration supplies which they are.)*
+      - > **"Waived", defined — v30a** > The floor above uses the word without a defining clause, and the word appears again as a coverage state in §7.7's table, also undefined. An undefined term inside a floor whose purpose is to stop criteria being dropped silently is exactly the term that gets read permissively later. This adds the defining clause. > > A detector is **WAIVED** with respect to a criterion when the criterion is written, configured, or > reported in any way that makes the detector's own result **incapable of changing the criterion's > outcome**. Concretely, a detector is waived if any
+      + **THE CLAUSE.** *(Generic form; H1's H7 text is compatible and is the drafting basis. The one change from H7 is that the governed set is pinned by citation, not hard-coded and not delegated: see the governed-set paragraph added to the clause below. SC-12 and SC-13c(c3) pin the same set to the same registered sites and never diverge on it.)*
+      + > **"Waived", defined — v30a [SC-12]** > The floor above uses the word without a defining clause, and the word appears again as a coverage state in §7.7's table, also undefined. An undefined term inside a floor whose purpose is to stop criteria being dropped silently is exactly the term that gets read permissively later. This adds the defining clause. > > A detector is **WAIVED** with respect to a criterion when the criterion is written, configured, or > reported in any way that makes the detector's own result **incapable of changing the criterion's > outcome**. Concretely, a detector is waive
+  [DATA THE DECLARATION] DIFFERS:
+      replace: ...**DATA THE DECLARATION MUST SUPPLY.** [-Which-] {+Nothing for the governed set — **the declaration does NOT supply which+}
+      replace: ...MUST SUPPLY.** Which detectors the floor [-governs for this fixture; and — if and when-] {+governs**;+}
+      replace: ...and — if and when the [-branch is resolved — the-] {+clause pins it by citation. The+}
+      replace: ...criterion's unit, threshold, and denominator, which [-**this-] {+this+}
+      replace: ...**this clause does not and cannot [-supply** (finding F-7).-] {+supply (K1 finding F-7), are discharged by SC-13a when the ambiguity branch has fired; SC-12 itself consumes no instance data.+}
+  [ROWS COVERED] IDENTICAL (normalized)
+====================================================================================================
+CLAUSE SC-13a
+  [REGISTERS] IDENTICAL (normalized)
+  [INSERTION POINT] IDENTICAL (normalized)
+  [SUPERSESSION MARKER] DIFFERS:
+      - **SUPERSESSION MARKER.** One, conditional rather than absolute — carried from the corrected draft with the clause names updated:
+      - > **§10.2 criterion 2, line 1030 — v30a, SUPERSEDED ON THE AMBIGUITY BRANCH ONLY. Registered v30 text, retained verbatim, operative where the branch has NOT fired:** "2. **The runtime detectors cannot separate contaminated from corrected fixture under the reconstructed declaration** → **stop.**" *Not deleted, and not superseded generally. Line 1031 already registers the disposition this marker performs — "this criterion is replaced, not deleted" — so where §6.2 line 449's ambiguity branch has not fired, the sentence above is the operative criterion and SC-13a–c do not apply. Where it has fired
+      + **SUPERSESSION MARKER.** One, conditional rather than absolute:
+      + > **§10.2 criterion 2, line 1030 — v30a, SUPERSEDED ON THE AMBIGUITY BRANCH ONLY. Registered v30 text, retained verbatim, operative where the branch has NOT fired:** "2. **The runtime detectors cannot separate contaminated from corrected fixture under the reconstructed declaration** → **stop.**" *Not deleted, and not superseded generally. Line 1031 already registers the disposition this marker performs — "this criterion is replaced, not deleted" — so where §6.2 line 449's ambiguity branch has not fired, the sentence above is the operative criterion and SC-13a–c do not apply. Where it has fired
+  [THE CLAUSE] DIFFERS:
+      replace: ...— v30a, operative on the ambiguity [-branch.**-] {+branch. [SC-13a]**+}
+  [DATA THE DECLARATION] IDENTICAL (normalized)
+  [ROWS COVERED] IDENTICAL (normalized)
+====================================================================================================
+CLAUSE SC-13b
+  [REGISTERS] IDENTICAL (normalized)
+  [INSERTION POINT] IDENTICAL (normalized)
+  [SUPERSESSION MARKER] DIFFERS:
+      delete: ...lines it relies on — 816, [-818,-] {++}
+  [THE CLAUSE] DIFFERS:
+      replace: ...**ADMISSIBILITY FOR THE CRITERION ABOVE — [-v30a.-] {+v30a [SC-13b].+}
+      replace: ...gate outcome are all published together. [-Line 818's-] {+**The exception rests on two grounds and on no other.** *First*, it is a class C change to how line 816 reads at this one criterion, made on this amendment's+}
+      replace: ...all published together. Line 818's own [-principle decides-] {+authority and recorded in the v30a amendments block (SC-13c(c2)). *Second*,+}
+      replace: ...Line 818's own principle decides this [-rather than fighting it — "Suppression exists to remove numbers that measure nothing, never to remove one that does" — and at-] {+is+}
+      replace: ...— and at a kill criterion [-this zero measures exactly what-] {+over+}
+      replace: ...this zero measures exactly what the [-criterion asks:-] {+detectors' capability:+}
+      insert: ...asks: a combination that never applied [--] {+on a declared side+}
+      replace: ...applied cannot separate the fixture sides, [-and-] {+so+}
+      replace: ...is a detector waived on it [-(§A.12's head:-] {+(SC-12's definition:+}
+      replace: ...made "incapable of changing the criterion's [-outcome").-] {+outcome"), and line 1035 forbids the waiver.+}
+  [DATA THE DECLARATION] IDENTICAL (normalized)
+  [ROWS COVERED] IDENTICAL (normalized)
+====================================================================================================
+CLAUSE SC-13c
+  [REGISTERS] IDENTICAL (normalized)
+  [INSERTION POINT] DIFFERS:
+      - **INSERTION POINT.** **Pure insertion, immediately after SC-13b's block**, same three-space indentation, still between line 1035's paragraph and line 1036. The enumeration is untouched.
+      + **INSERTION POINT.** **Two:**
+      + 1. **Pure insertion, immediately after SC-13b's block**, same three-space indentation, still between line 1035's paragraph and line 1036. The enumeration is untouched. 2. **A pointer paragraph inserted after `PREREG.md` line 816** (§7.2.1), between line 816 and line 818, so that the site of the excepted rule signals the exception — the same convention H1's hunk H8 applies at §7.7 for SC-12's `waived`. Text at §13c-P below. Anchor: line 816 as a full-line match (count 1 as read this pass); re-derive after any earlier edit.
+  [SUPERSESSION MARKER] IDENTICAL (normalized)
+  [THE CLAUSE] DIFFERS:
+      replace: ...**INTERACTIONS OF THE CRITERION ABOVE — [-v30a.**-] {+v30a [SC-13c].**+}
+      replace: ...substitute for the amendment (line 1033; [-§A.12-] {+SC-12+}
+      replace: ...the amendment (line 1033; §A.12 item [-5).-] {+(5)).+}
+      replace: ...a detector waived on it — [-§A.12's-] {+SC-12's definition,+}
+      insert: ...and line 1035 forbids the waiver. [--] {+**The exception rests on this amendment's class C authority and on that capability ground; it does not rely on `PREREG.md` line 818, whose text stands as registered.**+}
+      replace: ...`Runtime, preserving` and `Runtime, promoted` rows [-(line 759),-] {+(lines 759 and 760),+}
+      replace: ...as the replacement for `PREREG.md` line [-461 and that declaration §A.8 records per working resolution R9.-] {+461.+}
+      replace: ...declared cell** of the declared scored [-population, which in-] {+population. **The cell key is the declaration's to supply, not+}
+      replace: ...declared scored population, which in this [-fixture's instance form §A.8 states as per-side, per-class, per-instrument-month.-] {+clause's to state**: SC-3(a) requires only that a key exist, be declared and named, and be frozen with the map before any detector runs (SC-3(h), SC-8), and this clause names no key.+}
+  [DATA THE DECLARATION] IDENTICAL (normalized)
+  [ROWS COVERED] IDENTICAL (normalized)

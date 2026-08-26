@@ -1,0 +1,36 @@
+=== 1. SINGLE-SOURCE SCAN SET (files now read) ===
+    AVAILABILITY_DECLARATION.md
+    DESIGN.md
+    DEVIATIONS.md
+    PRIOR_ART_VERIFICATION.md
+    README.md
+
+=== 2. EXCLUSIONS (with reasons) ===
+    DIR  evidence: dated evidence records and superseded-draft snapshots; the declaration that speaks for them is scanned instead
+    DIR  .git: version-control internals, not repository documents
+    DIR  .pytest_cache: tool cache, gitignored
+    DIR  __pycache__: tool cache, gitignored
+    FILE PREREG.md: the single normative source (PREREG §0.2.1)
+    FILE HISTORY.md: self-declared non-normative ledger (PREREG §6.8)
+    FILE PARKING_LOT.md: exempt region per PREREG §6.8; §11 item 1 permits exactly one entry, enforced by check_parking_lot
+    FILE tests/registration/EXPECTED_OUTPUTS.md: generated test artifact, pinned to the reducer by test_expected_outputs.py
+
+=== 3. RULE COUNTS ===
+    pre-H3 detectors: 8
+    H3-added detectors: 4
+    H3-added definitional detectors: 1
+
+=== 4. COUNTERFACTUAL: pre-H3 ruleset over the POST-H3 scope set ===
+    -> AVAILABILITY_DECLARATION.md: 0 finding(s) under pre-H3 rules
+    -> DESIGN.md: 0 finding(s) under pre-H3 rules
+    -> DEVIATIONS.md: 0 finding(s) under pre-H3 rules
+    -> PRIOR_ART_VERIFICATION.md: 0 finding(s) under pre-H3 rules
+    -> README.md: 0 finding(s) under pre-H3 rules
+    TOTAL under pre-H3 ruleset, post-H3 scope: 0
+
+=== 5. ATTRIBUTION OF EACH ACTUAL FINDING TO ITS DETECTOR ===
+Traceback (most recent call last):
+  File "C:\Users\ttbea\AppData\Local\Temp\claude\C--Users-ttbea-OneDrive-Desktop-MBO-2025-4mon--2026-01\8b1d67a4-ce4f-4c55-b09d-1c72e7b6b5e1\scratchpad\g5run2\c_attribution_probe.py", line 41, in <module>
+    per_file[f.where] += 1
+             ^^^^^^^
+AttributeError: 'Finding' object has no attribute 'where'

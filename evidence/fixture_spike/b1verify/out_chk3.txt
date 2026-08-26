@@ -1,0 +1,58 @@
+A.6.1 REQUIRED  n=11 ['net_delta_1s', 'net_delta_5s', 'net_delta_10s', 'net_delta_30s', 'net_delta_60s', 'sell_volume_10s', 'large_trade_count_10s', 'vwap_distance', 'trade_volume_1s', 'trade_count_1s', 'dollar_volume_1s']
+A.6.2(a)        n=4 ['minutes_since_open', 'session_open', 'session_mid', 'session_close']
+A.6.2(b)        n=18 ['spread_ticks', 'bid_size_1', 'ask_size_1', 'l1_imbalance', 'total_bid_depth', 'total_ask_depth', 'depth_imbalance', 'book_slope_bid', 'book_slope_ask', 'depth_change_1s', 'depth_change_5s', 'depth_change_30s', 'mid_return_1s', 'mid_return_5s', 'mid_return_10s', 'mid_return_30s', 'tick_direction', 'weighted_mid']
+A.6.3 UNSCORED  n=2 ['buy_volume_10s', 'book_imbalance_ratio']
+enumerated total (dedup): 35  raw sum: 35
+y1 columns: 35
+set identity decl vs y1: True | decl-only: [] | y1-only: []
+
+#  column                     y1 source                    RULE                 ENUM                 match
+1   mid_return_1s            snapshot parquet             OUT OF JURISDICTION  OUT OF JURISDICTION  OK
+2   mid_return_5s            snapshot parquet             OUT OF JURISDICTION  OUT OF JURISDICTION  OK
+3   mid_return_10s           snapshot parquet             OUT OF JURISDICTION  OUT OF JURISDICTION  OK
+4   mid_return_30s           snapshot parquet             OUT OF JURISDICTION  OUT OF JURISDICTION  OK
+5   tick_direction           snapshot parquet             OUT OF JURISDICTION  OUT OF JURISDICTION  OK
+6   trade_volume_1s          trades parquet               REQUIRED             REQUIRED             OK
+7   trade_count_1s           trades parquet               REQUIRED             REQUIRED             OK
+8   dollar_volume_1s         trades parquet               REQUIRED             REQUIRED             OK
+9   minutes_since_open       clock-only                   OUT OF JURISDICTION  OUT OF JURISDICTION  OK
+10  session_open             derived-from-another-column  OUT OF JURISDICTION  OUT OF JURISDICTION  OK
+11  session_mid              derived-from-another-column  OUT OF JURISDICTION  OUT OF JURISDICTION  OK
+12  session_close            derived-from-another-column  OUT OF JURISDICTION  OUT OF JURISDICTION  OK
+13  net_delta_1s             trades parquet               REQUIRED             REQUIRED             OK
+14  net_delta_5s             trades parquet               REQUIRED             REQUIRED             OK
+15  net_delta_10s            trades parquet               REQUIRED             REQUIRED             OK
+16  net_delta_30s            trades parquet               REQUIRED             REQUIRED             OK
+17  net_delta_60s            trades parquet               REQUIRED             REQUIRED             OK
+18  buy_volume_10s           trades parquet               UNSCORED             UNSCORED             OK
+19  sell_volume_10s          trades parquet               REQUIRED             REQUIRED             OK
+20  large_trade_count_10s    trades parquet               REQUIRED             REQUIRED             OK
+21  vwap_distance            MIXED: snapshot parquet + trades parquet REQUIRED             REQUIRED             OK
+22  bid_size_1               snapshot parquet             OUT OF JURISDICTION  OUT OF JURISDICTION  OK
+23  ask_size_1               snapshot parquet             OUT OF JURISDICTION  OUT OF JURISDICTION  OK
+24  total_bid_depth          snapshot parquet             OUT OF JURISDICTION  OUT OF JURISDICTION  OK
+25  total_ask_depth          snapshot parquet             OUT OF JURISDICTION  OUT OF JURISDICTION  OK
+26  book_imbalance_ratio     derived-from-another-column  UNSCORED             UNSCORED             OK
+27  weighted_mid             snapshot parquet             OUT OF JURISDICTION  OUT OF JURISDICTION  OK
+28  spread_ticks             snapshot parquet             OUT OF JURISDICTION  OUT OF JURISDICTION  OK
+29  depth_imbalance          derived-from-another-column  OUT OF JURISDICTION  OUT OF JURISDICTION  OK
+30  book_slope_bid           snapshot parquet             OUT OF JURISDICTION  OUT OF JURISDICTION  OK
+31  book_slope_ask           snapshot parquet             OUT OF JURISDICTION  OUT OF JURISDICTION  OK
+32  depth_change_1s          derived-from-another-column  OUT OF JURISDICTION  OUT OF JURISDICTION  OK
+33  depth_change_5s          derived-from-another-column  OUT OF JURISDICTION  OUT OF JURISDICTION  OK
+34  depth_change_30s         derived-from-another-column  OUT OF JURISDICTION  OUT OF JURISDICTION  OK
+35  l1_imbalance             derived-from-another-column  OUT OF JURISDICTION  OUT OF JURISDICTION  OK
+
+RULE-derived counts : {'OUT OF JURISDICTION': 22, 'REQUIRED': 11, 'UNSCORED': 2}
+ENUMERATED counts   : {'REQUIRED': 11, 'OUT OF JURISDICTION': 22, 'UNSCORED': 2}
+partition 11+22+2 == 35 ? 11 + 22 + 2 = 35
+N = 11
+DISAGREEMENTS: NONE
+
+A.6.0 table rows parsed: 35
+A.6.0 table vs A.6.1/2/3 enumeration mismatches: NONE
+A.6.0 table vs independently applied rule    : NONE
+
+A.6.5 crosstab rows parsed: 35
+A.6.5 row order == column_universe.csv row order ? True
+A.6.5 gate-class transcription mismatches: NONE

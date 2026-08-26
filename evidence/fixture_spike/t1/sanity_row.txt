@@ -1,0 +1,8 @@
+row index 168919
+row stamp T 2025-01-16 16:59:20
+joined second 2025-01-16 16:59:20
+                            ts_event   price  size  aggressor_side  signed_vol  after_T
+193037 2025-01-16 16:59:20.128299325  476.25     5  SELL_AGGRESSOR  4294967291     True
+sum signed_vol 4294967291 pkl net_delta_1s 4294967291.0
+max trade ts 2025-01-16 16:59:20.128299325 overhang_ms 128.299325
+corrected net_delta_1s at row i+1 4294967291.0 stamp 2025-01-16 16:59:21

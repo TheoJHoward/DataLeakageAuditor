@@ -1,0 +1,94 @@
+R18 FIVE-DEFECT CORRECTION PASS — working ledger (scratch; not part of the declaration)
+Target (only file edited): fixture_spike/f4/availability_declaration_DRAFT.md
+Date: 2026-08-12
+
+BASELINE (re-read before editing)
+  lines 2943 | bytes 215256
+  md5    5dee246bda6c4e53d90b3214cab8c805
+  sha256 d1f43f51e3c31108e42ba53f40ea72b4ac7db0a2f9224ed528acad2a5cf9f83c
+  frozen (i)  T2 addendum   6170 B md5 d4dd09b939540bdc2db33a2e13cb049e  == PRE_R9
+  frozen (ii) decision tail 5744 B md5 059bbb1d33e4c93c254ac5f1dabf8dae  == PRE_R9
+
+END STATE (re-read after editing)
+  lines 3059 | bytes 224596
+  md5    06b0845c51a226d0830aefdbf98e57ef
+  sha256 f4abf851ee65a57ba6907294203bf177763224b113358efa951fd005e3557e8f
+  frozen (i)  6170 B md5 d4dd09b939540bdc2db33a2e13cb049e sha256 3a82ba45bb83095239f17e5169d11b5724419fe629b5ac08aee313020424ae81 -> IDENTICAL to PRE_R9_HASHES.txt
+  frozen (ii) 5744 B md5 059bbb1d33e4c93c254ac5f1dabf8dae sha256 ad8b327707ecb9627b56b9e74e757facad55fb14e87a3082470fd7398bf267e0 -> IDENTICAL to PRE_R9_HASHES.txt
+  Nothing appended to the tail; both regions untouched.
+
+EDIT LEDGER (14 edits, every anchor match count = 1; net +116; 2943 + 116 = 3059)
+  D1-a  §C.3 gate consequence per-category      now 2378-2405   old 2  new 28  +26
+  D1-b  §C.3 "What happens instead" items 1-2   now 2512-2524   old 6  new 13   +7
+  D2    §B.1 enumeration                        now 1539-1553   old 3  new 15  +12
+  D3    §13(b) prose list -> ranked table       now 1739-1782   old 3  new 44  +41
+  D4-a  §2 headline two-count label             now  188-192    old 1  new  5   +4
+  D4-b  §2 reconciliation sentence              now  202-208    old 1  new  7   +6
+  D4-c  §B.4 heading                            now 1589-1596   old 1  new  8   +7
+  D4-d  §B.5 alignment                          now 1619-1625   old 3  new  7   +4
+  D4-e  §0.3 claims-table row                   now  642        old 1  new  1   +0
+  D4-f  §13(j) quotation of §B.4                now 2212-2214   old 2  new  3   +1
+  D4-g  §C.2 cross-reference                    now 2352-2353   old 2  new  2   +0
+  D5    header amendment enumeration            now   16-25     old 2  new 10   +8
+  D3fix zs 2025-08 max_strict_frac literal      now 1756        old 1  new  1   +0
+  D3fix gc 2025-08 max_strict_frac literal      now 1764        old 1  new  1   +0
+
+DEFECT 1 — grep disposition ("false positive" / "false-positive", whole file, post-edit)
+  L 439  Part I §5 map-relative        NO CHANGE (scoped to map cells)
+  L 948  §A.4 R9 quote                 NO CHANGE (verbatim registered text)
+  L1066  §A.6.2 heading                NO CHANGE (already exactly the 22)
+  L1067  §A.6.2 sub-group routes       NO CHANGE
+  L1077  §A.6.2(b) the 18              NO CHANGE
+  L1087  §A.6.2 blockquote, the 18     NO CHANGE
+  L1167  §A.8 R9 quote                 NO CHANGE (verbatim)
+  L1182  §A.8 corrected-side cell      NO CHANGE (cell-level, map-relative)
+  L1201  §A.9 criterion-4 sentinel     NO CHANGE (different criterion)
+  L1233  §A.10 reporting rule          NO CHANGE (already names OOJ vs UNSCORED separately)
+  L1668  §12 the 49 tie events         NO CHANGE (cells under declared branch, not columns)
+  L2381  §C.3 availability declaration FIXED  (was unscoped over the 27) -> scoped to the 22 + 2 carve-outs
+  L2424  §C.3 Category 1               NO CHANGE (already exactly the 22)
+  L2513  §C.3 "What happens instead" 1 FIXED  (was "any column above" = the 27) -> scoped to the 22 + carve-outs
+  L2520  §C.3 "What happens instead" 2 FIXED  (criterion-3 limb, same widening) -> scoped to the same 22
+  L2566  §C.4(b) session flags         NO CHANGE (criterion 3, 4 clean columns)
+  L3046  decision-log R9 (FROZEN)      NOT TOUCHED
+  L3054  decision-log OOJ (FROZEN)     NOT TOUCHED — already scoped to OUT OF JURISDICTION, consistent
+  Two hits widened past the 22; both fixed. No other hit ranges over the 27-list or any set wider than 22.
+
+DEFECT 2 — n2/lattice_provenance.csv, measured
+  228 rows. 7 block-structure columns populated on 84, empty on 144 (all 7 agree exactly).
+  84 = A_processed_FIXTURE_PATH 48 + B_processed_v4_gapfill 30 + B_processed_v4_morning_chunk 6.
+  144 = D_PC2_TRANSFER_v4 48 + E_pc2_transfer_processed 48 + F_pc2_transfer_transfer_data 24 + G_transfer_data 24.
+  All 228 carry: size_bytes, mtime_utc, sha256, md5, generation, manifest_status, total_rows,
+  filtered_rows, ts_min_ns, ts_max_ns, n_columns, subsecond_spacing_rows, nonexact_1s_gap_rows.
+
+DEFECT 3 — derivation (n1/summary_corrected.csv, max_strict > 0; 18 rows; y1/trade_class_only_map.csv
+  max_strict_declared10 agrees on all 48 corrected rows, 0 mismatches)
+  RATE order (max_strict_frac desc) vs ABSOLUTE order (max_strict desc):
+    rate 1 zc2025-09 111334/580944 .191643 (abs 1)   rate 10 cl2025-01  53249/801410 .066444 (abs 8)
+    rate 2 zc2025-10 109332/634445 .172327 (abs 2)   rate 11 gc2025-12  49649/772202 .064295 (abs 9)
+    rate 3 zc2025-08  90868/554303 .163932 (abs 3)   rate 12 gc2025-08  42886/692041 .06197  (abs 12)
+    rate 4 zs2025-08  64404/465381 .13839  (abs 5)   rate 13 cl2025-10  42377/745569 .056838 (abs 13)
+    rate 5 zs2025-10  60559/508910 .118997 (abs 6)   rate 14 cl2025-12  38945/768531 .050675 (abs 14)
+    rate 6 zs2025-09  45255/429465 .105375 (abs 11)  rate 15 cl2025-09  34010/687658 .049458 (abs 16)
+    rate 7 gc2025-10  71584/772447 .092672 (abs 4)   rate 16 gc2025-01  37065/761736 .048659 (abs 15)
+    rate 8 gc2025-09  59691/734280 .081292 (abs 7)   rate 17 gc2025-11  30577/674038 .045364 (abs 17)
+    rate 9 cl2025-11  48607/703999 .069044 (abs 10)  rate 18 cl2025-08  27852/664076 .041941 (abs 18)
+  argmax_strict = mbo_all and classes_scored = 10 on all 18.
+  Old list failed BOTH orders: zs2025-08 (64,404) ahead of gc2025-10 (71,584) is not absolute order;
+  stopping at gc2025-10 (9.27%) omits zs2025-10 (11.90%) and zs2025-09 (10.54%) under rate.
+  Table re-parsed OUT of the finished file and re-checked cell-by-cell against both artifacts: 18/18 OK.
+
+DEFECT 4 — n2/block_overlap.csv, 48 fixture-path rows, measured
+  MULTI-BLOCK (native_blocks>1 AND overlapping_block_pairs>0) = 18   (cl x6, gc x6, zc 08/09/10, zs 08/09/10)
+  EXCESS      (filtered_excess_rows>0)                        = 41
+  zero excess                                                 =  7   (he 2025-11, le 2025-11, zc 2025-01,
+                                                                      zc 2025-11, zs 2025-01, zs 2025-11, zs 2025-12)
+  single-block = 30 = 7 zero-excess + 23 with 1-17 excess (max rows/second 2; max 17 at he 2025-10)
+  18 is a STRICT SUBSET of 41 (18 + 23 = 41). Multi-block max rows/second = 5.
+  The 18 multi-block == the 18 corrected-side non-zero (set equality, verified).
+  The 23 single-block-with-excess are corrected-side ZERO (empty intersection, verified).
+  v4 (36 rows): 36 single-block, 12 zero excess, 24 with 1-5 excess -> §3/§B.4 unchanged and correct.
+
+DEFECT 5 — header: §2 and §3 clauses now record the two post-PRE_R9 Part I precision fixes, dated
+  2026-08-12, on n2/block_overlap.csv. R11-batch preamble's "amends NO Part I section" left intact
+  and explicitly reconciled. "amended in place, in five sections" still correct (§1-§5).

@@ -1,0 +1,15 @@
+WHOLE FILE  bytes=225675  lines=3071
+  md5    : 69d123886505bdd2e6cccdaeeeb06ce7
+  sha256 : 18d08e0ec19fd134c540bcfa91122ce55a46d13695a08fa6b3901e799250d99c
+
+FROZEN (i) T2 addendum block   offsets [23439,29609) len=6170
+  md5    : d4dd09b939540bdc2db33a2e13cb049e  MATCH
+  sha256 : 3a82ba45bb83095239f17e5169d11b5724419fe629b5ac08aee313020424ae81  MATCH
+  length : 6170  MATCH
+
+FROZEN (ii) decision-log tail  offsets [219931,EOF) len=5744
+  md5    : 059bbb1d33e4c93c254ac5f1dabf8dae  MATCH
+  sha256 : ad8b327707ecb9627b56b9e74e757facad55fb14e87a3082470fd7398bf267e0  MATCH
+  length : 5744  MATCH
+
+BOTH FROZEN REGIONS INTACT: True

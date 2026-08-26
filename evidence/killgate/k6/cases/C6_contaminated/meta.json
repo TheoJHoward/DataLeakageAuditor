@@ -1,0 +1,17 @@
+{
+  "features": [
+    "win5"
+  ],
+  "target": "target",
+  "group": null,
+  "time": "t",
+  "truth": "trailing 5-bar mean INCLUDES the decision bar t, which the declared availability model marks unavailable at decision time (one bar of reach)",
+  "case": "C6",
+  "side": "contaminated",
+  "type": "T6",
+  "detector_row": "L3.1",
+  "n_rows": 400,
+  "n_train": 200,
+  "n_test": 200,
+  "n_index_overlap": 0
+}

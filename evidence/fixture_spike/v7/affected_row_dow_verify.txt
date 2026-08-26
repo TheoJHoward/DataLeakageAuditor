@@ -1,0 +1,4 @@
+zc 2025-08 bucket=afternoon n=5 NY times: ['2025-08-01 14:19:59', '2025-08-08 14:19:59', '2025-08-15 14:19:59'] ... dows=['Friday']
+zc 2025-08 bucket=outside_session n=16 NY times: ['2025-08-04 19:59:59', '2025-08-05 19:59:59', '2025-08-06 19:59:59'] ... dows=['Monday', 'Thursday', 'Tuesday', 'Wednesday']
+es 2025-08 bucket=outside_session n=5 NY times: ['2025-08-01 17:00:00', '2025-08-08 17:00:00', '2025-08-15 17:00:00'] ... dows=['Friday']
+es 2025-08 bucket=asia_overnight n=16 NY times: ['2025-08-04 19:59:59', '2025-08-05 19:59:59', '2025-08-06 19:59:59'] ... dows=['Monday', 'Thursday', 'Tuesday', 'Wednesday']

@@ -1,0 +1,5 @@
+horizon_s,total_rows,nan_labels_total,month_tail_last_h_rows_nan,cross_boundary_label_pairs,cross_boundary_label_real_value,cross_boundary_label_nan,worst_wallclock_span_cross,median_wallclock_span_cross,sameday_pairs_span_gt60s,worst_wallclock_span_sameday,cross_boundary_passing_mag_filter_abs_ge_2ticks,cross_boundary_mag_filter_pass_frac,overall_mag_filter_pass_frac
+5,338159,5,5,100,100,0,3 days 19:30:05,0 days 19:30:05,34,0 days 00:20:03.471596117,83,0.83,0.0
+10,338159,10,10,200,200,0,3 days 19:30:10,0 days 19:30:10,61,0 days 00:23:44.418748740,166,0.83,0.001
+30,338159,30,30,600,600,0,3 days 19:30:30,0 days 19:30:30,158,0 days 00:25:12.258511998,494,0.823,0.004
+60,338159,60,60,1200,1200,0,3 days 19:31:00,0 days 19:31:00,255,0 days 00:30:45.369966846,974,0.812,0.01

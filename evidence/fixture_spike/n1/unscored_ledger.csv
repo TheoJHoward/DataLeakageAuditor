@@ -1,0 +1,7 @@
+instrument,month,missing_path,classes,n_cells
+nq,2025-01,C:\Users\ttbea\OneDrive\Desktop\MBO_2025\processed\nq\nq_mbo_2025-01.parquet,"mbo_all,mbo_ask_add,mbo_ask_cancel,mbo_bid_add,mbo_bid_cancel,mbo_cancel_any",12
+nq,2025-08,C:\Users\ttbea\OneDrive\Desktop\MBO_2025\processed\nq\nq_mbo_2025-08.parquet,"mbo_all,mbo_ask_add,mbo_ask_cancel,mbo_bid_add,mbo_bid_cancel,mbo_cancel_any",12
+nq,2025-09,C:\Users\ttbea\OneDrive\Desktop\MBO_2025\processed\nq\nq_mbo_2025-09.parquet,"mbo_all,mbo_ask_add,mbo_ask_cancel,mbo_bid_add,mbo_bid_cancel,mbo_cancel_any",12
+nq,2025-10,C:\Users\ttbea\OneDrive\Desktop\MBO_2025\processed\nq\nq_mbo_2025-10.parquet,"mbo_all,mbo_ask_add,mbo_ask_cancel,mbo_bid_add,mbo_bid_cancel,mbo_cancel_any",12
+nq,2025-11,C:\Users\ttbea\OneDrive\Desktop\MBO_2025\processed\nq\nq_mbo_2025-11.parquet,"mbo_all,mbo_ask_add,mbo_ask_cancel,mbo_bid_add,mbo_bid_cancel,mbo_cancel_any",12
+nq,2025-12,C:\Users\ttbea\OneDrive\Desktop\MBO_2025\processed\nq\nq_mbo_2025-12.parquet,"mbo_all,mbo_ask_add,mbo_ask_cancel,mbo_bid_add,mbo_bid_cancel,mbo_cancel_any",12

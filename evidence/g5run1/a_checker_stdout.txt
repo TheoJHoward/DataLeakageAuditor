@@ -1,0 +1,28 @@
+== check_registration --stage prereg (root: C:\Users\ttbea\AppData\Local\Temp\claude\C--Users-ttbea-OneDrive-Desktop-MBO-2025-4mon--2026-01\8b1d67a4-ce4f-4c55-b09d-1c72e7b6b5e1\scratchpad\g5run1\tree) ==
+[PASS] structure
+[PASS] config_schema
+[PASS] lock_table
+[PASS] banned_vocabulary
+    note: PREREG.md:414: EXEMPTION APPLIED id=REG15 reason='the registry entry must name the parked mechanism to state what a user does not get'
+    note: PREREG.md:1097: EXEMPTION APPLIED id=PARK9 reason='the parking-lot pointer must name the parked mechanism to state what an amendment would restore'
+[PASS] deletion_certificate
+[PASS] single_source
+[PASS] phase_arithmetic
+[PASS] requirement_ids
+[PASS] legality_table
+[PASS] parking_lot
+[PASS] reducer_functions
+[PASS] unit_grammar
+[PASS] suppression_anchor
+
+Deferred at this stage (owned elsewhere; an omitted branch is a failure, not a pass):
+    ties_comparator_vs_shipped_mask  -> owned by --stage implementation
+    l31b_inequalities_vs_shipped_rule  -> owned by --stage implementation
+    shipping_defaults_vs_validated_runtime  -> owned by --stage implementation
+    deleted_config_fields_rejected  -> owned by --stage implementation
+    cost_script_total  -> owned by --stage implementation
+    readme_numbers_regenerated  -> owned by --stage release
+    package_defaults  -> owned by --stage release
+    installability  -> owned by --stage release
+
+RESULT: PASS

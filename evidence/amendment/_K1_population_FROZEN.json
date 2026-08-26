@@ -1,0 +1,434 @@
+[
+ {
+  "idx": 1,
+  "lines": [
+   150,
+   159
+  ],
+  "kind": "quote",
+  "heading": "SUPERSESSION MARKER",
+  "sha12": "e0f0bfe73f11",
+  "chars": 720,
+  "first": "**§2.3 line 205 (`column_roles`) — v30a, ADDED NOT SUPERSEDED.** The role enumeration stan"
+ },
+ {
+  "idx": 2,
+  "lines": [
+   163,
+   202
+  ],
+  "kind": "quote",
+  "heading": "THE CLAUSE",
+  "sha12": "3f11151ac725",
+  "chars": 2698,
+  "first": "**§2.9 What a reconstructed declaration fixes, and what it may not leave open — v30a [SC-1"
+ },
+ {
+  "idx": 3,
+  "lines": [
+   228,
+   232
+  ],
+  "kind": "quote",
+  "heading": "SUPERSESSION MARKER",
+  "sha12": "2a15be77ebb3",
+  "chars": 447,
+  "first": "**§6.2 line 445 — SUPERSEDED BY v30a** (H1 hunk **H2**): the registered anchor pair and it"
+ },
+ {
+  "idx": 4,
+  "lines": [
+   236,
+   269
+  ],
+  "kind": "quote",
+  "heading": "THE CLAUSE",
+  "sha12": "5bac5c6dc112",
+  "chars": 2569,
+  "first": "**The acceptance fixture's composition — v30a [SC-2]** **(a) THE FIXTURE IS AN ENUMERATED "
+ },
+ {
+  "idx": 5,
+  "lines": [
+   293,
+   301
+  ],
+  "kind": "quote",
+  "heading": "SUPERSESSION MARKER",
+  "sha12": "71eb6ac4908a",
+  "chars": 697,
+  "first": "**SUPERSEDED BY v30a — registered v30 criterion 3, retained verbatim, NOT operative:** \"3."
+ },
+ {
+  "idx": 6,
+  "lines": [
+   305,
+   358
+  ],
+  "kind": "quote",
+  "heading": "THE CLAUSE",
+  "sha12": "dfddb160a6b0",
+  "chars": 3853,
+  "first": "**3. Runtime findings on every fixture side are scored against the fixture's DECLARED GROU"
+ },
+ {
+  "idx": 7,
+  "lines": [
+   382,
+   408
+  ],
+  "kind": "quote",
+  "heading": "SUPERSESSION MARKER",
+  "sha12": "8a07d997c85c",
+  "chars": 1799,
+  "first": "**§6.2 line 459 — v30a. THE TEXT IS UNCHANGED; THE REQUIREMENT IS NOT.** *(Corrected at R5"
+ },
+ {
+  "idx": 8,
+  "lines": [
+   412,
+   570
+  ],
+  "kind": "quote",
+  "heading": "THE CLAUSE",
+  "sha12": "415e8562be7e",
+  "chars": 12788,
+  "first": "**The criterion-1 denominator, and the partition rule that constitutes it — v30a [SC-4]** "
+ },
+ {
+  "idx": 9,
+  "lines": [
+   598,
+   636
+  ],
+  "kind": "quote",
+  "heading": "THE CLAUSE",
+  "sha12": "5a4f1e58d02e",
+  "chars": 2834,
+  "first": "**Adjudication routing — v30a [SC-5]** **(a) EVERY FINDING IS CHARGED TO EXACTLY ONE CRITE"
+ },
+ {
+  "idx": 10,
+  "lines": [
+   663,
+   671
+  ],
+  "kind": "quote",
+  "heading": "SUPERSESSION MARKER",
+  "sha12": "0f4141befa0a",
+  "chars": 697,
+  "first": "**§7.7 line 855 — SUPERSEDED BY v30a. Registered v30 row, retained verbatim, NOT operative"
+ },
+ {
+  "idx": 11,
+  "lines": [
+   675,
+   680
+  ],
+  "kind": "quote",
+  "heading": "INSERTION TEXT — §8.2, after `PREREG.md` line 915 (after marker M2 where placed) — S2(i)",
+  "sha12": "4666f6636c27",
+  "chars": 537,
+  "first": "**`unscored` — §7.7 (v30a) [SC-6] — is governed by this section's closing sentence as well"
+ },
+ {
+  "idx": 12,
+  "lines": [
+   684,
+   712
+  ],
+  "kind": "quote",
+  "heading": "THE CLAUSE",
+  "sha12": "ca4aa92a88cf",
+  "chars": 2061,
+  "first": "**`unscored` — a coverage state, v30a [SC-6]** **(a) SEMANTICS.** A unit is **`unscored`**"
+ },
+ {
+  "idx": 13,
+  "lines": [
+   744,
+   764
+  ],
+  "kind": "quote",
+  "heading": "THE CLAUSE",
+  "sha12": "f25ea576a158",
+  "chars": 1408,
+  "first": "**The gate's input surface — v30a [SC-7]** **(a) AT GATE TIME A DETECTOR RECEIVES EXACTLY "
+ },
+ {
+  "idx": 14,
+  "lines": [
+   789,
+   804
+  ],
+  "kind": "quote",
+  "heading": "SUPERSESSION MARKER",
+  "sha12": "37cd269a2a9c",
+  "chars": 1178,
+  "first": "**§6.2 line 480 — v30a, EXTENDED NOT SUPERSEDED.** The locked ordering stands byte-exact. "
+ },
+ {
+  "idx": 15,
+  "lines": [
+   810,
+   821
+  ],
+  "kind": "quote",
+  "heading": "INSERTION TEXT — §11 item 8, after `PREREG.md` line 1054 (item 7) — S2(ii)",
+  "sha12": "9df814684357",
+  "chars": 1123,
+  "first": "8. **The freeze, and the hash set that carries it — v30a.** What freezes at an amended reg"
+ },
+ {
+  "idx": 16,
+  "lines": [
+   825,
+   861
+  ],
+  "kind": "quote",
+  "heading": "THE CLAUSE",
+  "sha12": "468295588a21",
+  "chars": 2741,
+  "first": "**The freeze, and what \"declared ex ante\" requires — v30a [SC-8]** **(a) EVERYTHING THE GA"
+ },
+ {
+  "idx": 17,
+  "lines": [
+   887,
+   926
+  ],
+  "kind": "quote",
+  "heading": "THE CLAUSE",
+  "sha12": "3561c0ce3074",
+  "chars": 2987,
+  "first": "**Integrity of a declared instance — v30a [SC-9]** **(a) A DECLARATION SUPPLIES DATA UNDER"
+ },
+ {
+  "idx": 18,
+  "lines": [
+   950,
+   954
+  ],
+  "kind": "quote",
+  "heading": "SUPERSESSION MARKER",
+  "sha12": "09b887f2d87b",
+  "chars": 486,
+  "first": "**§6.1 line 431 heading and table — v30a, AMENDED IN FORM.** The five bodies stand unchang"
+ },
+ {
+  "idx": 19,
+  "lines": [
+   958,
+   985
+  ],
+  "kind": "quote",
+  "heading": "THE CLAUSE",
+  "sha12": "d53bc617c4f4",
+  "chars": 1931,
+  "first": "**Declared non-gated data — v30a [SC-10]** **(a) A DECLARATION MAY CARRY DATA THE GATE DOE"
+ },
+ {
+  "idx": 20,
+  "lines": [
+   1012,
+   1014
+  ],
+  "kind": "quote",
+  "heading": "INSERTION TEXT — §8.6, after `PREREG.md` line 961 — S2(iii)",
+  "sha12": "4e20c446788d",
+  "chars": 282,
+  "first": "**A zero, an empty result, or an all-clean statement is a published number and carries pro"
+ },
+ {
+  "idx": 21,
+  "lines": [
+   1018,
+   1055
+  ],
+  "kind": "quote",
+  "heading": "THE CLAUSE",
+  "sha12": "374fa1f6b543",
+  "chars": 2677,
+  "first": "**The all-zero control — v30a [SC-11]** **(a) AN EMPTY AGGREGATE MUST BE PROVED EMPTY BEFO"
+ },
+ {
+  "idx": 22,
+  "lines": [
+   1086,
+   1125
+  ],
+  "kind": "quote",
+  "heading": "THE CLAUSE",
+  "sha12": "f72054921e17",
+  "chars": 3163,
+  "first": "**\"Waived\", defined — v30a [SC-12]** The floor above uses the word without a defining clau"
+ },
+ {
+  "idx": 23,
+  "lines": [
+   1137,
+   1173
+  ],
+  "kind": "quote",
+  "heading": "SC-12(w) — ENTRY CONDITION FOR §7.7's `waived` COVERAGE STATE (item Y3, adopted at DELTA R35 B3)",
+  "sha12": "9b6e2a518e76",
+  "chars": 7329,
+  "first": "**(w) ENTRY CONDITION FOR §7.7's `waived` COVERAGE STATE — a prohibition, and a closed lis"
+ },
+ {
+  "idx": 24,
+  "lines": [
+   1199,
+   1204
+  ],
+  "kind": "quote",
+  "heading": "SUPERSESSION MARKER — registered v30 text retained verbatim at its site, NOT operative:",
+  "sha12": "942b9e3f7e7e",
+  "chars": 497,
+  "first": "**§8.3 line 929 — SUPERSEDED BY v30a, carried with SC-12(w).** Registered v30 text, retain"
+ },
+ {
+  "idx": 25,
+  "lines": [
+   1208,
+   1208
+  ],
+  "kind": "quote",
+  "heading": "OPERATIVE v30a TEXT at line 929:",
+  "sha12": "0368dc305862",
+  "chars": 373,
+  "first": "- **`assert_audit_complete()`** — fails on any `unsupported`, `could_not_run`, or **`waive"
+ },
+ {
+  "idx": 26,
+  "lines": [
+   1215,
+   1219
+  ],
+  "kind": "fence",
+  "heading": "ROWS COVERED: 62, 63, 64",
+  "sha12": "6f26efff1df0",
+  "chars": 628,
+  "first": "| **Runtime, `preserving`** | L2a, L3.1 | **proof yield**; conditional feature-cohort reca"
+ },
+ {
+  "idx": 27,
+  "lines": [
+   1247,
+   1272
+  ],
+  "kind": "quote",
+  "heading": "SUPERSESSION MARKER",
+  "sha12": "c2f18201a502",
+  "chars": 1976,
+  "first": "**§10.2 criterion 2, line 1030 — v30a, SUPERSEDED ON THE AMBIGUITY BRANCH ONLY. Registered"
+ },
+ {
+  "idx": 28,
+  "lines": [
+   1276,
+   1334
+  ],
+  "kind": "quote",
+  "heading": "THE CLAUSE",
+  "sha12": "4d62b1ab53b5",
+  "chars": 4923,
+  "first": "**2. Where the fixture is semantically ambiguous, the runtime detectors must reach a non-z"
+ },
+ {
+  "idx": 29,
+  "lines": [
+   1370,
+   1437
+  ],
+  "kind": "quote",
+  "heading": "THE CLAUSE",
+  "sha12": "866c2968b9ea",
+  "chars": 5746,
+  "first": "**ADMISSIBILITY FOR THE CRITERION ABOVE — v30a [SC-13b]. Tested before any detector runs, "
+ },
+ {
+  "idx": 30,
+  "lines": [
+   1475,
+   1575
+  ],
+  "kind": "quote",
+  "heading": "THE CLAUSE",
+  "sha12": "e53506718260",
+  "chars": 8294,
+  "first": "**INTERACTIONS OF THE CRITERION ABOVE — v30a [SC-13c].** **(c1) ADOPTION, AND THE ONE NAME"
+ },
+ {
+  "idx": 31,
+  "lines": [
+   1596,
+   1598
+  ],
+  "kind": "fence",
+  "heading": "ANCHOR — `PREREG.md` line 816, verbatim (match count 1 as read this pass):",
+  "sha12": "567704552402",
+  "chars": 174,
+  "first": "**A combination that is `not_applicable` on every scope-eligible case in a body of data pu"
+ },
+ {
+  "idx": 32,
+  "lines": [
+   1604,
+   1608
+  ],
+  "kind": "fence",
+  "heading": "INSERT AFTER (one paragraph, blank line each side):",
+  "sha12": "d021face5287",
+  "chars": 556,
+  "first": "**The suppression clause above is subject to one express, scoped exception, stated in §10."
+ },
+ {
+  "idx": 33,
+  "lines": [
+   1632,
+   1679
+  ],
+  "kind": "quote",
+  "heading": "§AB — THE v30a AMENDMENTS-BLOCK RECORDING TEXT (revised; drafted, not applied)",
+  "sha12": "c4463ff1de52",
+  "chars": 3656,
+  "first": "**RECORDED DEFECT, NOT RESOLVED BY THIS AMENDMENT — `PREREG.md` lines 816 and 830 hold dup"
+ },
+ {
+  "idx": 34,
+  "lines": [
+   1687,
+   1737
+  ],
+  "kind": "quote",
+  "heading": "§AC — THE v30a DISCLOSURES BLOCK (drafted R58/W4)",
+  "sha12": "7d72cae05ccb",
+  "chars": 3841,
+  "first": "**WHAT THIS AMENDMENT DISCLOSES — seven things a reader would otherwise have to reconstruc"
+ },
+ {
+  "idx": 35,
+  "lines": [
+   1754,
+   1756
+  ],
+  "kind": "fence",
+  "heading": "§10.1-C2op — THE C2 OPERATIVE ITEM (replaces `PREREG.md` line 1022)",
+  "sha12": "4c18ca940288",
+  "chars": 404,
+  "first": "3. Fires on `fixture_contaminated`, and on `fixture_corrected` its runtime findings match "
+ },
+ {
+  "idx": 36,
+  "lines": [
+   1760,
+   1762
+  ],
+  "kind": "fence",
+  "heading": "§10.1-C2ret — THE C2 RETENTION BLOCK (inserted beneath the operative item)",
+  "sha12": "cbf0368075a1",
+  "chars": 1015,
+  "first": "> **§10.1 line 1022 (kill-gate criterion 3) — SUPERSEDED BY v30a, consequential to §6.2 li"
+ }
+]

@@ -1,0 +1,23 @@
+import numpy as np
+import pandas as pd
+from sklearn.feature_selection import SelectKBest, f_classif
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+
+
+def run():
+    df = pd.read_csv("full.csv")
+    y = df["target"].to_numpy()
+    X = df.drop(columns=["target"]).to_numpy(dtype=float)
+    n = len(df)
+
+    selector = SelectKBest(f_classif, k=5)
+    X_all = selector.fit_transform(X, y)         # SELECT ON TRAIN+TEST
+    X_tr, X_te, y_train, y_test = train_test_split(X, y, test_size=0.5, shuffle=False)
+    X_train, X_test = X_all[: n // 2], X_all[n // 2:]
+    model = LogisticRegression(max_iter=200).fit(X_train, y_train)
+    print(model.score(X_test, y_test))
+
+
+run()

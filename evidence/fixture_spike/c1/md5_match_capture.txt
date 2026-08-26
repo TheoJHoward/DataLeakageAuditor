@@ -1,0 +1,30 @@
+C1 (a) MD5 match capture
+run_utc: 2026-08-12T00:11:26.902470+00:00
+python: hashlib.md5, 1 MiB chunks, binary read
+
+checksums file: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\pc2_transfer\transfer\checksums.txt
+checksums file total lines: 96
+
+line 49 (verbatim): 'ea2eee6136896b5f8a5b7ddc052f589c  data/zc/zc_snapshots_2025-01.parquet'
+  -> expected md5: ea2eee6136896b5f8a5b7ddc052f589c
+  -> named file:   data/zc/zc_snapshots_2025-01.parquet
+file recomputed: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\processed\zc\zc_snapshots_2025-01.parquet
+  exists: True
+  size_bytes: 15919599
+  mtime_utc: 2026-04-02T21:31:53.929382+00:00
+  recomputed md5: ea2eee6136896b5f8a5b7ddc052f589c
+  expected  md5 (checksums.txt line 49): ea2eee6136896b5f8a5b7ddc052f589c
+  verdict: MATCH
+
+line 61 (verbatim): 'a2ccce4d3e69c001cd45a44b5eaf7eae  data/zc/zc_trades_tagged_2025-01.parquet'
+  -> expected md5: a2ccce4d3e69c001cd45a44b5eaf7eae
+  -> named file:   data/zc/zc_trades_tagged_2025-01.parquet
+file recomputed: C:\Users\ttbea\OneDrive\Desktop\MBO_2025\processed\zc\zc_trades_tagged_2025-01.parquet
+  exists: True
+  size_bytes: 11521206
+  mtime_utc: 2026-04-02T21:31:53.199896+00:00
+  recomputed md5: a2ccce4d3e69c001cd45a44b5eaf7eae
+  expected  md5 (checksums.txt line 61): a2ccce4d3e69c001cd45a44b5eaf7eae
+  verdict: MATCH
+
+overall: BOTH MATCH

@@ -1,0 +1,218 @@
+[
+  {
+    "tool": "Leakly",
+    "version": "0.1.2",
+    "case": "C2",
+    "side": "contaminated",
+    "config": {
+      "pipeline_order": [
+        "imputation",
+        "normalization",
+        "feature_selection",
+        "data_split",
+        "model"
+      ],
+      "n_permutations": 25,
+      "alpha": 0.05,
+      "metric": "auc",
+      "random_state": 0,
+      "firing_rule": "one-sided t-test of permuted-label AUCs > 0.5"
+    },
+    "status": "ran",
+    "fired": false,
+    "observed_auc": 0.9887429643527204,
+    "permuted_auc_mean": 0.498223889931207,
+    "permuted_auc_std": 0.061208913365256634,
+    "p_value": 0.5559277277232698,
+    "fired_labels": []
+  },
+  {
+    "tool": "Leakly",
+    "version": "0.1.2",
+    "case": "C2",
+    "side": "clean",
+    "config": {
+      "pipeline_order": [
+        "data_split",
+        "imputation",
+        "normalization",
+        "feature_selection",
+        "model"
+      ],
+      "n_permutations": 25,
+      "alpha": 0.05,
+      "metric": "auc",
+      "random_state": 0,
+      "firing_rule": "one-sided t-test of permuted-label AUCs > 0.5"
+    },
+    "status": "ran",
+    "fired": false,
+    "observed_auc": 0.9887429643527204,
+    "permuted_auc_mean": 0.49313320825515944,
+    "permuted_auc_std": 0.06058772281791823,
+    "p_value": 0.7080628254092738,
+    "fired_labels": []
+  },
+  {
+    "tool": "Leakly",
+    "version": "0.1.2",
+    "case": "C3",
+    "side": "contaminated",
+    "config": {
+      "pipeline_order": [
+        "imputation",
+        "normalization",
+        "feature_selection",
+        "data_split",
+        "model"
+      ],
+      "n_permutations": 25,
+      "alpha": 0.05,
+      "metric": "auc",
+      "random_state": 0,
+      "firing_rule": "one-sided t-test of permuted-label AUCs > 0.5"
+    },
+    "status": "ran",
+    "fired": false,
+    "observed_auc": 0.6538220551378446,
+    "permuted_auc_mean": 0.5057769423558898,
+    "permuted_auc_std": 0.06411878447457281,
+    "p_value": 0.3314423951942148,
+    "fired_labels": []
+  },
+  {
+    "tool": "Leakly",
+    "version": "0.1.2",
+    "case": "C3",
+    "side": "clean",
+    "config": {
+      "pipeline_order": [
+        "data_split",
+        "imputation",
+        "normalization",
+        "feature_selection",
+        "model"
+      ],
+      "n_permutations": 25,
+      "alpha": 0.05,
+      "metric": "auc",
+      "random_state": 0,
+      "firing_rule": "one-sided t-test of permuted-label AUCs > 0.5"
+    },
+    "status": "ran",
+    "fired": false,
+    "observed_auc": 0.6109022556390978,
+    "permuted_auc_mean": 0.47946115288220553,
+    "permuted_auc_std": 0.04904731168653367,
+    "p_value": 0.9743564666270388,
+    "fired_labels": []
+  },
+  {
+    "tool": "Leakly",
+    "version": "0.1.2",
+    "case": "C5",
+    "side": "contaminated",
+    "config": {
+      "pipeline_order": [
+        "data_split",
+        "imputation",
+        "normalization",
+        "feature_selection",
+        "model"
+      ],
+      "n_permutations": 25,
+      "alpha": 0.05,
+      "metric": "auc",
+      "random_state": 0,
+      "firing_rule": "one-sided t-test of permuted-label AUCs > 0.5"
+    },
+    "status": "ran",
+    "fired": false,
+    "observed_auc": 1.0,
+    "permuted_auc_mean": 0.4782363977485929,
+    "permuted_auc_std": 0.050687688827152286,
+    "p_value": 0.9769544890886761,
+    "fired_labels": []
+  },
+  {
+    "tool": "Leakly",
+    "version": "0.1.2",
+    "case": "C5",
+    "side": "clean",
+    "config": {
+      "pipeline_order": [
+        "data_split",
+        "imputation",
+        "normalization",
+        "feature_selection",
+        "model"
+      ],
+      "n_permutations": 25,
+      "alpha": 0.05,
+      "metric": "auc",
+      "random_state": 0,
+      "firing_rule": "one-sided t-test of permuted-label AUCs > 0.5"
+    },
+    "status": "ran",
+    "fired": false,
+    "observed_auc": 0.8270794246404003,
+    "permuted_auc_mean": 0.4971482176360225,
+    "permuted_auc_std": 0.060195833078007056,
+    "p_value": 0.5907819559534925,
+    "fired_labels": []
+  },
+  {
+    "tool": "Leakly",
+    "version": "0.1.2",
+    "case": "C6",
+    "side": "contaminated",
+    "config": {
+      "pipeline_order": [
+        "data_split",
+        "imputation",
+        "normalization",
+        "feature_selection",
+        "model"
+      ],
+      "n_permutations": 25,
+      "alpha": 0.05,
+      "metric": "auc",
+      "random_state": 0,
+      "firing_rule": "one-sided t-test of permuted-label AUCs > 0.5"
+    },
+    "status": "ran",
+    "fired": false,
+    "observed_auc": 0.6188242651657285,
+    "permuted_auc_mean": 0.49503439649781106,
+    "permuted_auc_std": 0.05076535563233627,
+    "p_value": 0.6819305038604185,
+    "fired_labels": []
+  },
+  {
+    "tool": "Leakly",
+    "version": "0.1.2",
+    "case": "C6",
+    "side": "clean",
+    "config": {
+      "pipeline_order": [
+        "data_split",
+        "imputation",
+        "normalization",
+        "feature_selection",
+        "model"
+      ],
+      "n_permutations": 25,
+      "alpha": 0.05,
+      "metric": "auc",
+      "random_state": 0,
+      "firing_rule": "one-sided t-test of permuted-label AUCs > 0.5"
+    },
+    "status": "ran",
+    "fired": false,
+    "observed_auc": 0.5561617458279846,
+    "permuted_auc_mean": 0.49600770218228507,
+    "permuted_auc_std": 0.05008081090572367,
+    "p_value": 0.6502061182347119,
+    "fired_labels": []
+  }
+]

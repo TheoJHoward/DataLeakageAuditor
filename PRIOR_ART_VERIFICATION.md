@@ -36,7 +36,9 @@ Author's ledger of prior-art tools checked at source. Fulfills the "written down
   SURFACE, NOT SOURCE — recorded as such, because the absence of a
   user-callable parameter places it outside the primitive's neighbourhood
   by construction. Surfaced by the author's own search of 12 Aug 2026;
-  MISSED by the assistant sweep of the same date. Broadest leakage-family
+  NOT surfaced by the automated sweep conducted the same date. The
+  divergence is recorded because it bears on how the coverage claim
+  should be weighted: automated search did not reach this candidate. Broadest leakage-family
   coverage of any candidate found (~6 of 8).
 
 - **Method note (sweep calibration).** The scrutiny tier applied to a

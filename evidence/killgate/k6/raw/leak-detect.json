@@ -1,0 +1,260 @@
+[
+  {
+    "tool": "leak-detect",
+    "version": "0.0.1",
+    "case": "C6",
+    "side": "contaminated",
+    "config": {
+      "only_nan": false,
+      "probe": "vertical",
+      "check_row_number": "default int(len(data)/2)=200",
+      "direction": "upward"
+    },
+    "status": "crash",
+    "fired": null,
+    "stdout": "Checking for vertical leakage in upward direction...\nBy replacing 'input_feature_cols' after row number 200 with NANs:\nNo vertical leakage detected. Good to go! Yay!!\n\n\nBy adding imaginary component to 'input_feature_cols' after row number 200:\n",
+    "error": "AttributeError: module 'numpy' has no attribute 'complex'.\n`np.complex` was a deprecated alias for the builtin `complex`. To avoid this error in existing code, use `complex` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.complex128` here.\nThe aliases was originally deprecated in NumPy 1.20; for more details and guidance see the original release note at:\n    https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations",
+    "traceback": "Users\\ttbea\\k6env\\ld\\Lib\\site-packages\\pandas\\core\\base.py\", line 921, in _map_values\n    return algorithms.map_array(arr, mapper, na_action=na_action, convert=convert)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\ttbea\\k6env\\ld\\Lib\\site-packages\\pandas\\core\\algorithms.py\", line 1743, in map_array\n    return lib.map_infer(values, mapper, convert=convert)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"lib.pyx\", line 2972, in pandas._libs.lib.map_infer\n  File \"C:\\Users\\ttbea\\k6env\\ld\\Lib\\site-packages\\leak_detect\\base.py\", line 76, in <lambda>\n    input_data.loc[start:end-1, col] = input_data.loc[start:end-1, col].apply(lambda x: np.complex(x + 1j))\n                                                                                        ^^^^^^^^^^\n  File \"C:\\Users\\ttbea\\k6env\\ld\\Lib\\site-packages\\numpy\\__init__.py\", line 338, in __getattr__\n    raise AttributeError(__former_attrs__[attr])\nAttributeError: module 'numpy' has no attribute 'complex'.\n`np.complex` was a deprecated alias for the builtin `complex`. To avoid this error in existing code, use `complex` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.complex128` here.\nThe aliases was originally deprecated in NumPy 1.20; for more details and guidance see the original release note at:\n    https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations. Did you mean: 'complex_'?\n"
+  },
+  {
+    "tool": "leak-detect",
+    "version": "0.0.1",
+    "case": "C6",
+    "side": "clean",
+    "config": {
+      "only_nan": false,
+      "probe": "vertical",
+      "check_row_number": "default int(len(data)/2)=200",
+      "direction": "upward"
+    },
+    "status": "crash",
+    "fired": null,
+    "stdout": "Checking for vertical leakage in upward direction...\nBy replacing 'input_feature_cols' after row number 200 with NANs:\nNo vertical leakage detected. Good to go! Yay!!\n\n\nBy adding imaginary component to 'input_feature_cols' after row number 200:\n",
+    "error": "AttributeError: module 'numpy' has no attribute 'complex'.\n`np.complex` was a deprecated alias for the builtin `complex`. To avoid this error in existing code, use `complex` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.complex128` here.\nThe aliases was originally deprecated in NumPy 1.20; for more details and guidance see the original release note at:\n    https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations",
+    "traceback": "Users\\ttbea\\k6env\\ld\\Lib\\site-packages\\pandas\\core\\base.py\", line 921, in _map_values\n    return algorithms.map_array(arr, mapper, na_action=na_action, convert=convert)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\ttbea\\k6env\\ld\\Lib\\site-packages\\pandas\\core\\algorithms.py\", line 1743, in map_array\n    return lib.map_infer(values, mapper, convert=convert)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"lib.pyx\", line 2972, in pandas._libs.lib.map_infer\n  File \"C:\\Users\\ttbea\\k6env\\ld\\Lib\\site-packages\\leak_detect\\base.py\", line 76, in <lambda>\n    input_data.loc[start:end-1, col] = input_data.loc[start:end-1, col].apply(lambda x: np.complex(x + 1j))\n                                                                                        ^^^^^^^^^^\n  File \"C:\\Users\\ttbea\\k6env\\ld\\Lib\\site-packages\\numpy\\__init__.py\", line 338, in __getattr__\n    raise AttributeError(__former_attrs__[attr])\nAttributeError: module 'numpy' has no attribute 'complex'.\n`np.complex` was a deprecated alias for the builtin `complex`. To avoid this error in existing code, use `complex` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.complex128` here.\nThe aliases was originally deprecated in NumPy 1.20; for more details and guidance see the original release note at:\n    https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations. Did you mean: 'complex_'?\n"
+  },
+  {
+    "tool": "leak-detect",
+    "version": "0.0.1",
+    "case": "C6",
+    "side": "contaminated",
+    "config": {
+      "only_nan": true,
+      "probe": "vertical",
+      "check_row_number": "default int(len(data)/2)=200",
+      "direction": "upward"
+    },
+    "status": "ran",
+    "fired": false,
+    "stdout": "Checking for vertical leakage in upward direction...\nBy replacing 'input_feature_cols' after row number 200 with NANs:\nNo vertical leakage detected. Good to go! Yay!!\n\n\n"
+  },
+  {
+    "tool": "leak-detect",
+    "version": "0.0.1",
+    "case": "C6",
+    "side": "clean",
+    "config": {
+      "only_nan": true,
+      "probe": "vertical",
+      "check_row_number": "default int(len(data)/2)=200",
+      "direction": "upward"
+    },
+    "status": "ran",
+    "fired": false,
+    "stdout": "Checking for vertical leakage in upward direction...\nBy replacing 'input_feature_cols' after row number 200 with NANs:\nNo vertical leakage detected. Good to go! Yay!!\n\n\n"
+  },
+  {
+    "tool": "leak-detect",
+    "version": "0.0.1",
+    "case": "C5",
+    "side": "contaminated",
+    "config": {
+      "only_nan": false,
+      "probe": "horizontal",
+      "check_row_number": "default int(len(data)/2)=200",
+      "direction": null
+    },
+    "status": "crash",
+    "fired": null,
+    "stdout": "Checking for leakage from target columns to feature columns...\nBy replacing target with NANs:\nOops horizontal leakage detected!! \nList of columns and their respective number of rows with leaky data:\nrisk_score : 400\n\n\nBy adding imaginary component to target columns:\n",
+    "error": "AttributeError: module 'numpy' has no attribute 'complex'.\n`np.complex` was a deprecated alias for the builtin `complex`. To avoid this error in existing code, use `complex` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.complex128` here.\nThe aliases was originally deprecated in NumPy 1.20; for more details and guidance see the original release note at:\n    https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations",
+    "traceback": "map_values(\n             ^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\ttbea\\k6env\\ld\\Lib\\site-packages\\pandas\\core\\base.py\", line 921, in _map_values\n    return algorithms.map_array(arr, mapper, na_action=na_action, convert=convert)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\ttbea\\k6env\\ld\\Lib\\site-packages\\pandas\\core\\algorithms.py\", line 1743, in map_array\n    return lib.map_infer(values, mapper, convert=convert)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"lib.pyx\", line 2972, in pandas._libs.lib.map_infer\n  File \"C:\\Users\\ttbea\\k6env\\ld\\Lib\\site-packages\\leak_detect\\base.py\", line 209, in <lambda>\n    input_data.loc[:, col] = input_data[col].apply(lambda x: np.complex(x + 1j))\n                                                             ^^^^^^^^^^\n  File \"C:\\Users\\ttbea\\k6env\\ld\\Lib\\site-packages\\numpy\\__init__.py\", line 338, in __getattr__\n    raise AttributeError(__former_attrs__[attr])\nAttributeError: module 'numpy' has no attribute 'complex'.\n`np.complex` was a deprecated alias for the builtin `complex`. To avoid this error in existing code, use `complex` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.complex128` here.\nThe aliases was originally deprecated in NumPy 1.20; for more details and guidance see the original release note at:\n    https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations. Did you mean: 'complex_'?\n"
+  },
+  {
+    "tool": "leak-detect",
+    "version": "0.0.1",
+    "case": "C5",
+    "side": "clean",
+    "config": {
+      "only_nan": false,
+      "probe": "horizontal",
+      "check_row_number": "default int(len(data)/2)=200",
+      "direction": null
+    },
+    "status": "crash",
+    "fired": null,
+    "stdout": "Checking for leakage from target columns to feature columns...\nBy replacing target with NANs:\nOops horizontal leakage detected!! \nList of columns and their respective number of rows with leaky data:\nrisk_score : 399\n\n\nBy adding imaginary component to target columns:\n",
+    "error": "AttributeError: module 'numpy' has no attribute 'complex'.\n`np.complex` was a deprecated alias for the builtin `complex`. To avoid this error in existing code, use `complex` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.complex128` here.\nThe aliases was originally deprecated in NumPy 1.20; for more details and guidance see the original release note at:\n    https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations",
+    "traceback": "map_values(\n             ^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\ttbea\\k6env\\ld\\Lib\\site-packages\\pandas\\core\\base.py\", line 921, in _map_values\n    return algorithms.map_array(arr, mapper, na_action=na_action, convert=convert)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\ttbea\\k6env\\ld\\Lib\\site-packages\\pandas\\core\\algorithms.py\", line 1743, in map_array\n    return lib.map_infer(values, mapper, convert=convert)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"lib.pyx\", line 2972, in pandas._libs.lib.map_infer\n  File \"C:\\Users\\ttbea\\k6env\\ld\\Lib\\site-packages\\leak_detect\\base.py\", line 209, in <lambda>\n    input_data.loc[:, col] = input_data[col].apply(lambda x: np.complex(x + 1j))\n                                                             ^^^^^^^^^^\n  File \"C:\\Users\\ttbea\\k6env\\ld\\Lib\\site-packages\\numpy\\__init__.py\", line 338, in __getattr__\n    raise AttributeError(__former_attrs__[attr])\nAttributeError: module 'numpy' has no attribute 'complex'.\n`np.complex` was a deprecated alias for the builtin `complex`. To avoid this error in existing code, use `complex` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.complex128` here.\nThe aliases was originally deprecated in NumPy 1.20; for more details and guidance see the original release note at:\n    https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations. Did you mean: 'complex_'?\n"
+  },
+  {
+    "tool": "leak-detect",
+    "version": "0.0.1",
+    "case": "C5",
+    "side": "contaminated",
+    "config": {
+      "only_nan": true,
+      "probe": "horizontal",
+      "check_row_number": "default int(len(data)/2)=200",
+      "direction": null
+    },
+    "status": "ran",
+    "fired": true,
+    "stdout": "Checking for leakage from target columns to feature columns...\nBy replacing target with NANs:\nOops horizontal leakage detected!! \nList of columns and their respective number of rows with leaky data:\nrisk_score : 400\n\n\n"
+  },
+  {
+    "tool": "leak-detect",
+    "version": "0.0.1",
+    "case": "C5",
+    "side": "clean",
+    "config": {
+      "only_nan": true,
+      "probe": "horizontal",
+      "check_row_number": "default int(len(data)/2)=200",
+      "direction": null
+    },
+    "status": "ran",
+    "fired": true,
+    "stdout": "Checking for leakage from target columns to feature columns...\nBy replacing target with NANs:\nOops horizontal leakage detected!! \nList of columns and their respective number of rows with leaky data:\nrisk_score : 399\n\n\n"
+  },
+  {
+    "tool": "leak-detect",
+    "version": "0.0.1",
+    "case": "C2",
+    "side": "contaminated",
+    "config": {
+      "only_nan": false,
+      "probe": "vertical",
+      "check_row_number": "default int(len(data)/2)=200",
+      "direction": "upward"
+    },
+    "status": "crash",
+    "fired": null,
+    "stdout": "Checking for vertical leakage in upward direction...\nBy replacing 'input_feature_cols' after row number 200 with NANs:\nOops vertical leakage detected!!\nList of columns and number of previous rows into which data is leaking from a row:\nf0 : 200\nf1 : 200\nf2 : 200\nf3 : 200\n\n\nBy adding imaginary component to 'input_feature_cols' after row number 200:\n",
+    "error": "AttributeError: module 'numpy' has no attribute 'complex'.\n`np.complex` was a deprecated alias for the builtin `complex`. To avoid this error in existing code, use `complex` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.complex128` here.\nThe aliases was originally deprecated in NumPy 1.20; for more details and guidance see the original release note at:\n    https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations",
+    "traceback": "Users\\ttbea\\k6env\\ld\\Lib\\site-packages\\pandas\\core\\base.py\", line 921, in _map_values\n    return algorithms.map_array(arr, mapper, na_action=na_action, convert=convert)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\ttbea\\k6env\\ld\\Lib\\site-packages\\pandas\\core\\algorithms.py\", line 1743, in map_array\n    return lib.map_infer(values, mapper, convert=convert)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"lib.pyx\", line 2972, in pandas._libs.lib.map_infer\n  File \"C:\\Users\\ttbea\\k6env\\ld\\Lib\\site-packages\\leak_detect\\base.py\", line 76, in <lambda>\n    input_data.loc[start:end-1, col] = input_data.loc[start:end-1, col].apply(lambda x: np.complex(x + 1j))\n                                                                                        ^^^^^^^^^^\n  File \"C:\\Users\\ttbea\\k6env\\ld\\Lib\\site-packages\\numpy\\__init__.py\", line 338, in __getattr__\n    raise AttributeError(__former_attrs__[attr])\nAttributeError: module 'numpy' has no attribute 'complex'.\n`np.complex` was a deprecated alias for the builtin `complex`. To avoid this error in existing code, use `complex` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.complex128` here.\nThe aliases was originally deprecated in NumPy 1.20; for more details and guidance see the original release note at:\n    https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations. Did you mean: 'complex_'?\n"
+  },
+  {
+    "tool": "leak-detect",
+    "version": "0.0.1",
+    "case": "C2",
+    "side": "clean",
+    "config": {
+      "only_nan": false,
+      "probe": "vertical",
+      "check_row_number": "default int(len(data)/2)=200",
+      "direction": "upward"
+    },
+    "status": "crash",
+    "fired": null,
+    "stdout": "Checking for vertical leakage in upward direction...\nBy replacing 'input_feature_cols' after row number 200 with NANs:\nNo vertical leakage detected. Good to go! Yay!!\n\n\nBy adding imaginary component to 'input_feature_cols' after row number 200:\n",
+    "error": "AttributeError: module 'numpy' has no attribute 'complex'.\n`np.complex` was a deprecated alias for the builtin `complex`. To avoid this error in existing code, use `complex` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.complex128` here.\nThe aliases was originally deprecated in NumPy 1.20; for more details and guidance see the original release note at:\n    https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations",
+    "traceback": "Users\\ttbea\\k6env\\ld\\Lib\\site-packages\\pandas\\core\\base.py\", line 921, in _map_values\n    return algorithms.map_array(arr, mapper, na_action=na_action, convert=convert)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\ttbea\\k6env\\ld\\Lib\\site-packages\\pandas\\core\\algorithms.py\", line 1743, in map_array\n    return lib.map_infer(values, mapper, convert=convert)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"lib.pyx\", line 2972, in pandas._libs.lib.map_infer\n  File \"C:\\Users\\ttbea\\k6env\\ld\\Lib\\site-packages\\leak_detect\\base.py\", line 76, in <lambda>\n    input_data.loc[start:end-1, col] = input_data.loc[start:end-1, col].apply(lambda x: np.complex(x + 1j))\n                                                                                        ^^^^^^^^^^\n  File \"C:\\Users\\ttbea\\k6env\\ld\\Lib\\site-packages\\numpy\\__init__.py\", line 338, in __getattr__\n    raise AttributeError(__former_attrs__[attr])\nAttributeError: module 'numpy' has no attribute 'complex'.\n`np.complex` was a deprecated alias for the builtin `complex`. To avoid this error in existing code, use `complex` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.complex128` here.\nThe aliases was originally deprecated in NumPy 1.20; for more details and guidance see the original release note at:\n    https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations. Did you mean: 'complex_'?\n"
+  },
+  {
+    "tool": "leak-detect",
+    "version": "0.0.1",
+    "case": "C2",
+    "side": "contaminated",
+    "config": {
+      "only_nan": true,
+      "probe": "vertical",
+      "check_row_number": "default int(len(data)/2)=200",
+      "direction": "upward"
+    },
+    "status": "ran",
+    "fired": true,
+    "stdout": "Checking for vertical leakage in upward direction...\nBy replacing 'input_feature_cols' after row number 200 with NANs:\nOops vertical leakage detected!!\nList of columns and number of previous rows into which data is leaking from a row:\nf0 : 200\nf1 : 200\nf2 : 200\nf3 : 200\n\n\n"
+  },
+  {
+    "tool": "leak-detect",
+    "version": "0.0.1",
+    "case": "C2",
+    "side": "clean",
+    "config": {
+      "only_nan": true,
+      "probe": "vertical",
+      "check_row_number": "default int(len(data)/2)=200",
+      "direction": "upward"
+    },
+    "status": "ran",
+    "fired": false,
+    "stdout": "Checking for vertical leakage in upward direction...\nBy replacing 'input_feature_cols' after row number 200 with NANs:\nNo vertical leakage detected. Good to go! Yay!!\n\n\n"
+  },
+  {
+    "tool": "leak-detect",
+    "version": "0.0.1",
+    "case": "C3",
+    "side": "contaminated",
+    "config": {
+      "only_nan": false,
+      "probe": "vertical",
+      "check_row_number": "default int(len(data)/2)=200",
+      "direction": "upward"
+    },
+    "status": "crash",
+    "fired": null,
+    "stdout": "Checking for vertical leakage in upward direction...\nBy replacing 'input_feature_cols' after row number 200 with NANs:\n",
+    "error": "KeyError: \"['f20', 'f2', 'f8', 'f3'] not in index\"",
+    "traceback": "n one\n    fired = detect_vertical_leakage(\n            ^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\ttbea\\k6env\\ld\\Lib\\site-packages\\leak_detect\\base.py\", line 160, in detect_vertical_leakage\n    has_leakage += detect_vertical_leakage_from_to(data_creation_func, data_in, input_feature_cols,\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\ttbea\\k6env\\ld\\Lib\\site-packages\\leak_detect\\base.py\", line 91, in detect_vertical_leakage_from_to\n    nulls_df_detect = get_nan_counts(input_data_feats_null[start:end], output_feature_cols,\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\ttbea\\k6env\\ld\\Lib\\site-packages\\leak_detect\\base.py\", line 17, in get_nan_counts\n    nulls_df = pd.DataFrame(pd.isnull(data[cols]).sum())\n                                      ~~~~^^^^^^\n  File \"C:\\Users\\ttbea\\k6env\\ld\\Lib\\site-packages\\pandas\\core\\frame.py\", line 4108, in __getitem__\n    indexer = self.columns._get_indexer_strict(key, \"columns\")[1]\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\ttbea\\k6env\\ld\\Lib\\site-packages\\pandas\\core\\indexes\\base.py\", line 6200, in _get_indexer_strict\n    self._raise_if_missing(keyarr, indexer, axis_name)\n  File \"C:\\Users\\ttbea\\k6env\\ld\\Lib\\site-packages\\pandas\\core\\indexes\\base.py\", line 6252, in _raise_if_missing\n    raise KeyError(f\"{not_found} not in index\")\nKeyError: \"['f20', 'f2', 'f8', 'f3'] not in index\"\n"
+  },
+  {
+    "tool": "leak-detect",
+    "version": "0.0.1",
+    "case": "C3",
+    "side": "clean",
+    "config": {
+      "only_nan": false,
+      "probe": "vertical",
+      "check_row_number": "default int(len(data)/2)=200",
+      "direction": "upward"
+    },
+    "status": "crash",
+    "fired": null,
+    "stdout": "Checking for vertical leakage in upward direction...\nBy replacing 'input_feature_cols' after row number 200 with NANs:\nNo vertical leakage detected. Good to go! Yay!!\n\n\nBy adding imaginary component to 'input_feature_cols' after row number 200:\n",
+    "error": "AttributeError: module 'numpy' has no attribute 'complex'.\n`np.complex` was a deprecated alias for the builtin `complex`. To avoid this error in existing code, use `complex` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.complex128` here.\nThe aliases was originally deprecated in NumPy 1.20; for more details and guidance see the original release note at:\n    https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations",
+    "traceback": "Users\\ttbea\\k6env\\ld\\Lib\\site-packages\\pandas\\core\\base.py\", line 921, in _map_values\n    return algorithms.map_array(arr, mapper, na_action=na_action, convert=convert)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\ttbea\\k6env\\ld\\Lib\\site-packages\\pandas\\core\\algorithms.py\", line 1743, in map_array\n    return lib.map_infer(values, mapper, convert=convert)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"lib.pyx\", line 2972, in pandas._libs.lib.map_infer\n  File \"C:\\Users\\ttbea\\k6env\\ld\\Lib\\site-packages\\leak_detect\\base.py\", line 76, in <lambda>\n    input_data.loc[start:end-1, col] = input_data.loc[start:end-1, col].apply(lambda x: np.complex(x + 1j))\n                                                                                        ^^^^^^^^^^\n  File \"C:\\Users\\ttbea\\k6env\\ld\\Lib\\site-packages\\numpy\\__init__.py\", line 338, in __getattr__\n    raise AttributeError(__former_attrs__[attr])\nAttributeError: module 'numpy' has no attribute 'complex'.\n`np.complex` was a deprecated alias for the builtin `complex`. To avoid this error in existing code, use `complex` by itself. Doing this will not modify any behavior and is safe. If you specifically wanted the numpy scalar type, use `np.complex128` here.\nThe aliases was originally deprecated in NumPy 1.20; for more details and guidance see the original release note at:\n    https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations. Did you mean: 'complex_'?\n"
+  },
+  {
+    "tool": "leak-detect",
+    "version": "0.0.1",
+    "case": "C3",
+    "side": "contaminated",
+    "config": {
+      "only_nan": true,
+      "probe": "vertical",
+      "check_row_number": "default int(len(data)/2)=200",
+      "direction": "upward"
+    },
+    "status": "crash",
+    "fired": null,
+    "stdout": "Checking for vertical leakage in upward direction...\nBy replacing 'input_feature_cols' after row number 200 with NANs:\n",
+    "error": "KeyError: \"['f20', 'f2', 'f8', 'f3'] not in index\"",
+    "traceback": "n one\n    fired = detect_vertical_leakage(\n            ^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\ttbea\\k6env\\ld\\Lib\\site-packages\\leak_detect\\base.py\", line 160, in detect_vertical_leakage\n    has_leakage += detect_vertical_leakage_from_to(data_creation_func, data_in, input_feature_cols,\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\ttbea\\k6env\\ld\\Lib\\site-packages\\leak_detect\\base.py\", line 91, in detect_vertical_leakage_from_to\n    nulls_df_detect = get_nan_counts(input_data_feats_null[start:end], output_feature_cols,\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\ttbea\\k6env\\ld\\Lib\\site-packages\\leak_detect\\base.py\", line 17, in get_nan_counts\n    nulls_df = pd.DataFrame(pd.isnull(data[cols]).sum())\n                                      ~~~~^^^^^^\n  File \"C:\\Users\\ttbea\\k6env\\ld\\Lib\\site-packages\\pandas\\core\\frame.py\", line 4108, in __getitem__\n    indexer = self.columns._get_indexer_strict(key, \"columns\")[1]\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\ttbea\\k6env\\ld\\Lib\\site-packages\\pandas\\core\\indexes\\base.py\", line 6200, in _get_indexer_strict\n    self._raise_if_missing(keyarr, indexer, axis_name)\n  File \"C:\\Users\\ttbea\\k6env\\ld\\Lib\\site-packages\\pandas\\core\\indexes\\base.py\", line 6252, in _raise_if_missing\n    raise KeyError(f\"{not_found} not in index\")\nKeyError: \"['f20', 'f2', 'f8', 'f3'] not in index\"\n"
+  },
+  {
+    "tool": "leak-detect",
+    "version": "0.0.1",
+    "case": "C3",
+    "side": "clean",
+    "config": {
+      "only_nan": true,
+      "probe": "vertical",
+      "check_row_number": "default int(len(data)/2)=200",
+      "direction": "upward"
+    },
+    "status": "ran",
+    "fired": false,
+    "stdout": "Checking for vertical leakage in upward direction...\nBy replacing 'input_feature_cols' after row number 200 with NANs:\nNo vertical leakage detected. Good to go! Yay!!\n\n\n"
+  }
+]

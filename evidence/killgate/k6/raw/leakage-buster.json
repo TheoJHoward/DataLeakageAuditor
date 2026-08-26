@@ -1,0 +1,474 @@
+[
+  {
+    "tool": "leakage-buster",
+    "version": "1.0.2",
+    "case": "C1",
+    "side": "contaminated",
+    "config": {
+      "target": "target",
+      "time_col": null,
+      "cv_type": "kfold",
+      "leak_threshold": "default 0.02"
+    },
+    "status": "ran",
+    "fired_labels": [
+      "WOE leakage risk"
+    ],
+    "risks": [
+      {
+        "name": "WOE leakage risk",
+        "severity": "medium",
+        "detail": "\u68c0\u6d4b\u5230 1 \u4e2a\u7591\u4f3cWOE\u7279\u5f81\uff0c\u4e0e\u76ee\u6807\u9ad8\u76f8\u5173\u4e14\u503c\u57df\u53ef\u7591\u3002",
+        "leak_score": 0.4
+      }
+    ],
+    "evidence": {
+      "WOE leakage risk": "{'suspicious_columns': {'f0': {'correlation': 0.6666511347639354, 'mean': -0.026521500626867943, 'target_mean': 0.4925, 'leak_score': 0.4}}}"
+    }
+  },
+  {
+    "tool": "leakage-buster",
+    "version": "1.0.2",
+    "case": "C1",
+    "side": "clean",
+    "config": {
+      "target": "target",
+      "time_col": null,
+      "cv_type": "kfold",
+      "leak_threshold": "default 0.02"
+    },
+    "status": "ran",
+    "fired_labels": [
+      "WOE leakage risk"
+    ],
+    "risks": [
+      {
+        "name": "WOE leakage risk",
+        "severity": "medium",
+        "detail": "\u68c0\u6d4b\u5230 1 \u4e2a\u7591\u4f3cWOE\u7279\u5f81\uff0c\u4e0e\u76ee\u6807\u9ad8\u76f8\u5173\u4e14\u503c\u57df\u53ef\u7591\u3002",
+        "leak_score": 0.4
+      }
+    ],
+    "evidence": {
+      "WOE leakage risk": "{'suspicious_columns': {'f0': {'correlation': 0.6666511347639354, 'mean': -0.026521500626867943, 'target_mean': 0.4925, 'leak_score': 0.4}}}"
+    }
+  },
+  {
+    "tool": "leakage-buster",
+    "version": "1.0.2",
+    "case": "C2",
+    "side": "contaminated",
+    "config": {
+      "target": "target",
+      "time_col": null,
+      "cv_type": "kfold",
+      "leak_threshold": "default 0.02"
+    },
+    "status": "ran",
+    "fired_labels": [
+      "WOE leakage risk"
+    ],
+    "risks": [
+      {
+        "name": "WOE leakage risk",
+        "severity": "high",
+        "detail": "\u68c0\u6d4b\u5230 3 \u4e2a\u7591\u4f3cWOE\u7279\u5f81\uff0c\u4e0e\u76ee\u6807\u9ad8\u76f8\u5173\u4e14\u503c\u57df\u53ef\u7591\u3002",
+        "leak_score": 0.7
+      }
+    ],
+    "evidence": {
+      "WOE leakage risk": "{'suspicious_columns': {'f0': {'correlation': 0.8044769436377045, 'mean': 1.7053025658242404e-15, 'target_mean': 0.51, 'leak_score': 0.7}, 'f2': {'correlation': 0.30997439556214074, 'mean': 9.237055564881303e-16, 'target_mean': 0.51, 'leak_score': 0.4}, 'f3': {'correlation': 0.32073817882378447, 'me"
+    }
+  },
+  {
+    "tool": "leakage-buster",
+    "version": "1.0.2",
+    "case": "C2",
+    "side": "clean",
+    "config": {
+      "target": "target",
+      "time_col": null,
+      "cv_type": "kfold",
+      "leak_threshold": "default 0.02"
+    },
+    "status": "ran",
+    "fired_labels": [
+      "WOE leakage risk"
+    ],
+    "risks": [
+      {
+        "name": "WOE leakage risk",
+        "severity": "high",
+        "detail": "\u68c0\u6d4b\u5230 3 \u4e2a\u7591\u4f3cWOE\u7279\u5f81\uff0c\u4e0e\u76ee\u6807\u9ad8\u76f8\u5173\u4e14\u503c\u57df\u53ef\u7591\u3002",
+        "leak_score": 0.7
+      }
+    ],
+    "evidence": {
+      "WOE leakage risk": "{'suspicious_columns': {'f0': {'correlation': 0.8044769436377044, 'mean': 0.8304566721209977, 'target_mean': 0.51, 'leak_score': 0.7}, 'f2': {'correlation': 0.30997439556214074, 'mean': 0.7183312039841157, 'target_mean': 0.51, 'leak_score': 0.4}, 'f3': {'correlation': 0.3207381788237845, 'mean': 0.6"
+    }
+  },
+  {
+    "tool": "leakage-buster",
+    "version": "1.0.2",
+    "case": "C3",
+    "side": "contaminated",
+    "config": {
+      "target": "target",
+      "time_col": null,
+      "cv_type": "kfold",
+      "leak_threshold": "default 0.02"
+    },
+    "status": "ran",
+    "fired_labels": [
+      "WOE leakage risk"
+    ],
+    "risks": [
+      {
+        "name": "WOE leakage risk",
+        "severity": "medium",
+        "detail": "\u68c0\u6d4b\u5230 1 \u4e2a\u7591\u4f3cWOE\u7279\u5f81\uff0c\u4e0e\u76ee\u6807\u9ad8\u76f8\u5173\u4e14\u503c\u57df\u53ef\u7591\u3002",
+        "leak_score": 0.4
+      }
+    ],
+    "evidence": {
+      "WOE leakage risk": "{'suspicious_columns': {'f0': {'correlation': 0.31533838282607307, 'mean': 0.03785384907570679, 'target_mean': 0.525, 'leak_score': 0.4}}}"
+    }
+  },
+  {
+    "tool": "leakage-buster",
+    "version": "1.0.2",
+    "case": "C3",
+    "side": "clean",
+    "config": {
+      "target": "target",
+      "time_col": null,
+      "cv_type": "kfold",
+      "leak_threshold": "default 0.02"
+    },
+    "status": "ran",
+    "fired_labels": [
+      "WOE leakage risk"
+    ],
+    "risks": [
+      {
+        "name": "WOE leakage risk",
+        "severity": "medium",
+        "detail": "\u68c0\u6d4b\u5230 1 \u4e2a\u7591\u4f3cWOE\u7279\u5f81\uff0c\u4e0e\u76ee\u6807\u9ad8\u76f8\u5173\u4e14\u503c\u57df\u53ef\u7591\u3002",
+        "leak_score": 0.4
+      }
+    ],
+    "evidence": {
+      "WOE leakage risk": "{'suspicious_columns': {'f0': {'correlation': 0.31533838282607307, 'mean': 0.03785384907570679, 'target_mean': 0.525, 'leak_score': 0.4}}}"
+    }
+  },
+  {
+    "tool": "leakage-buster",
+    "version": "1.0.2",
+    "case": "C4",
+    "side": "contaminated",
+    "config": {
+      "target": "target",
+      "time_col": null,
+      "cv_type": "kfold",
+      "leak_threshold": "default 0.02"
+    },
+    "status": "ran",
+    "fired_labels": [
+      "WOE leakage risk"
+    ],
+    "risks": [
+      {
+        "name": "WOE leakage risk",
+        "severity": "high",
+        "detail": "\u68c0\u6d4b\u5230 1 \u4e2a\u7591\u4f3cWOE\u7279\u5f81\uff0c\u4e0e\u76ee\u6807\u9ad8\u76f8\u5173\u4e14\u503c\u57df\u53ef\u7591\u3002",
+        "leak_score": 0.7
+      }
+    ],
+    "evidence": {
+      "WOE leakage risk": "{'suspicious_columns': {'f0': {'correlation': 0.7031837334664985, 'mean': -0.030646749999999987, 'target_mean': 0.525, 'leak_score': 0.7}}}"
+    }
+  },
+  {
+    "tool": "leakage-buster",
+    "version": "1.0.2",
+    "case": "C4",
+    "side": "clean",
+    "config": {
+      "target": "target",
+      "time_col": null,
+      "cv_type": "kfold",
+      "leak_threshold": "default 0.02"
+    },
+    "status": "ran",
+    "fired_labels": [
+      "WOE leakage risk"
+    ],
+    "risks": [
+      {
+        "name": "WOE leakage risk",
+        "severity": "medium",
+        "detail": "\u68c0\u6d4b\u5230 1 \u4e2a\u7591\u4f3cWOE\u7279\u5f81\uff0c\u4e0e\u76ee\u6807\u9ad8\u76f8\u5173\u4e14\u503c\u57df\u53ef\u7591\u3002",
+        "leak_score": 0.4
+      }
+    ],
+    "evidence": {
+      "WOE leakage risk": "{'suspicious_columns': {'f0': {'correlation': 0.6939426252533658, 'mean': -0.01903299999999998, 'target_mean': 0.5325, 'leak_score': 0.4}}}"
+    }
+  },
+  {
+    "tool": "leakage-buster",
+    "version": "1.0.2",
+    "case": "C5",
+    "side": "contaminated",
+    "config": {
+      "target": "target",
+      "time_col": null,
+      "cv_type": "kfold",
+      "leak_threshold": "default 0.02"
+    },
+    "status": "ran",
+    "fired_labels": [
+      "Target leakage (high correlation)",
+      "WOE leakage risk"
+    ],
+    "risks": [
+      {
+        "name": "Target leakage (high correlation)",
+        "severity": "high",
+        "detail": "\u4ee5\u4e0b\u5217\u4e0e\u76ee\u6807\u9ad8\u5ea6\u76f8\u5173\uff08|corr|\u6216R\u00b2\u22650.98\uff09\uff0c\u53ef\u80fd\u6cc4\u6f0f\u3002",
+        "leak_score": 0.9
+      },
+      {
+        "name": "WOE leakage risk",
+        "severity": "medium",
+        "detail": "\u68c0\u6d4b\u5230 1 \u4e2a\u7591\u4f3cWOE\u7279\u5f81\uff0c\u4e0e\u76ee\u6807\u9ad8\u76f8\u5173\u4e14\u503c\u57df\u53ef\u7591\u3002",
+        "leak_score": 0.4
+      }
+    ],
+    "evidence": {
+      "Target leakage (high correlation)": "{'columns': {'risk_score': 0.998971030425577}}",
+      "WOE leakage risk": "{'suspicious_columns': {'f0': {'correlation': 0.5961747544543845, 'mean': 0.05857178995498936, 'target_mean': 0.51, 'leak_score': 0.4}}}"
+    }
+  },
+  {
+    "tool": "leakage-buster",
+    "version": "1.0.2",
+    "case": "C5",
+    "side": "clean",
+    "config": {
+      "target": "target",
+      "time_col": null,
+      "cv_type": "kfold",
+      "leak_threshold": "default 0.02"
+    },
+    "status": "ran",
+    "fired_labels": [
+      "WOE leakage risk"
+    ],
+    "risks": [
+      {
+        "name": "WOE leakage risk",
+        "severity": "medium",
+        "detail": "\u68c0\u6d4b\u5230 1 \u4e2a\u7591\u4f3cWOE\u7279\u5f81\uff0c\u4e0e\u76ee\u6807\u9ad8\u76f8\u5173\u4e14\u503c\u57df\u53ef\u7591\u3002",
+        "leak_score": 0.4
+      }
+    ],
+    "evidence": {
+      "WOE leakage risk": "{'suspicious_columns': {'f0': {'correlation': 0.5961747544543845, 'mean': 0.05857178995498936, 'target_mean': 0.51, 'leak_score': 0.4}}}"
+    }
+  },
+  {
+    "tool": "leakage-buster",
+    "version": "1.0.2",
+    "case": "C6",
+    "side": "contaminated",
+    "config": {
+      "target": "target",
+      "time_col": "t",
+      "cv_type": "timeseries",
+      "leak_threshold": "default 0.02"
+    },
+    "status": "ran",
+    "fired_labels": [
+      "Detector error: target_leakage",
+      "Time-awareness suggestion"
+    ],
+    "risks": [
+      {
+        "name": "Detector error: target_leakage",
+        "severity": "low",
+        "detail": "\u68c0\u6d4b\u5668 target_leakage \u6267\u884c\u51fa\u9519: Input X contains NaN.\nLinearRegression does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values",
+        "leak_score": 0.0
+      },
+      {
+        "name": "Time-awareness suggestion",
+        "severity": "low",
+        "detail": "\u5efa\u8bae\u4f7f\u7528\u65f6\u95f4\u611f\u77e5\u5207\u5206/\u7f16\u7801\u5e76\u6821\u9a8c\u53e3\u5f84\u4e00\u81f4\u3002",
+        "leak_score": 0.3
+      }
+    ],
+    "evidence": {
+      "Detector error: target_leakage": "{'error': 'Input X contains NaN.\\nLinearRegression does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is poss",
+      "Time-awareness suggestion": "{'min': '1970-01-01 00:00:00', 'max': '1970-01-01 00:00:00.000000399'}"
+    }
+  },
+  {
+    "tool": "leakage-buster",
+    "version": "1.0.2",
+    "case": "C6",
+    "side": "clean",
+    "config": {
+      "target": "target",
+      "time_col": "t",
+      "cv_type": "timeseries",
+      "leak_threshold": "default 0.02"
+    },
+    "status": "ran",
+    "fired_labels": [
+      "Detector error: target_leakage",
+      "Time-awareness suggestion"
+    ],
+    "risks": [
+      {
+        "name": "Detector error: target_leakage",
+        "severity": "low",
+        "detail": "\u68c0\u6d4b\u5668 target_leakage \u6267\u884c\u51fa\u9519: Input X contains NaN.\nLinearRegression does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values",
+        "leak_score": 0.0
+      },
+      {
+        "name": "Time-awareness suggestion",
+        "severity": "low",
+        "detail": "\u5efa\u8bae\u4f7f\u7528\u65f6\u95f4\u611f\u77e5\u5207\u5206/\u7f16\u7801\u5e76\u6821\u9a8c\u53e3\u5f84\u4e00\u81f4\u3002",
+        "leak_score": 0.3
+      }
+    ],
+    "evidence": {
+      "Detector error: target_leakage": "{'error': 'Input X contains NaN.\\nLinearRegression does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is poss",
+      "Time-awareness suggestion": "{'min': '1970-01-01 00:00:00', 'max': '1970-01-01 00:00:00.000000399'}"
+    }
+  },
+  {
+    "tool": "leakage-buster",
+    "version": "1.0.2",
+    "case": "C7",
+    "side": "contaminated",
+    "config": {
+      "target": "target",
+      "time_col": null,
+      "cv_type": "group",
+      "leak_threshold": "default 0.02"
+    },
+    "status": "ran",
+    "fired_labels": [
+      "WOE leakage risk",
+      "KFold leakage risk (use GroupKFold)"
+    ],
+    "risks": [
+      {
+        "name": "WOE leakage risk",
+        "severity": "medium",
+        "detail": "\u68c0\u6d4b\u5230 3 \u4e2a\u7591\u4f3cWOE\u7279\u5f81\uff0c\u4e0e\u76ee\u6807\u9ad8\u76f8\u5173\u4e14\u503c\u57df\u53ef\u7591\u3002",
+        "leak_score": 0.4
+      },
+      {
+        "name": "KFold leakage risk (use GroupKFold)",
+        "severity": "medium",
+        "detail": "\u8fd9\u4e9b\u9ad8\u91cd\u590d\u5217\u5efa\u8bae\u7528\u4f5c groups \u4ee5\u907f\u514d\u8de8\u6298\u6cc4\u6f0f\u3002",
+        "leak_score": 0.6
+      }
+    ],
+    "evidence": {
+      "WOE leakage risk": "{'suspicious_columns': {'f0': {'correlation': 0.528407236455181, 'mean': 0.15741399346864052, 'target_mean': 0.6075, 'leak_score': 0.4}, 'f1': {'correlation': 0.4802820130383526, 'mean': 0.1671797478375182, 'target_mean': 0.6075, 'leak_score': 0.4}, 'f2': {'correlation': 0.5104544142123774, 'mean': ",
+      "KFold leakage risk (use GroupKFold)": "{'candidates': [{'column': 'group_id', 'nunique': 40, 'dup_rate': 0.9}]}"
+    }
+  },
+  {
+    "tool": "leakage-buster",
+    "version": "1.0.2",
+    "case": "C7",
+    "side": "clean",
+    "config": {
+      "target": "target",
+      "time_col": null,
+      "cv_type": "group",
+      "leak_threshold": "default 0.02"
+    },
+    "status": "ran",
+    "fired_labels": [
+      "WOE leakage risk",
+      "KFold leakage risk (use GroupKFold)"
+    ],
+    "risks": [
+      {
+        "name": "WOE leakage risk",
+        "severity": "medium",
+        "detail": "\u68c0\u6d4b\u5230 3 \u4e2a\u7591\u4f3cWOE\u7279\u5f81\uff0c\u4e0e\u76ee\u6807\u9ad8\u76f8\u5173\u4e14\u503c\u57df\u53ef\u7591\u3002",
+        "leak_score": 0.4
+      },
+      {
+        "name": "KFold leakage risk (use GroupKFold)",
+        "severity": "medium",
+        "detail": "\u8fd9\u4e9b\u9ad8\u91cd\u590d\u5217\u5efa\u8bae\u7528\u4f5c groups \u4ee5\u907f\u514d\u8de8\u6298\u6cc4\u6f0f\u3002",
+        "leak_score": 0.6
+      }
+    ],
+    "evidence": {
+      "WOE leakage risk": "{'suspicious_columns': {'f0': {'correlation': 0.528407236455181, 'mean': 0.15741399346864052, 'target_mean': 0.6075, 'leak_score': 0.4}, 'f1': {'correlation': 0.4802820130383526, 'mean': 0.1671797478375182, 'target_mean': 0.6075, 'leak_score': 0.4}, 'f2': {'correlation': 0.5104544142123774, 'mean': ",
+      "KFold leakage risk (use GroupKFold)": "{'candidates': [{'column': 'group_id', 'nunique': 40, 'dup_rate': 0.9}]}"
+    }
+  },
+  {
+    "tool": "leakage-buster",
+    "version": "1.0.2",
+    "case": "C8",
+    "side": "contaminated",
+    "config": {
+      "target": "target",
+      "time_col": null,
+      "cv_type": "kfold",
+      "leak_threshold": "default 0.02"
+    },
+    "status": "ran",
+    "fired_labels": [
+      "WOE leakage risk"
+    ],
+    "risks": [
+      {
+        "name": "WOE leakage risk",
+        "severity": "medium",
+        "detail": "\u68c0\u6d4b\u5230 1 \u4e2a\u7591\u4f3cWOE\u7279\u5f81\uff0c\u4e0e\u76ee\u6807\u9ad8\u76f8\u5173\u4e14\u503c\u57df\u53ef\u7591\u3002",
+        "leak_score": 0.4
+      }
+    ],
+    "evidence": {
+      "WOE leakage risk": "{'suspicious_columns': {'f0': {'correlation': 0.6953483700408278, 'mean': 1.2314660323122975, 'target_mean': 0.725, 'leak_score': 0.4}}}"
+    }
+  },
+  {
+    "tool": "leakage-buster",
+    "version": "1.0.2",
+    "case": "C8",
+    "side": "clean",
+    "config": {
+      "target": "target",
+      "time_col": null,
+      "cv_type": "kfold",
+      "leak_threshold": "default 0.02"
+    },
+    "status": "ran",
+    "fired_labels": [
+      "WOE leakage risk"
+    ],
+    "risks": [
+      {
+        "name": "WOE leakage risk",
+        "severity": "medium",
+        "detail": "\u68c0\u6d4b\u5230 1 \u4e2a\u7591\u4f3cWOE\u7279\u5f81\uff0c\u4e0e\u76ee\u6807\u9ad8\u76f8\u5173\u4e14\u503c\u57df\u53ef\u7591\u3002",
+        "leak_score": 0.4
+      }
+    ],
+    "evidence": {
+      "WOE leakage risk": "{'suspicious_columns': {'f0': {'correlation': 0.6351550530710695, 'mean': -0.018533967687702557, 'target_mean': 0.51, 'leak_score': 0.4}}}"
+    }
+  }
+]
