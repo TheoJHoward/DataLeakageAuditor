@@ -20,11 +20,14 @@ invariant executably.
 from .contract import ContractError, audit, normalise_raw
 from .determinism import DeterminismResult, check_frame, frames_equal
 from .probe import DETECTOR_ID, ProbeResult, cohort_id_for, probe_columns
+from .detectors import (
+    NULL_DETECTOR_ID, VALUE_DETECTOR_ID, probe_nulls, probe_values)
 from . import fixture_adapter
 
 __all__ = [
     "audit", "normalise_raw", "ContractError",
     "check_frame", "frames_equal", "DeterminismResult",
     "probe_columns", "ProbeResult", "cohort_id_for", "DETECTOR_ID",
+    "probe_values", "probe_nulls", "VALUE_DETECTOR_ID", "NULL_DETECTOR_ID",
     "fixture_adapter",
 ]

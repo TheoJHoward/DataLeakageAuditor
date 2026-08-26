@@ -50,7 +50,8 @@ for p in (ROOT, ROOT / "src"):
 
 from leakaudit import fixture_adapter as fa                       # noqa: E402
 from leakaudit.corruption import (                                # noqa: E402
-    NAN, SENTINEL, SHUFFLE, Unsupportable, corrupt, promote, promotion_of)
+    NAN, SENTINEL, SHUFFLE, Unsupportable, corrupt, promote, promotion_of,
+    seed_for)
 from leakaudit.determinism import check_frame, frames_equal       # noqa: E402
 from leakaudit.probe import DETECTOR_ID, cohort_id_for, domain_statement  # noqa: E402
 from protocol.runtime_reference import (                          # noqa: E402
@@ -152,7 +153,7 @@ def rec(strat, status, cid, valid, reason=None, feature=None):
 def run_one(base, fname, col, strat, cid, status):
     series = raw[fname][col]
     try:
-        bad = corrupt(series, strat, seed=abs(hash((fname, col, strat))) % (2 ** 31))
+        bad = corrupt(series, strat, seed=seed_for(fname, col, strat))
     except Unsupportable:
         return [rec(strat, status, cid, False, FailureReason.COMPATIBILITY)], set()
     except Exception:                                       # noqa: BLE001

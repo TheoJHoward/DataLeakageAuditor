@@ -95,10 +95,18 @@ def domain_statement() -> str:
         "`%s` is not applied to float columns, because it preserves there rather "
         "than promoting and is configured only in the promoted combination -- so "
         "a feature reading a float column ONLY through its null mask is outside "
-        "this probe's domain, and its silence here is not evidence about it."
+        "this probe's domain, and its silence here is not evidence about it. "
+        "UPDATED AT R134/B9, NOT DELETED: the gap is now COVERED, by a "
+        "different detector rather than by a change here. `nullread` runs "
+        "`%s` over every column -- preserving where the column already holds "
+        "a null in its own dtype, promoted where it does not -- so the "
+        "null-mask read this probe cannot see is seen there. This sentence "
+        "stays because a reader of an EARLIER columndep result needs to know "
+        "the gap was open when that result was produced; deleting it would "
+        "make the closure invisible to exactly the reader it matters to."
         % (", ".join("`%s`" % s for s in PRESERVING_STRATEGIES),
            ", ".join("`%s`" % s for s in PROMOTED_STRATEGIES),
-           cx.NAN))
+           cx.NAN, cx.NAN))
 
 
 def cohort_id_for(frame_name: str, column: str) -> str:
@@ -252,7 +260,8 @@ def probe_columns(
                        domain=domain_statement())
 
 
-def _run_one(build, frames, bare, baseline, fname, col, strat, cid, case_id, status):
+def _run_one(build, frames, bare, baseline, fname, col, strat, cid, case_id, status,
+              detector_id=DETECTOR_ID):
     """One (strategy, cohort) execution. Returns (records, moved output columns).
 
     Emits one record per moved output feature, or a single finding-free record
@@ -262,10 +271,10 @@ def _run_one(build, frames, bare, baseline, fname, col, strat, cid, case_id, sta
     """
     series = frames[fname][col]
     try:
-        bad = cx.corrupt(series, strat, seed=abs(hash((fname, col, strat))) % (2 ** 31))
+        bad = cx.corrupt(series, strat, seed=cx.seed_for(fname, col, strat))
     except cx.Unsupportable as e:
         return [ExecutionRecord(
-            detector_id=DETECTOR_ID, case_id=case_id, strategy_id=strat,
+            detector_id=detector_id, case_id=case_id, strategy_id=strat,
             promotion_status=status, cohort_id=cid, attempted=True, valid=False,
             failure_reason=FailureReason.COMPATIBILITY)], set()
 
@@ -274,7 +283,7 @@ def _run_one(build, frames, bare, baseline, fname, col, strat, cid, case_id, sta
         # here would be reporting that a probe which did not happen found
         # nothing -- the control-artifact case (§6.11 control 2).
         return [ExecutionRecord(
-            detector_id=DETECTOR_ID, case_id=case_id, strategy_id=strat,
+            detector_id=detector_id, case_id=case_id, strategy_id=strat,
             promotion_status=status, cohort_id=cid, attempted=True, valid=False,
             failure_reason=FailureReason.CONTROL_ARTIFACT)], set()
 
@@ -282,7 +291,7 @@ def _run_one(build, frames, bare, baseline, fname, col, strat, cid, case_id, sta
         out = _call(build, _substitute(frames, fname, col, bad), bare)
     except Exception:                                       # noqa: BLE001
         return [ExecutionRecord(
-            detector_id=DETECTOR_ID, case_id=case_id, strategy_id=strat,
+            detector_id=detector_id, case_id=case_id, strategy_id=strat,
             promotion_status=status, cohort_id=cid, attempted=True, valid=False,
             failure_reason=FailureReason.CRASH)], set()
 
@@ -291,21 +300,21 @@ def _run_one(build, frames, bare, baseline, fname, col, strat, cid, case_id, sta
         # execution. A pipeline that drops rows makes every later comparison
         # meaningless, including the ones that look clean.
         return [ExecutionRecord(
-            detector_id=DETECTOR_ID, case_id=case_id, strategy_id=strat,
+            detector_id=detector_id, case_id=case_id, strategy_id=strat,
             promotion_status=status, cohort_id=cid, attempted=True, valid=False,
             failure_reason=FailureReason.COMPATIBILITY)], set()
 
     equal, differing, _ = frames_equal(baseline, out)
     if equal:
         return [ExecutionRecord(
-            detector_id=DETECTOR_ID, case_id=case_id, strategy_id=strat,
+            detector_id=detector_id, case_id=case_id, strategy_id=strat,
             promotion_status=status, cohort_id=cid, attempted=True,
             valid=True, finding=None)], set()
 
     recs = []
     for feat in differing:
         recs.append(ExecutionRecord(
-            detector_id=DETECTOR_ID, case_id=case_id, strategy_id=strat,
+            detector_id=detector_id, case_id=case_id, strategy_id=strat,
             promotion_status=status, cohort_id=cid, attempted=True, valid=True,
             finding=FindingRecord(feature=str(feat), probe_cohort=cid,
                                   affected_output_cohort=cid)))

@@ -127,8 +127,18 @@ def test_full_product_runs_no_early_stop_on_a_fixture_run():
 
 
 def test_strategy_order_is_promotion_safe_first():
-    from leakaudit.corruption import STRATEGY_ORDER
-    assert STRATEGY_ORDER == (SHUFFLE, SENTINEL, NAN)
+    from leakaudit.corruption import SENTINEL_OOD, STRATEGY_ORDER, promotion_of as po
+    # R134/B9 added `sentinel_ood`. The property under test is not the literal
+    # tuple but the ORDER PROPERTY it encodes: no promoting strategy may precede
+    # a preserving one, because promotion costs PROVEN (§3.1). Asserting the
+    # property means a fourth strategy cannot be appended in the wrong place and
+    # still pass.
+    assert STRATEGY_ORDER == (SHUFFLE, SENTINEL, NAN, SENTINEL_OOD)
+    probe = pd.Series([1, 2, 3], dtype="int64")
+    kinds = [po(s, probe) for s in STRATEGY_ORDER]
+    first_promoted = kinds.index(PromotionStatus.PROMOTED)
+    assert all(k is PromotionStatus.PRESERVING for k in kinds[:first_promoted])
+    assert all(k is PromotionStatus.PROMOTED for k in kinds[first_promoted:])
     s_int = pd.Series([1, 2, 3], dtype="int64")
     s_flt = pd.Series([1.0, 2.0, 3.0])
     assert promotion_of(SHUFFLE, s_int) is PromotionStatus.PRESERVING

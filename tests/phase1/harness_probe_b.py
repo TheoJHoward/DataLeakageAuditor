@@ -56,7 +56,7 @@ from protocol.runtime_reference import (               # noqa: E402
 import pandas as pd                                    # noqa: E402
 
 from leakaudit.corruption import (  # noqa: E402
-    Unsupportable, corrupt, promote)
+    Unsupportable, corrupt, promote, seed_for)
 from leakaudit.determinism import check_frame, frames_equal  # noqa: E402
 
 OUT = pathlib.Path(os.environ.get(
@@ -111,7 +111,7 @@ def sub(frames, fname, col, series):
 def run_one(frames, base, fname, col, strat, cid, status):
     series = frames[fname][col]
     try:
-        bad = corrupt(series, strat, seed=abs(hash((fname, col, strat))) % (2 ** 31))
+        bad = corrupt(series, strat, seed=seed_for(fname, col, strat))
     except Unsupportable:
         return [ExecutionRecord(DETECTOR_ID, CASE, strat, status, cid, True, False,
                                 failure_reason=FailureReason.COMPATIBILITY)], set()
