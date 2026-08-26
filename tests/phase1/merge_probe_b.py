@@ -143,8 +143,15 @@ out["evidence_events"] = len(events)
 out["events_licensing_proven"] = sum(1 for e in events if e.licenses_proven)
 out["silent_cohorts"] = sorted(set(assigned) - set(depmap))
 
-(EV / "probe_b_merged.json").write_text(json.dumps(out, indent=1), encoding="utf-8")
+# The output path is overridable so that a SECOND run -- over a second set of
+# shards, e.g. to check reproducibility -- cannot overwrite the banked result
+# it exists to be compared against. Default unchanged (R134/B9).
+OUT_PATH = pathlib.Path(os.environ.get(
+    "LEAKAUDIT_B8_MERGE_OUT", str(EV / "probe_b_merged.json")))
+OUT_PATH.parent.mkdir(parents=True, exist_ok=True)
+OUT_PATH.write_text(json.dumps(out, indent=1), encoding="utf-8")
 
+print("wrote %s" % OUT_PATH)
 print("MERGED %d shards, %d cohorts, baseline %s" % (len(data), len(assigned),
                                                      baseline_sha[:16]))
 for k, v in out["traces"].items():
