@@ -177,8 +177,16 @@ def _run_detector(
     run_context: RunContext = RunContext.USER,
     bare: bool = False,
     columns: tuple[str, ...] | None = None,
+    cohorts: tuple[str, ...] | None = None,
 ) -> ProbeResult:
-    """Run one detector's two combinations and emit both traces."""
+    """Run one detector's two combinations and emit both traces.
+
+    `cohorts` selects by COHORT ID (`col:<frame>.<column>`) rather than by
+    column name, and is what a sharded run partitions on. `columns` selects by
+    bare name, which is ambiguous the moment two frames share one -- so a
+    sharded caller must use `cohorts`, and a caller that passes both gets the
+    intersection.
+    """
     targets: list[tuple[str, str]] = []
     for fname, f in frames.items():
         for c in f.columns:
@@ -186,6 +194,8 @@ def _run_detector(
                 continue
             if "|" in str(c) or "|" in fname:
                 continue        # reserved separator; cannot be a cohort id
+            if cohorts is not None and cohort_id_for(fname, str(c)) not in cohorts:
+                continue
             targets.append((fname, str(c)))
 
     # ---- the original-frame determinism guard (§6.10: per frame, not once) --
