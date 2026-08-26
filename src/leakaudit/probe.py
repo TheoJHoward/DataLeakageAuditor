@@ -59,6 +59,47 @@ from .determinism import DeterminismResult, check_frame, frames_equal
 
 DETECTOR_ID = "columndep"
 
+# The strategies this probe configures per promotion status. `nan` sits only in
+# the promoted combination, which is what creates the gap published below.
+PRESERVING_STRATEGIES: tuple[str, ...] = (cx.SHUFFLE, cx.SENTINEL)
+PROMOTED_STRATEGIES: tuple[str, ...] = (cx.NAN,)
+
+
+def domain_statement() -> str:
+    """What this probe can and cannot see, DERIVED from its configuration.
+
+    PREREG.md §39: silence is honest only with its domain attached. A probe that
+    reports `observed_silence` without saying what it never looked at is making
+    the stronger claim it did not earn.
+
+    THE GAP, STATED RATHER THAN LEFT TO BE DISCOVERED. `nan` is configured only
+    in the promoted combination, and `nan` promotes only where the column is not
+    already floating point (§3.2). So on a FLOAT column no strategy introduces a
+    null, and a feature whose only read of that column is through its null mask
+    -- `x.isna()`, a fillna count, a data-quality indicator -- moves under none
+    of the configured strategies and is reported silent. That is an instrument
+    narrower than its claim, in the direction that hides findings.
+
+    Widening it is NOT available as a schedule change: promotion KEYS the
+    combination (§6.6 l.1063, "Two fields, keyed (detector, promotion_status,
+    case)"), and `protocol.runtime_reference._validate_trace` raises on a record
+    whose promotion status differs from its trace's. So `nan` cannot simply join
+    the preserving strategy list; it would have to become a second combination
+    family. Until that is decided, the gap is published rather than closed.
+
+    Derived from the configuration above, so it cannot drift from what runs.
+    """
+    return (
+        "Probed: every source column of every supplied frame, under %s in the "
+        "preserving combination and %s in the promoted combination. NOT probed: "
+        "`%s` is not applied to float columns, because it preserves there rather "
+        "than promoting and is configured only in the promoted combination -- so "
+        "a feature reading a float column ONLY through its null mask is outside "
+        "this probe's domain, and its silence here is not evidence about it."
+        % (", ".join("`%s`" % s for s in PRESERVING_STRATEGIES),
+           ", ".join("`%s`" % s for s in PROMOTED_STRATEGIES),
+           cx.NAN))
+
 
 def cohort_id_for(frame_name: str, column: str) -> str:
     return "col:%s.%s" % (frame_name, column)
@@ -72,6 +113,10 @@ class ProbeResult:
     dependency_map: dict[str, tuple[str, ...]] = field(default_factory=dict)
     determinism: dict[str, DeterminismResult] = field(default_factory=dict)
     baseline_columns: tuple[str, ...] = ()
+    domain: str = ""
+    """What was and was not probed (§39). Carried WITH the result so a
+    reader cannot receive `observed_silence` without the domain that
+    produced it."""
 
     @property
     def traces(self) -> tuple[CombinationTrace, CombinationTrace]:
@@ -155,7 +200,7 @@ def probe_columns(
             prom_cohorts.append(cid)
 
         # ---- preserving strategies: the full product, no early stop ---------
-        for strat in (cx.SHUFFLE, cx.SENTINEL):
+        for strat in PRESERVING_STRATEGIES:
             recs, moved = _run_one(build, frames, bare, baseline, fname, col,
                                    strat, cid, case_id, PromotionStatus.PRESERVING)
             pres_records.extend(recs)
@@ -188,7 +233,7 @@ def probe_columns(
     preserving = CombinationTrace(
         detector_id=DETECTOR_ID, case_id=case_id,
         promotion_status=PromotionStatus.PRESERVING, run_context=run_context,
-        resolved_strategies=(cx.SHUFFLE, cx.SENTINEL) if pres_cohorts else (),
+        resolved_strategies=PRESERVING_STRATEGIES if pres_cohorts else (),
         selected_eligible_cohorts=tuple(pres_cohorts),
         required_inputs_available=True,
         terminal_decision_occurred=False,
@@ -197,13 +242,14 @@ def probe_columns(
     promoted = CombinationTrace(
         detector_id=DETECTOR_ID, case_id=case_id,
         promotion_status=PromotionStatus.PROMOTED, run_context=run_context,
-        resolved_strategies=(cx.NAN,) if prom_cohorts else (),
+        resolved_strategies=PROMOTED_STRATEGIES if prom_cohorts else (),
         selected_eligible_cohorts=tuple(prom_cohorts),
         required_inputs_available=True,
         terminal_decision_occurred=False,
         records=tuple(prom_records))
 
-    return ProbeResult(preserving, promoted, depmap, det, baseline_cols)
+    return ProbeResult(preserving, promoted, depmap, det, baseline_cols,
+                       domain=domain_statement())
 
 
 def _run_one(build, frames, bare, baseline, fname, col, strat, cid, case_id, status):
@@ -273,12 +319,12 @@ def _failed_frame_result(targets, case_id, run_context, det, reason) -> ProbeRes
         detector_id=DETECTOR_ID, case_id=case_id, strategy_id=s,
         promotion_status=PromotionStatus.PRESERVING, cohort_id=cid,
         attempted=True, valid=False, failure_reason=reason)
-        for cid in cohorts for s in (cx.SHUFFLE, cx.SENTINEL))
+        for cid in cohorts for s in PRESERVING_STRATEGIES)
     return ProbeResult(
         CombinationTrace(
             detector_id=DETECTOR_ID, case_id=case_id,
             promotion_status=PromotionStatus.PRESERVING, run_context=run_context,
-            resolved_strategies=(cx.SHUFFLE, cx.SENTINEL) if cohorts else (),
+            resolved_strategies=PRESERVING_STRATEGIES if cohorts else (),
             selected_eligible_cohorts=cohorts, required_inputs_available=True,
             terminal_decision_occurred=False, records=pres),
         CombinationTrace(
@@ -287,4 +333,4 @@ def _failed_frame_result(targets, case_id, run_context, det, reason) -> ProbeRes
             resolved_strategies=(), selected_eligible_cohorts=(),
             required_inputs_available=True, terminal_decision_occurred=False,
             records=()),
-        {}, det, ())
+        {}, det, (), domain=domain_statement())
