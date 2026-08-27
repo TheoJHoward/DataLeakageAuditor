@@ -10,8 +10,8 @@ byte-duplicate of the declaration and has been deleted from this tree.
 may be created. This directory holds this pointer and nothing else.
 
     path:   AVAILABILITY_DECLARATION.md          (repository root; one level above evidence\)
-    sha256: 3a5790159ec4a3bf63ea626ac08b11dc6cc1e54d761ca2c055066b554b2a2179
-    bytes:  331978
+    sha256: 79357d774b330dfaa0e517fcb0ca1026164cce9620730e903753adab2053047f
+    bytes:  335156
     as of:  2026-08-24, at the writing of this hash block (R67/§14.3(c): the three §D.3
             interpretation entries for the registered hash-set language; supersedes the
             2026-08-21 block, which supersedes the 2026-08-20 v30a scrub block below)
