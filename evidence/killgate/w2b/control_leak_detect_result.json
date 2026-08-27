@@ -1,0 +1,34 @@
+{
+  "tool": "leak-detect",
+  "version": "0.0.1 (none declared)",
+  "vendor_fixture": false,
+  "vendor_negative": false,
+  "limbs": {
+    "POSITIVE": {
+      "expected": true,
+      "fired": true,
+      "ok": true,
+      "return_type": "bool",
+      "return_repr": "True",
+      "stdout": "Checking for leakage from target columns to feature columns...\nBy replacing target with NANs:\nOops horizontal leakage detected!! \nList of columns and their respective number of rows with leaky data:\nmade_feature : 200",
+      "error": null,
+      "signal": "return(bool)"
+    },
+    "NEGATIVE": {
+      "expected": false,
+      "fired": false,
+      "ok": true,
+      "return_type": "bool",
+      "return_repr": "False",
+      "stdout": "Checking for leakage from target columns to feature columns...\nBy replacing target with NANs:\nNo horizontal leakage detected. Good to go! Yay!!",
+      "error": null,
+      "signal": "return(bool)"
+    },
+    "DEFAULT": {
+      "only_nan": false,
+      "raised": "AttributeError: module 'numpy' has no attribute 'complex'.",
+      "stdout": "Checking for leakage from target columns to feature columns...\nBy replacing target with NANs:\nOops horizontal leakage detected!! \nList of columns and their respective number of rows with leaky data:\nmade_feature : 200\n\n\nBy adding imaginary component to target columns:"
+    }
+  },
+  "verdict": "DISCRIMINATING"
+}

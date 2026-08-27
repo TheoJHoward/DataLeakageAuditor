@@ -1,0 +1,37 @@
+{
+  "tool": "leakage-buster",
+  "version": "1.0.2",
+  "vendor_fixture": false,
+  "vendor_negative": false,
+  "label_mapping": "severity == 'high' is a leakage finding; medium/low are advisory (CV strategy). detail strings are Chinese; severity keys are ASCII.",
+  "limbs": {
+    "POSITIVE": {
+      "n_risks": 4,
+      "n_high": 2,
+      "fired": true,
+      "expected": true,
+      "ok": true,
+      "high_names": [
+        "Target leakage (high correlation)",
+        "Target Encoding leakage risk"
+      ],
+      "other_names": [
+        "KFold leakage risk (use GroupKFold)",
+        "CV strategy recommendation"
+      ]
+    },
+    "NEGATIVE": {
+      "n_risks": 2,
+      "n_high": 0,
+      "fired": false,
+      "expected": false,
+      "ok": true,
+      "high_names": [],
+      "other_names": [
+        "KFold leakage risk (use GroupKFold)",
+        "CV strategy recommendation"
+      ]
+    }
+  },
+  "verdict": "DISCRIMINATING"
+}
