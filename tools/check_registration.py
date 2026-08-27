@@ -1542,6 +1542,12 @@ def check_declaration_values(root: Path) -> list[Finding]:
 # shell assignment, not a section. Those are registered here with the text that
 # must be ON that line.
 #
+# AN ENTRY WITH `lineno = None` IS ANCHOR-KEYED: the text must occur exactly
+# ONCE in the file, and where it occurs is reported rather than required.
+# "Has no heading" is a reason not to cite a SECTION; it was never a reason to
+# cite a LINE NUMBER, and the declaration's citation drifted twice in two rounds
+# before that was noticed (R139/§1.4).
+#
 # The failure this prevents is specific and worse than a dead link: `l.1516` was
 # cited in three files as the §A.11 walk summary and, after the declaration grew,
 # resolved to "What this subsection does NOT do." A reader following it lands on
@@ -1562,7 +1568,11 @@ _LINE_PINNED_CITATIONS = (
      "DEVIATIONS_DRAFT.md cites H-L12 by line for the date convention"),
     ("DESIGN.md", 546, "review-lesson",
      "COMMIT_PLAN.md cites DESIGN.md l.546 as the cross-reference H-L13 de-fragilised"),
-    ("AVAILABILITY_DECLARATION.md", 4377, "R8. H-entry",
+    # ANCHOR-KEYED (lineno None) at R139/§1.4: this pin drifted 4339 ->
+    # 4377 -> 4376 in two rounds of declaration edits. The anchor text is
+    # unique, so the line number was carrying no information the text did
+    # not already carry -- only the ability to go stale.
+    ("AVAILABILITY_DECLARATION.md", None, "R8. H-entry",
      "the decision-log tail is one block with no per-entry heading"),
 )
 
@@ -1577,6 +1587,24 @@ def check_line_citations(root: Path) -> list[Finding]:
                                     "D8: cited file is missing"))
             continue
         lines = path.read_text(encoding="utf-8", errors="replace").split("\n")
+        if lineno is None:
+            # ANCHOR-KEYED. The citation names TEXT, not a position, so the
+            # question is whether that text is still there and still unique.
+            # A duplicate fails here; a line pin would have silently taken the
+            # first and reported success.
+            hits = [i for i, l in enumerate(lines, 1) if expect in l]
+            if len(hits) == 1:
+                findings.append(Finding(
+                    "line_citations", rel, hits[0],
+                    "D8: resolves by anchor - %r at line %d" % (expect, hits[0]),
+                    is_note=True))
+            else:
+                findings.append(Finding(
+                    "line_citations", rel, None,
+                    "D8: anchor %r occurs %d times, expected exactly 1. An "
+                    "anchor that is not unique cites whichever copy the reader "
+                    "finds first. Cited because: %s" % (expect, len(hits), why)))
+            continue
         if lineno > len(lines):
             findings.append(Finding(
                 "line_citations", rel, lineno,
