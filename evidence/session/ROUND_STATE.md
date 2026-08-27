@@ -2,31 +2,42 @@
 
 **Purpose (R36).** After compaction, re-orient from THIS file. Rewrite it every round.
 
-**CURRENT STATE: R145. Track A HALTS AT A33b — the author's approval of sixteen lines is the only
-thing blocking the tag.** `main` is at `caf87ee`; `phase1` at `5295089`. **`PREREG.md` is at
-`e7b0e5aec2c4523e…`, 2228 lines.** Tags `prereg-v30` only; `backup/held-banking` at `655f613` pins
-the stash. Nothing tagged, pushed or stamped.
+**CURRENT STATE: R146. The sixteen lines are APPROVED and applied. Track A now halts at A36b —
+§13c-P is presented and awaits the author's read.** `main` is at `09d4ca0`; `phase1` at `5295089`.
+**`PREREG.md` is at `fcacebb231438e31…`, 2228 lines.** Tags `prereg-v30` only;
+`backup/held-banking` `655f613` pins the stash. Nothing tagged, pushed or stamped.
 
-**Everything executable on Track A is done.** A37, A36 and A38 completed at R144; **A33b was
-produced (`094486d`) and halts**; **A35 is done (`4585994`)**; **A34's read-only sweep is done
-(`682566c`)** and its repair set is fixed at **five sites**. A34 and A17‴ are gated behind the
-author.
+**A34 — five corrections applied, anchor-keyed.** The four block citations now read *“the v30a
+recorded-defect block in §7.2.1”*, and A30's provenance note — true when written, falsified by hunk
+3 — now says the limb **was applied and is in the file**. **The obvious anchor was refused:** quoting
+§AB's headline in four citations would have put the phrase in the file **five times**, and D8
+resolves an anchor only when it occurs **once**. The fix would have destroyed the uniqueness that
+makes the citation work.
 
-**A38 is complete and took the UNIQUE branch.** The 92 held lines were **68 substantive lines
-existing in no committed file**; they are appended **dated**, framed as the `d39643e` pass and
-banner-marked **superseded as a verification, standing as a record** — R145 §1.1's care point,
-satisfied before it was written. **68 of 68 present, 0 missing.** The stash is redundant by
-construction and is **verified-and-dropped at A15**, not before.
+**A34b — the same trap, avoided in one place and walked into two paragraphs later.** The note quoted
+SC-12(w)'s limb heading verbatim, taking `(w) ENTRY CONDITION FOR` from 1 occurrence to 2. A34's
+guard checked only §AB's anchor, so nothing failed. **A guard that pins one invariant does not pin
+its neighbour.** Repaired; both anchors now asserted.
 
-**`main`'s gate: 23 checks, FAIL — the two C2-blocked findings, which §1.5 rules stand.
-`round_reconciliation` PASSES.** **`phase1`'s D10 has NOT cleared, and the mechanism is now
-evidenced rather than asserted:** the pinned work-root copy is `3dc4e498…`, **byte-identical to
-main's committed copy**; `phase1`'s checked-out copy is `1bafc19e…`. **D10 hashes the checked-out
-tree**, so it reconciles on `main` and cannot on `phase1`.
+**⛔ A36b HALTS — and it halts on a collision, not on the extraction.** §13c-P's pointer **is** in SSF
+at the approved hash and is extracted verbatim (SSF ll.1612–1616; `BLOCK_MANIFEST` declared
+1604–1608, **eight early** — extracting inside the declared range would have come out **empty**).
+**Its last sentence cites “the v30a amendments block” — the exact phrase A34 removed from all four
+operative sites one commit earlier.** Applying it verbatim puts that false citation back into
+registered prose. **Three ways out are set down and none is chosen.**
 
-**Track B: §9.2 STEP 2 IS COMPLETE — six of six comparators DISCRIMINATING**, AGPL-3.0-or-later
-determined for deepchecks, four adapter defects of mine caught before anything was recorded.
-**`aggressor_side` is now PROPOSED, NOT BUILT** — the recommendation is **no third detector**.
+**A39 — eight manifest ranges fixed, sixteen refused.** All eight were exactly **+8**. **The first
+version wrote invented numbers that looked derived** — it expanded rows declaring a sub-range (row
+1a's 150–153 became 150–159, swallowing row 1b) and short-circuited on row 32. Reverted; **length
+preservation is now the acceptance test**, and a number the instrument cannot derive is one it must
+not write.
+
+**`main`'s gate: 23 checks, FAIL — the two C2-blocked findings.** **D10 earned its keep this round:**
+it failed on `main` after A39 because the pinned work root held `BLOCK_MANIFEST.md` at its pre-A39
+hash; synced and re-gated to **PASS**.
+
+**Track B: §9.2 step 2 COMPLETE (six of six).** Step 3's preconditions are established — the fixture
+builder is reachable and **byte-identical to the committed copy** — but **the runs have not started**.
 
 **THIS FILE IS THE REPORT.** Each item is banked here when it completes, before the next begins.
 A record that lives only in a chat message dies with the turn, and a turn that ends mid-item then
@@ -2404,3 +2415,119 @@ find constantly-false predicates. It finds **columns referenced but unmoved — 
 candidate may be a dead branch, a cross-frame name collision, an unprobed frame, or a genuine dead
 predicate. **Every candidate stays a question for a human.** Three conditions that would change the
 recommendation are named in the artifact; **none holds today.**
+
+---
+
+# R146 — A34 CORRECTS FIVE SITES · ⛔ A36b HALTS ON A COLLISION · A39 FIXES EIGHT RANGES
+
+**RE-ENTRY.** `main` `7f3f1a8` → `09d4ca0`; `phase1` `5295089`. Trees clean, tags `prereg-v30` only,
+`backup/held-banking` == `stash@{0}`. `main` 23 checks / 2 findings; `phase1` 23 / 3. **EXPECTED.**
+**§0 was stale in one place:** B-1's step-2 results were already in the report and the chat at R144.
+
+## A34 — five corrections, and the obvious anchor was the wrong one
+
+**The citation form was chosen against the obvious candidate.** §AB's headline — `RECORDED DEFECT,
+NOT RESOLVED BY THIS AMENDMENT` — is the natural anchor. **Quoting it in four citations would have
+put it in the file five times, and D8 resolves an anchor only when it occurs exactly once.** The
+obvious fix destroys the property that makes the citation resolvable.
+
+So the block is named by **section plus a non-colliding descriptor**: *“the v30a recorded-defect
+block in §7.2.1”*. Verified before writing — `recorded-defect` occurs **zero** times, and §7.2.1
+(ll.1322–1454) contains **exactly one** such block. `§AB` is not used: it is SSF's label, occurs zero
+times in `PREREG.md`, and would point at nothing.
+
+| site | was | now |
+|---|---|---|
+| l.1999 | *“the amendments block records”* | the v30a recorded-defect block in §7.2.1 |
+| l.2003 | *“recorded in the v30a amendments block (SC-13c(c2))”* | same form |
+| ll.2064–2065 | **spans a line break** | the newline and its `> ` are part of the match |
+| l.2067 | *“recorded in the amendments block”* | *“recorded in that block (§7.2.1)”* |
+| l.1533 | A30's note — **true when written, falsified by hunk 3** | the limb **was applied and is in the file** |
+
+The provenance note is **spliced between anchors, never respelled** — it carries em-dashes and
+backticked identifiers, and a patch that spells the text it edits can misspell it.
+
+### A34b — the same trap, two paragraphs later
+
+Having carefully not quoted §AB's headline, A34 **quoted SC-12(w)'s limb heading verbatim**, taking
+`(w) ENTRY CONDITION FOR` from 1 occurrence to **2**. A34's guard asserted §AB's anchor and nothing
+else, **so nothing failed**. **A guard that pins one invariant does not pin its neighbour.** Caught
+by verifying the effect **by reading**, not by trusting the applier's own OK lines. Repaired to *“as
+SC-12(w)'s entry-condition limb in §10.2”*; A34b asserts **both** anchors, because checking one is
+the defect it repairs.
+
+**Post-fix sweep run and reported:** 125 files, 41 hits, **one** in a registered object — the
+provenance paragraph, matching on *“stops short”* + *“SC-12(w)”*. **Over-collection by design; the
+surviving sentence is true.** No further registered site needs correcting.
+
+## ⛔ A36b — §13c-P presented. It halts on a collision, not on the extraction.
+
+**Artifact: [`A36B_13cP_POINTER.md`](../amendment/A36B_13cP_POINTER.md). NOT APPLIED.**
+
+The pointer **is** in SSF at the approved hash `32358f6d…`, verified before a line was read.
+Extracted verbatim from **SSF ll.1612–1616**, the fence under §13c-P's `INSERT AFTER` apparatus.
+**`BLOCK_MANIFEST` row 32 declares ll.1604–1608 — eight early — so extracting inside the declared
+range would have returned nothing at all.** A **byte-identical** copy already sits at `PREREG.md`
+l.1344 inside the unapplied specimen, so applying changes no wording, only its status.
+
+**What halts it:** the pointer's last sentence cites *“the v30a amendments block”* — **the container
+that does not exist, and the exact phrase A34 removed from all four operative sites one commit
+earlier.** Applying it verbatim re-plants the false citation.
+
+| option | what it costs |
+|---|---|
+| apply verbatim | faithful to approved content; **plants a citation needing its own A34-class correction** |
+| apply with the citation corrected | leaves the file consistent; **no longer verbatim extraction**, so it needs its own approval, exactly as the sixteen lines did |
+| do not apply | nothing false is added; **§AB's pointer assertion stays false** and joins HELD |
+
+**No recommendation is offered** — a presentation that arrives with its own preferred answer has
+stopped being an extraction.
+
+## A39 — eight ranges fixed, sixteen refused, and the first attempt was worse than the defect
+
+`BLOCK_MANIFEST.md` is a working document, so §1.4 fixes rather than discloses. **Eight rows
+corrected — 23, 24, 27, 28, 29, 30, 33, 36 — every one exactly +8.** A note above the §A table now
+states the ranges are **derived** and warns against extracting inside one without re-deriving it.
+
+**The first version wrote invented numbers that looked derived, and was reverted before commit.**
+Taking `extent(first) or extent(first + 8)` and writing the result **expanded** rows that
+deliberately declare a **sub-range** of a longer run — row 1a's 150–153 became 150–159, swallowing
+row 1b whole; row 14a's swallowed 14b, 14c and 14d — and **short-circuited**: row 32's
+`extent(1604)` found the ANCHOR fence, so `extent(1612)`, where A36b had just proved the INSERT
+fence is, was never tried, and rows 31 and 32 both collapsed onto `1604-1604`.
+
+**A block that moved keeps its length.** Length preservation is now the acceptance test. **Sixteen
+rows have no length-preserving candidate and are left untouched and named** — several certainly
+stale, 26, 31 and 32 among them. **A number the instrument cannot derive is one it must not write.**
+
+**D10 earned its keep.** `round_reconciliation` failed on `main` immediately after A39, because the
+pinned work root held `BLOCK_MANIFEST.md` at its **pre-A39 hash** and no longer had a twin. Synced as
+bytes, re-gated: **PASS**. This is precisely the drift the check exists to find, caught in the same
+round the file changed.
+
+## TRACK B — §9.2 step 3: preconditions established, runs NOT started
+
+**B-1 was already discharged at R144** — the six-of-six table reached both the report and the chat.
+
+**Step 3's preconditions are established and one of them is a finding.** `fixture_adapter.read_inputs`
+/ `builder_for` are intact, and the fixture's producing code is reachable. **But `F2_DIR` is an
+absolute path into the pinned session scratchpad**, and the adapter's own docstring says so: *“it is
+a session scratchpad and is not guaranteed to survive.”*
+
+**Checked rather than assumed — all four files are byte-identical to their committed copies:**
+
+| file | scratchpad | repo `evidence/fixture_spike/f2/` |
+|---|---|---|
+| `fixture.py` | `f1a8bddf…` | **identical** |
+| `phase5_ml_fixture.py` | `fb9760fe…` | **identical** |
+| `check_external.py` | `3a1b5013…` | **identical** |
+| `check_self_consistency.py` | `eb86a42f…` | **identical** |
+
+**So there is no drift — and the risk is still real.** The adapter loads from a transient location
+code that the repository already holds. **If that scratchpad is cleaned, `_import_fixture()` raises
+and §9.2 cannot run, with the identical bytes sitting committed a few directories away.** A fallback
+to the repo copy is a one-line change; it is **named, not made**, because `fixture_adapter.py` is
+Phase 1 code and no ruling this round reaches it.
+
+**The comparator runs themselves have not started.** Step 3 is a 2–3 hour block and is reported as
+not begun rather than half-recorded.
