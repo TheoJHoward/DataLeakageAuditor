@@ -70,6 +70,34 @@ x5 = text_of(X5)
 prereg = text_of(PREREG).split("\n")
 
 
+HEADINGS = {"§AB": "### §AB", "§AC": "## §AC",
+            "SC-12(w) limb": "**SC-12(w) — ENTRY CONDITION"}
+
+
+def _true_extent(first, last, expect_in, label):
+    """A block's real extent, from its own heading -- not from a declared range.
+
+    `BLOCK_MANIFEST.md` is an assertion about where a block sits; the file is the
+    fact. For §AB and §AC the assertion is eight lines out.
+    """
+    head = HEADINGS.get(label)
+    if head is None:
+        return first, last
+    idx = [n for n, l in enumerate(ssf) if l.startswith(head)]
+    if len(idx) != 1:
+        sys.exit("HALT: %s -- heading occurs %d times, expected 1" % (label, len(idx)))
+    i = idx[0]
+    while i < len(ssf) and not ssf[i].startswith(">"):
+        i += 1
+    lo = i
+    while i < len(ssf) and ssf[i].startswith(">"):
+        i += 1
+    if (lo + 1, i) != (first, last):
+        print("      %-16s declared ll.%d-%d -> TRUE ll.%d-%d (offset %+d)"
+              % (label, first, last, lo + 1, i, (lo + 1) - first))
+    return lo + 1, i
+
+
 def ssf_span(first, last, expect_in, label):
     """The APPLIED text inside a manifest range: its blockquote, and only that.
 
@@ -81,11 +109,14 @@ def ssf_span(first, last, expect_in, label):
     extraction narrows to the maximal contiguous blockquote inside the range,
     which is the applied form, and the apparatus stays where it belongs.
     """
-    # MAXIMAL CONTIGUOUS RUNS, then the one carrying the expected text. A first
-    # version took everything between the first and last `>` in the range, and
-    # §AC's range straddles §AB's closing line -- so it swept up §AB's tail, the
-    # `---`, §AC's heading and its prose. The contiguity check refused, which is
-    # the right failure; this is the right question.
+    # SUPERSEDED AT R142/A33 -- KEPT ONLY SO THIS SCRIPT STILL RUNS.
+    # `BLOCK_MANIFEST.md`'s declared ranges for §AB and §AC are the RIGHT LENGTH
+    # and OFFSET BY +8: they cover each block's apparatus plus all but its last
+    # eight lines. Extracting inside them cut §AC's disclosure 7 mid-sentence and
+    # dropped its closing paragraph. `a33_apply.py` derives each block's extent
+    # from its own heading instead, and THAT is what was applied. This presenter
+    # is left pointing at the same derivation so the two cannot disagree.
+    first, last = _true_extent(first, last, expect_in, label)
     block = ssf[first - 1:last]
     runs, cur = [], []
     for l in block:
