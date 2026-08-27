@@ -1,0 +1,90 @@
+# Criterion 5 scaffold — installable by a stranger. R150 §4 / B-5.
+#
+# NEW FILE, and new files only: `main` is frozen awaiting the v30a signature and
+# nothing here may collide with it at the rebase. No README edits until the tag
+# lands (R150 §6 makes a pre-tag README edit a halt).
+#
+# EVERY RUNTIME DEPENDENCY AND ITS LICENCE IS RECORDED HERE, derived from the
+# installed distributions rather than asserted (§D.5(ii)):
+#
+#   numpy   2.4.2   BSD-3-Clause AND 0BSD AND MIT
+#   pandas  3.0.1   BSD-3-Clause
+#   pyarrow 23.0.1  Apache-2.0
+#
+#   pytest  9.1.1   MIT                    (development only, not shipped)
+#
+# DEEPCHECKS IS NOT A DEPENDENCY. It is a comparator, invoked as a separate
+# program in its own virtualenv. Its AGPL-3.0-or-later is therefore not engaged
+# by this distribution: interoperation is not vendoring, and the determination is
+# recorded at `evidence/killgate/w2b/W2B_STEP3_DISCHARGE.md`. Listing it here
+# would be false and would drag AGPL obligations onto a package that does not
+# contain, link, or redistribute it.
+#
+# THE FIXTURE'S PRODUCING CODE IS NOT A DEPENDENCY EITHER. `fixture` and
+# `phase5_ml_fixture` are imported by `leakaudit.fixture_adapter`, but LAZILY --
+# `import leakaudit` succeeds without them, verified before this file was
+# written. They are the acceptance fixture's own modules, committed under
+# `evidence/fixture_spike/f2/`, and a stranger installing this package gets the
+# auditor, not the fixture. `fixture_adapter` raises `FixtureUnavailable` with
+# the reason when they are absent, which is the correct behaviour for a stranger
+# who has no fixture to audit.
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "leakaudit"
+version = "0.1.0.dev0"
+description = "Runtime data-leakage auditing against a declared per-cell availability model"
+readme = { text = "See README.md in the repository; packaging notes in INSTALL.md.", content-type = "text/plain" }
+requires-python = ">=3.11"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Theo Johann Howard" }]
+keywords = ["data-leakage", "auditing", "pre-registration", "reproducibility"]
+
+# PINNED AS FLOORS, NOT AS EXACT VERSIONS. The versions above are what this
+# environment runs; a floor lets a stranger install without fighting our lockfile,
+# and the registration's determinism claims are made about the pinned dev
+# environment, never about an arbitrary install.
+dependencies = [
+    "numpy>=1.26",
+    "pandas>=2.1",
+    "pyarrow>=14",
+]
+
+# NO `License ::` CLASSIFIER. PEP 639 supersedes them with the SPDX `license`
+# expression above, and setuptools REFUSES a project carrying both -- the build
+# failed on exactly that, and only an actual install attempt found it. The file
+# parsed cleanly beforehand, which is why parsing is not the test.
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+# TWO PACKAGES, AND `protocol` IS SHIPPED FROM WHERE IT STANDS.
+#
+# `leakaudit.contract` imports `protocol.runtime_reference`, so a distribution
+# carrying only `leakaudit` INSTALLS AND THEN FAILS TO IMPORT -- which is exactly
+# what the first install test did, after the metadata build had already gone
+# green. Building is not installing, and installing is not importing.
+#
+# `protocol/` is NOT moved under `src/`. `protocol/runtime_reference.py` is ONE
+# OF THE TWENTY REGISTERED PATHS whose hashes the `prereg-v30a` tag message
+# carries; relocating it would change a registered path while `main` is frozen
+# awaiting signature. It is mapped from its existing location instead, so the
+# tree the tag attests is untouched.
+[tool.setuptools]
+packages = ["leakaudit", "protocol"]
+
+[tool.setuptools.package-dir]
+leakaudit = "src/leakaudit"
+protocol = "protocol"
