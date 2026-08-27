@@ -2,24 +2,32 @@
 
 **Purpose (R36).** After compaction, re-orient from THIS file. Rewrite it every round.
 
-**CURRENT STATE: R135. Track A is suspended below A20, and A20 is DONE and ⛔ HALTED.** `main` is at
+**CURRENT STATE: R136. A20b is done; A21 ⛔ HALTS TWICE.** `main` is at
 `87054020278eca99a09164a4bb3e11bf20620878`; `PREREG.md` is byte-exact at `0c8da19f237cd243…`; tags
 are `prereg-v30` only; held banking is preserved in `stash@{0}`. Nothing has been edited, staged,
-committed to `main`, tagged, pushed or stamped. **`main`'s gate is 23 checks, FAIL — one finding,
-D10 on `ROUND_STATE.md`, expected and recorded (RE-2).** Nothing signs against a failing gate.
+committed to `main`, tagged, pushed or stamped. **`main`'s gate is 23 checks, FAIL — one finding**,
+D10 on `ROUND_STATE.md` (RE-2, expected). Nothing signs against a failing gate.
 
-**A20 inverted the salvage question.** The applied `PREREG.md` is **byte-identical** to v30 with the
-approval record applied: **UNAPPROVED-APPLIED 0, APPROVED-MISSING 0.** Nothing was applied that
-nobody approved and nothing approved failed to land — so the defect is in the approval record, whose
-population is CLAUSES by its own statement, and every one of the 14 MARKER blocks was ineligible for
-it. Five deletions, four retaining nothing. A twelfth missing touch, `SC-12(w)`, not previously
-counted. The table is
-[`evidence/amendment/A20_DIFFERENTIAL_AUDIT.md`](../amendment/A20_DIFFERENTIAL_AUDIT.md).
-**The author rules salvage versus re-plan.**
+**A20b:** the wrapping hypothesis was checked with a whole-file longest-common-substring derivation
+and does not hold — **one of five deletions retains its text** (v30 l.1022, verbatim, marked); four
+do not. **Exactly one live citation to deleted text: l.1544.** Four "line 461" citations and two of
+three deictics were read and cleared.
 
-**Track B runs on branch `phase1` and waits on none of it.** `phase1` gate PASS 23;
-`tests/phase1` 136 passed / 4 skipped. B8's fixed-seed re-run reproduced `probe_b_merged.json` byte
-for byte; B9's fixture sweep is running.
+**A21 halts twice.** (1) `tagmsg.txt`'s change-list is **hand-authored prose** in
+`CEREMONY_COMMANDS.md` §3.5's format block — no source to correct, R136's own halt branch.
+(2) **The defect reaches inside the twenty hashed files:** `AVAILABILITY_DECLARATION.md` discharges
+three §6.2 elements by citing `PREREG.md` clauses **that do not exist** — all three of its
+named-clause citations resolve to nothing, while all 67 `SC-n` citations resolve. Not a wording fix:
+either the clauses get applied, or three elements are re-dispositioned as undischarged.
+**The author rules.** Table: [`A20_DIFFERENTIAL_AUDIT.md`](../amendment/A20_DIFFERENTIAL_AUDIT.md).
+
+**Clean, and checked:** `README.md`'s v30a block carries **no** change list and its 20 hashes all
+match; `tagmsg.txt`'s 20 all match. Every defect this round is in prose no gate reads.
+
+**Track B runs on `phase1` and waits on none of it.** `phase1` gate PASS 23, 145 passed / 4 skipped.
+**B8-R landed** — the fixed-seed re-run reproduced `probe_b_merged.json` byte for byte, no silence
+flipped, the provisional marking is discharged. **B9-S is DONE** —
+[`B9_DETECTOR_SWEEP_RESULTS.md`](../phase1/B9_DETECTOR_SWEEP_RESULTS.md). §9.2 is next.
 
 **THIS FILE IS THE REPORT.** Each item is banked here when it completes, before the next begins.
 A record that lives only in a chat message dies with the turn, and a turn that ends mid-item then
@@ -1129,3 +1137,158 @@ probe cannot execute. Whether it earns a third detector stays open.
 `valueread`: **12 `observed_silence`, 2 `none`** (`trades.action`, `trades.symbol` — no strategy ran
 validly). `nullread`: **10 `observed_silence`, 5 `none`** — all five the crashes above. A probe that
 did not happen found nothing, and that is not the same as a probe that happened and found nothing.
+
+---
+
+# R136 — A20b DONE · A21 ⛔ HALTS TWICE · THE DEFECT REACHES A HASHED FILE
+
+**Track A unchanged on disk.** `main` at `87054020278eca99…`, `PREREG.md` byte-exact at
+`0c8da19f237cd243…`, tags `prereg-v30` only, held banking in `stash@{0}`. Nothing edited, staged or
+committed to `main`.
+
+## RE-ENTRY
+
+| | |
+|---|---|
+| `phase1` gate | **23 checks, PASS** |
+| `main` gate | **23 checks, FAIL — 1 finding**, D10 on `ROUND_STATE.md`, run in the real tree this time |
+| §0.2 said `phase1` at `5e3aabb`, B8-R running, B9-S queued | **stale** — `phase1` at `8121549`; **B8-R landed** (byte-identical) and **B9-S is DONE** |
+| §1.4 says `B8_PROBE_B_RESULTS.md` is provisional until the re-run lands | **the re-run landed.** §6.1 of that file carries the defect, the re-run and the comparison |
+
+**No silence flipped.** The fixed-seed re-run reproduced `probe_b_merged.json` byte for byte, sha256
+`1cdae81ea761bc86…`, so there is nothing to report individually and the provisional marking is
+discharged.
+
+---
+
+## A20b — THE DELETED CLASS, FINISHED. The wrapping hypothesis was checked and does not hold.
+
+A20's probe asked whether an 80-character prefix appeared on **some line**. That is a sample.
+R136 was right that a retention block may wrap a quotation across lines, so this replaced it with a
+derivation: **both sides normalised — blockquote markers stripped, all whitespace collapsed, the
+whole file as one string — then the longest common substring between each deleted sentence and the
+entire applied file.** Line boundaries stop existing, so wrapping cannot hide anything.
+
+| v30 line | what it is | longest surviving run | at | marker? | verdict |
+|---|---|---|---|---|---|
+| **461** | §6.2 acceptance criterion 3 | 54/92 | l.630 | no | **NOT RETAINED** |
+| **855** | §7.7 detector-case coverage row | 37/119 | l.1067 | no | **NOT RETAINED** |
+| **929** | §8.3 `assert_audit_complete()` | 108/187 | l.1565 | no | **NOT RETAINED** |
+| 1022 | §10.1 kill-gate criterion 3 | **214/214** | l.1678 | **yes** | **RETAINED VERBATIM** |
+| **1030** | §10.2 kill/pause criterion 2 | 36/128 | l.627 | no | **NOT RETAINED** |
+
+**A20's answer survives the stronger test: one of five retained, four not.**
+
+**A long common substring is not a quotation.** `" under the reconstructed declaration"` is 36
+characters of shared vocabulary between two clauses about the same subject. Partial retention is
+credited **only where a retention marker sits at the site** — which is what §8.2 actually promises
+(*"in a block marked `SUPERSEDED BY v30a`"*) and the only form a reader could recognise.
+
+**l.929 is the interesting near-miss.** 108 of its 187 characters survive at l.1565 — but l.1565 is
+the **operative v30a replacement**, which is the old bullet with `waived` added. A reader can
+recover most of the old sentence only by noticing the replacement is a near-copy. **Nothing marks it
+as the retained original**, so it is not retention in §8.2's sense.
+
+### DECISION A20b — the branches that fired
+
+- **retains its text →** v30 l.1022. §8.2's description is accurate for that row.
+- **retains nothing → a DESCRIPTION defect in §8.2, not an applied defect.** Four rows: 461, 855,
+  929, 1030. The deletions were approved; **`PREREG.md` is not edited.**
+- **leaves a live citation → an APPLIED defect.** **Exactly one: l.1544**, *"state that row carries
+  other than `passed` and `failed`"*, whose *"that row"* is §7.7's deleted coverage row.
+
+### The citation screens, and what they cost me
+
+Two screens, each with its bound stated. **(a) by v30 line number** — fully derived. **(b) deictic**
+— every *"that row"* / *"the table above"* in the file, **listed once and unattributed**.
+
+**The first version attributed deictics by proximity** to where each deleted sentence's longest
+surviving run happened to sit — which is not the deletion's site at all — and put **l.1544's
+*"that row"*, which refers to §7.7's row at v30 l.855, onto v30 l.929** because it was 21 lines
+away. **Proximity is not reference.** The list is now unattributed and complete rather than
+attributed and wrong.
+
+Three deictics exist. Two were **read and cleared**: l.895's *"that row"* refers to a detector row
+named in its own sentence; l.1163's refers to *"each §0.1 lock-table row"*, also named in its own
+sentence. Only **l.1544** refers to something deleted.
+
+**And four "line 461" citations were read and cleared too.** l.1892 and l.1898 say *"under
+registered line 461 **unamended**"* and *"**Until the `prereg-v30a` tag is signed**, line 461 stands
+unamended"* — **forward-looking conditionals that are true as written**, discharged by signing, the
+same class as `PROVISIONAL until the tag is signed`. Not defects.
+
+---
+
+## A21 — ⛔ HALTS, TWICE, AND THE SECOND ONE IS NEW
+
+### HALT 1 — `tagmsg.txt`'s change-list is hand-authored, exactly as R136's branch anticipated
+
+`CEREMONY_COMMANDS.md` §3.5, l.503, inside the format block:
+
+> `Amends PREREG.md §6.2 — reference AUC (l.445), contamination availability class`
+> `recording locus (l.450), sliced CI variant (l.451), criterion 3 (l.461) — and`
+> `defines "waived" for §10.2's replacement-criterion floor.`
+
+**There is no source to correct.** The hash lines below it *are* derived — §3.5 says they are *"the
+output of C2, pasted — never retyped, never re-derived"*, and `v30a.hashes.txt` is their authority.
+**The change list has no equivalent.** It is prose, and it is the same defect class as the
+six-versus-twenty-three count: a hand-authored value with no derivation, that no gate asks about.
+
+**DECISION A21 → "it is hand-authored in the format block → HALT and present."**
+
+### HALT 2 — the defect reaches inside the twenty hashed files
+
+`AVAILABILITY_DECLARATION.md` is **not a drafting record**. It is one of the twenty files
+`tagmsg.txt` hashes, frozen at the tag by its own §D.1, and `PREREG.md` SC-7(a) names its declared
+elements as a gate input.
+
+Its §A conformance walk discharges three §6.2 elements **by citing `PREREG.md` clauses by name**:
+
+| declaration line | cites | resolves? |
+|---|---|---|
+| l.822 | `PREREG.md` §6.2 *"Reference AUC anchor — v30a, operative"* | **NO — not in `PREREG.md` at all** |
+| l.994 | *"Contamination availability class — v30a, operative"* | **NO** — the stem is at l.579, but that is **v30's own unamended line** |
+| l.1051 | *"Sliced variant — v30a, operative"* | **NO** — same, at l.580 |
+
+**All three of the declaration's named-clause citations resolve to nothing**, and they are exactly
+the three §6.2 changes A20 proved were never in the approval record. **All 67 distinct `SC-n`
+citations resolve.** So the damage is bounded and it is precisely these three.
+
+**This is not a wording fix.** Three declared elements are reported discharged on the authority of
+registered text that was never registered. Making the declaration true requires **applying the three
+clauses** — a new `PREREG.md` diff needing its own approval. Making it accurate as it stands
+requires **re-dispositioning three elements as undischarged**. Either way it is a decision about
+what the amendment means, so §2.3's provisional resolution does not reach it.
+
+### What is CLEAN, checked and reported as such
+
+**`README.md`'s v30a block carries no change list at all** — twenty hash lines and nothing else, and
+**all twenty match** the registered branch. `tagmsg.txt`'s twenty likewise: **20 of 20 match.**
+`README.md`'s v30 block mismatches four of five and is a **dated record of what v30 was**, correct
+as written.
+
+**The mechanical half — the half a gate checks — is entirely sound. Every defect found this round is
+in prose no gate reads.**
+
+### The §36.2 survey, and the line it draws
+
+Twenty-odd files mention `l.445`. Almost all are **drafting records of the plan** — `K1`, `X5`,
+`SCHEMA_SET_ADOPTION`, `PREREG_v30a_DIFF`, `_E2E3` — and a record saying *"the plan includes l.445"*
+is **true**. Only a document asserting the amendment **did** amend l.445 is false. That reduces the
+set to four: `tagmsg.txt`, `CEREMONY_COMMANDS.md` §3.5 (its source), `K2_AMENDMENT_LEDGER.md` §8.2,
+and `AVAILABILITY_DECLARATION.md`. **Nothing was edited** — §36.2 says find the set before fixing
+any of it, and two of the four halt.
+
+---
+
+## INSTRUMENT DEFECTS THIS ROUND
+
+| defect | what it would have reported |
+|---|---|
+| the normalised text and its line index were built in two passes | reported line numbers drifted further the deeper into the file a hit was — **1658 for a passage at 1678** |
+| a long common substring scored as partial retention | four deletions credited as **RETAINED IN PART** on shared house-style vocabulary |
+| deictic references attributed by proximity | **l.1544's citation put on the wrong deleted row** |
+| the declaration's clause probe searched for the heading stem alone | **"Contamination availability class" and "Sliced variant" reported as RESOLVING at PREREG.md l.579 and l.580 — the very lines A20 proved were never replaced.** The probe found the thing the citation says was superseded and called that resolution |
+
+The last one is the sharpest instance yet of a guard passing for the wrong reason: it would have
+reported two of the three most serious findings of this round as clean.
