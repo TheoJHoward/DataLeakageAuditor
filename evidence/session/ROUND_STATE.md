@@ -2,45 +2,43 @@
 
 **Purpose (R36).** After compaction, re-orient from THIS file. Rewrite it every round.
 
-**CURRENT STATE: R143. Track A HALTS AT A33b for the author's approval of sixteen lines.**
-`main` is at `682566c`; **`PREREG.md` is at `e7b0e5aec2c4523e…`, 2228 lines.** Tags are
-`prereg-v30` only; held banking preserved in `stash@{0}`. Nothing tagged, pushed or stamped.
+**CURRENT STATE: R144. Track A still HALTS AT A33b for the author's approval of sixteen lines —
+that is the only thing blocking the tag.** `main` is at `451555b`; **`PREREG.md` is at
+`e7b0e5aec2c4523e…`, 2228 lines.** Tags are `prereg-v30` only. **`backup/held-banking` at `655f613`
+now pins the stash**; nothing tagged, pushed or stamped.
 
-**A33 applied hunks 1–3** — §AB ll.1348–1395 (48), §AC ll.1397–1447 (51), SC-12(w)'s limb
-ll.1921–1957 (37). **`+139 −0`, pure insertion.** SSF verified at the approved hash before a line
-was read out of it; applied bottom-to-top so the earlier insertion could not shift the later anchor.
+**A37 — the record is GC-proof.** A branch ref pins `stash@{0}`. Its inventory, which prior rounds
+never gave: **exactly one file**, `evidence/session/ROUND_STATE.md`, +92 lines. The "held banking"
+was the report itself.
 
-**⛔ A33b HALTS.** `BLOCK_MANIFEST.md`'s ranges end **eight lines before each blockquote's true
-end**, so `A32_PROPOSED_DIFF.md` — the document the author read — carried §AB and §AC each eight
-lines short. The applied text is the presented text **plus exactly sixteen lines, altering nothing
-presented**, proved by prefix equality line by line. The sixteen are substantive: §AB's central
-holding and §AC's disclosure-7 conclusion with the block's closing paragraph. **An approval covers
-what was read**, so they need their own. `A32_PROPOSED_DIFF.md` is **not touched**.
+**A36 — the contradiction dissolves, and it was my instrument.**
+`evidence/session/ROUND_STATE.md` has **fifteen commits of continuous history**, is tracked on
+**both** branches, and **is manifest-attested** (line 896). Never deleted. Last round's sentence —
+*"does not exist, is not tracked on either branch, and has never been committed"* — was true of the
+**path `ROUND_STATE.md` at the repo root**, which is what `ls`, `git ls-files`, `git ls-tree` and
+`git log` were all given. **It was stated about the file.** The narrower-than-its-claim class,
+**H-L21**: the population was a filename, not the tree.
 
-**The offset is wider than two blocks.** **Seven** decidable §A rows are eight lines early against
-twenty-one correct; ambiguous rows are reported UNDECIDABLE, not forced. Entry 23 puts the limb at
-1137–1173 when its true extent is 1145–1181 — **the limb was applied correctly by luck, not by
-check.** A whole-block sweep then answered the question that actually mattered before a signature:
-**41 rows, 0 truncated, 24 complete**, including SC-13a's 59 lines, SC-13b's 68 and SC-13c's 101.
-**No applied block is truncated.**
+**A38 — the held banking was NOT redundant, and that was the real risk.** **68 substantive lines
+existed in no committed file**: the **A9 all-green table**, **the point at which §1.6 attaches**, and
+**two recorded defects of mine**. All of it lived only in the one git ref that is unpushed,
+droppable and invisible to every branch. Restored **verbatim** between A5.3 and R134 — a **gap, not
+a divergence**, checked for a competing account before concluding it. **68 of 68 now present, 0
+missing.** The A9 run is banner-marked **superseded as a verification, standing as a record**: it
+ran against `d39643e` and **sixteen commits have landed since**.
 
-**A35 is done: hunk 4 does not land.** Line 1080 settles it — no published metric reads a §7.7
-detector-case state, and `assert_audit_complete()` names its three states directly. SC-6b's
-extension is a **no-op, not a break**. The disclosure is drafted and **held**; `DEVIATIONS.md` is
-one of the twenty and is still **0 bytes**.
+**⛔ A33b HALTS — unchanged.** The applied text is the presented text **plus exactly sixteen lines,
+altering nothing presented**. `A32_PROPOSED_DIFF.md` stays frozen at `26d4856`. **A34 is gated on
+it**, its repair set fixed at **five sites**; **A35 is done** — hunk 4 does not land, disclosure
+drafted and held. **`DEVIATIONS.md` is still 0 bytes.**
 
-**A34 is gated on A33b and its repair set is now fixed at five sites** — the four block citations
-plus A30's provenance note, whose three clauses hunk 3 falsified. Established by a sweep over 125
-files, after a first version matching line-by-line returned a **false all-clear**.
+**⚠️ `main`'s gate is 23 checks, FAIL — 2 findings, and §1.5 rules they stand.** `round_reconciliation`
+**PASSES**. Manifest **0 listed-but-absent**.
 
-**⚠️ `main`'s gate is 23 checks, FAIL — 2 findings, and §1.5 rules they stand.** `phase1`'s is 23
-checks, **3 findings**, the same two plus **D10**, whose mechanism is now understood rather than
-merely accepted: the work-root `ROUND_STATE.md` is byte-identical to **main's** copy and differs
-from `phase1`'s, and D10 hashes the checked-out tree. Manifest **0 listed-but-absent**.
-
-**Track B is on `phase1` at `a8263e7`.** §9.2 step 2: **three of six comparators DISCRIMINATING** —
-Leakly (vendor pair), temporalcv (**defect #7 reproduced**), leakfence (both surfaces).
-leakage-buster, leak-detect and deepchecks remain **uninterpretable, not null**.
+**Track B is on `phase1` at `cfb8a89`. §9.2 STEP 2 IS COMPLETE — six of six comparators
+DISCRIMINATING**, AGPL-3.0-or-later determined for deepchecks. **Four adapter defects of mine were
+caught before anything was recorded**, each of which would have been a plausible, publishable, false
+finding about someone else's software.
 
 **THIS FILE IS THE REPORT.** Each item is banked here when it completes, before the next begins.
 A record that lives only in a chat message dies with the turn, and a turn that ends mid-item then
@@ -2218,3 +2216,111 @@ an unrecognised return shape** rather than returning an empty list, because an e
 | the leakfence adapter read `.violations` off a tuple | recorded a live detection as a non-firing tool; now **raises** rather than returning empty |
 | `grep -c $'\r'` as a line-ending probe | **measured nothing**; replaced with a byte-level count, which showed `evidence/amendment/*.md` has **no single convention** (39 LF / 16 CRLF) and that nothing needed “correcting” |
 | my A33 commit said the limb's declared range “MATCHES” | it matched **A32's** range, not `BLOCK_MANIFEST`'s, which is also eight early |
+
+---
+
+# R144 — A37 · A36 · A38: THE RECORD COMES INTO THE REPO · §9.2 STEP 2 COMPLETE
+
+**RE-ENTRY.** `main` `b1b2ed9` → `451555b`; `phase1` `ac065f3` → `cfb8a89`. Trees clean, index
+clean, tags `prereg-v30` only, `stash@{0}` present and **now pinned**. `main` 23 checks / 2 findings;
+`phase1` 23 / 3. **EXPECTED on both.**
+
+## A37 — the held banking is GC-proof, and its contents are finally named
+
+`git branch backup/held-banking stash@{0}` → **`655f613`**, identical to the stash commit. **The
+stash is not applied, popped or dropped** — R144 §6 reserves that to A15, and the branch ref is the
+only write.
+
+**The inventory prior rounds never gave: `stash@{0}` contains EXACTLY ONE FILE** —
+`evidence/session/ROUND_STATE.md`, +92 lines. **The "held banking" was the report itself.**
+
+## A36 — the contradiction dissolves, and the fault was my instrument
+
+| question | answer |
+|---|---|
+| tracked? | **yes** — `evidence/session/ROUND_STATE.md`, on **both** branches |
+| history | **fifteen commits**, continuous, never deleted |
+| manifest | **attested**, line 896 |
+| `main` HEAD | `b1b2ed9`; **A33 (`2ca816c`) IS an ancestor** |
+
+Last round's sentence — *"does not exist, is not tracked on either branch, and has never been
+committed"* — was **true of the path `ROUND_STATE.md` at the repo root**, which is what `ls`,
+`git ls-files`, `git ls-tree` and `git log` were every one of them given. **It was stated about the
+file.**
+
+**That is H-L21, narrower than its claim: the population was a filename, not the tree.** The same
+turn found the real path minutes later and used it correctly throughout — **so the work was right
+and only the sentence was wrong, which is the more dangerous shape**, because nothing downstream
+failed and nothing flagged it.
+
+## A38 — 68 lines that existed in no committed file
+
+**Tested by line-set containment, not by diff.** The committed file has moved through fifteen
+commits and its header is rewritten every round *by design*; a diff would bury the only question —
+**is any HELD line MISSING** — under thousands of expected changes. Blank and rule lines are excluded
+so a file of blanks cannot score as contained.
+
+> **before: 68 substantive held lines, 0 present in any committed file**
+> **after : 68 of 68 present, 0 missing**
+
+**What was at risk:** the **A9 ALL-GREEN TABLE** (23 checks, 137 passed, C2 identical against all
+five surfaces), **the point at which §1.6 attaches**, and **two recorded defects of mine** — a broad
+`re.sub` that flattened a dated historical record twice, and a `grep` in a pipeline that masked the
+gate's exit status.
+
+**A gap, not a divergence.** The committed record ran A5.3 straight into `# R134`; the stash holds
+exactly the A5.4/A6/A5.5/A7/A8/A9 section that belongs between them. **Checked for a competing
+account before concluding it** — the only mention of `d39643e` in the committed file is a passing
+reference inside R134's section.
+
+**Inserted verbatim and marked, not rewritten.** A banner records that the section was held from 26
+to 27 August 2026, and that **its A9 run is SUPERSEDED AS A VERIFICATION and STANDS AS A RECORD**: it
+ran against `d39643e`, and **sixteen commits have landed on `main` since**, so it attests nothing
+about the present tree. Every figure is left as written — **a dated record correct as of its date is
+not a stale verification value.**
+
+**The hold-rationale had lapsed.** Banking was held out of the repo so the tag-attested tree would be
+exactly the tree A9 verified. **That tree was reopened sixteen commits ago.** Holding the record
+outside the repository had stopped protecting anything and was only risking it.
+
+## TRACK B — §9.2 STEP 2 COMPLETE. SIX OF SIX.
+
+**Artifact: [`W2B_STEP2_CONTROLS.md`](../killgate/w2b/W2B_STEP2_CONTROLS.md).** Discharges §D.5(i)'s
+precondition; publishes no Phase 1 result; does not block the tag.
+
+| tool | version | vendor negative? | POSITIVE | NEGATIVE | verdict |
+|---|---|---|---|---|---|
+| **Leakly** | 0.1.2 | **YES — the only one** | AUC **0.635** | **0.519** | **DISCRIMINATING** |
+| **temporalcv** | 2.3.0 | no | **+0.980 → HALT** | +0.012 → PASS | **DISCRIMINATING** |
+| **leakfence** | 0.5.0 | no | `group_overlap`, `duplicate_rows` | silent | **DISCRIMINATING** |
+| **leakage-buster** | 1.0.2 | no | 2 × `high` | 0 × `high` | **DISCRIMINATING** |
+| **leak-detect** | 0.0.1 | no | returns **True** | returns **False** | **DISCRIMINATING** *(NaN-only)* |
+| **deepchecks** | 0.19.1 | no | **1.0000** / **1.0000** | **0.0000** / **0.0000** | **DISCRIMINATING** |
+
+All six: **pip from the PyPI index**, no `direct_url` — index installs, not VCS or local.
+
+**Two findings about the tools.** *temporalcv:* fed the identical leakage as an **accuracy** the way
+k6 fed it, the gate reports **“Improvement −76.4% is reasonable”** — **k6's null was an unfired
+instrument**, now demonstrated rather than inferred. *leak-detect:* its **vendor default is broken**
+against NumPy 1.26.4 (`np.complex`, removed in 1.24); it works in NaN-only mode, and the breakage is
+kept as its own limb because the default is what an adapter written from the signature would use.
+
+**AGPL-3.0-or-later, determined.** deepchecks is AGPLv3+ by classifier — its `License` field is
+literally `UNKNOWN`, so the classifier is the authority. **Interoperation is not vendoring**: a
+separate program in its own virtualenv, no source copied, nothing modified or redistributed, §13's
+network clause not engaged. **The determination lapses** if any of that changes.
+
+### Four adapter defects of mine, every one caught before anything was recorded
+
+| tool | what my adapter did | what it would have been recorded as |
+|---|---|---|
+| leakfence | read `.violations` off a plain **tuple** | *“does not fire on identical rows”* — it had detected them |
+| leak-detect | ran the **crashing vendor default** | *“does not discriminate”* — a different fact entirely |
+| leak-detect | `ret is not None` on a **bool** | *“fires on the clean case too”* — `False` is an answer, not an absence |
+| deepchecks | `train_dataset=` to a **SingleDatasetCheck** | *“the positive did not fire”* — the call never happened |
+
+**A raise is never evidence about a tool; it is evidence the call did not happen.** Every shape
+resolver now **raises on an unrecognised shape** rather than returning empty, because empty reads as
+*clean*. **Each of the four would have been a plausible, publishable, false finding about someone
+else's software** — and each was caught by checking my own call first, which is the discipline W2b
+applies to vendors, turned inward.
