@@ -509,9 +509,7 @@ the signed tag object itself (`git cat-file tag prereg-v30`). It stays **untrack
 ```
 Pre-registration v30a — Data Leakage Auditor (class C amendment, PREREG §0.2.1)
 
-Amends PREREG.md §6.2 — reference AUC (l.445), contamination availability class
-recording locus (l.450), sliced CI variant (l.451), criterion 3 (l.461) — and
-defines "waived" for §10.2's replacement-criterion floor.
+<the change list, one line, pasted from `v30a.changes.txt` — never retyped>
 
 SHA-256 of the registration documents and tooling as committed:
 
@@ -544,7 +542,22 @@ committed in a follow-up commit. The prereg-v30 tag never moves.
 ```
 
 **The six hash lines are the output of C2, pasted — never retyped, never re-derived, never
-reordered.** Two spaces between hash and path. Six lines, in the `FILES` order. The block's first
+reordered.**
+
+**The change list is the output of `evidence/amendment/a27_derive_changes.py`, pasted — never
+retyped.** Its authority is `v30a.changes.txt`, the way the hash lines' authority is
+`v30a.hashes.txt`. **Corrected at R140/A27, and this is why:** until then the change list was PROSE
+in this block, and it named three §6.2 changes — l.445, l.450, l.451 — that the file it hashes did not
+contain. Two of the three were applied at R139/A24; the third never existed as a clause and its
+element is effected by SC-2(e). **A hand-authored assertion beside a derived one drifts, and no gate
+asks.** The generator reads `prereg-v30:PREREG.md` against the applied file, so the list is true
+however many approvals accumulate — a list built from any single approval record would miss the
+changes the others made. **It states no numeral**: the count is read from the enumeration.
+
+*(Scope, recorded per R140/A27: §0.2.1's class table classifies what a MEASUREMENT may resolve about
+`PREREG.md` — its column is “Phase 1 may” and class C is “a class C amendment to this file”. It does
+not reach edits to this document, which is the procedure that produces the tag, not a registered
+object. This edit is §187's ordinary case: a stale verification value corrected at its source.)* Two spaces between hash and path. Six lines, in the `FILES` order. The block's first
 five lines are the v30 block's paths in the v30 order; only the values change.
 
 ```sh
