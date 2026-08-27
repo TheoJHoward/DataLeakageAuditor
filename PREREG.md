@@ -1428,7 +1428,11 @@ A finding on a unit whose leakage is entirely inherited from an upstream labelle
 at R80/§87. SC-12's INSERTION POINT names this pointer as applied text and said "The operative
 pointer text is Y3 §6.3's" — so the applied text lived outside the source of record and this file
 was INCOMPLETE. Transcribed verbatim from `Y3_WAIVED_ENTRY_CONDITION.md` §6.3, which now cites this
-block as the single normative copy. Same correction DELTA R37/D1 made for SC-12(w)'s own limb text.)*
+block as the single normative copy. **Corrected at R140/A30:** this said the same correction was
+made for SC-12(w)'s own limb text. **It was not.** SC-12(w)'s limb — the entry condition itself — is
+in `SCHEMA_SET_FINAL.md` and **not in this file**; the `SC-12` record's clause span stops short of it,
+so it was never offered for approval. The pointer above is unaffected and is transcribed verbatim as
+stated.)*
 
 > **`waived` is defined in §10.2 (v30a).** That definition governs the word wherever it appears, including this table, and **SC-12(w) registers the condition under which a detector-case may be reported in this state.** Neither is restated here.
 
@@ -1540,7 +1544,7 @@ Per §7.7, coverage states are `not_applicable`, `unsupported`, and `could_not_r
 
 <!-- v30a SC-6b — INSERT_AFTER -->
 
-**INSERTION TEXT — §8.2, after `PREREG.md` line 915 (after marker M2 where placed) — S2(i).**
+**INSERTION TEXT — §8.2, after `PREREG.md` line 915 — S2(i).** *(Corrected at R140/A30: this read “after marker M2 where placed”. **Marker M2 was drafted and never applied**, so the conditional was describing a neighbour that does not exist; the insertion sits directly after line 915's not-run states. **The clause below is unchanged**, and so is what it governs.)*
 
 > **`unscored` — §7.7 (v30a) [SC-6] — is governed by this section's closing sentence as well.** It
 > is neither a pass nor a not-run: this section's boundary sentence does not reach it, and its entry
@@ -2016,9 +2020,13 @@ registered sites and never diverge on it.)*
 
 <!-- v30a SC-8b — INSERT_AFTER -->
 
-**INSERTION TEXT — §11 item 8, after `PREREG.md` line 1054 (item 7) — S2(ii).** *(Item 8 is inserted
-as the list's eighth item; the item-3 marker and SC-8's revised M2 follow the list; the line-97 marker is
-placed after line 97 in §0.2.1.)*
+**INSERTION TEXT — §11 item 8, after `PREREG.md` line 1054 (item 7) — S2(ii).** *(Item 8 is
+inserted as the list's eighth item — that part stands. **Corrected at R140/A30:** this note also said
+“the item-3 marker and SC-8's revised M2 follow the list; the line-97 marker is placed after line 97 in
+§0.2.1”. **None of those three markers was applied**; all three were drafted and left behind. The
+substance they carried is not lost — **item 8's own body below states it**, naming item 3's three names and
+§0.2.1 line 97's “both” and superseding each as the set. What is missing is a marker AT those two sites,
+so a reader arriving at line 97 or at item 3 is not told. **Item 8 itself is unchanged.**)*
 
 > 8. **The freeze, and the hash set that carries it — v30a.** What freezes at an amended
 > registration's tag, in what form, and what may not happen to it afterwards is stated in §6.2
