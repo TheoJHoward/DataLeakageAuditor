@@ -187,6 +187,43 @@ completed 15 cohorts before an unrelated defect ended it; those 15 were
 snapshotted and compared against the parallel result, **15/15 identical, cohort
 for cohort.**
 
+### 6.1 REPRODUCIBILITY — the run that produced this document could not be repeated, and now can
+
+**The defect, found at R134 by reading the instrument rather than running it.** All three call
+sites seeded the shuffle with `abs(hash((frame, column, strategy))) % 2**31`. CPython salts
+`hash()` for `str` with `PYTHONHASHSEED`, which is random per process unless pinned, and nothing in
+this repository pinned it — demonstrated by running the same expression in three processes and
+getting `1115184579`, `226073761`, `588577123`. **So this document's run drew permutations nobody
+recorded, and the four workers each drew from a different salt.**
+
+**Nothing it produced was invalid.** Any permutation is a legitimate shuffle, and the identity case
+is caught explicitly as `control_artifact`. What was missing is reproducibility — and that matters
+asymmetrically. **A detection stands whatever the seed:** a perturbation that moved the output
+proves the pipeline reads that column, and a second draw cannot unprove it. **A silence does not.**
+"Nothing moved under one unrecorded draw" is not a claim anyone can re-check, and §39 requires a
+silence to carry the domain that produced it — of which an unrecorded seed is part.
+
+**The seed is now derived from SHA-256, and the sweep was re-run in full under it.**
+
+| | recorded run | fixed-seed re-run |
+|---|---|---|
+| baseline digest | `d8712f163cf9dcb6…` | `d8712f163cf9dcb6…` |
+| cohorts fired / silent | 33 / 14 | **33 / 14** |
+| preserving records / valid | 433 / 422 | **433 / 422** |
+| promoted records / valid | 127 / 127 | **127 / 127** |
+| evidence events / PROVEN | 346 / 228 | **346 / 228** |
+| merged artifact sha256 | `1cdae81ea761bc86…` | **`1cdae81ea761bc86…`** |
+
+**The re-run reproduced `probe_b_merged.json` byte for byte.** No cohort changed classification; no
+silence flipped to fired; both traces resolved to the same state pair. **On this fixture the salted
+seed cost reproducibility and nothing else, and the numbers in this document stand exactly as
+reported.**
+
+That is a stronger statement than it looks, and also a narrower one: it is a fact about **this**
+fixture and **these** columns, not a licence to leave a stochastic instrument unseeded. Where a
+column has few distinct values, a draw that happens to be output-equivalent is possible in
+principle, and the only reason we can say it did not happen here is that the run was repeated.
+
 The merge refuses rather than warns on three conditions: shards disagreeing on
 the baseline, an incomplete shard, or a cohort covered twice or not at all. A
 dropped cohort would read downstream as `observed_silence` — a finding-shaped

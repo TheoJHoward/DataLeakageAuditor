@@ -2,20 +2,24 @@
 
 **Purpose (R36).** After compaction, re-orient from THIS file. Rewrite it every round.
 
-**CURRENT STATE: R134. Track A is ⛔ HALTED at A19″ on a derivation, not a question.** `main` is at
-`87054020278eca99a09164a4bb3e11bf20620878`, clean, tags `prereg-v30` only; `PREREG.md` is byte-exact
-at `0c8da19f237cd243…`; held banking is preserved in `stash@{0}`. Nothing has been committed,
-tagged, pushed or stamped. **`main`'s gate is 23 checks, RESULT FAIL** — `round_reconciliation`
-(D10), mechanism at RE-1 below, and it must be green before A17‴.
+**CURRENT STATE: R135. Track A is suspended below A20, and A20 is DONE and ⛔ HALTED.** `main` is at
+`87054020278eca99a09164a4bb3e11bf20620878`; `PREREG.md` is byte-exact at `0c8da19f237cd243…`; tags
+are `prereg-v30` only; held banking is preserved in `stash@{0}`. Nothing has been edited, staged,
+committed to `main`, tagged, pushed or stamped. **`main`'s gate is 23 checks, FAIL — one finding,
+D10 on `ROUND_STATE.md`, expected and recorded (RE-2).** Nothing signs against a failing gate.
 
-**Track A cannot advance past A19″ without an author ruling.** Three findings, any one of which is
-a halt on its own: the tag message names three §6.2 changes that are not in the file it hashes
-(F1); §7.7's detector-case coverage row is deleted and nothing re-registers it (F2); and the
-amendments block §1.1 asks me to insert asserts that no registered sentence is deleted (F2 again,
-from the other side).
+**A20 inverted the salvage question.** The applied `PREREG.md` is **byte-identical** to v30 with the
+approval record applied: **UNAPPROVED-APPLIED 0, APPROVED-MISSING 0.** Nothing was applied that
+nobody approved and nothing approved failed to land — so the defect is in the approval record, whose
+population is CLAUSES by its own statement, and every one of the 14 MARKER blocks was ineligible for
+it. Five deletions, four retaining nothing. A twelfth missing touch, `SC-12(w)`, not previously
+counted. The table is
+[`evidence/amendment/A20_DIFFERENTIAL_AUDIT.md`](../amendment/A20_DIFFERENTIAL_AUDIT.md).
+**The author rules salvage versus re-plan.**
 
-**Track B runs on branch `phase1` and waits on none of it.** `phase1` at `7e8b902`;
-`tests/phase1` 113 passed / 4 skipped, whole suite `tests/` 250 passed / 4 skipped.
+**Track B runs on branch `phase1` and waits on none of it.** `phase1` gate PASS 23;
+`tests/phase1` 136 passed / 4 skipped. B8's fixed-seed re-run reproduced `probe_b_merged.json` byte
+for byte; B9's fixture sweep is running.
 
 **THIS FILE IS THE REPORT.** Each item is banked here when it completes, before the next begins.
 A record that lives only in a chat message dies with the turn, and a turn that ends mid-item then
@@ -849,3 +853,109 @@ and the test failed for the right reason before it could become a claim.
 | `560ec2a` | the sharded B9 sweep and its merge — apparatus only, not yet run |
 
 `tests/phase1` **134 passed, 4 skipped**; gate **PASS 23**.
+
+---
+
+# R135 — A20 COMPLETE AND HALTED · B8-R REPRODUCED · B9-S RUNNING
+
+**Track A is suspended below A20 and A20 is done. Nothing edited, staged or committed to `main`.**
+`main` at `87054020278eca99…`, `PREREG.md` byte-exact at `0c8da19f237cd243…`, tags `prereg-v30`
+only, held banking preserved in `stash@{0}`.
+
+## RE-ENTRY — both gates, and where §0 was stale
+
+| | |
+|---|---|
+| `phase1` gate | **23 checks, PASS** |
+| `main` gate | **23 checks, FAIL** — expected, and now down to **one** finding |
+| §0 said `phase1` is at `5e3aabb` | it is at `e194d82` — §0 was written before the comparator commit |
+
+**`main`'s D10 is one file, not three.** `ROUND_STATE.md` alone: `phase1` adopted `main`'s
+`DEFERRED_ITEMS.md` and `COMMIT_ACCOUNTING.md` verbatim last round, so the work root now matches
+`main` on both, and only the round record — which this round rewrites again — differs. RE-2 settles
+as recorded.
+
+**`main`'s gate was run without a checkout**, by extracting `git archive main` to a scratch tree, so
+the three running sweep workers were not disturbed. That method has two artifacts of its own and
+they are named rather than reported as findings: `git archive` carries no untracked files, so four
+`.pytest_cache` entries show as missing; and the extracted tree is not a git repository, so D16's
+`git ls-files` cannot run. Neither is a fact about `main`.
+
+## A20 — ⛔ HALTED AND PRESENTED
+
+**The artifact is [`evidence/amendment/A20_DIFFERENTIAL_AUDIT.md`](../amendment/A20_DIFFERENTIAL_AUDIT.md).**
+Three read-only instruments, all committed: `a20_differential_audit.py`, `a20_block_classes.py`,
+`a20_artifacts.py`.
+
+**The headline inverts the salvage question.** The reconstruction — v30 with
+`PREREG_v30a_APPROVAL.diff` applied, every context and removal line verified against v30 first, 109
+checks — is **byte-identical to the applied `PREREG.md`**, `0c8da19f237cd243…` on both sides.
+
+| class | count |
+|---|---|
+| **UNAPPROVED-APPLIED** | **0** |
+| **APPROVED-MISSING** | **0** |
+| APPROVED-APPLIED | 15 hunks, 868/868 added lines present |
+| DELETED | 5, of which **4 retain nothing** |
+
+**Nothing was applied that nobody approved, and nothing approved failed to land.** The defect is not
+in the application; it is in the **approval record**, one layer back.
+
+**And the record set states its own population, which is the whole cause:** *"one record per
+**clause**, authored by reading `SCHEMA_SET_FINAL.md` PART 1"*, located by a `### SC-<id>` header and
+a `**THE CLAUSE.**` line. A MARKER block has neither. Derived: **MARKER blocks reaching the file,
+0 of 14. CLAUSE blocks reaching the file, 16 of 16.** The markers were not dropped — they were never
+eligible.
+
+**A twelfth missing touch, not previously counted: `SC-12(w)`.** The `waived` entry condition — *"a
+prohibition, and a closed list of licensed grounds with no members"* — is absent from `PREREG.md`,
+cited from three applied lines, and its text sits **outside** the `SC-12` record's declared clause
+span. `verify_schema_records.py` digests the declared span and cannot see that the span stops short
+of the block it names.
+
+**The hash half of the describing artifacts is sound and is the half a gate checks.** `tagmsg.txt`
+v30a block: 20 enumerated, **20 match**. `README.md` v30a block: 20 enumerated, **20 match**.
+`README.md`'s v30 block mismatches 4 of 5 and is a **dated record of what v30 was**, correct as
+written. The defect is entirely in the prose: **21 of 25 enumerated claims do not hold**.
+
+## B8-R — THE FIXED-SEED RE-RUN REPRODUCED THE ARTIFACT BYTE FOR BYTE
+
+Four workers, fixed SHA-256 seed, merged into a separate path so the banked record could not be
+clobbered — a hazard fixed before it fired, since `merge_probe_b.py` had an overridable input
+directory and a hardcoded output.
+
+**`probe_b_merged.json` sha256 `1cdae81ea761bc86…` — identical.** Same baseline, 33 fired / 14
+silent, 433/422 preserving, 127/127 promoted, 346 events, 228 PROVEN. **No cohort changed
+classification and no silence flipped.** On this fixture the salted seed cost reproducibility and
+nothing else, and B8.3's numbers stand exactly as reported. `B8_PROBE_B_RESULTS.md` §6.1 now carries
+the defect, the re-run and the comparison, so the document's silences carry the seed as part of
+their domain.
+
+**Narrower than it looks:** that is a fact about these columns, not a licence to leave a stochastic
+instrument unseeded. A draw that happens to be output-equivalent is possible where a column has few
+distinct values, and the only reason we can say it did not happen here is that the run was repeated.
+
+## B9-S — RUNNING
+
+Both detectors against `fixture_corrected`, four workers, launched as soon as B8-R released the
+cores. Still in the `valueread` phase. **Known gap in the harness:** it logs once per detector
+rather than per cohort, so a long run reports nothing for a long time. That is a reporting hole, not
+a correctness one, and it is recorded rather than fixed mid-run.
+
+## INSTRUMENT DEFECTS FOUND AND CORRECTED THIS ROUND
+
+Every one would have put a false row into A20's tables. Full list with consequences in §8 of the
+audit artifact.
+
+| defect | what it would have reported |
+|---|---|
+| diff parser read the file's trailing newline as a context line | the applier halted on a mismatch **it had itself created** |
+| block probe used each block's longest line | four `SC-` clauses ABSENT that are demonstrably present |
+| block probe did not exclude text v30 already had | H29 PRESENT on **v30's own text** — the inference R135 forbids |
+| cross-tab conclusion was half-checked | *"every clause is present"* printed while the column read 12 of 16 |
+| claim table scored raw verdicts | the tag message's one **true** §6.2 claim listed as false |
+| artifact audit read one tree and hashed another | `phase1`'s pre-growth README reported as `main`'s — six files where there are twenty |
+
+**D2.1 was violated twice this round**, both times a heredoc running a file-writing patch script —
+once before R135 restated the rule and once after. Both caught and rewritten through the Write tool;
+`test_written_files_are_intact.py` found no damage.

@@ -219,6 +219,7 @@
 # ============================================================================
 # END
 
+18edf7aac29d92083dc0d884f5c8a4061205f9de1447e76db5e911c0a3317928  amendment/A20_DIFFERENTIAL_AUDIT.md
 aa435f61d0a50b87285f2a0d616cf0593277abbcc1469867ee607d945cab6443  amendment/_CI_GATE_RESULT_moved.md
 93bf1270a0ddb4538782bb17747142c9a58e93b2902081a39ec0794f9e80a740  amendment/_completion_claims.py
 5ca6ffa601ac9c9cdc8ccebd48364be2b7152da1bdfe2d8167d0b9bb2127ff9f  amendment/_D1_D8_apply.py
@@ -353,6 +354,9 @@ d56453545ddc7062d508309d5bf41a9753bad4779c3b7c8d5fb6fafe6eb5bd3d  amendment/_X5_
 75c44b19c7bfd2f3af347267ea9195ca87ce24d347e0d2376e2d0cb5c9dc11b0  amendment/_X5_hunks_v2.json
 8b1cf98f6ca60f0da0cc78c269853cf354d9d1371a6ab12b68e233fbdd9d05a5  amendment/_X5_selfcheck.py
 b8faab3a99c9301026b4d4d0b4ddd9c1c8943c9b4cef9d2bc56c66802e0655fb  amendment/_Z4_scrub_practices.py
+28c5cca3d39f3b86d21f49f7ce5492cc20ad5d8aeaf1b24d45a08365f06bb999  amendment/a20_artifacts.py
+b2b41d06363a0eb4d22f9e8625af1c20d2566d4d71b949307bd80ffb52d3bc40  amendment/a20_block_classes.py
+c2cac42592a14a855c03be520deeaacfceca3856655d9f89ad60bef51493997f  amendment/a20_differential_audit.py
 6289cd460d5e5201c2fbc5a9fbd8517367f46db554ea7a8039337d3612bf95b6  amendment/apply_v30a.py
 93377cc5f7e579be7a443cf446dd64cd2346d715421ec24b96f2022dbdb537ac  amendment/APPROVAL_PACKAGE.md
 7ccc2a65f15f99e3e576d2da5f43ed813abe05c8f66ef4238cf6b7102e6865d2  amendment/BLOCK_MANIFEST.md
@@ -862,7 +866,7 @@ d6242e9bbf9f5ce103845e5bf6ecc94d622be1d6254c0e04f6fae0bbc4840d1c  p5probe/p5_pro
 a0d171656eb992b24c51a8a6a6628706e8a492415b41a1db0ec94bac54d4c5c8  phase1/PHASE1_PLAN.md
 48c07420392aba5f3b0e4197bccc9c4ce88631e7aa5a49b46de9f76ae9622023  phase1/REPO_READINESS.md
 1cdae81ea761bc865fd749addf0af9830b7510cbcf5e08d5d0beada646aad1a6  phase1/probe_b_merged.json
-6bf7bfd1f6f2b8127e76f25c16df99383d71f17b0611b3b3a787ec0439f96b05  phase1/B8_PROBE_B_RESULTS.md
+ba3e8a801d5cabbee32cd2bacb223e3cbecf7714682823dc82f3ab630d5d5bcf  phase1/B8_PROBE_B_RESULTS.md
 ba19551b03700019b220f435e8e7adffd0f740cbe29f0eb4fe0538204ec9c336  session/attack_checker.py
 38dfc1133d7b707b5f2ccd9668de5782495ea98e9e3fbc7ebcc47fadb0d1d525  session/ia.txt
 90fb3b39a5fb06c94c680a30545b3703e84a501ce1307c16f7087533e36e68df  session/main_paper.txt
@@ -870,7 +874,7 @@ a8aa4ebbc197489c467dffc74a19d71f2f6ad81f0934353ead052ecfe3b70410  session/ots_up
 382ca49236db7b5ae3034d830723b00390107acda5f3484ec224ed67cdb0ed93  session/probe.py
 62230fb83791ed0283cba114fc95aa1e24e33e722b24861ba3d6a1e2554fb4d1  session/probe2.py
 70ba22584655c7f97b3e4085d1ad0e21d5c13309507da878c0f45c09665d2536  session/probe_suppression.py
-1e9be33b0fddf3d345f6c2ef9667c941dc1e455c38b18c0154bf8230bb04ca5e  session/ROUND_STATE.md
+9d30b341bed8898bcb3015f1a3a9ac2fcb6406ba986e159d0641fcf3fcd1fe8c  session/ROUND_STATE.md
 6603d216c4d11ab3cf33efa44150de07e47a2428c641441cd405e030c7b06af4  work/base_checker.txt
 01c2b2f8e82b29ea14d6479d0f8a78b80161d3d3c8ba532c08b77dee654de5e0  work/load.py
 4d9c160864c86d3fd43a556cbaad3c7dfa761f407a298ac07278bf83daa71b37  amendment/block_reachability_check.py
