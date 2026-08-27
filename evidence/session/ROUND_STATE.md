@@ -1702,3 +1702,149 @@ correct refusal, wrong question. Changed to assert the file is unchanged **acros
 which is what the script actually promises and cannot be satisfied by editing a number.
 
 **Next: A30, A31, A27, A17‴.**
+
+---
+
+# R140 — A30 · A31 · A27. ⛔ A31 HALTS: §8.2 IS NOT APPROVED CONTENT, AND ITS ITEM 1 IS FALSE.
+
+**`main` at `1950afb`. `PREREG.md` at `15baa648cb723b79…`, 2089 lines.** Gate 23 checks, FAIL — the
+two C2-blocked findings only. Manifest **703 OK / 0 failed**. Tags `prereg-v30` only. `stash@{0}`
+preserved. **A17‴ has NOT been run** — see the halt below.
+
+---
+
+## A30 — five corrected, three sent to the author
+
+Each of the eight was tested one at a time against §1.1's sentence — *"does nothing but make a false
+existence claim true, or removes the claim, changing no substantive rule"* — and the split is
+**five to three**, not eight to zero.
+
+**Applied — five, all FRAMING NOTES, none operative.** Each correction names in its own text the
+rule it leaves untouched, so a reader of `PREREG.md` can see what did not change.
+
+| site | said | now |
+|---|---|---|
+| SC-6b's insertion note | *"after marker M2 **where placed**"* | M2 was drafted and never applied; the conditional hedged its own anchor instead of failing on it. **The clause below and what it governs are unchanged.** |
+| SC-8b's insertion note | names the item-3 marker, SC-8's revised M2, the line-97 marker | **none was applied.** The substance survives in item 8's own body; what is missing is a marker **at** those sites, so a reader arriving at line 97 is not told. **Item 8 itself is unchanged.** |
+| SC-12p's provenance note | the same correction was made for SC-12(w)'s limb | **it was not.** That limb is in SSF and not in this file; the `SC-12` record's span stops short of it. **The pointer above it is untouched.** |
+
+**Not applied — three, all inside OPERATIVE text, and they are TWO questions, presented whole
+rather than half-fixed:**
+
+- **§7.7's deleted row.** SC-6b's clause ranges over *"every detector-case coverage state **that
+  row** carries"*, and the row is gone. Making the claim true means **re-registering a row**;
+  removing it means **rewording an operative clause**. Either is a rewrite.
+- **SC-12(w)'s absent limb**, cited twice: SC-12p's pointer *"SC-12(w) registers the condition…"*
+  and §8.3's *"whose (w1) prohibits the state outright"*. Landing the limb — **it is approved
+  content, inside SSF** — and deleting both citations are both substantive, and they are **one**
+  question.
+
+Anchors located, never offset: every line moved by six at A24. Register form checked — the
+corrections use the file's dominant curly-quote style, **360 against 59**.
+
+---
+
+## A31 — ⛔ HALTS, and on two independent grounds
+
+**Artifact: [`A31_AMENDMENTS_BLOCK.md`](../amendment/A31_AMENDMENTS_BLOCK.md)** — the block
+assembled and presented in full. **Nothing applied.**
+
+### Ground 1 — §8.2 is not approved content
+
+Authority was established **before** anything was assembled, because assembling first and asking
+afterwards is how an artifact becomes its own argument. `APPROVAL_RECORD.md` §140 records what the
+author approved on **25 August 2026**, and it is a **closed list of three**:
+`PREREG_v30a_APPROVAL.diff` (`c5d89db1…`), `SCHEMA_SET_FINAL.md` (`32358f6d…`), and the `PREREG.md`
+base blob. **Both hashes verify byte-exact on disk.**
+
+`BLOCK_MANIFEST.md` l.141 names three components, from two documents:
+
+| component | source | in the approval? |
+|---|---|---|
+| **§8.2, the block proper** | `K2_AMENDMENT_LEDGER.md` | **NO** |
+| §AB | `SCHEMA_SET_FINAL.md` | yes |
+| §AC | `SCHEMA_SET_FINAL.md` | yes |
+
+**The largest of the three is not approved content.** §AB and §AC are; the block that would carry
+them is not. The block would need a **fresh approval**, exactly as the two §6.2 diffs got one.
+
+### Ground 2 — §8.2 item 1 is FALSE of the file it would describe
+
+Item 1 is the first thing the block asserts: *"**No registered sentence is deleted from this
+file.**"*
+
+**Derived from the two files, not from any approval's removal list** — because A24 superseded two
+further lines under a second approval, so a population taken from the first would miss them.
+
+| v30 line | retained? |
+|---|---|
+| 445 | **RETAINED** at l.575, marked |
+| 450 | **RETAINED** at l.583, marked |
+| 1022 | **RETAINED** at l.1688, marked |
+| **461, 855, 929, 1030** | **NOT RETAINED** |
+
+**Seven superseded sentences: three retained with a marker, four not.** *(R140 §1.2 put it at two
+and four; that missed v30 l.1022, which A20b had established was retained verbatim with a marker.
+The figure is three and four.)*
+
+**The two clauses A24 applied are exactly the pattern item 1 describes** — both retain verbatim,
+both marked. Four earlier deletions do not. **Landing §8.2 as drafted would put a false claim about
+the amendment into registered text, false in the way the block exists to prevent.**
+
+**Three options are laid out in the artifact and NONE is chosen**, per §1.2: land it and disclose
+the discrepancy; retro-retain the four so item 1 becomes true; or do not land it, in which case the
+four block citations join A30's correction class and the two absences become disclosed deviations.
+
+**What the block would resolve, of A31's six: FIVE.** The four block citations and the missing block
+itself. **Not** the missing `**Amendment status:**` line — that is §8.1, a separate hunk at line 6,
+not assembled here.
+
+---
+
+## A27 — the change list becomes derived
+
+The hash lines beside it were already derived — *"the output of C2, pasted, never retyped"*, with
+`v30a.hashes.txt` as their authority. **The change list had none.** It now has
+**`v30a.changes.txt`**, generated by `a27_derive_changes.py`, and §3.5 carries a placeholder
+instead of prose.
+
+**Derived from the two files, not from an approval record.** R140 offered `SCHEMA_RECORDS.json` or
+the approval diff; both are now too narrow **in the opposite direction** — A24 superseded two
+further lines under a second approval, so a list built from the first would omit changes that ARE
+there. The pair of files is true however many approvals accumulate.
+
+> Amends PREREG.md: §6.2 Acceptance fixture: line 445, line 450, line 461; §7.7 Completion, and the
+> two levels of state: line 855; §8.3 Three assertions: line 929; §10.1 Phase 0 kill gate —
+> objective: line 1022; §10.2 Other kill / pause criteria: line 1030.
+
+**No summarisation.** A first version named each change by its first bolded phrase, which truncated
+§10.1's mid-word (*"…and is silent on fi"*) and reduced §10.2's to an arrow. **A hand-summary — even
+a generated one — is a second description of text that already exists, and it drifts.** The list
+names the **surface**; a reader who wants the sentence fetches it with `git show
+prereg-v30:PREREG.md`, which the message already tells them.
+
+**Scope determination, recorded.** §0.2.1's class table classifies what a **measurement** may
+resolve about `PREREG.md` — its column is *"Phase 1 may"* and class C is *"a class C amendment to
+**this file**"*. It does not reach `CEREMONY_COMMANDS.md`, which is the procedure that produces the
+tag, not a registered object. **The edit is §187's ordinary case: a stale verification value
+corrected at its source.**
+
+**`tagmsg.txt` is not regenerated here** — C2f compares it against C2's own output, and C2 is
+A17‴'s.
+
+---
+
+## WHY A17‴ HAS NOT RUN
+
+A17‴ produces the commit that becomes the tag target. **A31's halt means the registered text may not
+be final:** if the author chooses option 2 — retro-retain the four deletions so item 1 becomes true —
+that is a further `PREREG.md` edit, and the loop would have to run again over a superseded result.
+Running it now would produce a tag target likely to be discarded. **Held for the ruling.**
+
+## INSTRUMENT NOTES
+
+| | |
+|---|---|
+| the reconciler's `PREREG.md` tripwire pinned a literal hash and halted at A24 | correct refusal, wrong question — **changed to assert the file is unchanged across its own run**, which is what the script promises and cannot be satisfied by editing a number (§2.2) |
+| the reconciler still carried a one-shot line re-pin | **removed, not re-pointed.** A one-shot fix inside a re-runnable script becomes a landmine when the thing it fixed is superseded |
+| two indirect `python -c` patches misfired on quote style | switched to the Edit tool. The same class as D2.1, one layer up: a patch that spells the text it edits can misspell it |
