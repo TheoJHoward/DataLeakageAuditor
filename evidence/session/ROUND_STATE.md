@@ -518,6 +518,115 @@ reword was available and was taken.
 
 ---
 
+---
+
+> **CONSOLIDATED 27 AUGUST 2026 FROM `stash@{0}` (A38). THIS SECTION WAS NEVER COMMITTED.**
+>
+> **It was written on 26 August 2026 and held in the stash from that day until this one** — the one
+> git ref that is unpushed, droppable and invisible to every branch. It is restored here verbatim
+> and unedited; **68 lines of it existed in no committed file**, including the A9 all-green table,
+> the point at which §1.6 attaches, and two defects of my own.
+>
+> **THE A9 RUN BELOW IS SUPERSEDED AS A VERIFICATION AND STANDS AS A RECORD.** It ran against
+> `d39643e18fc5a6e1ffb26ebaa75e7d20ee1eb4ca` (26 Aug 2026). **Sixteen commits have landed on `main`
+> since**, so nothing below attests the tree that exists now — A17‴ re-runs A9 against the tree that
+> exists then. Every figure below was true of its own date and is not rewritten: **a dated record
+> correct as of its date is not a stale verification value.**
+>
+> **The hold-rationale had lapsed.** Banking was held out of the repo so the tag-attested tree would
+> be exactly the tree A9 verified. That tree was reopened sixteen commits ago, so holding the record
+> outside the repository had stopped protecting anything and was only risking it.
+
+## A5.4 / A6 / A5.5 / A7 / A8 / A9 — THE CEREMONY PASSED
+
+**A5.4 — the limb-table exemption stands, and the question is now settled
+empirically rather than by judgement.** The check requires every path of the set
+to appear in a window **in `FILES` order**. `FILES` leads with the `prereg-v30`
+five so the v30 block stays a verbatim prefix of the v30a one; the limb table
+leads with limb 1, because its argument is that the set is what three stated
+rules produce rather than a list someone chose. **No layout satisfies both**, so
+the objection is structural and the exemption is not avoidable by reshaping.
+
+**A6 — branch 2.** §3.5's format block carries substitutable fields only for the
+hash slots; the sentence citing §6.2 by line is fixed prose. The registered format
+was not edited. §146.2's frame was extended to reach the tag message and says so
+in terms — the tag message cannot carry its own caveat, so the frame is stated in
+a file the same tag hashes, which is what makes it as firmly attested as the
+message it qualifies.
+
+**A5.5 / A7 — the final five repaired.** Three D8 citations re-anchored by
+locating, never by offset. The README and the declaration pointer written from
+`v30a.hashes.txt` only.
+
+**A8 — commit `d39643e18fc5a6e1ffb26ebaa75e7d20ee1eb4ca`**, 34 files,
++4124 −217.
+
+### A9 — THE ONE PASS, ALL GREEN
+
+| check | result |
+|---|---|
+| `--stage prereg` | **exit 0, PASS, 23 checks** |
+| `pytest tests/registration` | **137 passed** |
+| manifest, listed→disk | **687 OK** |
+| manifest, D9 both directions | **exact, 683 files** |
+| C2 vs `v30a.hashes.txt` | IDENTICAL |
+| C2 vs `tagmsg.txt` | IDENTICAL |
+| C2 vs the README block | IDENTICAL |
+| C2 vs the working tree | IDENTICAL |
+| C2 vs the commit | IDENTICAL |
+| C5b, fresh baseline `3257f077` | every inherited commit accounted; `d39643e` is the ceremony's own |
+| tags | `prereg-v30` only |
+
+**§1.6 attaches from this point.** The registration is closed to pre-tag fixes;
+any later finding is a `DEVIATIONS.md` disclosure.
+
+### Two defects of mine this round, both caught and repaired
+
+**A dated historical record was corrupted twice by the same broad substitution.**
+`re.sub` over the whole pointer file rewrote every historical hash to the current
+one and edited a 2026-08-21 entry's byte count — while MISSING the current block,
+whose field is written with two spaces. Caught by reading the file rather than
+the gate; the gate cannot see it, because a flattened history is internally
+consistent. Reverted from HEAD both times. The replacement edits three anchored
+fields only and asserts afterwards that the chain still holds more than one
+distinct hash — the cheap invariant that catches a flattening substitution. The
+unsafe section was excised from the script that carried it, in the tree as well
+as the scratchpad, so it cannot run again.
+
+**A `grep` in a pipeline masked the gate's exit status**, reporting `EXIT = 0`
+when the gate had failed. Caught within the same step by re-running the gate
+alone. Every exit status reported above is the gate's own.
+
+---
+
+## A0 (this round) — THE CEREMONY WAS ALREADY PASSED
+
+**Entering state differed from the plan's premise.** The plan described `main` at
+`3257f077` with nothing committed and A5.4's outcome unknown. In fact the A8
+commit landed and A9 ran green in the preceding round.
+
+| | |
+|---|---|
+| `main` | **`d39643e18fc5a6e1ffb26ebaa75e7d20ee1eb4ca`** |
+| tags | `prereg-v30` only — nothing tagged, pushed or stamped |
+| the tag target's tree | **gate PASS** — verified by stashing the working-tree edit and re-running |
+
+**A5.4's uncertain script: determined by READING, not by re-running.** The four
+enumeration exemptions carry 11, 8, 3, 6 and 4 paths — the restated values, not
+the six-path-era ones. The gate agrees: the four D6 findings that script existed
+to clear are absent, and the committed tree passes 23 checks. **The script
+succeeded; no re-run was needed or attempted.**
+
+**The one red finding was mine and is not a registration defect.** Banking A9
+into this file after the commit changed its bytes, and the pinned scratchpad
+holds a copy of it that no longer matched — so the round-reconciliation check
+fired on the report about the work rather than on the work. Synced.
+
+**This round's banking stays UNCOMMITTED until after the tag**, so the tree the
+tag attests is exactly the tree A9 verified. It lands in a follow-up commit, the
+same shape as the OpenTimestamps receipt, which cannot be inside the commit it
+attests.
+
 # R134 — RE-ENTRY, A19″ DERIVED AND HALTED, TRACK B
 
 ## RE-ENTRY — §0 WAS STALE IN TWO PLACES, AND ONE OF THEM IS A FINDING
