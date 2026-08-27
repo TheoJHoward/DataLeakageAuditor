@@ -1848,3 +1848,103 @@ Running it now would produce a tag target likely to be discarded. **Held for the
 | the reconciler's `PREREG.md` tripwire pinned a literal hash and halted at A24 | correct refusal, wrong question — **changed to assert the file is unchanged across its own run**, which is what the script promises and cannot be satisfied by editing a number (§2.2) |
 | the reconciler still carried a one-shot line re-pin | **removed, not re-pointed.** A one-shot fix inside a re-runnable script becomes a landmine when the thing it fixed is superseded |
 | two indirect `python -c` patches misfired on quote style | switched to the Edit tool. The same class as D2.1, one layer up: a patch that spells the text it edits can misspell it |
+
+---
+
+# R141 — A32 ASSEMBLED AND ⛔ HALTING · §9.2 STARTED, SIX COMPARATORS REACHABLE
+
+**`main` at `26d4856`. `PREREG.md` unchanged at `15baa648cb723b79…`, 2089 lines** — A32 applies
+nothing. Gate 23 checks, FAIL — the two C2-blocked findings only. Manifest **705 OK / 0 failed**.
+Tags `prereg-v30` only. `stash@{0}` preserved.
+
+## A32 — one fresh approval diff, four independently approvable hunks
+
+**Artifact: [`A32_PROPOSED_DIFF.md`](../amendment/A32_PROPOSED_DIFF.md). NOT APPLIED.**
+
+| # | hunk | act | source | source sha256 |
+|---|---|---|---|---|
+| 1 | §AB — the 816/830 duplicated-authority record | **EXTRACTED** | SSF ll.1632–1679 | `32358f6d…` **= the approved hash** |
+| 2 | §AC — the seven `PREREG.md` disclosures | **EXTRACTED** | SSF ll.1687–1737 | `32358f6d…` **= approved** |
+| 3 | SC-12(w)'s limb | **EXTRACTED** | SSF ll.1145–1181 | `32358f6d…` **= approved** |
+| 4 | §7.7's row — operative + retention | **EXTRACTED, weaker provenance** | `X5_FINAL_PREREG_DIFF.md` | `a19ef629…` **not approved** |
+
+**SSF was verified equal to the approved hash before anything was extracted from it.**
+
+### Hunk 4 is flagged, not smoothed
+
+`X5_FINAL_PREREG_DIFF.md` is not one of the three approved artifacts — **and its own finding O-11
+says the operative row *"is nowhere quoted verbatim in `SCHEMA_SET_FINAL.md`"* and was recovered
+from a scratch applied file**, adding in terms: *"the author should not have to reconstruct
+operative registered text from a scratch artifact in order to sign it."* **That is exactly what
+hunk 4 asks**, and the hunk says so at the top.
+
+### Placement — no container invented
+
+§AB and §AC were anchored inside §8.2's block, which does not land. **They do not need a new one.**
+`SCHEMA_SET_FINAL.md` l.77 fixes the application order — *"SC-12 (revised) → SC-13a → SC-13b →
+SC-13c → **§13c-P → §AB**"* — and §13c-P is the §7.2.1 line-816 pointer, **which is applied**.
+`BLOCK_MANIFEST.md` row 36 puts §AC immediately after §AB. **A32-placement's first branch fires**,
+which matters: §8.2's item 1 is exactly the kind of claim a container must not reintroduce.
+
+### Two extraction failures on the way, both refusals rather than guesses
+
+- **`BLOCK_MANIFEST`'s §A ranges cover apparatus as well as applied text.** §AB's range opens on a
+  change note. SSF §0.2 draws the line — only THE CLAUSE, SUPERSESSION MARKER and INSERTION TEXT
+  enter `PREREG.md` — so the extractor narrows to the blockquote. Taking everything between the
+  first and last quote marker swept §AB's tail into §AC's range, and **the contiguity check
+  refused**; the fix was to take the run carrying the expected text.
+- **Anchoring §AB on §13c-P's paragraph would have placed it INSIDE a fenced code block.** The
+  pointer lives in a fence. The anchor is the **block**, located from its marker and closed at its
+  fence — never by counting lines.
+
+Anchors, all match count 1: §13c-P's block ends **l.1346**; §7.7's table header **l.1385**; SC-12's
+clause heading **l.1776**.
+
+**A third option is named, not drafted.** The orphaned `| **Strategy diagnostic** |` row at l.1423
+renders as a paragraph; landing 4a leaves the table well-formed with **one** row. Moving it back
+would repair the structure — a hunk nobody asked for, so it is named rather than written.
+
+---
+
+## §9.2 — STARTED. Step 1 done: the comparators are reachable.
+
+**Artifact: [`W2B_API_INVENTORY.md`](../killgate/w2b/W2B_API_INVENTORY.md), on `phase1` at
+`0885766`.**
+
+§9.2's first question is not *"what did the tools report"* but ***"can they be called at all."***
+W2b exists because k6's nulls were uninterpretable, and **a control written against an API that has
+moved fails for the wrong reason — which is precisely what would be mistaken for a tool that does
+not fire.** So each package was imported **in its own venv** and its surface read, rather than
+trusting k6's two-round-old runners or memory.
+
+**All six runnable comparators import; every entry point k6 used is intact.**
+
+| venv | tool | version |
+|---|---|---|
+| `general` | `leakage-buster` | 1.0.2 |
+| `general` | `leakfence` | 0.5.0 |
+| `general` | `temporalcv` | 2.3.0 |
+| `general` | `Leakly` | 0.1.2 |
+| `ld` | `leak-detect` | 0.0.1 |
+| `dc` | `deepchecks` | 0.19.1 |
+
+Versions match `k6/env/VERSIONS.txt`, captured 14 Aug 2026 **before results were read**.
+
+### Two findings that change the plan
+
+- **Leakly ships BOTH fixtures** — `load_example_leakage_config()`, which W2b names, **and
+  `load_example_nonleakage_config()`**. A vendor-supplied **positive *and* negative pair** is
+  stronger than a positive alone: **a tool that fires on both is not discriminating, and only the
+  pair shows it.**
+- **`temporalcv.gates` is a module, and `gate_suspicious_improvement` is the gate k6 got wrong** —
+  W2b defect #7 records it was fed an **accuracy** where the formula expects an **error** metric, so
+  a mapped gate silently never fired. **The control must pass an error metric and must be seen to
+  fire.**
+
+**This establishes reachability ONLY.** Nothing here says any tool detects anything. W2b step 2 —
+each adapter demonstrated to fire on a documented positive **through the same invocation path the
+real run uses** — is next, and until it passes for a tool, **that tool's acceptance-fixture result
+is `uninterpretable`, not a null.**
+
+**Not runnable, and not re-litigated:** `leakr` and `bioLeak` need R; `leakage-analysis` needs
+`souffle`; `LeakageDetector` is a VS Code extension. All four recorded at k6.
