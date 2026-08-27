@@ -2,42 +2,39 @@
 
 **Purpose (R36).** After compaction, re-orient from THIS file. Rewrite it every round.
 
-**CURRENT STATE: R146. The sixteen lines are APPROVED and applied. Track A now halts at A36b —
-§13c-P is presented and awaits the author's read.** `main` is at `09d4ca0`; `phase1` at `5295089`.
+**CURRENT STATE: R147. Track A halts at A36b — §13c-P is presented and awaits the author's read.
+It is the only thing between here and A17‴.** `main` is at `e5b099b`; `phase1` at `5295089`.
 **`PREREG.md` is at `fcacebb231438e31…`, 2228 lines.** Tags `prereg-v30` only;
-`backup/held-banking` `655f613` pins the stash. Nothing tagged, pushed or stamped.
+`backup/held-banking` `655f613` pins the stash.
 
-**A34 — five corrections applied, anchor-keyed.** The four block citations now read *“the v30a
-recorded-defect block in §7.2.1”*, and A30's provenance note — true when written, falsified by hunk
-3 — now says the limb **was applied and is in the file**. **The obvious anchor was refused:** quoting
-§AB's headline in four citations would have put the phrase in the file **five times**, and D8
-resolves an anchor only when it occurs **once**. The fix would have destroyed the uniqueness that
-makes the citation work.
+**A36b's presentation now LEADS with the consequence, and there are TWO.** *(1)* The pointer's
+closing sentence records the line-816/830 relationship *“in the v30a **amendments block**”* — a
+container ruled never to land, and the exact phrase A34 removed from all four operative sites one
+commit earlier. *(2)* **NEW this round:** the fenced specimen at l.1344 is **byte-identical** to the
+text being applied, so landing it without removing the `INSERT AFTER` apparatus puts the same
+paragraph in the file **twice** — and any future citation anchored on it would then resolve to two
+lines, which is exactly the failure A34 spent a correction class avoiding. **Three choices are laid
+out; none is taken.**
 
-**A34b — the same trap, avoided in one place and walked into two paragraphs later.** The note quoted
-SC-12(w)'s limb heading verbatim, taking `(w) ENTRY CONDITION FOR` from 1 occurrence to 2. A34's
-guard checked only §AB's anchor, so nothing failed. **A guard that pins one invariant does not pin
-its neighbour.** Repaired; both anchors now asserted.
+**Added this round, absent from the first artifact:** the insertion anchor **located and asserted
+unique** (`PREREG.md` l.1336, match count 1); the **markdown-structure check before any write plan**
+— top-level paragraph, blank above and blank below, fenced apparatus below stays balanced; and
+**what applying makes true** — §AB's assertion at l.1374, false today, to be verified by reading
+rather than assumed.
 
-**⛔ A36b HALTS — and it halts on a collision, not on the extraction.** §13c-P's pointer **is** in SSF
-at the approved hash and is extracted verbatim (SSF ll.1612–1616; `BLOCK_MANIFEST` declared
-1604–1608, **eight early** — extracting inside the declared range would have come out **empty**).
-**Its last sentence cites “the v30a amendments block” — the exact phrase A34 removed from all four
-operative sites one commit earlier.** Applying it verbatim puts that false citation back into
-registered prose. **Three ways out are set down and none is chosen.**
+**A34 and A39 are DONE** (`f1d66bf`, `09d4ca0`). A34's four citations are anchor-keyed by naming the
+container, never by quoting the unique string; the self-inflicted collision on the limb's heading was
+caught by its own sweep and repaired. A39 fixed **eight** ranges, all exactly +8, and **refused
+sixteen** it could not derive.
 
-**A39 — eight manifest ranges fixed, sixteen refused.** All eight were exactly **+8**. **The first
-version wrote invented numbers that looked derived** — it expanded rows declaring a sub-range (row
-1a's 150–153 became 150–159, swallowing row 1b) and short-circuited on row 32. Reverted; **length
-preservation is now the acceptance test**, and a number the instrument cannot derive is one it must
-not write.
+**`main`'s gate: 23 checks, FAIL — the two C2-blocked findings. `phase1`'s adds D10**, which clears
+at X1's post-push rebase.
 
-**`main`'s gate: 23 checks, FAIL — the two C2-blocked findings.** **D10 earned its keep this round:**
-it failed on `main` after A39 because the pinned work root held `BLOCK_MANIFEST.md` at its pre-A39
-hash; synced and re-gated to **PASS**.
-
-**Track B: §9.2 step 2 COMPLETE (six of six).** Step 3's preconditions are established — the fixture
-builder is reachable and **byte-identical to the committed copy** — but **the runs have not started**.
+**Track B: §9.2 step 2 COMPLETE (six of six).** `gate_suspicious_improvement` **was seen to fire** on
+an error metric — MAE 0.0163 against a 0.8173 baseline, improvement **+0.980 → HALT**. **Leakly is
+the only tool that supplied a vendor negative**; for the other five both limbs were constructed.
+**Step 3 has begun**: the fixture reads, and both sides are being materialised one at a time per
+SC-7(d).
 
 **THIS FILE IS THE REPORT.** Each item is banked here when it completes, before the next begins.
 A record that lives only in a chat message dies with the turn, and a turn that ends mid-item then
@@ -2531,3 +2528,89 @@ Phase 1 code and no ruling this round reaches it.
 
 **The comparator runs themselves have not started.** Step 3 is a 2–3 hour block and is reported as
 not begun rather than half-recorded.
+
+---
+
+# R147 — A36b's PRESENTATION LEADS WITH THE CONSEQUENCE · B-2 BEGINS
+
+**RE-ENTRY.** `main` `6b30e30` → `e5b099b`; `phase1` `5295089`. Trees clean, tags `prereg-v30` only,
+`backup/held-banking` == `stash@{0}`. `main` 23 checks / 2 findings; `phase1` 23 / 3. **EXPECTED.**
+
+**§0 was stale in three places**, established by derivation: `main` was at **`6b30e30`**, not
+`f1d66bf`; **A36b's presentation was produced** at `09d4ca0`; and **A39 was done** in the same commit
+— eight ranges fixed, sixteen refused.
+
+## A36b — the consequence now leads, and a second one was found
+
+**The requirement was met in substance last round and not in form.** The consequence was stated in
+the chat and in the artifact, but it sat in the artifact's **fourth section**. R147 §3 puts it first,
+and that reordering surfaced something the first version had missed.
+
+**Consequence 1 — the pointer cites a container ruled never to land.** Its closing sentence records
+the line-816/830 relationship *“in the v30a **amendments block**”*. §8.2 never lands, and that phrase
+is the one A34 removed from all four operative sites at `f1d66bf`. **Applying verbatim puts it back
+into registered prose one commit after it came out.**
+
+**Consequence 2 — NEW, and it follows from R147 §2.1's own rule.** The fenced specimen at l.1344 is
+**byte-identical** to the text being applied. Landing the paragraph without removing the
+`INSERT AFTER` apparatus leaves **an operative copy and a fenced copy** — so any future citation
+anchored on that text resolves to **two** lines. **That is precisely the failure A34 spent a whole
+correction class avoiding**, arriving from the opposite direction: not a citation that quotes an
+anchor, but an application that duplicates one. **Whether the apparatus is removed is named as a
+separable question and is not proposed** — it is scaffolding, but removing it is a deletion.
+
+| choice | what it costs |
+|---|---|
+| apply verbatim, disclose | faithful to approved content; **prose then cites a container that does not exist** |
+| apply with the citation corrected | file stays self-consistent; **no longer verbatim extraction**, so it needs its own approval, as the sixteen did |
+| do not apply | nothing false added; **§AB's assertion at l.1374 stays false**, joins HELD |
+
+**Added, and absent from the first artifact:** the insertion anchor **located and asserted unique**
+(l.1336, match count 1); the **structure check before any write plan** — the anchor is a top-level
+paragraph, blank above and blank below, so an inserted paragraph cannot merge into either neighbour
+nor turn a following rule into a setext heading, and the fenced apparatus below stays balanced; and
+**what applying makes true** — §AB's l.1374 assertion, to be verified by reading rather than assumed.
+
+## TRACK B
+
+### B-1 residual — the two facts owed to the chat
+
+**`gate_suspicious_improvement` WAS seen to fire on an error metric.** MAE **0.0163** against a
+persistence baseline of **0.8173** → improvement **+0.980 → HALT**, *“Model 98.0% better than
+baseline (max: 20%)”*. The honest limb returned **+0.012 → PASS**. And the defect-7 limb, fed the
+identical leakage as an **accuracy** the way k6 fed it, returns **PASS at −0.764** — *“Improvement
+−76.4% is reasonable.”*
+
+**Leakly is the ONLY tool that supplied a vendor negative.** For temporalcv, leakfence,
+leakage-buster, leak-detect and deepchecks, **both limbs were constructed here.**
+
+> **A false fact was caught before it reached the chat.** The readout script asked
+> `d.get("vendor_negative", None)` and printed a `None` as *“vendor pair used”* — but the key is
+> simply **absent** from Leakly's and temporalcv's result JSON, because those two controls were
+> written before the field existed. **A missing key is not a value**, and defaulting it to a
+> favourable reading would have reported temporalcv as vendor-backed when both its limbs are mine.
+> Corrected against the committed coverage table, which is the authority.
+
+### B-2 — §9.2 step 3 has begun
+
+**The fixture reads.** `read_inputs("zc", "2025-01")` completes in **46.4s** and returns four frames
+— `trades` 397,457×17, `snap` 1,262,191×24, `magg` 464,199×6, and the 8,272,769-row MBO frame the
+adapter deliberately never opens.
+
+**`b2_materialise.py` builds both sides ONE AT A TIME**, per SC-7(d): build, write, drop the
+reference, `gc.collect()`, then the other side. The order is recorded, and the script **halts if the
+two sides come out byte-identical** — which would mean it had built one side twice and no downstream
+comparator result would mean anything.
+
+**Two instrument defects on the way, both mine:**
+
+- **`sys.path` for a script is not `sys.path` for `python -c`.** `leakaudit.contract` imports
+  `protocol.runtime_reference` from the repo root; an inline `-c` probe succeeded because `-c` puts
+  the cwd on the path, which **made the missing entry invisible until it ran as a file**. Both the
+  root and `src` are now added explicitly.
+- **The harness's “completed” notification tracked the `nohup &` wrapper, not the job.** The wrapper
+  exits immediately; the python process was still running at 1.3 GB resident. **A wrapper's exit
+  status is not its child's**, and reading the log alone would have shown an empty file and looked
+  like silent failure.
+
+**The comparator runs themselves are not done.** Step 3 is reported as **in progress**, not complete.
