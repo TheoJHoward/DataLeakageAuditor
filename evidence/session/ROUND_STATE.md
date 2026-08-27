@@ -2,39 +2,39 @@
 
 **Purpose (R36).** After compaction, re-orient from THIS file. Rewrite it every round.
 
-**CURRENT STATE: R147. Track A halts at A36b — §13c-P is presented and awaits the author's read.
-It is the only thing between here and A17‴.** `main` is at `e5b099b`; `phase1` at `5295089`.
-**`PREREG.md` is at `fcacebb231438e31…`, 2228 lines.** Tags `prereg-v30` only;
-`backup/held-banking` `655f613` pins the stash.
+**CURRENT STATE: R148. A17‴ IS ALL GREEN. THE TAG TARGET IS
+`48604491956ff4320819d72205733909676482fb`, and A10 — the author's signature — is the only thing
+left before the tag exists.** `main` is at that commit; `phase1` at `d0ad24f`. **`PREREG.md` is at
+`fcacebb231438e31…`, 2228 lines, and was not touched this round** — R148 §1.1 closed that surface,
+and both repair scripts assert its hash is unchanged across their own run.
 
-**A36b's presentation now LEADS with the consequence, and there are TWO.** *(1)* The pointer's
-closing sentence records the line-816/830 relationship *“in the v30a **amendments block**”* — a
-container ruled never to land, and the exact phrase A34 removed from all four operative sites one
-commit earlier. *(2)* **NEW this round:** the fenced specimen at l.1344 is **byte-identical** to the
-text being applied, so landing it without removing the `INSERT AFTER` apparatus puts the same
-paragraph in the file **twice** — and any future citation anchored on it would then resolve to two
-lines, which is exactly the failure A34 spent a correction class avoiding. **Three choices are laid
-out; none is taken.**
+**⭐ THE GATE PASSES. `check_registration.py --stage prereg` exits 0 — 23 checks, RESULT: PASS.**
+The two C2-blocked findings that stood since R139 are **cleared by repair, not by exemption**:
+`README.md` l.60 and `f4/DECLARATION_POINTER.md` carried a pre-A24/A29 declaration hash. They were
+one site and two — l.60 sits **inside** the v30a hash block, so rewriting the block from
+`v30a.hashes.txt` repaired it. **pytest: 137 passed.**
 
-**Added this round, absent from the first artifact:** the insertion anchor **located and asserted
-unique** (`PREREG.md` l.1336, match count 1); the **markdown-structure check before any write plan**
-— top-level paragraph, blank above and blank below, fenced apparatus below stays balanced; and
-**what applying makes true** — §AB's assertion at l.1374, false today, to be verified by reading
-rather than assumed.
+**C2 over the grown set: 20 lines**, the count read from the `FILES` line and never stated as a
+literal. Three hashes moved since the stale `v30a.hashes.txt`, which predated the amendments —
+`PREREG.md` `0c8da19f`→`fcacebb2`, `check_registration.py` `392bab83`→`bdd64bd7`, the declaration
+`3a579015`→`79357d77`.
 
-**A34 and A39 are DONE** (`f1d66bf`, `09d4ca0`). A34's four citations are anchor-keyed by naming the
-container, never by quoting the unique string; the self-inflicted collision on the limb's heading was
-caught by its own sweep and repaired. A39 fixed **eight** ranges, all exactly +8, and **refused
-sixteen** it could not derive.
+**A9 compared C2 against FIVE surfaces, not four** — a tag points at a **commit**, so the committed
+tree is included: `v30a.hashes.txt`, `tagmsg.txt`, the README block, the working tree and the HEAD
+commit are **identical, 20 of 20, entry by entry and by count**. Manifest three directions: **723 OK
+/ 0 failed, 0 missing, 0 unlisted**. C5b by SHA: **11 inherited, 11 accounted, 0 unaccounted**.
 
-**`main`'s gate: 23 checks, FAIL — the two C2-blocked findings. `phase1`'s adds D10**, which clears
-at X1's post-push rebase.
+**`tagmsg.txt` regenerated and C2f GREEN** — change list from `v30a.changes.txt`, hashes from
+`v30a.hashes.txt`, the signing-key block carried verbatim by anchor because a key fingerprint is a
+value no script should retype.
 
-**Track B: §9.2 step 2 COMPLETE (six of six).** `gate_suspicious_improvement` **was seen to fire** on
-an error metric — MAE 0.0163 against a 0.8173 baseline, improvement **+0.980 → HALT**. **Leakly is
-the only tool that supplied a vendor negative**; for the other five both limbs were constructed.
-**Step 3 has begun**: the fixture reads, and both sides are being materialised one at a time per
-SC-7(d).
+**Two of my own defects were caught before they mattered**, both recorded: **A9 went red first on a
+defect in the CHECK, not the manifest** — two directions of one check disagreeing was itself the
+signal; and **the first A17‴ commit message was built with `printf`, whose `\u` escapes this shell
+does not expand**, so four lines carried a literal `§`. **D2.1's hazard reached the commit message.**
+Amended before any tag or push.
+
+**⛔ WAITING ON THE AUTHOR: A10.** Nothing else on Track A is outstanding.
 
 **THIS FILE IS THE REPORT.** Each item is banked here when it completes, before the next begins.
 A record that lives only in a chat message dies with the turn, and a turn that ends mid-item then
@@ -2614,3 +2614,88 @@ comparator result would mean anything.
   like silent failure.
 
 **The comparator runs themselves are not done.** Step 3 is reported as **in progress**, not complete.
+
+---
+
+# R148 — A17‴ ALL GREEN. THE TAG TARGET IS `4860449`. A10 AWAITS THE AUTHOR.
+
+**RE-ENTRY.** `main` `cf18df5` → `4860449`; `phase1` `d0ad24f`. Trees clean, tags `prereg-v30` only,
+`backup/held-banking` == `stash@{0}`. **§0 was accurate in every particular this round.**
+
+## The ceremony file warns against its own use — so the blocker was checked, not assumed
+
+`CEREMONY_COMMANDS.md` opens **"⛔ BLOCKED. DO NOT RUN ANY COMMAND IN THIS FILE."** *A source that
+warns against its own use is not a source*, so every blocker was derived against the current tree
+rather than read off the table:
+
+| | dated state (2026-08-13) | derived now |
+|---|---|---|
+| **Blocker 1** — Phase 0 routing | needs an author statement | **CLEARED** — branch (b) recorded 25 Aug 2026; "C5 is unblocked on this ground" |
+| **B1** — the amendment does not exist | `PREREG.md` byte-identical to v30 | **RESOLVED** — `fcacebb2` ≠ `f0a8f001` |
+| **B2** — `DEVIATIONS.md` 0 bytes | NOT DONE | **still 0 bytes** — re-sequenced to A15, where it is unfrozen |
+| **B3** — no `H-35` ledger entry | NOT DONE | **still absent** — re-sequenced to A15 |
+| **B4** — README has no v30a block | NOT DONE | **block exists; its hashes were stale** — filled this round |
+| **B5** — manifest verifies | re-verify at stage time | **723 OK / 0 FAILED** |
+
+**B2 and B3 are the two the delta re-sequences to A15** rather than clearing here, and that is
+recorded rather than glossed: `CEREMONY_COMMANDS.md` still calls each "independently sufficient to
+stop the ceremony." Under R148 they land after the tag, when both files are unfrozen.
+
+## A5 → C2 → repair → tagmsg → commit
+
+**A5 gate, run twice — before C2 and again before the commit.** All 20 members in the index, staged
+bytes **byte-identical** to the working tree, `git diff --stat` empty over the set. This matters
+because **C2 reads the INDEX and C2f compares `tagmsg` against C2's own output** — so both agree
+while both are wrong if index and tree have drifted.
+
+**C2: 20 lines.** Three moved. **The repairs took their values from `v30a.hashes.txt` only** — which
+is exactly what the README's own marker demands: *"FILLED AT CEREMONY TIME FROM v30a.hashes.txt. DO
+NOT TRANSCRIBE."*
+
+**The ceremony file's own `C2h-1` snippet was NOT run.** It asserts the hash file carries **six**
+lines; the set grew to twenty at A5, so the assertion is stale and **would halt on correct input**.
+It is also a shell heredoc, which D2.1 forbids for file content. The rule it encodes was
+implemented instead.
+
+**`C2h-2`'s Phase 0 sentence was re-derived, not carried** — no detector implementation exists on
+`main` (0 files under `src/leakaudit`); Phase 0 partly run; prior art signed off at H-34; the
+cross-tool comparison ran 14 Aug 2026 and does not satisfy §9.2; §9.2 and the licence check are
+Phase 1 entry obligations. README already stated all four correctly, so it was **verified rather
+than rewritten**.
+
+## A9 — five surfaces, and it went red first on the instrument
+
+| surface | result |
+|---|---|
+| `v30a.hashes.txt` | 20 lines — C2's own output |
+| `tagmsg.txt` | **IDENTICAL, 20 of 20** |
+| README block | **IDENTICAL, 20 of 20** |
+| working tree | **IDENTICAL, 20 of 20** |
+| **HEAD commit** | **IDENTICAL, 20 of 20** |
+
+**The fifth surface was added deliberately.** A tag points at a commit; a hash set matching the index
+but not the committed tree would attest something the tag does not contain.
+
+**A9's first run was RED, and the defect was in the check.** The manifest deliberately covers four
+repo-root files with `../` prefixes; my direction-2 comparison matched raw strings against an
+enumeration of `evidence/` alone, so all four read as MISSING — while **direction 1 had already
+resolved the same paths and reported zero failures**. *Two directions of one check disagreeing is
+itself the signal*, and it pointed at the instrument, not the manifest. Paths are now resolved.
+
+**C5b by SHA, not by count:** baseline `d39643e` is an ancestor; **11 inherited, 11 accounted, 0
+unaccounted, 0 accounted-but-not-inherited.** The 25 commits after the baseline are the ceremony's
+own — *a commit can never account for its own hash*, the same reason the OTS receipt needs a
+follow-up commit.
+
+## D2.1's hazard reached the commit message
+
+**The first A17‴ commit was built with `printf`, whose `\u` escapes this shell does not expand.**
+Four lines carried a literal `§` where a section sign belonged, and the subject read
+`A17‴`. **Earlier messages this session survived only because they were pure ASCII** — the rule
+was being obeyed by luck, not by construction. Amended before any tag or push, with the message
+authored through the file-write tool, which is what D2.1 has said all along.
+
+## TRACK B — untouched this round
+
+§9.2 step 3 stands where R147 left it: **one interpretable run of six**, no discharge table, the
+three adapter defects named in `W2B_STEP3_INTERIM.md`. B-2′ resumes in the wait for A10.
