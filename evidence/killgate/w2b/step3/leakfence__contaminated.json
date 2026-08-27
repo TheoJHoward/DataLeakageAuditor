@@ -1,0 +1,19 @@
+{
+  "tool": "leakfence",
+  "side": "contaminated",
+  "target": "fwd_move_ticks_5s",
+  "time_col": "timestamp",
+  "source": "C:/Users/ttbea/AppData/Local/Temp/claude/C--Users-ttbea-OneDrive-Desktop-MBO-2025-4mon--2026-01/33e8c843-30fa-4bfb-aa9f-814c77bdb2e6/scratchpad/b2_inputs/acceptance_zc_2025-01_contaminated.csv",
+  "rows": 338159,
+  "cols": 87,
+  "status": "ran",
+  "result": {
+    "split": "chronological 80/20 by row order",
+    "n_violations": 0,
+    "violations": [],
+    "finding": false,
+    "mapping": "a non-empty Violation list is a finding"
+  },
+  "summary": "finding=False",
+  "seconds": 6.5
+}

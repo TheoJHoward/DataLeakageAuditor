@@ -1,0 +1,21 @@
+{
+  "tool": "temporalcv",
+  "side": "contaminated",
+  "target": "fwd_move_ticks_5s",
+  "time_col": "timestamp",
+  "source": "C:/Users/ttbea/AppData/Local/Temp/claude/C--Users-ttbea-OneDrive-Desktop-MBO-2025-4mon--2026-01/33e8c843-30fa-4bfb-aa9f-814c77bdb2e6/scratchpad/b2_inputs/acceptance_zc_2025-01_contaminated.csv",
+  "rows": 338159,
+  "cols": 87,
+  "status": "ran",
+  "result": {
+    "model_mae": 0.06688009486658468,
+    "baseline_mae": 0.031701907437527724,
+    "improvement_ratio": -1.10965523126265,
+    "status": "PASS",
+    "message": "Improvement -111.0% is reasonable",
+    "finding": false,
+    "mapping": "GateStatus.HALT on an ERROR metric is a finding"
+  },
+  "summary": "finding=False",
+  "seconds": 5.2
+}

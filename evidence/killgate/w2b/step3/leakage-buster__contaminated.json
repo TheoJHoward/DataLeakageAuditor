@@ -1,0 +1,26 @@
+{
+  "tool": "leakage-buster",
+  "side": "contaminated",
+  "target": "fwd_move_ticks_5s",
+  "time_col": "timestamp",
+  "source": "C:/Users/ttbea/AppData/Local/Temp/claude/C--Users-ttbea-OneDrive-Desktop-MBO-2025-4mon--2026-01/33e8c843-30fa-4bfb-aa9f-814c77bdb2e6/scratchpad/b2_inputs/acceptance_zc_2025-01_contaminated.csv",
+  "rows": 338159,
+  "cols": 87,
+  "status": "ran",
+  "result": {
+    "n_risks": 5,
+    "n_high": 0,
+    "high": [],
+    "all": [
+      "Detector error: target_leakage",
+      "KFold leakage risk (use GroupKFold)",
+      "Time parse errors",
+      "Time-awareness suggestion",
+      "CV strategy recommendation"
+    ],
+    "finding": false,
+    "mapping": "severity == 'high' is a leakage finding; medium/low are advisory"
+  },
+  "summary": "finding=False",
+  "seconds": 7.3
+}
