@@ -2,32 +2,34 @@
 
 **Purpose (R36).** After compaction, re-orient from THIS file. Rewrite it every round.
 
-**CURRENT STATE: R136. A20b is done; A21 ⛔ HALTS TWICE.** `main` is at
-`87054020278eca99a09164a4bb3e11bf20620878`; `PREREG.md` is byte-exact at `0c8da19f237cd243…`; tags
-are `prereg-v30` only; held banking is preserved in `stash@{0}`. Nothing has been edited, staged,
-committed to `main`, tagged, pushed or stamped. **`main`'s gate is 23 checks, FAIL — one finding**,
-D10 on `ROUND_STATE.md` (RE-2, expected). Nothing signs against a failing gate.
+**CURRENT STATE: R137. §1.1 halts, A23 disposes three clauses separately, A22 presents sixteen.**
+`main` is at `87054020278eca99a09164a4bb3e11bf20620878`; `PREREG.md` is byte-exact at
+`0c8da19f237cd243…`; tags are `prereg-v30` only; held banking is preserved in `stash@{0}`. Nothing
+has been edited, staged, committed to `main`, tagged, pushed or stamped. **`main`'s gate is 23
+checks, FAIL — one finding**, D10 on `ROUND_STATE.md` (expected). Nothing signs against a failing
+gate.
 
-**A20b:** the wrapping hypothesis was checked with a whole-file longest-common-substring derivation
-and does not hold — **one of five deletions retains its text** (v30 l.1022, verbatim, marked); four
-do not. **Exactly one live citation to deleted text: l.1544.** Four "line 461" citations and two of
-three deictics were read and cleared.
+**§1.1 ⛔ HALT — §3.2's Class B precedent does not reach §3.5's change list.** §0.2.1 defines class B
+as *"a value chosen where the form, search space, objective, denominator, and freeze point are
+already fixed"*; `FILES` fits and every gate iterates it, the change list fits none of it and **no
+gate reads it**. R137's independent §187 route — a verification value, fixed not disclosed — reaches
+the correction without stretching the precedent, and is the author's to take.
 
-**A21 halts twice.** (1) `tagmsg.txt`'s change-list is **hand-authored prose** in
-`CEREMONY_COMMANDS.md` §3.5's format block — no source to correct, R136's own halt branch.
-(2) **The defect reaches inside the twenty hashed files:** `AVAILABILITY_DECLARATION.md` discharges
-three §6.2 elements by citing `PREREG.md` clauses **that do not exist** — all three of its
-named-clause citations resolve to nothing, while all 67 `SC-n` citations resolve. Not a wording fix:
-either the clauses get applied, or three elements are re-dispositioned as undischarged.
-**The author rules.** Table: [`A20_DIFFERENTIAL_AUDIT.md`](../amendment/A20_DIFFERENTIAL_AUDIT.md).
+**A23 — three clauses, three different dispositions.** Reference AUC anchor (v30 l.445):
+**LOAD-BEARING** — the registered anchor is **unsatisfiable**, no horizon meets `0.957/0.675 ±0.010`
+on both sides. Contamination class locus (l.450): **LOAD-BEARING** — l.450 requires what **SC-9(b)
+forbids**. Sliced CI variant (l.451): **UNDETERMINED** — §D.2(ii) discharges it *"by amendment"*, and
+that amendment is the missing one. Two diffs **presented, not applied**:
+[`A23_PROPOSED_DIFF.md`](../amendment/A23_PROPOSED_DIFF.md),
+[`A23_THREE_CLAUSES.md`](../amendment/A23_THREE_CLAUSES.md).
 
-**Clean, and checked:** `README.md`'s v30a block carries **no** change list and its 20 hashes all
-match; `tagmsg.txt`'s 20 all match. Every defect this round is in prose no gate reads.
+**A22 — the applied-defect set is SIXTEEN, not six.**
+[`A22_APPLIED_DEFECT_SET.md`](../amendment/A22_APPLIED_DEFECT_SET.md). R137 §1.3 counts `l.1544`
+twice and omits seven; `l.1338` is cleared. **The author rules the whole set at once.**
 
 **Track B runs on `phase1` and waits on none of it.** `phase1` gate PASS 23, 145 passed / 4 skipped.
-**B8-R landed** — the fixed-seed re-run reproduced `probe_b_merged.json` byte for byte, no silence
-flipped, the provisional marking is discharged. **B9-S is DONE** —
-[`B9_DETECTOR_SWEEP_RESULTS.md`](../phase1/B9_DETECTOR_SWEEP_RESULTS.md). §9.2 is next.
+**B9-R is discharged** — [`B9_DETECTOR_SWEEP_RESULTS.md`](../phase1/B9_DETECTOR_SWEEP_RESULTS.md)
+meets R137 §4's checklist. **B8.3 carries no provisional marking to remove.** §9.2 is next.
 
 **THIS FILE IS THE REPORT.** Each item is banked here when it completes, before the next begins.
 A record that lives only in a chat message dies with the turn, and a turn that ends mid-item then
@@ -1292,3 +1294,153 @@ any of it, and two of the four halt.
 
 The last one is the sharpest instance yet of a guard passing for the wrong reason: it would have
 reported two of the three most serious findings of this round as clean.
+
+---
+
+# R137 — §1.1 HALTS · A23 DISPOSES THREE CLAUSES SEPARATELY · A22 PRESENTS SIXTEEN
+
+**Track A unchanged on disk.** `main` at `87054020278eca99…`, `PREREG.md` byte-exact at
+`0c8da19f237cd243…`, tags `prereg-v30` only, held banking in `stash@{0}`. Nothing edited, staged or
+committed to `main`.
+
+## RE-ENTRY
+
+| | |
+|---|---|
+| `phase1` gate | 23 checks, **PASS**; 145 passed / 4 skipped |
+| `main` gate | 23 checks, **FAIL — 1 finding**, D10 on `ROUND_STATE.md` alone, run in the real tree |
+| §0.4: *"B9-S — Done, results not reported"* | **stale.** Reported at `8121549`: [`B9_DETECTOR_SWEEP_RESULTS.md`](../phase1/B9_DETECTOR_SWEEP_RESULTS.md) |
+| §4: *"B8.3 — remove the provisional marking"* | **there is none to remove.** `grep -i provisional` on that file returns nothing; §6.1 records the defect, the re-run and the byte-identical comparison directly |
+
+**B9-R is discharged, and against R137 §4's own checklist:** fired/silent per cohort per detector
+with the moved features (§2 and `b9_merged.json`); silence accounting with domains (§3); `none`
+distinguished from `observed_silence` (12/2 and 10/5); reducers accepted every trace unchanged;
+the partition held at run time, **22 + 25 = 47**; not scored against the R9 map; and §4 names where
+the `aggressor_side` class would have been missed.
+
+---
+
+## §0.3's LINE NUMBERS WERE `phase1`'s. Re-derived on the authority.
+
+`main`'s declaration is **4,358** lines, last written at `8705402`; `phase1`'s is **4,027**, one
+round behind. My A21 finding came from the older copy. Re-derived against `main`:
+
+| §0.3 says | actually |
+|---|---|
+| decl l.822 | **l.860** |
+| decl l.994 | **l.1032** |
+| decl l.1089 → l.1051 | **l.1089** |
+
+**The finding is unchanged and now stronger: all three named-clause citations resolve to nothing,
+and all 71 distinct `SC-n` citations resolve** (61 on the stale copy). Same mixed-tree hazard as
+last round's README, caught by re-running rather than by trusting a number.
+
+---
+
+## §1.1 — ⛔ HALT. §3.2's Class B precedent does not reach §3.5's change list.
+
+R137's DECISION 1.1 is explicit: *"Do not stretch a precedent."* On reading, **§3.2's language is
+narrower.**
+
+**What §3.2 actually says**, in a parenthetical about a *declined* candidate file: *"Adding a file
+later is a Class B change — a parameter of a locked procedure — so this is reversible."* And it
+scopes the edit in the same breath: *"append it to the `FILES` line above **and to nothing else in
+this file**."*
+
+**What class B is**, per the authority — `PREREG.md` §0.2.1's table, not the ceremony file:
+*"**B — parameters under a locked procedure** — a value chosen where the **form, search space,
+objective, denominator, and freeze point are already fixed**."* The table's column is *"Phase 1
+may"*: it classifies what a **measurement** may resolve.
+
+**Why `FILES` fits and the change list does not:**
+
+| | `FILES` | §3.5's change list |
+|---|---|---|
+| form fixed | a path list | prose |
+| search space fixed | §11 item 8 defines the set | none stated |
+| objective fixed | hash every registered file | none stated |
+| freeze point fixed | C2, before the tag | none stated |
+| consumed by the procedure | **every gate iterates it — C2a, C2b, C2c, C2, C2e, C2f, C1c** | **no gate reads it** |
+| single authority | *"`FILES` above is the single authority for the set"* | none |
+
+**The property that makes `FILES` a parameter is exactly what the change list lacks.** Extending the
+precedent from a gate-iterated set-membership parameter to a hand-authored assertion is stretching
+it, and R137 forbids that.
+
+**The other route is available and does not depend on §3.2.** R137's own second argument stands on
+its own: the change list is *"an assertion about what the amendment did, inside the text the key
+attests"* — a **verification value** under §187, fixed rather than disclosed. **That ground reaches
+the correction without touching §3.2's precedent, and it is the author's to take.** Both readings
+are presented; neither is acted on.
+
+---
+
+## A23 — THE THREE CLAUSES, DISPOSED SEPARATELY
+
+**Artifacts: [`A23_THREE_CLAUSES.md`](../amendment/A23_THREE_CLAUSES.md) and, for the two that are
+load-bearing, [`A23_PROPOSED_DIFF.md`](../amendment/A23_PROPOSED_DIFF.md) — extracted verbatim from
+`PREREG_v30a_DIFF.md`, anchors located and match-counted, NOT APPLIED.**
+
+| clause | v30 line | verdict | why |
+|---|---|---|---|
+| Reference AUC anchor | 445 | **LOAD-BEARING** | the registered anchor is **unsatisfiable** on the fixture |
+| Contamination class locus | 450 | **LOAD-BEARING** | l.450 requires what **SC-9(b) forbids** |
+| Sliced CI variant | 451 | **UNDETERMINED** | §D.2(ii) discharges it *"by amendment"* — the missing one |
+
+**Clause 1 is not load-bearing by citation — nothing in `PREREG.md` reads the reference AUC** (the
+string occurs once, its own v30 bullet). It is load-bearing by arithmetic. Computed here, not
+quoted, against `0.957 / 0.675 ± 0.010`: 5s passes pre by 0.009244 and fails post by 0.256536; 10s
+fails both; 30s fails pre by 0.100581 and passes post by 0.004288. **No horizon satisfies both
+sides.** SC-2(d) registers the recomputation rule but subordinates *"any figure recorded in a prior
+report"* — and l.445's pair is in the **registration**, not a prior report, so on its face SC-2(d)
+does not retire it.
+
+**Clause 2 is two registered texts in conflict.** l.450 requires the class *"recorded in the
+manifest"*; `fixture_manifest_DRAFT.json` has **no key mentioning availability or contamination**;
+and **SC-9(b), which is applied**, forbids the fix outright: *"A manifest, a measurement record, a
+capture … **is not edited to carry a declaration, a decision, or an amendment**."* SC-9(b)'s next
+sentence names the remedy: *"the locus is **amended explicitly**."*
+
+**Clause 3 — R137's hypothesis does not hold as stated.** §D.2(ii) *does* do what SC-2(e) requires:
+it names the due event (*"the first CI run that exercises the padded slicer"*), declares the scoring
+rule ex ante, and freezes it at §D.1 item 5. **But it records itself *"DISCHARGED by amendment"* —
+and that amendment is the missing clause.** The disposition is not independent of the thing that is
+absent. Two readings are stated in the artifact; SC-2(e) says the move *is* an amendment, and
+SC-9(a) says a declaration *"creates no gate object"*. **The repository does not settle it, and
+H4's drafted text is deliberately NOT extracted** — presenting a diff for an element whose
+disposition is undecided would be answering the question by drafting.
+
+---
+
+## A22 — THE APPLIED-DEFECT SET: SIXTEEN, NOT SIX
+
+**Artifact: [`A22_APPLIED_DEFECT_SET.md`](../amendment/A22_APPLIED_DEFECT_SET.md). ⛔ Halts by
+construction.**
+
+R137 §1.3 enumerates six. The derivation finds **sixteen**, and §36.2 says report the set before
+fixing any of it. R137's list **counts l.1544 twice** — once by line, once as *"the one uncleared
+deictic"* — and **omits** the four amendments-block citations and the three `SC-12(w)` citations.
+
+| class | n | what |
+|---|---|---|
+| 0 | 2 | the amendments block and status line the rest of the set refers to |
+| A | 4 | citations of the absent block — ll.1849, 1853, 1915, 1917 |
+| B | 4 | clauses describing markers never placed — l.1415, l.2013 ×3 |
+| C | 1 | l.1544, citing the **deleted** §7.7 row |
+| D | 3 | ll.1425, 1427, 1565 citing `SC-12(w)`'s absent limb |
+| E | 2 | l.1380's zero-row table header, l.1417's orphaned row |
+
+**l.1338 is cleared and removed from the set.** Earlier rounds said *"the five citations at ll.
+1338, 1849, 1853, 1915, 1917"*; l.1338 cites `SC-13c(c2)`, which **resolves**. The class is four.
+
+**Every one was approved that way.** None is an application failure.
+
+---
+
+## INSTRUMENT NOTES
+
+| | |
+|---|---|
+| the A21 tool was re-run against `main` by pinning `REPO` | a scratchpad copy computes `REPO` from `__file__`'s grandparent and reads the wrong tree — the mixed-tree hazard, avoided deliberately this time |
+| pinning it through `python -c` produced a `unicodeescape` SyntaxError on `\U` in a Windows path | rewritten through the Write tool — D2.1's rule one layer up, in a script that patches a script |
+| the H3 extraction halted on `REPLACE with (4 lines):**` against H2's `.**` | it **halted** rather than matching something else, which is the right failure; the label is punctuation and the pattern should not be a spelling test |
