@@ -4,6 +4,10 @@
   "target": "fwd_move_ticks_5s",
   "time_col": "timestamp",
   "source": "C:/Users/ttbea/AppData/Local/Temp/claude/C--Users-ttbea-OneDrive-Desktop-MBO-2025-4mon--2026-01/33e8c843-30fa-4bfb-aa9f-814c77bdb2e6/scratchpad/b2_inputs/acceptance_zc_2025-01_contaminated.csv",
+  "restored_datetime_columns": [
+    "timestamp",
+    "ts_floor"
+  ],
   "rows": 338159,
   "cols": 87,
   "status": "ran",
@@ -11,7 +15,7 @@
     "top_pps": [
       [
         "fwd_move_ticks_10s",
-        0.009509551333798494
+        0.023129404315351154
       ],
       [
         "bid_price_1",
@@ -42,10 +46,10 @@
         0.0
       ]
     ],
-    "max_pps": 0.009509551333798494,
+    "max_pps": 0.023129404315351154,
     "finding": false,
     "mapping": "predictive-power score > 0.5 for any single feature"
   },
   "summary": "finding=False",
-  "seconds": 11.3
+  "seconds": 11.6
 }

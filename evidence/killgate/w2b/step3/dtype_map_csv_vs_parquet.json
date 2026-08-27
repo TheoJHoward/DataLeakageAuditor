@@ -1,0 +1,40 @@
+{
+  "contaminated": {
+    "n_cols": 87,
+    "changed": {
+      "timestamp": [
+        "datetime64[ns]",
+        "str"
+      ],
+      "hour_utc": [
+        "int32",
+        "int64"
+      ],
+      "minutes_since_open": [
+        "int32",
+        "int64"
+      ],
+      "ts_floor": [
+        "datetime64[ns]",
+        "str"
+      ]
+    }
+  },
+  "corrected": {
+    "n_cols": 87,
+    "changed": {
+      "timestamp": [
+        "datetime64[ns]",
+        "str"
+      ],
+      "hour_utc": [
+        "int32",
+        "int64"
+      ],
+      "ts_floor": [
+        "datetime64[ns]",
+        "str"
+      ]
+    }
+  }
+}

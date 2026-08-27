@@ -4,10 +4,14 @@
   "target": "fwd_move_ticks_5s",
   "time_col": "timestamp",
   "source": "C:/Users/ttbea/AppData/Local/Temp/claude/C--Users-ttbea-OneDrive-Desktop-MBO-2025-4mon--2026-01/33e8c843-30fa-4bfb-aa9f-814c77bdb2e6/scratchpad/b2_inputs/acceptance_zc_2025-01_contaminated.csv",
+  "restored_datetime_columns": [
+    "timestamp",
+    "ts_floor"
+  ],
   "rows": 338159,
   "cols": 87,
   "status": "unsupported",
   "reason": "question_not_posed_by_input",
   "detail": "Leakly detects by varying pipeline ORDER (where data_split sits); the acceptance fixture is a built table with no pipeline to reorder, so the tool's question is not posed by this input. Version 0.1.2.",
-  "seconds": 5.3
+  "seconds": 5.1
 }

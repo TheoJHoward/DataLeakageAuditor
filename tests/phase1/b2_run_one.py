@@ -26,6 +26,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import pathlib
 import sys
 import time
 import traceback
@@ -82,6 +83,21 @@ try:
     # packages would alter the environment the record attests. The inputs are
     # written as CSV instead, which every venv can read unaided.
     df = pd.read_csv(a.path, low_memory=False)
+    # DATETIME COLUMNS ARE RESTORED FROM A SIDECAR WRITTEN OFF THE PARQUET.
+    # The CSV round-trip turns `timestamp` and `ts_floor` into strings, and
+    # leakage-buster -- handed `time_col="timestamp"` -- reported "Time parse
+    # errors" for exactly that reason. A verdict that hinges on a dtype the
+    # transport changed is a verdict about the transport. The column list is
+    # DERIVED from the parquet, never hardcoded here.
+    side = pathlib.Path(a.path).with_suffix(".dtypes.json")
+    if side.exists():
+        spec = json.loads(side.read_text(encoding="utf-8"))
+        for c in spec.get("datetime_columns", []):
+            if c in df.columns:
+                df[c] = pd.to_datetime(df[c], errors="coerce")
+        rec["restored_datetime_columns"] = spec.get("datetime_columns", [])
+    else:
+        rec["restored_datetime_columns"] = None      # reported, never silent
     rec["rows"], rec["cols"] = int(df.shape[0]), int(df.shape[1])
 except Exception as e:                                  # noqa: BLE001
     finish(status="could_not_run", reason="input_unreadable",
@@ -100,8 +116,35 @@ if df[a.target].notna().sum() == 0:
 
 
 def run_leakage_buster():
+    """R148 §1.3 -- the tool's best shot.
+
+    The first sweep handed it the frame whole and its `target_leakage` detector
+    errored with "Input y contains NaN": `fwd_move_ticks_5s` is forward-looking,
+    so the tail rows have no label. **Rows with no target are dropped**, which is
+    ordinary preparation rather than a favour -- a row with no label cannot be
+    audited for label leakage, and leaving them in silenced the one detector that
+    matters. The count dropped is reported, because a comparison run on a
+    different row set than it claims is a different comparison.
+    """
     import leakage_buster.api as api
-    r = api.audit(df, target=a.target, time_col=a.time_col)
+    n0 = len(df)
+    # COMPLETE-CASE ON ALL 87 COLUMNS. NO FEATURE IS REMOVED.
+    #
+    # Dropping only target-nulls left "Input X contains NaN" -- the detector is
+    # LinearRegression-based and takes neither. The obvious shortcut is to drop
+    # the offending columns (`vwap_distance` alone carries 243,000 NaNs, and 66
+    # of 87 columns are NaN-free), and it is REFUSED: dropping a feature could
+    # drop the leaky one, and a comparison won by removing the evidence is the
+    # starving §1.3 forbids.
+    #
+    # So every column is kept and incomplete rows go: 95,159 of 338,159 survive.
+    # That is a real reduction and it is reported, not buried -- a correlation
+    # detector has ample rows at 95k, but the row set is no longer the fixture's
+    # full population and any verdict is about the complete-case subset.
+    d = df.dropna()
+    if d.empty:
+        raise ValueError("complete-case filtering left no rows")
+    r = api.audit(d, target=a.target, time_col=a.time_col)
     data = getattr(r, "data", None)
     if not isinstance(data, dict):
         raise TypeError("AuditResult.data is %s" % type(data).__name__)
@@ -109,20 +152,69 @@ def run_leakage_buster():
     if not isinstance(risks, list):
         raise TypeError("'risks' is %s" % type(risks).__name__)
     high = [x for x in risks if str(x.get("severity", "")).lower() == "high"]
-    return {"n_risks": len(risks), "n_high": len(high),
+    # A RISK NAMED "Detector error: ..." IS A could_not_run FOR THAT DETECTOR,
+    # NOT AN ABSENCE. The first sweep folded it into a severity count and
+    # reported finding=False -- the one detector that would have found target
+    # leakage had ERRORED, and nothing said so. Errors are separated out and the
+    # verdict refuses to be a clean null while any detector is broken.
+    errs = [x for x in risks if str(x.get("name", "")).lower().startswith("detector error")]
+    return {"rows_in": n0, "rows_audited": len(d), "rows_dropped_incomplete": n0 - len(d),
+            "n_risks": len(risks), "n_high": len(high),
             "high": [x.get("name") for x in high],
             "all": [x.get("name") for x in risks],
-            "finding": bool(high),
-            "mapping": "severity == 'high' is a leakage finding; medium/low are advisory"}
+            "detector_errors": [{"name": x.get("name"), "detail": str(x.get("detail"))[:400],
+                                 "evidence": str(x.get("evidence"))[:400]} for x in errs],
+            "finding": None if errs else bool(high),
+            "mapping": "severity == 'high' is a leakage finding; medium/low are "
+                       "advisory. ANY 'Detector error' makes the verdict None -- "
+                       "could_not_run for that detector, never a clean null."}
 
 
 def run_leakfence():
+    """R148 §1.3 -- `audit_split` WITH a subject, so the group check arms.
+
+    The first sweep called it with train/test indices and nothing else. Its own
+    docstring says "subject: per-window subject id. **Omit to skip the group
+    check**" -- so the check never ran and the zero violations were vacuous.
+
+    THE SUBJECT IS `ts_floor`, the fixture's own time bucket. Rows sharing a
+    `ts_floor` are the same bucket, so a chronological split that puts one bucket
+    on both sides of the cut IS the overlap this check exists to find. That is
+    the fixture's real grouping, not one invented to make the tool fire.
+    """
     import leakfence
     n = len(df)
     cut = int(n * 0.8)
     tr, te = list(range(cut)), list(range(cut, n))
-    rep = leakfence.audit_split(train_idx=tr, test_idx=te)
-    v = list(getattr(rep, "violations", None) or [])
+    # A DEGENERATE SUBJECT ARMS NOTHING. Supplying `ts_floor` made
+    # `n_subject_values` equal the ROW COUNT: it is unique per row, so every row
+    # is its own group and a group-overlap check can never fire. That is a
+    # SECOND vacuous zero wearing the first one's fix -- the check was armed in
+    # form and dead in substance.
+    #
+    # Both candidates are one-group-per-row (338,159 distinct of 338,159 rows),
+    # so THIS FIXTURE HAS NO SUBJECT GROUPING and the group check is UNPOSABLE
+    # on it. Coarsening the timestamp into buckets would manufacture a grouping
+    # the fixture does not have, purely to make the tool produce a number.
+    #
+    # The group check is therefore recorded unposable, and `check_duplicates` --
+    # which needs no grouping -- still runs and still answers.
+    subj, subj_col, group_state = None, None, None
+    for cand in ("ts_floor", "timestamp"):
+        if cand in df.columns:
+            vals = df[cand].astype(str)
+            if vals.nunique() < len(vals):
+                subj, subj_col = vals.tolist(), cand
+            else:
+                group_state = ("unposable: %s is unique per row (%d of %d), so "
+                               "every row is its own group" % (cand, vals.nunique(), len(vals)))
+            break
+    if subj is not None:
+        rep = leakfence.audit_split(train_idx=tr, test_idx=te, subject=subj)
+        group_state = "armed on %s (%d groups)" % (subj_col, len(set(subj)))
+        v = list(getattr(rep, "violations", None) or [])
+    else:
+        v = []
     dup = leakfence.check_duplicates(df.select_dtypes("number").to_numpy(),
                                      train_idx=tr, test_idx=te)
     dv = dup[-1] if isinstance(dup, tuple) else (dup if isinstance(dup, list) else None)
@@ -131,31 +223,61 @@ def run_leakfence():
     names = [getattr(x, "check", str(x)) for x in v] + \
             [getattr(x, "check", str(x)) for x in dv]
     return {"split": "chronological 80/20 by row order",
+            "group_check": group_state,
+            "duplicate_check": "ran on %d numeric columns" % df.select_dtypes("number").shape[1],
             "n_violations": len(names), "violations": names,
             "finding": bool(names),
-            "mapping": "a non-empty Violation list is a finding"}
+            "mapping": "a non-empty Violation list is a finding. The GROUP check "
+                       "is unposable on this fixture (no subject grouping exists) "
+                       "and contributes NO evidence either way; the DUPLICATE "
+                       "check ran and its zero is a real result."}
 
 
 def run_temporalcv():
+    """R148 §1.3 -- pose the question the gate was built for.
+
+    The first sweep compared a MEAN PREDICTOR against persistence. That measures
+    whether a trivial constant beats persistence; it contains no leakage question
+    at all, and its -111% "improvement" was about the mean, not the fixture.
+
+    THE REAL QUESTION, and the shape the tool's own fired control used: fit a
+    MODEL ON THE FEATURES, forecast the target, and compare its error against the
+    persistence baseline. If a side leaks, the model's error collapses and the
+    improvement over persistence becomes implausible -- which is exactly what
+    `gate_suspicious_improvement` exists to flag. Fed as MAE, an ERROR metric;
+    feeding an accuracy is defect #7 and is what made k6's gate unable to fire.
+
+    Chronological 80/20, fit on train only, scored on test only.
+    """
     from temporalcv.gates import GateStatus, gate_suspicious_improvement
+    from sklearn.linear_model import Ridge
     import numpy as np
-    y = pd.to_numeric(df[a.target], errors="coerce").to_numpy()
-    ok = ~np.isnan(y)
-    y = y[ok]
-    if len(y) < 100:
-        raise ValueError("only %d usable target rows" % len(y))
-    cut = int(len(y) * 0.8)
-    # PERSISTENCE BASELINE vs THE MEAN PREDICTOR, both as MAE -- an ERROR metric,
-    # which is what the gate's formula expects. Feeding an accuracy is defect #7.
-    base = float(np.mean(np.abs(y[cut + 1:] - y[cut:-1])))
-    model = float(np.mean(np.abs(y[cut + 1:] - np.mean(y[:cut]))))
+
+    d = df.dropna()
+    if len(d) < 1000:
+        raise ValueError("only %d complete rows; too few to fit" % len(d))
+    feat = [c for c in d.columns
+            if c != a.target and pd.api.types.is_numeric_dtype(d[c])
+            and not c.startswith("fwd_move_ticks")]
+    X = d[feat].to_numpy(dtype=float)
+    y = d[a.target].to_numpy(dtype=float)
+    cut = int(len(d) * 0.8)
+    m = Ridge(alpha=1.0).fit(X[:cut], y[:cut])
+    pred = m.predict(X[cut:])
+    model = float(np.mean(np.abs(y[cut:] - pred)))
+    # PERSISTENCE: the previous row's target, the baseline the gate documents.
+    base = float(np.mean(np.abs(y[cut:] - np.concatenate([[y[cut - 1]], y[cut:-1]]))))
     r = gate_suspicious_improvement(model, base, metric_name="MAE")
     st = r.status.name if isinstance(r.status, GateStatus) else str(r.status)
-    return {"model_mae": model, "baseline_mae": base,
+    return {"n_features": len(feat), "rows_fit": cut, "rows_scored": len(d) - cut,
+            "model_mae": model, "baseline_mae": base,
             "improvement_ratio": r.details.get("improvement_ratio"),
             "status": st, "message": r.message,
             "finding": st == "HALT",
-            "mapping": "GateStatus.HALT on an ERROR metric is a finding"}
+            "mapping": "GateStatus.HALT on an ERROR metric is a finding. Other "
+                       "fwd_move_ticks_* columns are EXCLUDED from features -- "
+                       "they are sibling targets, and leaving them in would "
+                       "manufacture leakage the fixture did not put there"}
 
 
 def run_leakly():

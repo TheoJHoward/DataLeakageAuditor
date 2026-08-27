@@ -4,16 +4,22 @@
   "target": "fwd_move_ticks_5s",
   "time_col": "timestamp",
   "source": "C:/Users/ttbea/AppData/Local/Temp/claude/C--Users-ttbea-OneDrive-Desktop-MBO-2025-4mon--2026-01/33e8c843-30fa-4bfb-aa9f-814c77bdb2e6/scratchpad/b2_inputs/acceptance_zc_2025-01_contaminated.csv",
+  "restored_datetime_columns": [
+    "timestamp",
+    "ts_floor"
+  ],
   "rows": 338159,
   "cols": 87,
   "status": "ran",
   "result": {
     "split": "chronological 80/20 by row order",
+    "group_check": "unposable: ts_floor is unique per row (338159 of 338159), so every row is its own group",
+    "duplicate_check": "ran on 84 numeric columns",
     "n_violations": 0,
     "violations": [],
     "finding": false,
-    "mapping": "a non-empty Violation list is a finding"
+    "mapping": "a non-empty Violation list is a finding. The GROUP check is unposable on this fixture (no subject grouping exists) and contributes NO evidence either way; the DUPLICATE check ran and its zero is a real result."
   },
   "summary": "finding=False",
-  "seconds": 6.5
+  "seconds": 7.2
 }
