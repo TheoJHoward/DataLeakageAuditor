@@ -1051,3 +1051,81 @@ discarded; only its reads are kept.
 `FixtureInputs`, so **SC-7(d)'s one-side-at-a-time rule is enforced by harness discipline, not by
 the adapter.** Nothing structurally prevents a caller from building both. For §9.2, which needs both
 sides, that is exactly the place where the sequencing rule has to be honoured deliberately.
+
+---
+
+## B9-S — DONE. The sweep's headline is a NEGATIVE result.
+
+**Artifact: [`evidence/phase1/B9_DETECTOR_SWEEP_RESULTS.md`](../phase1/B9_DETECTOR_SWEEP_RESULTS.md).**
+Four workers, 47 cohorts, baseline `d8712f163cf9dcb6…` — **identical to B8's**, so all three
+detectors probed one object. All four traces accepted by the reducers unchanged.
+
+| | `valueread` | `nullread` |
+|---|---|---|
+| preserving | `incomplete(compatibility)` × `finding` — 47 cohorts, 433/**422** valid | `incomplete(crash)` × `finding` — 22 cohorts, 68/**63** valid |
+| promoted | `completed` × `finding` — 25 cohorts, 125/**125** | `completed` × `finding` — 25 cohorts, 127/**127** |
+| events | 344 (228 PROVEN) | 180 (62 PROVEN) |
+| fired / silent | 33 / 14 | 32 / 15 |
+
+**`nullread`'s partition holds: 22 + 25 = 47**, no overlap, none uncovered, asserted by the merge.
+
+### What each strategy uniquely contributed
+
+| strategy | pairs | cohorts | **pairs no other strategy found** |
+|---|---|---|---|
+| `shuffle` | 226 | 33 | — |
+| `sentinel` | 178 | 32 | — |
+| `sentinel_ood` | 116 | 16 | **0** |
+| `nan` | 180 | 32 | **2** |
+
+**The out-of-dtype sentinel added nothing on this fixture.** Zero pairs the preserving strategies had
+not already found, for the cost of a determinism guard and a promoted baseline on 25 cohorts. Its
+reason for existing — that at a dtype ceiling both preserving strategies degenerate to the identity
+— is demonstrated in a unit test and **does not arise in this fixture's data**. Worth having;
+stated as the negative it is.
+
+**`nan` found exactly two pairs no value strategy can reach:** `trades.size → trade_count` and
+`→ trade_count_10s`. `trade_count=("size","count")` counts **non-null** values, so a permutation
+and an in-dtype sentinel both leave it alone. A pure null-mask dependency, structurally invisible
+to a value probe.
+
+### The gap `columndep` published is real in principle and EMPTY in fact
+
+`nullread`'s preserving combination is precisely the probe `columndep` said it was missing: `nan`
+over the **22** float/datetime/object columns. **Sixteen fired, and every feature they moved was
+already found by `shuffle` or `sentinel`.** The two null-only findings are on `trades.size`, an
+**integer** column — `nullread`'s *promoted* side, the combination `columndep` already had.
+
+**So the published gap cost this fixture nothing.** That is weaker than the gap statement implied
+and is stated plainly rather than left for a reader to derive.
+
+### The three detectors agree where they should, and differ where they should
+
+`valueread`'s preserving side reproduces `columndep`'s **exactly** — same 33 cohorts, identical
+feature sets — **except `col:trades.size`, 15 features vs 13.** The two missing are the null-only
+pair: `columndep` found them through its *promoted* combination, which runs `nan`; `valueread` never
+runs `nan` and cannot. **Checked, not assumed** — a difference between two detectors over the same
+strategies would otherwise read as a defect.
+
+### Five crashes, and they are a fact about the pipeline
+
+`nan` **crashes the builder** on `snap.timestamp`, `trades.action`, `trades.aggressor_side`,
+`trades.side` and `trades.symbol` — recorded `could_not_run(crash)`, never as a finding, and they
+are why `nullread`'s preserving trace is `incomplete(crash)`. **The builder has no null tolerance on
+those five columns.** `snap.timestamp` is the single cohort that fires in `columndep`/`valueread`
+(50 features) and is silent in `nullread`; that is not a disagreement — the probe crashed, so its
+outcome is `none`, not silence.
+
+### The `aggressor_side` class survives all three detectors, for TWO reasons
+
+R135 predicted the null detector would not catch it because the mechanism is a constantly false
+predicate rather than a null pattern. True — and the run adds a **proximate** reason that bites
+first: **`nan` on `aggressor_side` crashes the builder**, so the null probe never reaches a
+comparison. The class is unreachable both because no value probe can see it and because the null
+probe cannot execute. Whether it earns a third detector stays open.
+
+### Silence accounting, per cohort (§39)
+
+`valueread`: **12 `observed_silence`, 2 `none`** (`trades.action`, `trades.symbol` — no strategy ran
+validly). `nullread`: **10 `observed_silence`, 5 `none`** — all five the crashes above. A probe that
+did not happen found nothing, and that is not the same as a probe that happened and found nothing.
