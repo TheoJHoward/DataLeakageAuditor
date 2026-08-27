@@ -2,36 +2,36 @@
 
 **Purpose (R36).** After compaction, re-orient from THIS file. Rewrite it every round.
 
-**CURRENT STATE: R138. A25 applied to TWO sites; A26 presents sixteen and halts; the two diffs
-still await approval.** `main` is at `87054020278eca99a09164a4bb3e11bf20620878`; **`PREREG.md` is
-untouched at `0c8da19f237cd243…`**, verified before and after every write this round; tags are
-`prereg-v30` only; held banking is preserved in `stash@{0}`. Nothing has been staged or committed to
-`main`, tagged, pushed or stamped, and **neither presented diff was applied**. `main`'s gate is 23
-checks, FAIL — one finding, D10 on `ROUND_STATE.md` (expected).
+**CURRENT STATE: R139. Track A is unblocked and moving on `main`. A28, A24 and A29 are done;
+A30, A31, A27 and A17‴ remain.** `main` is at `66ee10c`, three commits past `8705402`.
+**`PREREG.md` is at `f927e67efd2b27f9…`** — changed for the first time since the amendment, and only
+under §1.1's approval. Tags are `prereg-v30` only; held banking preserved in `stash@{0}`. Nothing
+tagged, pushed or stamped.
 
-**A25 — §36.2 found TWO sites, not one.** §D.2(i) *and* (ii) both claimed *"DISCHARGED by
-amendment"* by an amendment that never landed; both are now recorded **NOT DISCHARGED**, each naming
-its own discharge condition. The count of discharged lock-time obligations in the declaration goes
-from **two to zero**. H4 was not drafted (§2.2).
+**A28** carried Track A's work back from `phase1`, the set **derived** by attributing every changed
+file to the commits that touched it and labelling each commit from its own subject — 43 Track A, 32
+Track B, 3 both and decided explicitly. **`main`'s D10 finding cleared.**
 
-**The mixed-tree hazard is fixed at the root.** `phase1`'s declaration was a round stale, and
-adopting it alone against `phase1`'s pre-growth ceremony file took the gate to 3 checks / 15
-findings. The adoption set was **derived**: 31 files `main` changed since the merge base and
-`phase1` did not — lossless by construction. 15 findings → 4 → 2.
+**A24** applied the two approved §6.2 replacements: **H2 at l.574** (Reference AUC anchor — retired
+because no horizon satisfies the registered pair on both sides) and **H3 at l.579** (contamination
+class locus — because applied SC-9(b) forbids the manifest route). Text extracted from
+`PREREG_v30a_DIFF.md`, not from the proposal; **applied bottom-to-top** so the earlier edit could
+not shift the later anchor; both v30 lines **retained verbatim** under `SUPERSEDED BY v30a … NOT
+operative`.
 
-**⚠️ `phase1`'s gate is now 23 checks, FAIL — 2 findings, and the red is CORRECT.** `README.md`
-l.60 and `DECLARATION_POINTER.md`'s CURRENT block both carry the declaration's pre-A25 hash. Both
-are **blocked on C2**, which is A17‴'s suspended loop: README's block says *"FILLED AT CEREMONY TIME
-… DO NOT TRANSCRIBE"*, and `_v30a_pointer_sync.py` halts on *"the declaration on disk differs from
-C2's staged hash."* A green gate here would mean transcribing a block that forbids it.
+**A29** settled the declaration. §D.2's ledger now reads **BOTH DISCHARGED, each by a different
+thing** — (i) by the amendment, which now exists; (ii) by **SC-2(e), cited**, per §1.3. §A.4's
+citation re-pointed from a clause that does not exist to the one that does.
+**Every named-clause citation in the declaration now resolves — zero missing, down from three**;
+all 71 distinct `SC-n` resolve. And **D8's citation is now anchor-keyed** (§1.4), after drifting
+twice in two rounds.
 
-**A26 — the applied-defect set is sixteen, presented and halting.**
-[`A22_APPLIED_DEFECT_SET.md`](../amendment/A22_APPLIED_DEFECT_SET.md). **The author rules the whole
-set at once.** The two diffs stand at
-[`A23_PROPOSED_DIFF.md`](../amendment/A23_PROPOSED_DIFF.md), anchors re-verified at l.574 and l.579.
+**⚠️ `main`'s gate is 23 checks, FAIL — 2 findings, and §1.5 rules they stand.** `README.md` l.60
+and `DECLARATION_POINTER.md`'s CURRENT block carry a pre-A24/A29 declaration hash; both clear at
+A17‴ when C2 re-derives. Manifest **699 OK / 0 failed**.
 
-**Track B runs on `phase1` and waits on none of it.** 145 passed / 4 skipped; manifest 703 OK / 0
-failed. **§9.2 is the item now** — venvs verified alive, positive controls first.
+**Track B is on `phase1` at `6947d27`** — 145 passed / 4 skipped. **§9.2 is its item**, venvs
+verified alive.
 
 **THIS FILE IS THE REPORT.** Each item is banked here when it completes, before the next begins.
 A record that lives only in a chat message dies with the turn, and a turn that ends mid-item then
@@ -1577,3 +1577,128 @@ disclose-as-deviation.
 re-verified this round at applied **l.574** and **l.579**, match count 1 each. **A25's correction to
 §D.2(i) names the first of them as the only thing that discharges that obligation** — so the
 declaration now points at the pending diff instead of claiming a discharge that never happened.
+
+---
+
+# R139 — A28 · A24 · A29 DONE ON `main`. THE DECLARATION NOW RESOLVES ENTIRELY.
+
+**`main` is at `66ee10c`**, three commits past `8705402`. `PREREG.md` is at **`f927e67efd2b27f9…`**
+— changed for the first time since the amendment, and only under R139 §1.1's approval. Tags
+`prereg-v30` only. `stash@{0}` preserved.
+
+## RE-ENTRY
+
+`phase1` `6947d27`, gate 23 checks FAIL — 2 findings, 145 passed / 4 skipped. `main` was 23 checks
+FAIL — 1 finding, D10 on `ROUND_STATE.md`. Both as §0 described.
+
+---
+
+## A28 — Track A's work comes back to `main`, derived not transcribed
+
+**The set was derived.** Every file `phase1` changed since merge-base `3257f07` was attributed to
+the commits that touched it, and **each commit labelled Track A or Track B from its own subject
+line** — not from a path rule, because "src/ is Track B" is the hand-authored enumeration this round
+exists to remove.
+
+| | |
+|---|---|
+| Track A only | **43** files |
+| Track B only | **32** files |
+| touched by both | **3**, decided explicitly |
+| of the Track A set, actually differing between branches | **13** |
+
+The three touched by both: `MANIFEST.sha256` **re-derived here, never copied**;
+`B8_PROBE_B_RESULTS.md` Track B, stays; `ROUND_STATE.md` moves, and `main`'s D10 finding was about
+it.
+
+**Losslessness checked, not assumed.** `main` had not moved since `8705402`, so its blobs are
+exactly what `phase1` adopted. My ancestry check flagged `AVAILABILITY_DECLARATION.md` — because I
+adopted `main`'s bytes into the working tree and edited them **before** committing, so no commit
+boundary carries `main`'s exact blob. **Verified directly instead: one hunk at l.3775, every removed
+line exactly A25's replaced block, 51 insertions / 13 deletions, nothing else touched.**
+
+**`main`'s D10 finding CLEARED.**
+
+---
+
+## A24 — the two approved §6.2 replacements, applied
+
+**`PREREG.md` `0c8da19f` → `f927e67e`, 2075 → 2081 lines.**
+
+| hunk | at | what |
+|---|---|---|
+| **H2** | l.574 | Reference AUC anchor — the registered pair retired, replaced by an anchor **constituted by recomputation**, declared as an enumerated entry set |
+| **H3** | l.579 | Contamination availability class — the recording locus moves to the declaration, because applied SC-9(b) forbids editing an evidence artifact |
+
+**The text came from `PREREG_v30a_DIFF.md`, not from the proposal.** `A23_PROPOSED_DIFF.md` is a
+derived presentation of that source; applying from the presentation would put a second copy in the
+chain and let the two drift.
+
+**Applied bottom-to-top** — H3 at l.579 before H2 at l.574. The anchors are five lines apart, so
+applying the earlier first would have shifted the later one, which is exactly how an applier writes
+correct text into the wrong place. Structure checked **before** the write.
+
+**Both v30 lines are RETAINED VERBATIM** in nested blockquotes marked `SUPERSEDED BY v30a …
+NOT operative` — what §8.2 item 1 promises, and what four of the amendment's five earlier deletions
+did not do.
+
+---
+
+## A29 — the declaration's final state
+
+**§D.2's ledger: BOTH DISCHARGED, and each by a different thing.** (i) the contamination class
+**by amendment, and the amendment now exists** — A24's clause at `PREREG.md` l.582; that entry was
+false from the day it was written until A24, and the gap is recorded rather than smoothed over.
+(ii) the CI sliced variant **by SC-2(e), cited, and by no amendment** — §1.3's ruling. SC-2(e) is
+the registered rule; the declaration supplies the instance it calls for. Same shape as §D.5
+recording SC-9(c) obligations here, and SC-9(a) is respected because **no gate object is created**:
+SC-2(e) already created it.
+
+**§A.4's citation** named `PREREG.md` §6.2 *"Sliced variant — v30a, operative"*, which does not
+exist. Re-pointed at **SC-2(e)**, which does. **Only the citation changes** — the obligation, its
+due event and its scoring rule are untouched, and the replacement says so in its own text.
+
+**VERIFIED: every named-clause citation in the declaration now RESOLVES — zero missing, down from
+three.** All **71** distinct `SC-n` citations resolve, across **268** citations.
+
+**§36.2 was re-surveyed before either edit.** Three other files match *"discharged by amendment"*:
+`A23_THREE_CLAUSES.md` quotes the old text inside a dated audit record; `g5run1/tree` and
+`g5run2/tree` are frozen snapshot copies. All dated records correct as of their dates; none touched.
+
+### D8's citation is now ANCHOR-KEYED (§1.4)
+
+**The pin drifted twice in two rounds on the same file** — 4339 → 4377 on A25's insert, 4377 → 4376
+on A29's. §17.2 already preferred anchors; this one stayed line-pinned because its target has no
+heading — but *"has no heading"* is a reason not to cite a **section**, never a reason to cite a
+**line number**.
+
+`lineno = None` now marks an entry anchor-keyed: the text must occur **exactly once**, and where it
+occurs is reported rather than required. **It changes what the checker LOCATES, never what it
+CHECKS** — and a duplicate anchor now **fails**, where a line pin would silently have taken the
+first. The three remaining pins stay; their targets are in files this round does not touch.
+
+**The reconciler's one-shot re-pin was REMOVED, not re-pointed.** A one-shot fix left inside a
+re-runnable script becomes a landmine the moment the thing it fixed is superseded — it halted here,
+correctly, on work that was done. Re-pointing it would have put a line number back into a script
+whose whole subject is that line numbers go stale.
+
+---
+
+## STATE
+
+| | |
+|---|---|
+| `main` gate | 23 checks, **FAIL — 2 findings**, both C2-blocked (§1.5), unchanged in character |
+| manifest | **699 OK / 0 failed** |
+| `PREREG.md` | `f927e67efd2b27f9…` |
+| declaration | `79357d774b330dfa…` |
+
+**The two remaining findings are the same pair §1.5 rules must stand:** `README.md` l.60 and
+`DECLARATION_POINTER.md`'s CURRENT block carry a pre-A24/A29 declaration hash. Both clear at A17‴
+when C2 re-derives. Not forced.
+
+**Also fixed at A24: the reconciler's `PREREG.md` tripwire pinned a literal hash and halted** —
+correct refusal, wrong question. Changed to assert the file is unchanged **across its own run**,
+which is what the script actually promises and cannot be satisfied by editing a number.
+
+**Next: A30, A31, A27, A17‴.**
