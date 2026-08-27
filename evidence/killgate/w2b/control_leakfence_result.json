@@ -1,0 +1,33 @@
+{
+  "tool": "leakfence",
+  "version": "0.5.0",
+  "vendor_fixture": false,
+  "vendor_negative": false,
+  "limbs": {
+    "audit/POSITIVE": {
+      "fired": true,
+      "expected": true,
+      "ok": true,
+      "violations": "group_overlap"
+    },
+    "audit/NEGATIVE": {
+      "fired": false,
+      "expected": false,
+      "ok": true,
+      "violations": "none"
+    },
+    "dupes/POSITIVE": {
+      "fired": true,
+      "expected": true,
+      "ok": true,
+      "violations": "duplicate_rows"
+    },
+    "dupes/NEGATIVE": {
+      "fired": false,
+      "expected": false,
+      "ok": true,
+      "violations": "none"
+    }
+  },
+  "verdict": "DISCRIMINATING"
+}
