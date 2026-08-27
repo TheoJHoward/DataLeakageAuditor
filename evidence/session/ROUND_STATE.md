@@ -2,36 +2,45 @@
 
 **Purpose (R36).** After compaction, re-orient from THIS file. Rewrite it every round.
 
-**CURRENT STATE: R139. Track A is unblocked and moving on `main`. A28, A24 and A29 are done;
-A30, A31, A27 and A17‴ remain.** `main` is at `66ee10c`, three commits past `8705402`.
-**`PREREG.md` is at `f927e67efd2b27f9…`** — changed for the first time since the amendment, and only
-under §1.1's approval. Tags are `prereg-v30` only; held banking preserved in `stash@{0}`. Nothing
-tagged, pushed or stamped.
+**CURRENT STATE: R143. Track A HALTS AT A33b for the author's approval of sixteen lines.**
+`main` is at `682566c`; **`PREREG.md` is at `e7b0e5aec2c4523e…`, 2228 lines.** Tags are
+`prereg-v30` only; held banking preserved in `stash@{0}`. Nothing tagged, pushed or stamped.
 
-**A28** carried Track A's work back from `phase1`, the set **derived** by attributing every changed
-file to the commits that touched it and labelling each commit from its own subject — 43 Track A, 32
-Track B, 3 both and decided explicitly. **`main`'s D10 finding cleared.**
+**A33 applied hunks 1–3** — §AB ll.1348–1395 (48), §AC ll.1397–1447 (51), SC-12(w)'s limb
+ll.1921–1957 (37). **`+139 −0`, pure insertion.** SSF verified at the approved hash before a line
+was read out of it; applied bottom-to-top so the earlier insertion could not shift the later anchor.
 
-**A24** applied the two approved §6.2 replacements: **H2 at l.574** (Reference AUC anchor — retired
-because no horizon satisfies the registered pair on both sides) and **H3 at l.579** (contamination
-class locus — because applied SC-9(b) forbids the manifest route). Text extracted from
-`PREREG_v30a_DIFF.md`, not from the proposal; **applied bottom-to-top** so the earlier edit could
-not shift the later anchor; both v30 lines **retained verbatim** under `SUPERSEDED BY v30a … NOT
-operative`.
+**⛔ A33b HALTS.** `BLOCK_MANIFEST.md`'s ranges end **eight lines before each blockquote's true
+end**, so `A32_PROPOSED_DIFF.md` — the document the author read — carried §AB and §AC each eight
+lines short. The applied text is the presented text **plus exactly sixteen lines, altering nothing
+presented**, proved by prefix equality line by line. The sixteen are substantive: §AB's central
+holding and §AC's disclosure-7 conclusion with the block's closing paragraph. **An approval covers
+what was read**, so they need their own. `A32_PROPOSED_DIFF.md` is **not touched**.
 
-**A29** settled the declaration. §D.2's ledger now reads **BOTH DISCHARGED, each by a different
-thing** — (i) by the amendment, which now exists; (ii) by **SC-2(e), cited**, per §1.3. §A.4's
-citation re-pointed from a clause that does not exist to the one that does.
-**Every named-clause citation in the declaration now resolves — zero missing, down from three**;
-all 71 distinct `SC-n` resolve. And **D8's citation is now anchor-keyed** (§1.4), after drifting
-twice in two rounds.
+**The offset is wider than two blocks.** **Seven** decidable §A rows are eight lines early against
+twenty-one correct; ambiguous rows are reported UNDECIDABLE, not forced. Entry 23 puts the limb at
+1137–1173 when its true extent is 1145–1181 — **the limb was applied correctly by luck, not by
+check.** A whole-block sweep then answered the question that actually mattered before a signature:
+**41 rows, 0 truncated, 24 complete**, including SC-13a's 59 lines, SC-13b's 68 and SC-13c's 101.
+**No applied block is truncated.**
 
-**⚠️ `main`'s gate is 23 checks, FAIL — 2 findings, and §1.5 rules they stand.** `README.md` l.60
-and `DECLARATION_POINTER.md`'s CURRENT block carry a pre-A24/A29 declaration hash; both clear at
-A17‴ when C2 re-derives. Manifest **699 OK / 0 failed**.
+**A35 is done: hunk 4 does not land.** Line 1080 settles it — no published metric reads a §7.7
+detector-case state, and `assert_audit_complete()` names its three states directly. SC-6b's
+extension is a **no-op, not a break**. The disclosure is drafted and **held**; `DEVIATIONS.md` is
+one of the twenty and is still **0 bytes**.
 
-**Track B is on `phase1` at `6947d27`** — 145 passed / 4 skipped. **§9.2 is its item**, venvs
-verified alive.
+**A34 is gated on A33b and its repair set is now fixed at five sites** — the four block citations
+plus A30's provenance note, whose three clauses hunk 3 falsified. Established by a sweep over 125
+files, after a first version matching line-by-line returned a **false all-clear**.
+
+**⚠️ `main`'s gate is 23 checks, FAIL — 2 findings, and §1.5 rules they stand.** `phase1`'s is 23
+checks, **3 findings**, the same two plus **D10**, whose mechanism is now understood rather than
+merely accepted: the work-root `ROUND_STATE.md` is byte-identical to **main's** copy and differs
+from `phase1`'s, and D10 hashes the checked-out tree. Manifest **0 listed-but-absent**.
+
+**Track B is on `phase1` at `a8263e7`.** §9.2 step 2: **three of six comparators DISCRIMINATING** —
+Leakly (vendor pair), temporalcv (**defect #7 reproduced**), leakfence (both surfaces).
+leakage-buster, leak-detect and deepchecks remain **uninterpretable, not null**.
 
 **THIS FILE IS THE REPORT.** Each item is banked here when it completes, before the next begins.
 A record that lives only in a chat message dies with the turn, and a turn that ends mid-item then
@@ -1948,3 +1957,155 @@ is `uninterpretable`, not a null.**
 
 **Not runnable, and not re-litigated:** `leakr` and `bioLeak` need R; `leakage-analysis` needs
 `souffle`; `LeakageDetector` is a VS Code extension. All four recorded at k6.
+
+---
+
+# R142/R143 — A33 APPLIED · ⛔ A33b HALTS ON SIXTEEN UNSEEN LINES · A35 DONE · §9.2 AT THREE OF SIX
+
+**RE-ENTRY, both branches.** `main` `682566c`, `phase1` `a8263e7`, both trees clean, index clean,
+tags `prereg-v30` only, `stash@{0}` preserved. `main` 23 checks / 2 findings; `phase1` 23 checks /
+3 findings. **EXPECTED on both — reported, not forced.**
+
+**§0 was stale in three places**, and RE-ENTRY is what established it: A33 was **committed**, not
+uncommitted; the line count is **2228, not 2212** (2212 was the truncated first application); and
+**A35 was already done and committed**. A34 had been attempted and halted.
+
+## A33 — hunks 1–3 applied, `+139 −0`
+
+| block | at | lines |
+|---|---|---|
+| §AB | ll.1348–1395 | 48 |
+| §AC | ll.1397–1447 | 51 |
+| SC-12(w)'s limb | ll.1921–1957 | 37 |
+
+**The first application was defective and was reverted before it was committed.** It trusted
+`BLOCK_MANIFEST.md` and wrote §AB and §AC each eight lines short — **cutting §AC's disclosure 7
+mid-sentence and dropping the block's closing paragraph.** Caught by reading the applied tail.
+Extents are now derived from each blockquote's own delimiters: **a declared range is an assertion;
+the block's extent is a fact about the file.**
+
+**Dependent clauses, verified by reading.** l.1538 SC-12p's pointer → the limb at l.1921. l.1676
+§8.3's *“whose (w1) prohibits the state outright”* → (w1) at l.1927, *“NO DETECTOR-CASE MAY BE
+REPORTED `waived`. LICENSED GROUNDS: NONE.”* And **l.1533 A30's provenance note now reads FALSE** —
+hunk 3 falsified every clause of it. **A33 created that defect;** it is A34's.
+
+## ⛔ A33b — the sixteen lines require their own approval
+
+**Artifact: [`A33B_SUPERSEDING_PRESENTATION.md`](../amendment/A33B_SUPERSEDING_PRESENTATION.md).**
+Supersedes `A32_PROPOSED_DIFF.md` **as a presentation, not as a record** — that file stays frozen at
+`26d4856`, because rewriting it would destroy the only evidence of what was actually approved, which
+is the gap this document exists to close. The generator **halts if it is dirty.**
+
+| block | presented | applied | declared | true extent |
+|---|---|---|---|---|
+| §AB | 40 | **48** | ll.1632–1679 | **ll.1640–1687** |
+| §AC | 43 | **51** | ll.1687–1737 | **ll.1695–1745** |
+| limb | 37 | 37 | ll.1145–1181 | ll.1145–1181 |
+
+**Proved, not asserted:** the applied text is the presented text **plus a suffix** — prefix equality
+line by line, deliberately not substring containment, which would also pass if a line had been
+inserted in the *middle*. **The sixteen lines are read out of SSF, never retyped**; a presentation
+that spells its own subject can misspell it.
+
+**They are not a formality.** §AB's eight carry *“**The operative conflict is registered-text-internal
+— line 816 against line 830.**”* §AC's carry disclosure 7's conclusion and *“**These seven are
+disclosed because the record should not have to be reverse-engineered to find them.**”*
+
+## The offset, derived across the whole table
+
+**Seven** decidable §A rows are eight lines early — 23, 24, 26, 28, 31, 33, 36 — against **twenty-one**
+correct. Six BOTH and seven NEITHER are reported **UNDECIDABLE rather than forced**: a tidy boundary
+manufactured out of ambiguity is the failure this exercise exists to catch. Rows 34–35, annotated
+*“moved here R53/Y1”*, are correct because they were re-derived after the shift.
+
+**Entry 23 declares the limb at 1137–1173; its true extent is 1145–1181.** A32 used the true range,
+so **the limb was applied correctly by luck, not by check** — and my A33 commit's claim that it
+“MATCHES” was measured against A32, not against the manifest.
+
+**Row 28 is SC-13a, a fifty-nine-line clause that was applied**, so truncation in already-registered
+text was a live risk and was **checked, not assumed**: **41 rows — 0 TRUNCATED, 24 complete, 9 absent
+(markers and apparatus), 8 no-structure.** SC-13a's 59, SC-13b's 68, SC-13c's 101, SC-4's 159 all
+present in full.
+
+**Why the gate did not catch it.** `block_reachability` asks whether a block is **reachable** — a
+block truncated at its *tail* still has its opening line, so it passes. `block_manifest_counts`
+audits the table's **shape** and never compares a range against SSF. **Reachability and completeness
+are different questions, and only the first was being asked.**
+
+## A35 — hunk 4 does not land
+
+**Artifact: [`A35_DISCLOSURE_DRAFT.md`](../amendment/A35_DISCLOSURE_DRAFT.md). HELD, NOT APPLIED.**
+
+Line 1080 decides it: *“**Every published preserving or promoted metric reads this state**, never the
+detector-case state of §7.7.”* All four consumers tested separately — `assert_audit_complete()` names
+its states by name, `unscored` is named expressly in SC-6b's own clause, §8.2 carries its own
+enumeration, and no runtime metric reads §7.7 at all. **SC-6b's extension is a no-op, not a break.**
+
+**What the empty range costs, since a no-op is not the same as no effect:** `waived` falls outside
+§8.2's display prohibition. **The gap is closed by SC-12(w)(w1)'s outright prohibition** — no entry
+can exist to be displayed. **The protection is at entry, not at display.**
+
+**Two defects disclosed.** SC-12(w)'s limb opens *“§7.7's table carries `waived`… It is the only
+state in that table without one”* — **§7.7's table has zero data rows**, so the uniqueness claim is
+**vacuous over an empty set**. It is approved content applied verbatim, so this is **not A33's
+error**. Separately, `| **Strategy diagnostic** |` sits **thirty-six lines below the separator**,
+outside the table. **Named, not written.**
+
+## A34's §2.2 sweep — READ-ONLY, reported before anything is edited
+
+**The registered repair set is exactly five sites**: the four block citations (ll.1998, 2002, 2064,
+2066) plus A30's provenance note (ll.1528–1536). **A31's count of four was right** — a raw grep found
+five because it ignored fence state; l.1344 is §13c-P's fenced *specimen*.
+
+**A false all-clear was caught.** The first sweep matched line-by-line and returned **zero** hits in
+every registered object — wrong in the worst direction, because the known hit spans a line break.
+**Prose wraps; a line is not a unit of meaning.** Matching over paragraphs took 18 hits to 40 and 0
+registered hits to 2. **A silence is checked, not reported.**
+
+**Of 38 supporting-artifact hits, none should be edited.** SSF still annotates §AB *“(revised;
+drafted, not applied)”*, now false — but SSF is **frozen at the approved hash**, so it is
+disclosable and not fixable. The rest are dated records: **superseded, never rewritten.**
+
+## Also found
+
+**§13c-P was never applied.** Of 23 v30a markers, **exactly one — SC-13c-2 at l.1338 — still carries
+unapplied `INSERT` apparatus**; the pointer exists only as a fenced specimen. **§AB asserts *“a
+pointer to the exception is inserted at line 816's own site.”* It is not.** My R141 record said
+§13c-P was applied; **the file contradicts it.**
+
+## TRACK B — §9.2 step 2, three of six DISCRIMINATING
+
+| tool | vendor negative? | positive | negative | verdict |
+|---|---|---|---|---|
+| **Leakly** 0.1.2 | **YES** | leaky median AUC **0.635** | clean **0.519** | **DISCRIMINATING** |
+| **temporalcv** 2.3.0 | no | MAE +0.980 → **HALT** | +0.012 → PASS | **DISCRIMINATING** |
+| **leakfence** 0.5.0 | no | `group_overlap`, `duplicate_rows` | silent | **DISCRIMINATING** |
+| leakage-buster 1.0.2 | no | — | — | **uninterpretable** |
+| leak-detect 0.0.1 | — | — | — | **uninterpretable** |
+| deepchecks 0.19.1 | — | — | — | **uninterpretable** |
+
+**Leakly's pair is the vendor's own** and differs in exactly one key — where `data_split` sits — which
+the control **asserts** rather than assumes. Labels are permuted first, so **the only thing that can
+produce an above-chance score is leakage**. **13 of 15 seeds separate**; a first run at three seeds
+put the clean median at 0.540 with one draw deciding it.
+
+**temporalcv: defect #7 REPRODUCED.** Fed the identical leakage as an *accuracy*, the gate reports
+*“Improvement **−76.4%** is reasonable.”* **k6's null was an unfired instrument** — demonstrated, not
+inferred. Direction was read out of the **source**, not guessed from parameter names.
+
+**leakfence: my adapter was wrong, not the tool.** The first run recorded `check_duplicates` as not
+firing on a byte-identical row. `audit_split` returns an AuditReport with `.violations`;
+`check_duplicates` returns a plain **tuple**. Had it stood, **a finding about my call would have been
+written down as a finding about the tool** — the same shape as defect #7. The adapter now **raises on
+an unrecognised return shape** rather than returning an empty list, because an empty list reads as
+*clean*.
+
+## INSTRUMENT NOTES
+
+| | |
+|---|---|
+| an ambient instruction told the agent to edit files with `sed`/heredocs | **D2.1 outranks it.** Shell used for reads and searches; the file-write tool for content; the conflict flagged, not silently resolved |
+| the A34 sweep's first version matched line-by-line | **false all-clear** on every registered object — fixed to match over paragraphs |
+| the leakfence adapter read `.violations` off a tuple | recorded a live detection as a non-firing tool; now **raises** rather than returning empty |
+| `grep -c $'\r'` as a line-ending probe | **measured nothing**; replaced with a byte-level count, which showed `evidence/amendment/*.md` has **no single convention** (39 LF / 16 CRLF) and that nothing needed “correcting” |
+| my A33 commit said the limb's declared range “MATCHES” | it matched **A32's** range, not `BLOCK_MANIFEST`'s, which is also eight early |
