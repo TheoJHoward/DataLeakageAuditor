@@ -1530,9 +1530,9 @@ at R80/§87. SC-12's INSERTION POINT names this pointer as applied text and said
 pointer text is Y3 §6.3's" — so the applied text lived outside the source of record and this file
 was INCOMPLETE. Transcribed verbatim from `Y3_WAIVED_ENTRY_CONDITION.md` §6.3, which now cites this
 block as the single normative copy. **Corrected at R140/A30:** this said the same correction was
-made for SC-12(w)'s own limb text. **It was not.** SC-12(w)'s limb — the entry condition itself — is
-in `SCHEMA_SET_FINAL.md` and **not in this file**; the `SC-12` record's clause span stops short of it,
-so it was never offered for approval. The pointer above is unaffected and is transcribed verbatim as
+made for SC-12(w)'s own limb text. **It was not — and it no longer needs to be.** SC-12(w)'s limb was applied at R142/A33
+under its own approval and is in this file below, as SC-12(w)'s entry-condition limb in §10.2. The `SC-12` record's clause span in `SCHEMA_SET_FINAL.md` stops short
+of it, which is why it was not offered alongside that record; it was approved separately. The pointer above is unaffected and is transcribed verbatim as
 stated.)*
 
 > **`waived` is defined in §10.2 (v30a).** That definition governs the word wherever it appears, including this table, and **SC-12(w) registers the condition under which a detector-case may be reported in this state.** Neither is restated here.
@@ -1995,11 +1995,11 @@ registered sites and never diverge on it.)*
 > SC-13a(a2)'s strictly-greater-than-zero threshold, and the STOP is tripped and published.**
 > **SC-13a(a2)'s gate is NOT suppressed by `PREREG.md` line 816.** For the quantities the criterion
 > requires, line 816's suppression clause does not apply — the express, scoped exception SC-13c(c2)
-> states and the amendments block records. **The `not_applicable` finding is PUBLISHED, never
+> states and the v30a recorded-defect block in §7.2.1 records. **The `not_applicable` finding is PUBLISHED, never
 > suppressed**: the counts, the named reason, the computed zero yield, and the gate outcome are all
 > published together. **The exception rests on two grounds and on no other.** *First*, it is a class
 > C change to how line 816 reads at this one criterion, made on this amendment's own authority and
-> recorded in the v30a amendments block (SC-13c(c2)). *Second*, this is a kill criterion over the
+> recorded in the v30a recorded-defect block in §7.2.1 (SC-13c(c2)). *Second*, this is a kill criterion over the
 > detectors' capability: a combination that never applied on a declared side cannot separate the
 > fixture sides, so a gate suppressed on that fact is a detector waived on it (SC-12's definition: a
 > detector is waived when its result is made "incapable of changing the criterion's outcome"), and
@@ -2060,10 +2060,10 @@ registered sites and never diverge on it.)*
 > a detector waived on it — SC-12's definition, head and limb (iii) — and line 1035 forbids the
 > waiver. **The exception rests on this amendment's class C authority and on that capability ground;
 > it does not rely on `PREREG.md` line 818, whose text stands as registered.**
-> **This is a class C change to how line 816 reads at this one criterion, it is recorded in the v30a
-> amendments block in terms, and it reaches nothing else**: everywhere outside this criterion, line
+> **This is a class C change to how line 816 reads at this one criterion, it is recorded in
+> the v30a recorded-defect block in §7.2.1 in terms, and it reaches nothing else**: everywhere outside this criterion, line
 > 816 governs exactly as registered. **The registered conflict between line 816 and line 830 is NOT
-> resolved by this clause** — it is recorded in the amendments block as a duplicated-authority
+> resolved by this clause** — it is recorded in that block (§7.2.1) as a duplicated-authority
 > defect and flagged for a future amendment; no reading of this clause settles it anywhere else.
 >
 > **(c3) WHICH DETECTORS THE FLOOR GOVERNS IS NOT THE DECLARATION'S TO CHOOSE.** They are **the
