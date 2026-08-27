@@ -79,6 +79,8 @@ that way. Without the rule a mechanical partition check trips on 567, 692, 698.
 `APPARATUS` = present in Part 1 but **not applied text**. It must be claimed by nothing; a
 hunk claiming an apparatus block is a check failure.
 
+**RANGES ARE DERIVED, NOT DECLARED**. Every range below was re-derived at R146/A39 from the structure's own delimiters in `SCHEMA_SET_FINAL.md` at the approved hash `32358f6dfc7f96d2…`, and 8 of them were wrong — 8 by exactly eight lines. **Do not extract inside a range from this table without re-deriving it**: the previous values ended before their blockquotes did, and extracting inside them truncated §AB and §AC by eight lines each, cutting §AC's disclosure 7 mid-sentence. A declared range is an assertion; the block's extent is a fact about the file.
+
 | # | Anchor (lines) | What it is | → Hunk |
 |---|---|---|---|
 | 1a | 150–153 | MARKER — §2.3 line 205 `column_roles` | **H5** (205, marker) |
@@ -112,20 +114,20 @@ hunk claiming an apparatus block is a check failure.
 | 20 | 1012–1014 | INSERTION TEXT — §8.6 after line 961, S2(iii) | **H28** (961, insert) |
 | 21 | 1018–1055 | THE CLAUSE — SC-11 | **H24** (892, insert) |
 | 22 | 1086–1125 | THE CLAUSE — SC-12 "Waived", defined | **H35** (1035, insert) |
-| 23 | 1137–1173 | **SC-12(w) — the `waived` entry condition, (w1)–(w7) + bounds** | **H35** (1035, insert) |
-| 24 | 1199–1204 | MARKER — §8.3 line 929, v30 bullet retained | **H27** (929, replace) |
+| 23 | 1145–1181 | **SC-12(w) — the `waived` entry condition, (w1)–(w7) + bounds** | **H35** (1035, insert) |
+| 24 | 1207–1212 | MARKER — §8.3 line 929, v30 bullet retained | **H27** (929, replace) |
 | 25 | 1208 | **OPERATIVE v30a TEXT at line 929** — the replacement bullet | **H27** (929, replace) |
 | 26 | 1215–1219 | Instance record under ROWS COVERED | **APPARATUS** |
-| 27 | 1247–1272 | MARKER — §10.2 criterion 2 line 1030, branch-conditional | **H33** (1030, replace) |
-| 28 | 1276–1334 | THE CLAUSE — SC-13a | **H33** (1030, replace) |
-| 29 | 1370–1437 | THE CLAUSE — SC-13b | **H34** (1035, insert) |
-| 30 | 1475–1575 | THE CLAUSE — SC-13c | **H36** (1036, insert) |
+| 27 | 1255–1280 | MARKER — §10.2 criterion 2 line 1030, branch-conditional | **H33** (1030, replace) |
+| 28 | 1284–1342 | THE CLAUSE — SC-13a | **H33** (1030, replace) |
+| 29 | 1378–1445 | THE CLAUSE — SC-13b | **H34** (1035, insert) |
+| 30 | 1483–1583 | THE CLAUSE — SC-13c | **H36** (1036, insert) |
 | 31 | 1596–1598 | ANCHOR — registered `PREREG.md` line 816 quoted verbatim | **APPARATUS** |
 | 32 | 1604–1608 | INSERT AFTER — §13c-P, the line-816 pointer | **H20** (816, insert) |
-| 33 | 1632–1679 | §AB — the amendments-block recording text | **H2** (8, insert) |
+| 33 | 1640–1687 | §AB — the amendments-block recording text | **H2** (8, insert) |
 | 34 | 1754–1756 | §10.1-C2op — the C2 operative item (moved here R53/Y1) | **H32** (1022, replace) |
 | 35 | 1760–1762 | §10.1-C2ret — the C2 retention block (moved here R53/Y1) | **H31** (1022, insert) |
-| 36 | 1687–1737 | §AC — the v30a disclosures block, seven items (R58/W4) | **H2** (8, insert) |
+| 36 | 1695–1745 | §AC — the v30a disclosures block, seven items (R58/W4) | **H2** (8, insert) |
 
 **Entries: 45. Claimed by a hunk: 39. Apparatus: 6. Unclaimed and undrafted: 0.**
 *(45 = 39 + 6. Pre-growth these read 42 = 36 + 6; the three R53/Y1 and R58/W4 additions are
