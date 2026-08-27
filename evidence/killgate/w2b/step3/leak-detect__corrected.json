@@ -13,5 +13,5 @@
   "status": "unsupported",
   "reason": "question_not_posed_by_input",
   "detail": "applicable in principle -- builder_for() is a data-creation function of exactly the kind leak-detect instruments -- but the `ld` venv's pandas pin cannot import the fixture builder. could_not_run(compatibility).",
-  "seconds": 4.3
+  "seconds": 4.1
 }

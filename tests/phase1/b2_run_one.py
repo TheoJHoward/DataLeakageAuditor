@@ -262,14 +262,37 @@ def run_temporalcv():
     X = d[feat].to_numpy(dtype=float)
     y = d[a.target].to_numpy(dtype=float)
     cut = int(len(d) * 0.8)
+    # PERSISTENCE: the previous row's target, the baseline the gate documents.
+    base = float(np.mean(np.abs(y[cut:] - np.concatenate([[y[cut - 1]], y[cut:-1]]))))
+
+    # THE GATE DECLARES ITS OWN DOMAIN, because B-3 found it firing on a clean
+    # series. `gate_suspicious_improvement` assumes PERSISTENCE IS A STRONG
+    # BASELINE -- true for near-unit-root forecasting, which is what it was built
+    # for. On an iid or mean-reverting target the MEAN PREDICTOR ALONE beats
+    # persistence by ~29% (E|y-mu| = 0.798σ against E|y_t - y_t-1| = 1.128σ),
+    # which trips a 20% threshold with no leakage present at all.
+    #
+    # So the precondition is measured before the gate is consulted: if the mean
+    # predictor already beats persistence past the gate's own threshold, any
+    # HALT is arithmetic rather than evidence, and the tool is UNSUPPORTED on
+    # this target rather than firing spuriously.
+    meanpred = float(np.mean(np.abs(y[cut:] - y[:cut].mean())))
+    precondition = 1.0 - meanpred / base if base > 0 else float("nan")
+    if precondition > 0.20:
+        raise Unsupported(
+            "persistence is not a strong baseline for this target: the mean "
+            "predictor alone beats it by %+.3f, past the gate's own 0.20 "
+            "threshold, so any HALT would be arithmetic and not evidence "
+            "(lag-1 autocorrelation too low for the gate's forecasting regime)"
+            % precondition)
+
     m = Ridge(alpha=1.0).fit(X[:cut], y[:cut])
     pred = m.predict(X[cut:])
     model = float(np.mean(np.abs(y[cut:] - pred)))
-    # PERSISTENCE: the previous row's target, the baseline the gate documents.
-    base = float(np.mean(np.abs(y[cut:] - np.concatenate([[y[cut - 1]], y[cut:-1]]))))
     r = gate_suspicious_improvement(model, base, metric_name="MAE")
     st = r.status.name if isinstance(r.status, GateStatus) else str(r.status)
     return {"n_features": len(feat), "rows_fit": cut, "rows_scored": len(d) - cut,
+            "precondition_mean_vs_persistence": precondition,
             "model_mae": model, "baseline_mae": base,
             "improvement_ratio": r.details.get("improvement_ratio"),
             "status": st, "message": r.message,

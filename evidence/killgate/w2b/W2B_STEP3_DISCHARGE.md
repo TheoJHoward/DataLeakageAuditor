@@ -1,4 +1,38 @@
-# W2b STEP 3 — THE DISCHARGE TABLE. §D.5(i).
+# W2b STEP 3 — THE DISCHARGE TABLE. §D.5(i) **DISCHARGED**.
+
+> **B-3, 28 August 2026 — the controls were re-run through the FINAL adapter path and all four
+> hold.** R149 §1.2: the step-2 controls each called their tool directly, and three adapters were
+> then rebuilt, so those controls no longer tested what the measurement does. A positive/negative
+> pair was pushed through `b2_run_one.py` itself — same CLI, same adapters, same CSV transport and
+> dtype sidecar the fixture rows used.
+>
+> | tool | positive | negative | |
+> |---|---|---|---|
+> | leakage-buster | **fires** | silent | holds |
+> | leakfence | **fires** | silent | holds |
+> | temporalcv | **fires** | silent | holds |
+> | deepchecks | **fires** | silent | holds |
+>
+> **The first attempt did NOT hold, and the defect was in the CONTROL.** temporalcv HALTed on the
+> clean frame — correctly and with no leakage present: the negative used an **iid** target, and for
+> an iid series the mean predictor alone beats persistence by **~29%** (E|y−μ| = 0.798σ against
+> E|y_t − y_{t−1}| = 1.128σ), tripping the gate's own 20% threshold on arithmetic. **A control must
+> be drawn from the regime the measurement operates in**; the fixture's target has lag-1
+> autocorrelation **0.794**, so the control was rebuilt at φ = 0.79 and now holds.
+>
+> **Two things came out of that.** The adapter now **measures the gate's precondition and declares
+> its own domain**: if the mean predictor already beats persistence past 0.20, any HALT is
+> arithmetic rather than evidence and the tool is recorded `unsupported` on that target. On the
+> fixture the precondition is **−1.195** — persistence is far stronger than the mean predictor — so
+> the gate is in its intended regime and the row stands. **The fixture sweep was re-run through the
+> final adapter and every verdict below is unchanged.**
+>
+> **`gate_suspicious_improvement` is only interpretable where persistence is a strong baseline.**
+> That is a real limit of the tool, found by controlling it, and it is recorded here rather than
+> discovered later by someone trusting a HALT.
+
+---
+
 
 **28 August 2026. `phase1`.** Adapters rebuilt to R148 §1.3's standard — each tool's best shot —
 and re-run against both sides of the acceptance fixture. **This table states what each row is
@@ -61,10 +95,17 @@ changes.**
 
 ## WHAT THIS DISCHARGES, AND WHAT IT DOES NOT CLAIM
 
-**It discharges §D.5(i)'s precondition**: every runnable comparator was shown to fire on a
-documented positive (step 2), then run against the acceptance fixture through an adapter that poses
-its question (step 3). The nulls are therefore **interpretable** — they are misses, not unfired
-instruments.
+**§D.5(i) IS DISCHARGED.** Every runnable comparator was shown to fire on a documented positive
+(step 2), run against the acceptance fixture through an adapter that poses its question (step 3),
+and — decisively — **its control re-run through the final adapter path** (B-3), because three
+adapters were rebuilt after step 2 and a control that does not exercise the measurement's path has
+not tested the measurement. The nulls are therefore **interpretable**: they are misses, not unfired
+instruments. **The publish-block on B8/B9's results lifts.**
+
+**Three failure modes, one conclusion.** A tool that fires identically on both sides
+(leakage-buster) fails the pair exactly as one that passes both (temporalcv, leakfence) or points
+the wrong way (deepchecks). **Constant firing is not detection**, and no row here should be read as
+one tool having found the contamination.
 
 **The empirical case, stated as carefully as it deserves.** Probe B found the fixture's
 contamination by NaN propagation. Four independent shipping tools, each demonstrated to fire on its
@@ -75,3 +116,14 @@ fifth would be applicable if a pandas pin allowed it.
 sweep and produced a plausible, publishable, false result; they were corrected toward the tools'
 best shot, and the corrections are in the table above rather than in a footnote. **A reader who
 thinks a fairer adapter exists for any row should say so — that is the row's real error bar.**
+
+## THE ROW THAT IS MISSING — this project's own tool
+
+**Six external tools, none separating the pair, and no row showing that ours does.** The comparison
+is asymmetric until that row exists, and a reader will ask for it first. It is **not** filled in
+here: what "separates" means for our tool is a design question, not a measurement — the dependency
+map may look alike on both sides, the difference living in availability verdicts, and SC-7
+constrains what the tool may be given (never the map).
+
+**Proposed before built**, on the `aggressor_side` precedent. Until that row exists, this table
+establishes what the external tools do **not** do, and claims nothing about what ours does.

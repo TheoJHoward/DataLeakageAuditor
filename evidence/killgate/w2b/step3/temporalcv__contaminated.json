@@ -15,6 +15,7 @@
     "n_features": 80,
     "rows_fit": 74916,
     "rows_scored": 18730,
+    "precondition_mean_vs_persistence": -1.1950009027013575,
     "model_mae": 0.07997928695447039,
     "baseline_mae": 0.02632140950347037,
     "improvement_ratio": -2.038563985105944,
@@ -24,5 +25,5 @@
     "mapping": "GateStatus.HALT on an ERROR metric is a finding. Other fwd_move_ticks_* columns are EXCLUDED from features -- they are sibling targets, and leaving them in would manufacture leakage the fixture did not put there"
   },
   "summary": "finding=False",
-  "seconds": 5.5
+  "seconds": 5.0
 }

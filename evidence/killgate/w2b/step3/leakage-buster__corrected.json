@@ -34,5 +34,5 @@
     "mapping": "severity == 'high' is a leakage finding; medium/low are advisory. ANY 'Detector error' makes the verdict None -- could_not_run for that detector, never a clean null."
   },
   "summary": "finding=True",
-  "seconds": 5.7
+  "seconds": 5.9
 }

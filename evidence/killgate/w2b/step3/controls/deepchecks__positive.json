@@ -1,0 +1,39 @@
+{
+  "tool": "deepchecks",
+  "side": "positive",
+  "target": "fwd_move_ticks_5s",
+  "time_col": "timestamp",
+  "source": "C:/Users/ttbea/AppData/Local/Temp/claude/C--Users-ttbea-OneDrive-Desktop-MBO-2025-4mon--2026-01/33e8c843-30fa-4bfb-aa9f-814c77bdb2e6/scratchpad/b3_inputs/b3_positive.csv",
+  "restored_datetime_columns": [
+    "timestamp",
+    "ts_floor"
+  ],
+  "rows": 6000,
+  "cols": 7,
+  "status": "ran",
+  "result": {
+    "top_pps": [
+      [
+        "leak",
+        0.9987726422557437
+      ],
+      [
+        "feat_a",
+        0.0
+      ],
+      [
+        "feat_b",
+        0.0
+      ],
+      [
+        "feat_c",
+        0.0
+      ]
+    ],
+    "max_pps": 0.9987726422557437,
+    "finding": true,
+    "mapping": "predictive-power score > 0.5 for any single feature"
+  },
+  "summary": "finding=True",
+  "seconds": 5.3
+}

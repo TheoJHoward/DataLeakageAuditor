@@ -1,0 +1,29 @@
+{
+  "tool": "temporalcv",
+  "side": "negative",
+  "target": "fwd_move_ticks_5s",
+  "time_col": "timestamp",
+  "source": "C:/Users/ttbea/AppData/Local/Temp/claude/C--Users-ttbea-OneDrive-Desktop-MBO-2025-4mon--2026-01/33e8c843-30fa-4bfb-aa9f-814c77bdb2e6/scratchpad/b3_inputs/b3_negative.csv",
+  "restored_datetime_columns": [
+    "timestamp",
+    "ts_floor"
+  ],
+  "rows": 6000,
+  "cols": 7,
+  "status": "ran",
+  "result": {
+    "n_features": 4,
+    "rows_fit": 4800,
+    "rows_scored": 1200,
+    "precondition_mean_vs_persistence": -0.5998628325040971,
+    "model_mae": 1.3478647535582882,
+    "baseline_mae": 0.8437676711529388,
+    "improvement_ratio": -0.5974358815105376,
+    "status": "PASS",
+    "message": "Improvement -59.7% is reasonable",
+    "finding": false,
+    "mapping": "GateStatus.HALT on an ERROR metric is a finding. Other fwd_move_ticks_* columns are EXCLUDED from features -- they are sibling targets, and leaving them in would manufacture leakage the fixture did not put there"
+  },
+  "summary": "finding=False",
+  "seconds": 1.1
+}

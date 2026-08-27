@@ -14,10 +14,6 @@
   "result": {
     "top_pps": [
       [
-        "fwd_move_ticks_10s",
-        0.023129404315351154
-      ],
-      [
         "bid_price_1",
         0.0
       ],
@@ -44,12 +40,16 @@
       [
         "bid_price_4",
         0.0
+      ],
+      [
+        "bid_size_4",
+        0.0
       ]
     ],
-    "max_pps": 0.023129404315351154,
+    "max_pps": 0.0,
     "finding": false,
     "mapping": "predictive-power score > 0.5 for any single feature"
   },
   "summary": "finding=False",
-  "seconds": 11.6
+  "seconds": 11.9
 }
