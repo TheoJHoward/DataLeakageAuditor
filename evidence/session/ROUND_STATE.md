@@ -2,34 +2,36 @@
 
 **Purpose (R36).** After compaction, re-orient from THIS file. Rewrite it every round.
 
-**CURRENT STATE: R137. §1.1 halts, A23 disposes three clauses separately, A22 presents sixteen.**
-`main` is at `87054020278eca99a09164a4bb3e11bf20620878`; `PREREG.md` is byte-exact at
-`0c8da19f237cd243…`; tags are `prereg-v30` only; held banking is preserved in `stash@{0}`. Nothing
-has been edited, staged, committed to `main`, tagged, pushed or stamped. **`main`'s gate is 23
-checks, FAIL — one finding**, D10 on `ROUND_STATE.md` (expected). Nothing signs against a failing
-gate.
+**CURRENT STATE: R138. A25 applied to TWO sites; A26 presents sixteen and halts; the two diffs
+still await approval.** `main` is at `87054020278eca99a09164a4bb3e11bf20620878`; **`PREREG.md` is
+untouched at `0c8da19f237cd243…`**, verified before and after every write this round; tags are
+`prereg-v30` only; held banking is preserved in `stash@{0}`. Nothing has been staged or committed to
+`main`, tagged, pushed or stamped, and **neither presented diff was applied**. `main`'s gate is 23
+checks, FAIL — one finding, D10 on `ROUND_STATE.md` (expected).
 
-**§1.1 ⛔ HALT — §3.2's Class B precedent does not reach §3.5's change list.** §0.2.1 defines class B
-as *"a value chosen where the form, search space, objective, denominator, and freeze point are
-already fixed"*; `FILES` fits and every gate iterates it, the change list fits none of it and **no
-gate reads it**. R137's independent §187 route — a verification value, fixed not disclosed — reaches
-the correction without stretching the precedent, and is the author's to take.
+**A25 — §36.2 found TWO sites, not one.** §D.2(i) *and* (ii) both claimed *"DISCHARGED by
+amendment"* by an amendment that never landed; both are now recorded **NOT DISCHARGED**, each naming
+its own discharge condition. The count of discharged lock-time obligations in the declaration goes
+from **two to zero**. H4 was not drafted (§2.2).
 
-**A23 — three clauses, three different dispositions.** Reference AUC anchor (v30 l.445):
-**LOAD-BEARING** — the registered anchor is **unsatisfiable**, no horizon meets `0.957/0.675 ±0.010`
-on both sides. Contamination class locus (l.450): **LOAD-BEARING** — l.450 requires what **SC-9(b)
-forbids**. Sliced CI variant (l.451): **UNDETERMINED** — §D.2(ii) discharges it *"by amendment"*, and
-that amendment is the missing one. Two diffs **presented, not applied**:
-[`A23_PROPOSED_DIFF.md`](../amendment/A23_PROPOSED_DIFF.md),
-[`A23_THREE_CLAUSES.md`](../amendment/A23_THREE_CLAUSES.md).
+**The mixed-tree hazard is fixed at the root.** `phase1`'s declaration was a round stale, and
+adopting it alone against `phase1`'s pre-growth ceremony file took the gate to 3 checks / 15
+findings. The adoption set was **derived**: 31 files `main` changed since the merge base and
+`phase1` did not — lossless by construction. 15 findings → 4 → 2.
 
-**A22 — the applied-defect set is SIXTEEN, not six.**
-[`A22_APPLIED_DEFECT_SET.md`](../amendment/A22_APPLIED_DEFECT_SET.md). R137 §1.3 counts `l.1544`
-twice and omits seven; `l.1338` is cleared. **The author rules the whole set at once.**
+**⚠️ `phase1`'s gate is now 23 checks, FAIL — 2 findings, and the red is CORRECT.** `README.md`
+l.60 and `DECLARATION_POINTER.md`'s CURRENT block both carry the declaration's pre-A25 hash. Both
+are **blocked on C2**, which is A17‴'s suspended loop: README's block says *"FILLED AT CEREMONY TIME
+… DO NOT TRANSCRIBE"*, and `_v30a_pointer_sync.py` halts on *"the declaration on disk differs from
+C2's staged hash."* A green gate here would mean transcribing a block that forbids it.
 
-**Track B runs on `phase1` and waits on none of it.** `phase1` gate PASS 23, 145 passed / 4 skipped.
-**B9-R is discharged** — [`B9_DETECTOR_SWEEP_RESULTS.md`](../phase1/B9_DETECTOR_SWEEP_RESULTS.md)
-meets R137 §4's checklist. **B8.3 carries no provisional marking to remove.** §9.2 is next.
+**A26 — the applied-defect set is sixteen, presented and halting.**
+[`A22_APPLIED_DEFECT_SET.md`](../amendment/A22_APPLIED_DEFECT_SET.md). **The author rules the whole
+set at once.** The two diffs stand at
+[`A23_PROPOSED_DIFF.md`](../amendment/A23_PROPOSED_DIFF.md), anchors re-verified at l.574 and l.579.
+
+**Track B runs on `phase1` and waits on none of it.** 145 passed / 4 skipped; manifest 703 OK / 0
+failed. **§9.2 is the item now** — venvs verified alive, positive controls first.
 
 **THIS FILE IS THE REPORT.** Each item is banked here when it completes, before the next begins.
 A record that lives only in a chat message dies with the turn, and a turn that ends mid-item then
@@ -1444,3 +1446,134 @@ deictic"* — and **omits** the four amendments-block citations and the three `S
 | the A21 tool was re-run against `main` by pinning `REPO` | a scratchpad copy computes `REPO` from `__file__`'s grandparent and reads the wrong tree — the mixed-tree hazard, avoided deliberately this time |
 | pinning it through `python -c` produced a `unicodeescape` SyntaxError on `\U` in a Windows path | rewritten through the Write tool — D2.1's rule one layer up, in a script that patches a script |
 | the H3 extraction halted on `REPLACE with (4 lines):**` against H2's `.**` | it **halted** rather than matching something else, which is the right failure; the label is punctuation and the pattern should not be a spelling test |
+
+---
+
+# R138 — A25 APPLIED (TWO SITES, NOT ONE) · A26 PRESENTS · `phase1` GATE NOW RED, ACCURATELY
+
+**`PREREG.md` untouched at `0c8da19f237cd243…`, verified before and after every write this round.
+Nothing staged on `main`, nothing committed to `main`, tags `prereg-v30` only, `stash@{0}` preserved.
+Neither presented diff was applied.**
+
+## RE-ENTRY
+
+| | |
+|---|---|
+| `main` gate | 23 checks, **FAIL — 1 finding**, D10 on `ROUND_STATE.md` alone (expected) |
+| `phase1` gate, before this round's work | 23 checks, **PASS**; 145 passed / 4 skipped |
+| `phase1` gate, after A25 | 23 checks, **FAIL — 2 findings**, both named below and both **blocked on C2** |
+
+---
+
+## A25 — §36.2 FOUND TWO SITES, NOT ONE. Both corrected.
+
+R138 §1.3's first branch assumes §D.2(ii) is the only site claiming discharge by the missing
+amendment. **The survey found two**, and no other file in the repository makes the claim:
+
+| site | element | claimed |
+|---|---|---|
+| §D.2 **(i)** | contamination availability class → the manifest (§A.3) | *"DISCHARGED by amendment, not by doing it"* |
+| §D.2 **(ii)** | the CI sliced variant (§A.4) | *"DISCHARGED by amendment"* |
+
+So the **second** branch governs — *"report the full list before editing any of it, then correct
+consistently"* — and both were corrected in one edit, each naming **its own** discharge condition.
+
+**(i)** is now recorded NOT DISCHARGED, with the reasoning intact: the manifest is an evidence
+artifact and applied **SC-9(b)** forbids editing one to carry a declaration, so the obligation
+cannot be met as line 450 words it. **What would discharge it** is named: the drafted §6.2
+replacement at `A23_PROPOSED_DIFF.md`, **approved and applied**. Nothing else — a declaration cannot
+amend `PREREG.md` (SC-9(a)).
+
+**(ii)** is now recorded NOT DISCHARGED, **and it is the weaker failure**: everything SC-2(e)
+requires of a phase move is present and stands — the due event is named, the scoring rule is
+declared ex ante, §D.1 item 5 freezes it. **What is missing is the move's own record in the
+registered file**, since SC-2(e)'s first words are *"MOVING AN ELEMENT BETWEEN PHASES IS AN
+AMENDMENT"*. **Two routes are named** and the choice is the author's: a §6.2 clause recording the
+move, or a ruling that SC-2(e) plus this declaration's instance already effects it — in which case
+the entry becomes discharged **by SC-2(e), cited**, not by an unapplied amendment.
+
+**H4 was not drafted** (§2.2). The count of discharged lock-time obligations in this file goes from
+**two to zero**.
+
+---
+
+## THE MIXED-TREE HAZARD, FIXED AT THE ROOT
+
+**A25 could not be written on `phase1`'s declaration** — that copy is a round behind and still
+carries the `Status: DRAFT. Nothing in this file is a registered declaration.` header A16 corrected.
+Writing a correction into a stale copy is worse than deriving from one, which is the very thing
+R138's RE-ENTRY forbids.
+
+**And adopting one file broke the branch.** Taking `main`'s declaration alone left it against
+`phase1`'s **pre-growth six-file** `CEREMONY_COMMANDS.md`: the gate went to **3 checks / 15
+findings**, D1 reporting *"states 20 for the v30a hash set; the authority says 6."*
+
+**So the set was derived, not guessed.** Files `main` changed since the merge base **and `phase1`
+did not**: **31**, adopted — lossless by construction, since `phase1` had touched none of them.
+Files **both** changed: 4, left alone. `git merge-base` = `3257f07`.
+
+After adoption: **15 findings → 4 → 2.** Manifest **703 OK / 0 failed**; tests **145 passed /
+4 skipped**.
+
+---
+
+## THE TWO REMAINING FINDINGS ARE ACCURATE, AND BOTH ARE BLOCKED ON C2
+
+Editing a file the tag hashes has a blast radius, and this is it.
+
+| finding | why it is not fixed here |
+|---|---|
+| `README.md` l.60 states the declaration's **old** sha256 | README's v30a block carries its own banner: **`FILLED AT CEREMONY TIME FROM v30a.hashes.txt. DO NOT TRANSCRIBE.`** Filling it now, by hand, is what that banner forbids |
+| `DECLARATION_POINTER.md`'s CURRENT block states the old sha256 / byte count | **R15 does instruct** re-deriving the pointer in the same pass — and the purpose-built `_v30a_pointer_sync.py` **halts** first: *"the declaration on disk differs from C2's staged hash; re-stage first."* Verified by reading `v30a.hashes.txt`, which still carries `3a5790159ec4…` against the file's `12d9ee233243…` |
+
+**Both are downstream of C2, which is A17‴'s loop, suspended pending the author's §1.2 and §1.4
+rulings.** A green gate here would mean transcribing a hash block that says do not transcribe.
+**The red is the correct signal**, and it says exactly one thing: the declaration changed and the
+ceremony has not re-derived from it.
+
+**Two smaller consequences, fixed because they were mine:**
+
+- A line-keyed citation in `tools/check_registration.py` drifted — `AVAILABILITY_DECLARATION.md`
+  **4339 → 4377**, the 38 lines A25 inserted above it. **The gate caught it, which is what that
+  check is for.** Corrected from the gate's own report, located not guessed.
+  **HELD:** this citation is **line-keyed**, so every future declaration edit drifts it again.
+  Earlier rounds converted the checker's *exemptions* from line keys to **anchor** keys for exactly
+  this reason. Converting this one is a design change beyond A25's scope — recorded, not taken.
+- 22 adopted `_v30a_*.py` instruments and `phase7_l2_sim.py` had no manifest line on this branch and
+  *"would ship inside the signed commit unattested"*. Added.
+
+**The manifest reconciler now DERIVES.** It walks the evidence tree instead of carrying a
+hand-maintained `TARGETS` tuple — the same hand-maintained-enumeration defect this whole round is
+about. It rehashes a mismatch, adds an unlisted file, and **reports a listed-but-absent file without
+ever removing the line**, because removing one is how an attestation quietly stops covering
+something. Distinct digests **628 → 650**, asserted not to fall.
+
+---
+
+## A26 — A22's SIXTEEN, PRESENTED. ⛔ HALTS.
+
+**[`A22_APPLIED_DEFECT_SET.md`](../amendment/A22_APPLIED_DEFECT_SET.md)** — unchanged since R137 and
+re-presented here as §1.4 requires: each defect's text, what is actually there, and that it was
+approved that way.
+
+| class | n | what |
+|---|---|---|
+| 0 | 2 | the amendments block and status line the rest of the set refers to |
+| A | 4 | citations of the absent block — ll.1849, 1853, 1915, 1917 |
+| B | 4 | clauses describing markers never placed — l.1415, l.2013 ×3 |
+| C | 1 | l.1544, citing the **deleted** §7.7 row |
+| D | 3 | ll.1425, 1427, 1565 citing `SC-12(w)`'s absent limb |
+| E | 2 | l.1380's zero-row table header, l.1417's orphaned row |
+
+**Every one was approved that way**; none is an application failure. **`l.1338` is cleared** — it
+cites `SC-13c(c2)`, which resolves. **The author rules the whole set at once:** correct-by-diff or
+disclose-as-deviation.
+
+---
+
+## STILL ⏳ AWAITING APPROVAL — the two diffs
+
+[`A23_PROPOSED_DIFF.md`](../amendment/A23_PROPOSED_DIFF.md), unchanged and unapplied. Anchors
+re-verified this round at applied **l.574** and **l.579**, match count 1 each. **A25's correction to
+§D.2(i) names the first of them as the only thing that discharges that obligation** — so the
+declaration now points at the pending diff instead of claiming a discharge that never happened.

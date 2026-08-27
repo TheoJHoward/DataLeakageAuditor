@@ -47,16 +47,31 @@ e8cf5bbbc42762838318e2ffc8cf85b6f44ed701c3ee88f8e93a6e734fc43e0d  HISTORY.md
 
 <!-- V30A-HASH-BLOCK: FILLED AT CEREMONY TIME FROM v30a.hashes.txt. DO NOT TRANSCRIBE. -->
 
-SHA-256 of the documents and tooling as committed at `prereg-v30a` — **six files**, the five above
-recomputed at their v30a state plus the availability declaration:
+SHA-256 of every file the `prereg-v30a` tag message enumerates, as committed. The set is the one
+`PREREG.md` §11 item 8 defines and `AVAILABILITY_DECLARATION.md` §D.2 sets out; its count is read
+from the enumeration below, not stated separately:
 
 ```
 0c8da19f237cd2437b91ef38c570f0ca2159863edcd7f05b10c5cdab9873d3a7  PREREG.md
 39a944c1cef2f4cea8cac3d84648ecec5407997ee010ef4e33ea6131cd0dcc00  DESIGN.md
-d19e49645a6143bd3fbd4827860bbc2b49954bd879e6a2f04d137a031f76ccc1  HISTORY.md
-070c336a57c54e5b593e6181689a68c865e0ac45da815436914c546b442f8d0b  tools/check_registration.py
+cb3e7065890b8989b9eb7cd775803b8712d7b7a775dc9d8aefa4f18d18586fc5  HISTORY.md
+392bab83a9356c88ba3a8f8126c80d74de76eabfff277f21938eeca528888a2a  tools/check_registration.py
 215194c15ab89f208198ce6bc3f8dd726d652fa6bee3d7bd868d1234c9bec31a  protocol/runtime_reference.py
-10b65a00651b6e8c79db26a7eab165361e0bb9122d746806f987996eefb2bb42  AVAILABILITY_DECLARATION.md
+3a5790159ec4a3bf63ea626ac08b11dc6cc1e54d761ca2c055066b554b2a2179  AVAILABILITY_DECLARATION.md
+e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  DEVIATIONS.md
+7d00fcf5597f71c0f4581475b66014b264e2f1914c81af6980510e0214c1b392  PARKING_LOT.md
+7e3149e6ad8fcc3e4730a159e81acbeee11571849ab8224f9079c3b37f04bc71  VALIDATED_CONFIG.toml
+6a1b2a4db70b8fe1ef69dec2b6c1a7cebef42c13dcd2a8138ed11557ca487ea9  tests/registration/EXPECTED_OUTPUTS.md
+cd3ebb73f6ef20df48e8a61ca8ca549d6f79cdd843441efd4836fa4a81bf49a5  tests/registration/conftest.py
+44e98f60541a05ede2c4581cf1ddab0c43a3cb018033f948acc02846c818cc8c  tests/registration/generate_expected_outputs.py
+00e19fa631fbc2e46936e666f535965b4bee046c93ea705e3b05c4f3dda2b1ee  tests/registration/test_checker.py
+94793a25a1a756c26c55fbf20ce6445e628cb855c6b03104efa9d8424cffbd72  tests/registration/test_expected_outputs.py
+08e77b3d427d752627573ddbf2f4635611c62dd297149ea1ada9735126da6a3e  tests/registration/test_invariants.py
+f9d5f5e1f98c13f7c1b7645c33e6f19058ab33e7bfb2cc53d3d5f111bd895619  tests/registration/test_traces.py
+b4961c44b6d87338b94de4ee4897c2d0a5e0db3be842598a00d91659349d4a36  tests/registration/traces.py
+0da59d53982188712073c9b7f5addcd66221babcd8555efabbbd0c3d3f208a1d  evidence/fixture_spike/f3/fixture_manifest_DRAFT.json
+763ac6c8382752aff954550e759eac4c138ac976ffec6d09fc93dd289876b467  evidence/fixture_spike/n1/declared_map.csv
+c659d3ac167a13afb52651d4521ecc9fd5c8fabd59fd2d712eb4afa5b4669665  evidence/fixture_spike/f3/phase7_l2_sim.py
 ```
 
 **Both blocks stand.** The `prereg-v30` block above is not edited: it records the files as of that

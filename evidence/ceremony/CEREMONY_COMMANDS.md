@@ -260,12 +260,21 @@ byte for byte — and no amend is ever needed to fill the tag message.
 > **No hash value appears anywhere in §3 of this file.** That is deliberate and must stay true of
 > any revision of it.
 
-## 3.2 The FIXED SIX. The list is closed.
+## 3.2 The FIXED SET. The list is closed.
 
 ```sh
-# The six files whose hashes the prereg-v30a tag message carries.
-# FIXED. Not derived from `git status`, not filtered, not extended, not shortened.
-FILES="PREREG.md DESIGN.md HISTORY.md tools/check_registration.py protocol/runtime_reference.py AVAILABILITY_DECLARATION.md"
+# The files whose hashes the prereg-v30a tag message carries, as PREREG.md
+# §11 item 8 defines the set: item 1's named paths (tests/registration/
+# expanded to its files), the document §0.2.1 registers, and the files
+# SC-8(f) reaches. FIXED. Not derived from `git status`, not filtered, not
+# extended, not shortened.
+#
+# ORDER IS NOT ALPHABETICAL AND MUST NOT BE MADE SO: the prereg-v30 five come
+# first in the v30 order, so the v30 block stays a verbatim prefix of this one
+# and no v30-era verification instruction is invalidated.
+#
+# The COUNT is read from this line. No clause anywhere states it as a literal.
+FILES="PREREG.md DESIGN.md HISTORY.md tools/check_registration.py protocol/runtime_reference.py AVAILABILITY_DECLARATION.md DEVIATIONS.md PARKING_LOT.md VALIDATED_CONFIG.toml tests/registration/EXPECTED_OUTPUTS.md tests/registration/conftest.py tests/registration/generate_expected_outputs.py tests/registration/test_checker.py tests/registration/test_expected_outputs.py tests/registration/test_invariants.py tests/registration/test_traces.py tests/registration/traces.py evidence/fixture_spike/f3/fixture_manifest_DRAFT.json evidence/fixture_spike/n1/declared_map.csv evidence/fixture_spike/f3/phase7_l2_sim.py"
 ```
 
 Declared by `AVAILABILITY_DECLARATION.md` **§D.2** (heading: “D.2 — The v30a tag message carries
@@ -512,6 +521,20 @@ SHA-256 of the registration documents and tooling as committed:
 <64 hex>  tools/check_registration.py
 <64 hex>  protocol/runtime_reference.py
 <64 hex>  AVAILABILITY_DECLARATION.md
+<64 hex>  DEVIATIONS.md
+<64 hex>  PARKING_LOT.md
+<64 hex>  VALIDATED_CONFIG.toml
+<64 hex>  tests/registration/EXPECTED_OUTPUTS.md
+<64 hex>  tests/registration/conftest.py
+<64 hex>  tests/registration/generate_expected_outputs.py
+<64 hex>  tests/registration/test_checker.py
+<64 hex>  tests/registration/test_expected_outputs.py
+<64 hex>  tests/registration/test_invariants.py
+<64 hex>  tests/registration/test_traces.py
+<64 hex>  tests/registration/traces.py
+<64 hex>  evidence/fixture_spike/f3/fixture_manifest_DRAFT.json
+<64 hex>  evidence/fixture_spike/n1/declared_map.csv
+<64 hex>  evidence/fixture_spike/f3/phase7_l2_sim.py
 
 Signing key: RSA 4096, Theo Johann Howard
 Key fingerprint = 991F 5331 C584 CE5E AF7D  6939 B29C F0E8 4711 9AD7
@@ -613,7 +636,7 @@ yet exist. Corrected to the executable order below.)*
    wording was reaching for.
 6. Write `tagmsg.txt` from the same `v30a.hashes.txt`, then tag.
 
-**Why step 4 cannot move a single one of the six.** The six hashes were read at step 2 from the
+**Why step 4 cannot move a single one of the set.** The hashes were read at step 2 from the
 index entries for `$FILES`. `README.md` is not in `$FILES`, so staging it adds an index entry
 that no hash in the block covers. **C2g** (§3.6) re-reads the six out of the finished commit and
 must still match `v30a.hashes.txt`; that is the gate which would catch it if this reasoning were

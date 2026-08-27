@@ -10,8 +10,8 @@ byte-duplicate of the declaration and has been deleted from this tree.
 may be created. This directory holds this pointer and nothing else.
 
     path:   AVAILABILITY_DECLARATION.md          (repository root; one level above evidence\)
-    sha256: 10b65a00651b6e8c79db26a7eab165361e0bb9122d746806f987996eefb2bb42
-    bytes:  309001
+    sha256: 3a5790159ec4a3bf63ea626ac08b11dc6cc1e54d761ca2c055066b554b2a2179
+    bytes:  331978
     as of:  2026-08-24, at the writing of this hash block (R67/§14.3(c): the three §D.3
             interpretation entries for the registered hash-set language; supersedes the
             2026-08-21 block, which supersedes the 2026-08-20 v30a scrub block below)
@@ -21,6 +21,10 @@ the two are generated in the same pass. `sha256sum -c MANIFEST.sha256`, run from
 `evidence\`, verifies the declaration through that line. **If the recorded hash and the file
 disagree, the file wins and the record is stale** — a pointer records where authority lives,
 it does not confer it.
+
+**2026-08-26 (v30a closeout) — the current bytes.** The declaration moved from `10b65a00…` / 309,001 bytes to `d26d8d5e…` / 329,950 bytes / 4332 lines, on the §D.2 hash-enumeration rewrite, §D.5's named open obligations, §D.6's five deployed disclosures, §D.1's repository path for the pinned producing code, and §146.2's frame extension to the tag message. **Rewritten in the same pass that moved the declaration, per R15.** Values derived with `sha256sum` and `wc`, never transcribed.
+
+**2026-08-26 (v30a closeout) — the current bytes.** The declaration moved from `d26d8d5e…` / 329,950 bytes to `3a579015…` / 331,978 bytes / 4358 lines, on the §D.2 hash-enumeration rewrite, §D.5's named open obligations, §D.6's five deployed disclosures, §D.1's repository path for the pinned producing code, and §146.2's frame extension to the tag message. **Rewritten in the same pass that moved the declaration, per R15.** Values derived with `sha256sum` and `wc`, never transcribed.
 
 **2026-08-26 (author sign-off) — the current bytes.** The declaration moved from `059fe270…` to `10b65a00…` / 309,001 bytes / 4027 lines when §D.1 recorded the F3 manifest's sign-off and re-pinned its bytes. **Rewritten in the same pass, per R15.**
 
