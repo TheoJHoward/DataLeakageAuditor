@@ -959,3 +959,95 @@ audit artifact.
 **D2.1 was violated twice this round**, both times a heredoc running a file-writing patch script —
 once before R135 restated the rule and once after. Both caught and rewritten through the Write tool;
 `test_written_files_are_intact.py` found no damage.
+
+---
+
+## R135/B — THE `aggressor_side` CLASS, MADE MECHANICAL · §9.2 IS FEASIBLE
+
+*(Banked while B9-S runs. B9-S's own results are not in this section.)*
+
+### The `aggressor_side` class — a screen, not a verdict
+
+R135 §4: *"Note where it would have been missed; whether it earns a third detector is a design
+question for after the sweep."* B8.3 found `trades.aggressor_side` by noticing one odd silence and
+then reading the source. `tests/phase1/reference_but_silent.py` makes the noticing mechanical:
+**the columns the builder's source references, minus the columns the probes moved.**
+
+Over B8's 47 cohorts:
+
+| | |
+|---|---|
+| silent cohorts | 14 |
+| name matches anywhere in the builder source | 3 |
+| **…of which SAME-FRAME candidates** | **2** |
+| …of which name collisions with another frame | 1 |
+| unreferenced — ordinary silence | 11 |
+
+**The first version of the screen reported three candidates and two were wrong.** `col:trades.side`
+and `col:trades.action` matched `df["side"]` and `df["action"]` inside `load_mbo_aggregated` — a
+function that reads *a different parquet*, the 8.2M-row MBO frame the adapter deliberately never
+opens. A bare column name collides across frames. The screen now captures the **receiver** and the
+**enclosing function** with every match, so a collision reads as a collision.
+
+**Both surviving candidates were then read, and they are different from each other:**
+
+```python
+is_buy = trades["aggressor_side"].isin(["B","Buy","buy"]) if "aggressor_side" in trades.columns \
+         else trades["side"].isin(["B","Buy","buy"])
+```
+
+- **`trades.aggressor_side` — the class.** The reference **executes**, and the predicate is false
+  for every row of `SELL_AGGRESSOR` / `BUY_AGGRESSOR` / `UNKNOWN`. No permutation can move the
+  output. **Invisible to a value probe, and invisible to the null detector too** — the mechanism is
+  a constantly false predicate, not a null pattern.
+- **`trades.side` — NOT the class.** Its reference is the `else` limb of a ternary whose `if` limb
+  always fires, because `aggressor_side` is present. **A dead branch, not a dead predicate.**
+  B8.3's one-line explanation — *"the `aggressor_side` branch is taken, so `side` is never read at
+  all"* — is confirmed by the screen rather than merely restated.
+
+**So the class has exactly one member on this fixture**, and the screen reduced fourteen silences to
+one question a human answers in two lines. Whether that earns a third detector stays a design
+question for after B9-S, as R135 directs. Three tests cover the screen, including that it **halts**
+rather than returning an empty candidate list when pointed at the wrong source — an empty screen is
+not an empty finding.
+
+### §9.2 — the comparators are runnable. Feasibility established, nothing executed.
+
+**The k6 virtualenvs survive at `C:\Users\ttbea\k6env\`**, and their versions match the environment
+record captured on 14 Aug 2026 before results were read:
+
+| venv | tools |
+|---|---|
+| `general` | `Leakly` 0.1.2, `leakage-buster` 1.0.2, `leakfence` 0.5.0, `temporalcv` 2.3.0 |
+| `ld` | `leak-detect` 0.0.1 |
+| `dc` | `deepchecks` 0.19.1 |
+| `omds`, `lav`, `la`, `R`, `omdsrc` | present |
+
+**None is importable from the main interpreter, and that is by design** — they carry conflicting
+`pandas` and `scikit-learn` pins (2.2.3 / 2.3.3 / 3.0.5 and 1.5.2 / 1.6.1 / 1.9.0). Any §9.2 runner
+must invoke each tool through its own venv's interpreter, as k6's did.
+
+**What §9.2 still needs**, stated so the next round starts from it rather than rediscovering it:
+
+1. **The acceptance fixture materialised as tool inputs, both sides.** Cheap: `fixture_corrected`
+   *literally calls* `fixture_contaminated` and adds `apply_universal_lag`, so one `read_inputs`
+   capture serves both — `builder_for(inputs, side)` switches at zero extra I/O.
+2. **A positive control per tool first** (W2b steps 1–2). *"A tool that has never been shown to fire
+   through its adapter has not been tested; it has been mishandled."* A tool whose adapter does not
+   fire on its own documented positive is recorded **NOT RUN** — never an abstention, never a miss.
+3. **R is still not installed**, so `leakr` and `bioLeak` remain structurally unrunnable, as
+   recorded at k6.
+
+### A related observation, HELD — SC-7(d) and the adapter
+
+`read_inputs` executes **`fixture_contaminated`** to capture the builder's reads, and the probes
+then build the **corrected** side from that capture. That looks like both sides in one run.
+**It is not**, and the reason is structural rather than a matter of care: `fixture_corrected` is
+*defined as* `fixture_contaminated` plus a lag, so the two sides read exactly the same inputs and
+the capture cannot carry side-specific information. The contaminated builder's **output** is
+discarded; only its reads are kept.
+
+**But the corollary is worth recording:** the two sides are one argument apart from the same
+`FixtureInputs`, so **SC-7(d)'s one-side-at-a-time rule is enforced by harness discipline, not by
+the adapter.** Nothing structurally prevents a caller from building both. For §9.2, which needs both
+sides, that is exactly the place where the sequencing rule has to be honoured deliberately.
