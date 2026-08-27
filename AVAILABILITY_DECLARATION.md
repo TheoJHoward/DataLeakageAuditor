@@ -3775,21 +3775,59 @@ elements the gate consumes. A tag that hashes the specification but not the decl
 specification is evaluated under is an integrity chain with a hole exactly where the amendment
 lives, and **an amendment weaker than the thing it amends is not one** (§0.2.1 line 97).
 
-**Lock-time obligations arising elsewhere in this file — BOTH DISCHARGED, recorded so the change is
-auditable rather than silent:**
+**Lock-time obligations arising elsewhere in this file — NEITHER IS DISCHARGED. Corrected at
+R138/A25; the previous text is quoted below and the reason it was wrong is stated.**
+
+**What this said until R138, verbatim:** *"Lock-time obligations arising elsewhere in this file —
+**BOTH DISCHARGED**, recorded so the change is auditable rather than silent"*, followed by *"(i) …
+**DISCHARGED by amendment**, not by doing it"* and *"(ii) … **DISCHARGED by amendment**."* Both
+discharges rest on an amendment to `PREREG.md` §6.2 that **was drafted and never applied**. A20
+established by reconstruction that `PREREG.md` is byte-identical to `prereg-v30:PREREG.md` with
+`PREREG_v30a_APPROVAL.diff` applied, and neither clause is in that diff. **An obligation recorded
+as discharged by an amendment that does not exist is not discharged; it is undischarged and
+mis-recorded**, which is the more serious of the two states because a reader checking the ledger
+would stop looking.
 
 - **(i) "Add the contamination availability class as a named field to the governing manifest"
-  (§A.3) — DISCHARGED by amendment, not by doing it.** The recording locus is amended to this
-  declaration, which the tag hashes; the manifest is an evidence artifact and is not edited
-  (§A.3, working resolution R13). There is no residual manifest edit due before the tag.
-- **(ii) "Produce or formally defer the CI sliced variant" (§A.4) — DISCHARGED by amendment.**
-  The element is moved off the Phase 0 acceptance fixture and re-registered as a Phase 1 CI
-  obligation with its scoring rule declared ex ante. It is not due at lock; it is due at the
-  first CI run that exercises the padded slicer, and it is frozen by §D.1 item 5.
+  (§A.3) — NOT DISCHARGED.** The reasoning stands and only the discharge does not: the manifest is
+  an evidence artifact, and **applied clause SC-9(b) forbids editing one to carry a declaration**
+  — *"A manifest, a measurement record, a capture … is not edited to carry a declaration, a
+  decision, or an amendment."* So the original obligation cannot be met the way line 450 words it,
+  and SC-9(b)'s next sentence names the only remedy: *"Where a registered element's recording locus
+  must move, the locus is **amended explicitly**."* **`PREREG.md` line 450 stands unamended and the
+  class is recorded here, so the registered text and the practice disagree.**
+  **What would discharge it:** the drafted §6.2 replacement — `PREREG_v30a_DIFF.md` H3, extracted
+  and presented at `evidence/amendment/A23_PROPOSED_DIFF.md`, anchor located at `PREREG.md` l.579,
+  match count 1 — **approved by the author and applied.** Nothing else discharges it; a declaration
+  cannot amend `PREREG.md` (SC-9(a)).
 
-**No lock-time obligation remains outstanding in this file.** Obligations carried FORWARD rather
-than discharged are named at §D.5, so a later reader does not mistake "nothing due at lock" for
-"nothing due".
+- **(ii) "Produce or formally defer the CI sliced variant" (§A.4) — NOT DISCHARGED, and it is the
+  weaker of the two failures.** Everything this element needs **except the amendment itself** is
+  present and stands: the element is not due at lock; **its due event is named** — the first CI run
+  that exercises the padded slicer, before any user-facing slice auditing is published; **its
+  scoring rule is declared ex ante**; and it is frozen by §D.1 item 5. That is exactly what applied
+  clause **SC-2(e)** requires of a phase move — *"the obligation names the event that makes it due,
+  and its scoring rule is declared ex ante, at the move."*
+  **What is missing is the move's own record in the registered file.** SC-2(e)'s first words are
+  *"MOVING AN ELEMENT BETWEEN PHASES **IS AN AMENDMENT**"*, and no clause of `PREREG.md` records
+  that this element moved. **`PREREG.md` line 451 therefore stands as a Phase 0 obligation on its
+  face**, while this file treats it as a Phase 1 one.
+  **What would discharge it — two routes, and the choice is the author's.** Either a §6.2 clause
+  recording the move (drafted at `PREREG_v30a_DIFF.md` H4, deliberately **not** extracted into the
+  proposal, because drafting a diff for an undecided element decides it); or an author ruling that
+  SC-2(e) plus this declaration's instance already effects the move, in which case this entry
+  becomes discharged **by SC-2(e)**, cited here, and not by an unapplied amendment.
+
+**One lock-time obligation was recorded as outstanding and is not affected: none.** The correction
+above changes the count of *discharged* obligations in this file from two to **zero**, and neither
+of the two is discharged by anything currently in the registered text. **This is a correction to
+this file's own record of itself, not to any registered clause of `PREREG.md`** — that file is
+unchanged at `0c8da19f237cd243…` and is edited only by a diff the author has approved.
+
+**Obligations carried FORWARD rather than discharged are named at §D.5**, so a later reader does not
+mistake "nothing due at lock" for "nothing due". With this correction, §D.5 is no longer the only
+place a reader must look: **the two entries above are due as well, and what makes each due is
+stated with it.**
 
 ### D.3 — Interpretation rule for decision-log entries
 

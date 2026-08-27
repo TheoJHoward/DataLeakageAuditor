@@ -1562,7 +1562,7 @@ _LINE_PINNED_CITATIONS = (
      "DEVIATIONS_DRAFT.md cites H-L12 by line for the date convention"),
     ("DESIGN.md", 546, "review-lesson",
      "COMMIT_PLAN.md cites DESIGN.md l.546 as the cross-reference H-L13 de-fragilised"),
-    ("AVAILABILITY_DECLARATION.md", 4339, "R8. H-entry",
+    ("AVAILABILITY_DECLARATION.md", 4377, "R8. H-entry",
      "the decision-log tail is one block with no per-entry heading"),
 )
 
