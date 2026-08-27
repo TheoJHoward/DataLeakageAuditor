@@ -2,43 +2,31 @@
 
 **Purpose (R36).** After compaction, re-orient from THIS file. Rewrite it every round.
 
-**CURRENT STATE: R144. Track A still HALTS AT A33b for the author's approval of sixteen lines —
-that is the only thing blocking the tag.** `main` is at `451555b`; **`PREREG.md` is at
-`e7b0e5aec2c4523e…`, 2228 lines.** Tags are `prereg-v30` only. **`backup/held-banking` at `655f613`
-now pins the stash**; nothing tagged, pushed or stamped.
+**CURRENT STATE: R145. Track A HALTS AT A33b — the author's approval of sixteen lines is the only
+thing blocking the tag.** `main` is at `caf87ee`; `phase1` at `5295089`. **`PREREG.md` is at
+`e7b0e5aec2c4523e…`, 2228 lines.** Tags `prereg-v30` only; `backup/held-banking` at `655f613` pins
+the stash. Nothing tagged, pushed or stamped.
 
-**A37 — the record is GC-proof.** A branch ref pins `stash@{0}`. Its inventory, which prior rounds
-never gave: **exactly one file**, `evidence/session/ROUND_STATE.md`, +92 lines. The "held banking"
-was the report itself.
+**Everything executable on Track A is done.** A37, A36 and A38 completed at R144; **A33b was
+produced (`094486d`) and halts**; **A35 is done (`4585994`)**; **A34's read-only sweep is done
+(`682566c`)** and its repair set is fixed at **five sites**. A34 and A17‴ are gated behind the
+author.
 
-**A36 — the contradiction dissolves, and it was my instrument.**
-`evidence/session/ROUND_STATE.md` has **fifteen commits of continuous history**, is tracked on
-**both** branches, and **is manifest-attested** (line 896). Never deleted. Last round's sentence —
-*"does not exist, is not tracked on either branch, and has never been committed"* — was true of the
-**path `ROUND_STATE.md` at the repo root**, which is what `ls`, `git ls-files`, `git ls-tree` and
-`git log` were all given. **It was stated about the file.** The narrower-than-its-claim class,
-**H-L21**: the population was a filename, not the tree.
+**A38 is complete and took the UNIQUE branch.** The 92 held lines were **68 substantive lines
+existing in no committed file**; they are appended **dated**, framed as the `d39643e` pass and
+banner-marked **superseded as a verification, standing as a record** — R145 §1.1's care point,
+satisfied before it was written. **68 of 68 present, 0 missing.** The stash is redundant by
+construction and is **verified-and-dropped at A15**, not before.
 
-**A38 — the held banking was NOT redundant, and that was the real risk.** **68 substantive lines
-existed in no committed file**: the **A9 all-green table**, **the point at which §1.6 attaches**, and
-**two recorded defects of mine**. All of it lived only in the one git ref that is unpushed,
-droppable and invisible to every branch. Restored **verbatim** between A5.3 and R134 — a **gap, not
-a divergence**, checked for a competing account before concluding it. **68 of 68 now present, 0
-missing.** The A9 run is banner-marked **superseded as a verification, standing as a record**: it
-ran against `d39643e` and **sixteen commits have landed since**.
+**`main`'s gate: 23 checks, FAIL — the two C2-blocked findings, which §1.5 rules stand.
+`round_reconciliation` PASSES.** **`phase1`'s D10 has NOT cleared, and the mechanism is now
+evidenced rather than asserted:** the pinned work-root copy is `3dc4e498…`, **byte-identical to
+main's committed copy**; `phase1`'s checked-out copy is `1bafc19e…`. **D10 hashes the checked-out
+tree**, so it reconciles on `main` and cannot on `phase1`.
 
-**⛔ A33b HALTS — unchanged.** The applied text is the presented text **plus exactly sixteen lines,
-altering nothing presented**. `A32_PROPOSED_DIFF.md` stays frozen at `26d4856`. **A34 is gated on
-it**, its repair set fixed at **five sites**; **A35 is done** — hunk 4 does not land, disclosure
-drafted and held. **`DEVIATIONS.md` is still 0 bytes.**
-
-**⚠️ `main`'s gate is 23 checks, FAIL — 2 findings, and §1.5 rules they stand.** `round_reconciliation`
-**PASSES**. Manifest **0 listed-but-absent**.
-
-**Track B is on `phase1` at `cfb8a89`. §9.2 STEP 2 IS COMPLETE — six of six comparators
-DISCRIMINATING**, AGPL-3.0-or-later determined for deepchecks. **Four adapter defects of mine were
-caught before anything was recorded**, each of which would have been a plausible, publishable, false
-finding about someone else's software.
+**Track B: §9.2 STEP 2 IS COMPLETE — six of six comparators DISCRIMINATING**, AGPL-3.0-or-later
+determined for deepchecks, four adapter defects of mine caught before anything was recorded.
+**`aggressor_side` is now PROPOSED, NOT BUILT** — the recommendation is **no third detector**.
 
 **THIS FILE IS THE REPORT.** Each item is banked here when it completes, before the next begins.
 A record that lives only in a chat message dies with the turn, and a turn that ends mid-item then
@@ -2324,3 +2312,95 @@ resolver now **raises on an unrecognised shape** rather than returning empty, be
 *clean*. **Each of the four would have been a plausible, publishable, false finding about someone
 else's software** — and each was caught by checking my own call first, which is the discipline W2b
 applies to vendors, turned inward.
+
+---
+
+# R145 — RE-ENTRY VERIFIES A38 ALREADY COMPLETE · `aggressor_side` PROPOSED, NOT BUILT
+
+## RE-ENTRY — HEADs reported explicitly, as R145 requires
+
+| | |
+|---|---|
+| `main` HEAD | **`caf87ee761464fa17e92d6c18eb7dab364f8ff0c`** |
+| `phase1` HEAD | **`cfb8a891835116b7daa016adacb96efa3fd35c38`** (→ `5295089` this round) |
+| working / index | **clean on both**; untracked ceremony files only |
+| tags | **`prereg-v30`** only — no unexpected tag |
+| `main` gate | 23 checks, **FAIL — 2 findings**, the C2-blocked pair. `round_reconciliation` **PASS** |
+| `phase1` gate | 23 checks, **FAIL — 3 findings**, those plus **D10** |
+
+**`phase1`'s D10 has NOT cleared, and the mechanism is now evidenced:**
+
+| copy | sha256 |
+|---|---|
+| pinned work-root | **`3dc4e498…`** |
+| `main` committed | **`3dc4e498…`** — identical |
+| `phase1` checked-out | `1bafc19e…` |
+
+**D10 hashes the checked-out tree.** On `main` the work-root copy finds its twin; on `phase1` it
+cannot, because `phase1`'s copy has not moved since before R134. **Not a defect — the settled
+branch-split property, with the hashes behind it rather than the label.**
+
+## §0 WAS STALE IN FOUR PLACES — established by derivation, not memory
+
+| §0 said | the tree says |
+|---|---|
+| *"A33b's superseding presentation has not yet been produced"* | **produced at `094486d`**, 89 lines, the sixteen in full |
+| *"§9.2 … step 2 next"* | **COMPLETE at `cfb8a89`** — six of six |
+| *"A35 pending"* | **done at `4585994`** |
+| A38 listed as this round's work | **done at `451555b`** |
+
+## A38 — verified complete, and it took the branch §1.1 cares about
+
+`a38_reconcile_sources.py` re-run: **68 held lines carrying text, 68 present, 0 missing.** The
+**UNIQUE** branch was taken at R144 and the framing §1.1 requires is already in place — the banner at
+ll.521–535 dates the section, names it the `d39643e` pass, and marks the A9 run **superseded as a
+verification, standing as a record**, *above* the `THE CEREMONY PASSED` heading at l.538. **It cannot
+be read as current status**, which was the whole hazard.
+
+**The stash is redundant by construction. It is not dropped** — R145 §6 reserves that to A15's
+verify-and-drop, and `backup/held-banking` stays until then.
+
+## TRACK B — `aggressor_side`: PROPOSED, NOT BUILT
+
+**Artifact: [`AGGRESSOR_SIDE_CLASS_PROPOSAL.md`](../phase1/AGGRESSOR_SIDE_CLASS_PROPOSAL.md).**
+Nothing built: no detector, `detectors.py` untouched, no registered text edited, no new
+`evidence_outcome` value.
+
+**Recommendation: no third detector.** Promote the existing screen from a diagnostic to a
+**reporting obligation** — every silent-but-referenced column named with its enclosing function and
+receiver, published as **`covered_with_exclusion`, never a pass**.
+
+**The blindness is structural.** `valueread` permutes within the observed domain and the predicate is
+false across all of it; `nullread` substitutes a null, also outside the `isin` set. **And the OOD
+strategy does not merely miss it — it is INELIGIBLE:** `aggressor_side` is an `object` column, and
+`_ood_target_dtype` returns `None` for `object` in terms — *"every value is representable, so no
+insertion can change the dtype. There is nothing to promote TO."* It **refuses as `Unsupportable`**
+rather than running and reporting silence. **A refusal and a silence are different facts, and only
+one of them is evidence.**
+
+*(I first wrote that row as "an out-of-distribution sentinel" — wrong twice: it is out-of-**dtype**,
+and here it does not run at all. Corrected by reading `corruption.py` instead of trusting the shape
+of the name.)*
+
+**The real defect is in the report, not the suite.** The guard is unsatisfied on **this** corpus; on
+one where `aggressor_side` holds `"B"` the dependence is live. **A suite reporting `none` makes a
+claim about all corpora from evidence about one** — and §6.6 already registers `observed_silence` ≠
+`none` (l.1101), while §39 already requires silence to carry its domain. **The vocabulary exists and
+is not being used.**
+
+**Why not a satisfying-value probe (Option A): its domain cannot be stated.** It would work on
+`isin([...])` and silently find nothing for `x > threshold`, a regex, a lookup, or any computed
+set — and *"found no candidate values"* renders as silence, which reads as clean. **That is the
+never-fired-reads-as-clean failure, hit four times in adapters in a single sweep.** Secondarily, the
+class has **one** member, and a detector firing that rarely can never be calibrated.
+
+**Why not a fourth `evidence_outcome` value (Option B):** §6.6's resolver has **ten legal pairs of
+fifteen** — verified against the registered table — so adding one is a class C amendment needing its
+own approval. It is also **the wrong axis**: `evidence_outcome` describes what an *execution*
+produced; this is a fact about what the *source* references.
+
+**What the recommendation would NOT establish, stated so it is not oversold:** the screen does not
+find constantly-false predicates. It finds **columns referenced but unmoved — a superset**; a
+candidate may be a dead branch, a cross-frame name collision, an unprobed frame, or a genuine dead
+predicate. **Every candidate stays a question for a human.** Three conditions that would change the
+recommendation are named in the artifact; **none holds today.**
