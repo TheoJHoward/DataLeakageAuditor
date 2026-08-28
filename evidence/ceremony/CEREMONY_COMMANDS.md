@@ -927,6 +927,16 @@ git push origin main
 The block heights go into `DEVIATIONS.md` D-001's last `«CEREMONY-FILL»` at this point, and not
 before — they are not knowable until the upgrade returns them.
 
+The recorded hash of the receipt goes stale in the same act. `ROUND_STATE.md` records the receipt's
+byte count and its sha256; upgrading REWRITES the receipt, so both figures change and the record then
+describes a file that no longer exists. **Re-derive both and update that line in this same commit** —
+the size as well as the digest, since an upgraded receipt is longer, not merely different. Do not copy
+the new values anywhere else: one place holds them.
+
+This step is the price of keeping the line, and the reason it was kept. A recorded hash that goes red
+when the receipt changes is a live check; no line at all is silence. The obligation is named here, at
+the point of use, because that is where it will be read at the moment it applies.
+
 **Hard ordering.** §0.2.1 line 95 requires the amendment "committed and externally timestamped
 before the affected detector is implemented or evaluated"; §10.0 step 3 requires it before step 4.
 So **C4a–C4c precede any Phase 1 freeze and any detector work. C4d may trail.**
