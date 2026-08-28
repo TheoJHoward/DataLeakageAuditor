@@ -2,39 +2,35 @@
 
 **Purpose (R36).** After compaction, re-orient from THIS file. Rewrite it every round.
 
-**CURRENT STATE: R148. A17‴ IS ALL GREEN. THE TAG TARGET IS
-`48604491956ff4320819d72205733909676482fb`, and A10 — the author's signature — is the only thing
-left before the tag exists.** `main` is at that commit; `phase1` at `d0ad24f`. **`PREREG.md` is at
-`fcacebb231438e31…`, 2228 lines, and was not touched this round** — R148 §1.1 closed that surface,
-and both repair scripts assert its hash is unchanged across their own run.
+**CURRENT STATE: THE v30a REGISTRATION IS CLOSED. `prereg-v30a` is signed, pushed, stamped and
+verified.** The ceremony that ran from R116 to R158 is finished; what follows it is Phase 1 work,
+not registration work.
 
-**⭐ THE GATE PASSES. `check_registration.py --stage prereg` exits 0 — 23 checks, RESULT: PASS.**
-The two C2-blocked findings that stood since R139 are **cleared by repair, not by exemption**:
-`README.md` l.60 and `f4/DECLARATION_POINTER.md` carried a pre-A24/A29 declaration hash. They were
-one site and two — l.60 sits **inside** the v30a hash block, so rewriting the block from
-`v30a.hashes.txt` repaired it. **pytest: 137 passed.**
+| | |
+|---|---|
+| **tag** | `prereg-v30a` → `814cd4cf…`, peeling to **`b5a05c0d1a20126dc026d63bffb4b388e72dd688`** |
+| **signature** | `git tag -v` exit 0, *"Good signature from Theo Johann Howard"*; VALIDSIG primary-key **`991F5331C584CE5EAF7D6939B29CF0E847119AD7`**; signing key `B29CF0E847119AD7` |
+| **the twenty** | read back **out of the signed object**, 20 of 20 identical to `v30a.hashes.txt`, entry by entry and by count |
+| **pushed** | fast-forward confirmed before the act (36 commits, remote an ancestor); no force, no flags; `0ee26c4..b5a05c0 main` then `* [new tag] prereg-v30a` |
+| **remote** | tag object **and** `^{}` peel both present, peel `b5a05c0d…`; remote `main` == local |
+| **stamped** | `amendment-commit-v30a.txt` 41 bytes, SHA + LF, sha256 `b45b3f52…`; receipt 654 bytes, sha256 `084afd7a…`, **independently re-derived** to attest that exact file (digest at byte offset 33, preceded by op byte `0x08`). **Calendar commitments only — the Bitcoin attestation was PENDING when committed**, as v30's was |
+| `registration-commit.txt` | **untouched**, `a7a80d81…` on both sides of the write |
 
-**C2 over the grown set: 20 lines**, the count read from the `FILES` line and never stated as a
-literal. Three hashes moved since the stale `v30a.hashes.txt`, which predated the amendments —
-`PREREG.md` `0c8da19f`→`fcacebb2`, `check_registration.py` `392bab83`→`bdd64bd7`, the declaration
-`3a579015`→`79357d77`.
+**`PREREG.md` is closed permanently at `fcacebb231438e31…`, 2228 lines.** Every instrument is spent,
+applied, or refused: A34's correction class · hunks 1–3 and the sixteen lines, approved and applied ·
+§8.2, hunk 4 and §13c-P, refused.
 
-**A9 compared C2 against FIVE surfaces, not four** — a tag points at a **commit**, so the committed
-tree is included: `v30a.hashes.txt`, `tagmsg.txt`, the README block, the working tree and the HEAD
-commit are **identical, 20 of 20, entry by entry and by count**. Manifest three directions: **723 OK
-/ 0 failed, 0 missing, 0 unlisted**. C5b by SHA: **11 inherited, 11 accounted, 0 unaccounted**.
+**Ten deviations are on the record** (`DEVIATIONS.md`, D-V30A-01 … 10), each stating what is true,
+what was expected, and why it stands. The file was empty when the tag attested it; everything in it
+post-dates that attestation, which is what an append-only deviations record is for.
 
-**`tagmsg.txt` regenerated and C2f GREEN** — change list from `v30a.changes.txt`, hashes from
-`v30a.hashes.txt`, the signing-key block carried verbatim by anchor because a key fingerprint is a
-value no script should retype.
+**Signing path: undetermined.** The machine side could not establish it; the author was asked twice
+and has not stated it. **The signature verifies; the input method is unrecorded.** It is not
+inferred here.
 
-**Two of my own defects were caught before they mattered**, both recorded: **A9 went red first on a
-defect in the CHECK, not the manifest** — two directions of one check disagreeing was itself the
-signal; and **the first A17‴ commit message was built with `printf`, whose `\u` escapes this shell
-does not expand**, so four lines carried a literal `§`. **D2.1's hazard reached the commit message.**
-Amended before any tag or push.
-
-**⛔ WAITING ON THE AUTHOR: A10.** Nothing else on Track A is outstanding.
+**Track B, unchanged and unstarted:** the §6.2 acceptance run opens as its own round — the tag now
+timestamps the criteria, so results score against a provably frozen registration. Probe A's traces
+exist and resolve through the registered machinery; the scoring apparatus has never run.
 
 **THIS FILE IS THE REPORT.** Each item is banked here when it completes, before the next begins.
 A record that lives only in a chat message dies with the turn, and a turn that ends mid-item then
@@ -2699,3 +2695,545 @@ authored through the file-write tool, which is what D2.1 has said all along.
 
 §9.2 step 3 stands where R147 left it: **one interpretable run of six**, no discharge table, the
 three adapter defects named in `W2B_STEP3_INTERIM.md`. B-2′ resumes in the wait for A10.
+
+---
+
+# R155 · R156 · R157 — THE SIGNATURE, THE STAMP, THE PUSH
+
+**Written at A15-4.** R149–R154's records were banked as pending-fold files and are folded below
+this section, verbatim. **R155, R156 and R157 were reported in chat only and had no record file**;
+this section is their record, written from the execution log.
+
+## R155 — the signature
+
+**The author instructed "sign it" and delegated A10's invocation**, once, on that recorded
+instruction. The key, the passphrase and the push remained his; only the keystroke moved.
+
+**S1 pre-flight, all four green:** `main` == `b5a05c0d…` · `tagmsg.txt` 2588 bytes, sha256
+`fa009dd2…`, 32 lines, **LF**, no control characters beyond tab/LF · **C2f GREEN, exit 0** — the tag
+message's twenty hash lines identical to `v30a.hashes.txt`, and the change list present verbatim
+from `v30a.changes.txt` · tags `prereg-v30` only · gate exit 0.
+
+**S2:** `git tag -s -F tagmsg.txt prereg-v30a b5a05c0d…` — **exit 0**, no output, one attempt.
+
+**S3, every check green:** `git tag -v` exit 0, *"Good signature from Theo Johann Howard"* ·
+VALIDSIG primary-key **`991F5331C584CE5EAF7D6939B29CF0E847119AD7`**, signing key `B29CF0E847119AD7`
+· **the twenty hashes read back OUT of the signed object**, 20 of 20 identical entry by entry and by
+count · `^{commit}` == `b5a05c0d…`.
+
+**The signing path was not determined and is not inferred.** No passphrase was seen or handled by
+the agent; the command returned inside the timeout with no passphrase-related error. Whether a
+pinentry dialog appeared on the author's screen or a cached agent supplied it is **his to state**,
+and he has not.
+
+## R156 — the stamp
+
+**The author's act, in a browser** — `ots` is recorded broken on this machine, so the OpenTimestamps
+web page was the route. The receipt was verified before it was committed:
+
+- **654 bytes**, sha256 `084afd7ada350b876578312e55a587391f25e3d7351e9f031f34227e28ea5a31`
+- **independently re-derived, not taken on report:** `sha256(amendment-commit-v30a.txt)` =
+  `b45b3f52…` appears in the receipt at **byte offset 33**, immediately preceded by op byte **`0x08`**
+  (SHA256). It attests that exact file, and that file holds the tag's own peel — so the chain runs
+  receipt → `amendment-commit-v30a.txt` → `prereg-v30a^{}` → the signed commit.
+- calendars: alice · bob · finney. **No Bitcoin attestation — PENDING**, as v30's was before its
+  upgrade landed at blocks 961654 and 961656.
+
+**The receipt was saved to `Downloads`, not beside its file, and was moved.** On disk it was
+**correctly hyphenated** — the hyphen-stripped name reported upstream was an upload artifact, not the
+filename. Copied beside its file, sha256 verified **at the destination**, and only then removed from
+the source: the original was not deleted until the copy verified.
+
+## R157 — the push
+
+**The author delegated A12**, bounded to the two bare commands. A **read-only fast-forward check ran
+first** — remote `0ee26c44` was an ancestor of local `b5a05c0d`, 36 commits — so no force was needed
+and none was used.
+
+- **P1** `git push origin main` → exit 0, `0ee26c4..b5a05c0  main -> main`
+- **P2** `git push origin prereg-v30a` → exit 0, `* [new tag] prereg-v30a -> prereg-v30a`
+
+**A13 verified the remote, not the local:** tag object `814cd4cf…` **and** its `^{}` peel both
+present on the remote, peel == `b5a05c0d…`; remote `main` == local. **C4a** wrote
+`amendment-commit-v30a.txt` **from the tag's own attestation** — 41 bytes, SHA + LF, sha256
+`b45b3f52…` — and `registration-commit.txt` was confirmed unchanged on **both sides** of that write.
+
+**At A13's green the registration became irreversible.**
+
+## A15 — the close-out
+
+**A15-0** located the receipt, verified its bytes, re-derived its attestation independently, and
+recorded the move. **A15-1** committed the receipt pair as a follow-up commit — *a commit cannot
+contain the receipt for its own hash* — recording that the attestation was **pending**. **D16 earned
+its keep here:** adding the manifest lines before committing the files turned the gate red with
+*"attested by the manifest but neither tracked nor in the add-set"*, which is precisely the check's
+purpose; the fix was the commit, not removing the lines.
+
+**A15-2** verified both backups redundant — **68 of 68 held lines already in the committed record, 0
+missing** — before dropping either, then dropped both. **A15-3** landed ten deviations, with the
+single-source scan enforcing that none of them is rule-shaped: a rule-shaped line in `DEVIATIONS.md`
+would be a class C change recorded in the one place §0.2.1 forbids.
+
+---
+
+# FOLDED AT A15-4 — `R149_PENDING_FOLD.md`, verbatim
+
+*Banked to the session scratchpad while `main` was frozen; folded here unchanged.*
+
+# R149 — BANKED TO THE WORK ROOT. FOLD INTO `ROUND_STATE.md` AT A15.
+
+**`main` is frozen at `b5a05c0d1a20126dc026d63bffb4b388e72dd688` awaiting the author's signature, so
+this round is NOT committed to `main`** — any commit there would invalidate the SHA the author was
+asked to sign. §7's fallback applies: bank to the work root, fold at A15.
+
+**RE-ENTRY, 28 August 2026.** No new tag — `prereg-v30` only. `main` unmoved at `b5a05c0d…`, gate
+**exit 0, 23 checks PASS**, A9 re-verified: all five surfaces identical, 20 of 20. `phase1`
+`f76afb0` → `b287765`. **The author has not signed; A10 is re-presented verbatim.**
+
+---
+
+## B-3 — controls through the FINAL adapter path. §D.5(i) **DISCHARGED**.
+
+R149 §1.2. Step 2's controls each called their tool directly; three adapters were then rebuilt, so
+those controls no longer tested what the measurement does. A positive/negative pair now goes through
+`b2_run_one.py` **itself** — same CLI, same adapters, same CSV transport and dtype sidecar the
+fixture rows used.
+
+| tool | positive | negative | |
+|---|---|---|---|
+| leakage-buster | **fires** | silent | holds |
+| leakfence | **fires** | silent | holds |
+| temporalcv | **fires** | silent | holds |
+| deepchecks | **fires** | silent | holds |
+
+**All four hold. The publish-block on B8/B9's results lifts.**
+
+### The first attempt did not hold, and the defect was in the CONTROL
+
+temporalcv HALTed on the clean frame — **correctly, arithmetically, with no leakage present**. The
+negative used an **iid** target, and for an iid series the mean predictor alone beats persistence by
+**~29%** (E|y−μ| = 0.798σ against E|y_t − y_{t−1}| = 1.128σ), tripping the gate's own 20% threshold
+on arithmetic alone. **A control must be drawn from the regime the measurement operates in.** The
+fixture's target has lag-1 autocorrelation **0.794**, so the control was rebuilt at φ = 0.79.
+
+**Two things came out of it, and the second is a finding about the tool.**
+
+1. The adapter now **measures the precondition and declares its own domain**: if the mean predictor
+   already beats persistence past 0.20, any HALT is arithmetic rather than evidence and the tool is
+   recorded `unsupported` on that target.
+2. **`gate_suspicious_improvement` is only interpretable where persistence is a strong baseline.**
+   Outside its forecasting regime it fires on clean data. Found by controlling the tool rather than
+   by trusting a HALT.
+
+On the fixture the precondition is **−1.195** — persistence far stronger than the mean predictor —
+so the gate is in its regime and the row stands. **§2.2 cuts both ways: the fixture sweep was re-run
+through the final adapter and every verdict is unchanged.**
+
+## The table's framing — three failure modes, one conclusion
+
+| tool | contaminated | corrected | separates? |
+|---|---|---|---|
+| leakage-buster | **True**, 2 HIGH | **True**, same 2 HIGH | **no** — fires on everything |
+| leakfence | dup 0; group **unposable** | dup 0; group **unposable** | **no** |
+| temporalcv | −2.04 → PASS | −2.07 → PASS | **no** |
+| deepchecks | PPS 0.023 | PPS **0.046** | **no** — wrong direction |
+| Leakly / leak-detect | `unsupported` / `could_not_run` | same | — |
+
+**Constant firing is not detection.** A tool that fires identically on both sides fails the pair
+exactly as one that passes both or points the wrong way, and no row should be read as a tool having
+found the contamination.
+
+## The missing row — named, not filled
+
+**Six external tools, none separating the pair, and no row showing that ours does.** The comparison
+is asymmetric until it exists. It is a **design question, not a measurement**: the dependency map may
+look alike on both sides, the difference living in availability verdicts, and SC-7 constrains what
+the tool may be given. **Proposed before built**, on the `aggressor_side` precedent. Until then the
+table establishes what the external tools do **not** do and claims nothing about ours.
+
+## Still HELD for A15
+
+A35's SC-6b disclosure · SSF's "(drafted, not applied)" annotation · SC-12(w)'s limb on a zero-row
+§7.7 table · the orphaned Strategy diagnostic row · the two absences · the two structural items ·
+§AB's l.1374 pointer assertion · A39's sixteen unresolved rows · **this record**.
+
+---
+
+# FOLDED AT A15-4 — `R150_PENDING_FOLD.md`, verbatim
+
+*Banked to the session scratchpad while `main` was frozen; folded here unchanged.*
+
+# R150 — BANKED TO THIS SESSION'S SCRATCHPAD. FOLD INTO `ROUND_STATE.md` AT A15.
+
+**Fold list at A15 is now `R149_PENDING_FOLD.md` **and** `R150_PENDING_FOLD.md`.** Banked here, not
+in the pinned work root: D10 scans that root, and a repo-twinless file there reds `main`'s gate at
+exactly the moment it must stay green (R150 §1.3 — it happened once, at R149, and was moved).
+
+**RE-ENTRY, 28 August 2026.** No new tag — `prereg-v30` only. **`main` unmoved at `b5a05c0d…`**,
+gate **exit 0, 23 PASS**, A9 re-verified all five surfaces 20/20. `phase1` `b287765` → `4ace11e`.
+**Not signed; A10 re-presented verbatim.**
+
+---
+
+## B-4 — the own-tool row. **PROPOSED, NOT BUILT.**
+
+**Artifact: [`B4_OWN_TOOL_ROW_PROPOSAL.md`](../phase1/B4_OWN_TOOL_ROW_PROPOSAL.md).**
+
+**The row is constructible and SC-7 permits it.** SC-7(d) forbids *one run* seeing both sides — not
+the harness comparing two per-side runs, which is exactly what the six comparator rows already are.
+**The pairing is the harness's act, never the tool's.**
+
+**The blocking fact, and the document's most consequential finding: every result this project has
+from its own detectors is corrected-side only.** `b9_merged.json`'s case is
+`fixture_corrected_zc_2025-01`; `probe_b_merged.json` never mentions `contaminated`;
+`B9_DETECTOR_SWEEP_RESULTS.md` says "corrected side" in its opening line. **The missing row is not a
+presentation oversight — it is a measurement never made.**
+
+**And the obvious reading of "separates" is wrong.** A dependency map over `raw` **cannot** differ
+between sides: `read_inputs` captures the reads by running one side, and `fixture_corrected` is
+*defined as* `fixture_contaminated` plus a lag, so both read the same frames. A row claiming our tool
+"sees a different map" would be **false**. Three candidate loci are ranked by confidence and labelled
+a proposal, not a result.
+
+**The risk is stated plainly:** the tool may not separate the pair either, and that is a finding to
+publish rather than re-run until it changes. **The subtler asymmetry** — we know this fixture's
+mechanism and the comparators did not — means any adapter choice exploiting that knowledge makes the
+row incomparable with the six.
+
+## B-5 — criterion-5 scaffold. `pyproject.toml` + `INSTALL.md`, new files only.
+
+**Building is not installing, and installing is not importing. All three were run, and two defects
+were found that reading the file would not have caught.**
+
+1. **The metadata build FAILED** — a PEP 639 conflict: both an SPDX `license = "MIT"` and the legacy
+   `License ::` classifier, which setuptools refuses. **The file parsed cleanly throughout.**
+2. **The first successful install could not be imported.** `leakaudit.contract` imports
+   `protocol.runtime_reference`, which was not in the distribution. **pip exited 0 and the package
+   was broken** — a stranger would have hit `ModuleNotFoundError` on first use.
+
+**`protocol` is shipped from its existing location, not moved.** `protocol/runtime_reference.py` is
+**one of the twenty registered paths**; relocating it would alter a registered path while the tree is
+frozen. Verified after the fix: **no tracked modifications**, so the tree the tag attests is
+untouched.
+
+**Verified end to end:** `pip install --target` into a clean directory, then import of `leakaudit`,
+`.detectors`, `.corruption`, `.contract`, `.fixture_adapter` and `protocol.runtime_reference` **from
+the installed copy alone**.
+
+**Licences derived from the installed distributions (§D.5(ii)):** numpy 2.4.2 BSD-3-Clause AND 0BSD
+AND MIT · pandas 3.0.1 BSD-3-Clause · pyarrow 23.0.1 Apache-2.0 · pytest 9.1.1 MIT (dev only).
+**Versions are floors, not pins.** **`deepchecks` is not a dependency** and is not listed —
+interoperation only; listing it would be false *and* would drag AGPL obligations onto a package that
+does not carry it.
+
+**`README.md` untouched** — confirmed by diff — since a pre-tag README edit is a halt.
+
+## Still HELD for A15
+
+A35's SC-6b disclosure · SSF's "(drafted, not applied)" annotation · SC-12(w)'s limb on a zero-row
+§7.7 table · the orphaned Strategy diagnostic row · the two absences · the two structural items ·
+§AB's l.1374 pointer assertion · A39's sixteen unresolved rows · **`R149_PENDING_FOLD.md` and this
+file** · **the `F2_DIR` transient-path fallback**, now also recorded in `INSTALL.md`.
+
+---
+
+# FOLDED AT A15-4 — `R151_PENDING_FOLD.md`, verbatim
+
+*Banked to the session scratchpad while `main` was frozen; folded here unchanged.*
+
+# R151 — BANKED TO THIS SESSION'S SCRATCHPAD. FOLD AT A15(4).
+
+**Fold list is now `R149_PENDING_FOLD.md`, `R150_PENDING_FOLD.md`, `R151_PENDING_FOLD.md`.**
+
+**RE-ENTRY, 28 August 2026.** No new tag — `prereg-v30` only. **`main` unmoved at `b5a05c0d…`**,
+gate **exit 0, 23 PASS**, A9 re-verified 20/20. `phase1` `4ace11e` → `2ceb3c9`. **Not signed.**
+
+*(Housekeeping: B-5's install test had left `build/` and `leakaudit.egg-info/` untracked on `main`.
+Inspected — nine regenerable files, nothing tracked — and removed. Gate re-checked after: still PASS.)*
+
+---
+
+## PROBE A — BUILT, CONTROLLED, RUN ON BOTH SIDES. **IT SEPARATES THE PAIR.**
+
+| side | verdict | cohorts w/ finding | moved **in-second** | moved next-second |
+|---|---|---|---|---|
+| contaminated | **`finding`** | **250 / 300** | **250** | 250 |
+| corrected | **`observed_silence`** | **0 / 300** | **0** | **250** |
+
+**The discrimination is in the row indices, not the fact of movement — that is the whole design.**
+Corrupting every aggregate moves every row on *both* sides. So the probe corrupts a **sparse** set of
+seconds and asks *which* rows moved: a row stamped in second **F** moving means the build read F's
+aggregate at a decision instant **inside** F, when the model says it had not yet arrived. **One
+rebuild per side suffices.**
+
+**The corrected side's 250 next-second movements are the liveness proof.** Its silence is not that of
+a probe which never reached the build — the corruption landed, the aggregate *was* read, one second
+later when it was available. **A silent row without that number would be worthless**, the same
+standard applied to the six external tools.
+
+**The model comes from the declaration, not from me.** Comparator `a(j,c) <= d(i)`, ties available,
+locked at §0.3 Claim A; the join families' declared instant is the **`at_source_timestamp` truth,
+`ts_floor + 1s`**. The declaration says in terms that `at_bar_close` is an **approximation** and not
+the scored instant — *because scoring it "would find the contaminated side clean."*
+
+**Controls first (R151 §6 makes a failing positive a HALT), synthetic and independent of the
+fixture:** own-second builder **fires in-second, 126 rows**; previous-second builder **silent
+in-second, 126 moved next-second**. **Re-run after a fix**, per §2.2: the corruption wrote floats into
+an `int64` column and pandas refused — and **casting to float would have been worse than the error**,
+since a dtype change is itself a perturbation and how a builder treats a promoted column is a
+different question from whether it reads the value. Integer offsets now; controls re-run before the
+fixture was touched again.
+
+**SC-7 throughout.** Each side in **its own process invocation** (SC-7(d)); the pairing is the
+harness's act, the same shape as rows 1–6. Never the paired side, never the R9 map (SC-7(c)).
+Determinism verified per side by two clean builds before any corruption.
+
+## B-8 — the table's final form: **seven rows**
+
+**Artifact: [`W2B_COMPARISON_FINAL.md`](../killgate/w2b/W2B_COMPARISON_FINAL.md).** R151 §1.2's three
+parts kept distinct: six external tools fail to separate the pair (three failure shapes) · **Layer 1
+is identical by design, not by failure** · Layer 2 separates because it probes availability.
+
+**Why rows 1–6 could not see it**, as a designed property: `read_inputs` captures the reads by
+running one side, and `fixture_corrected` is *defined as* `fixture_contaminated` plus a lag — **both
+sides read exactly the same frames**, so a dependency map over `raw` **cannot** differ. The sides
+differ in **when**, not **what**. **This is not a claim that rows 1–6 are bad tools**; each fired on
+its own documented positive, and this fixture's contamination is not in their class.
+
+**What row 7 is NOT evidence of**, stated at the same length as what it is: not general superiority
+(one fixture, one instrument-month, one horizon, one mechanism) · not a criterion-3 gate result (no
+map was received) · **not independent of the declaration** — if the declaration is wrong about when
+cells arrive, Probe A is wrong with it, and that dependency is the design, stated rather than hidden.
+
+## Still HELD for A15
+
+A35's SC-6b disclosure · SSF's "(drafted, not applied)" annotation · SC-12(w)'s limb on a zero-row
+§7.7 table · the orphaned Strategy diagnostic row · the two absences · the two structural items ·
+§AB's l.1374 pointer assertion · A39's sixteen unresolved rows · **the three pending-fold files** ·
+the `F2_DIR` transient-path fallback.
+
+---
+
+# FOLDED AT A15-4 — `R152_PENDING_FOLD.md`, verbatim
+
+*Banked to the session scratchpad while `main` was frozen; folded here unchanged.*
+
+# R152 — BANKED TO THIS SESSION'S SCRATCHPAD. FOLD AT A15(4).
+
+**Fold list: `R149_`, `R150_`, `R151_`, `R152_PENDING_FOLD.md`.**
+
+**RE-ENTRY, 28 August 2026.** No new tag. **`main` unmoved at `b5a05c0d…`**, gate **exit 0, 23
+PASS**, A9 re-verified 20/20. `phase1` `2ceb3c9` → `93c2c32`. **Not signed.**
+
+---
+
+## V-1 — the 50 silent cohorts. **MECHANISM ESTABLISHED.**
+
+**The answer was in the probe's own note**, not in a guess: it recorded corrupting **250 aggregate
+rows across 300 seconds**, and the shortfall *is* the mechanism.
+
+| | |
+|---|---|
+| picked seconds carrying a `magg` row | **250** |
+| picked seconds with **no aggregate row in any frame** | **50** |
+| cohorts reported silent | **50** — the same set |
+
+**Nothing was perturbed for those seconds, so nothing could move.** The silence is the probe having
+nothing to look at, not failing to see. **Domain: 50 rows, 0.0148% of 338,159.** Both sides agree on
+every decision stamp and pick the same 300 seconds — **set coherence holds.** Established **without a
+rebuild**, which is what keeps V-1 verification rather than a re-run.
+
+## V-1's second finding — **a frame that was never corrupted at all**
+
+**`trades` matched 0 of the 300 picked seconds.** `trades.ts_event` is `datetime64[ns, UTC]`;
+`snap.timestamp` and `magg.ts_floor` are naive; **`isin` between aware and naive never matches.** The
+frame was silently never perturbed — an all-False mask indistinguishable from *"no cells were
+unavailable."*
+
+**My guard missed it because it summed across frames**: `touched == 0` raised only if *every* frame
+matched nothing, so magg's 250 masked trades' zero. **A per-frame failure hidden by an aggregate** —
+the same shape as concurring checks over one wrong population. The guard is now per frame, and keys
+are converted into the decision stamps' frame of reference rather than compared across it.
+
+**The re-run changed the corruption and not the verdict**, which is why it is reported:
+
+| | before | after |
+|---|---|---|
+| aggregate rows corrupted | 250 | **608** |
+| contaminated | `finding` 250/300 | **`finding` 250/300** |
+| corrected | `observed_silence` 0/300 | **`observed_silence` 0/300** |
+
+**The fix could have weakened the separation and did not.** Two further dtype defects fell out, both
+under §2.2 — *a cast to make a perturbation fit is a second perturbation*: `+1_000_000` overflowed
+`uint8`; a modular wrap then overflowed `int64` (span 2⁶⁴). The offset now chooses its **direction**
+per element and is `>= 1`, so it never needs arithmetic wider than the column and the value is
+guaranteed to differ. **Controls were re-run after every one of these fixes.**
+
+## V-2 — discipline confirmation. Three items; the third is a real gap.
+
+| | |
+|---|---|
+| determinism guard, per side | **YES** — two clean builds compared before any corruption |
+| seed stable and recorded | **YES** — `20260828`, now written into each result file |
+| cross-process reproducibility | **YES** — fresh processes reproduced every figure exactly |
+| **traces through the existing reducers** | **NO** |
+
+**Probe A emits no registered traces** — no `CombinationTrace` / `ExecutionRecord`, so **no reducer
+has seen its output**. That is the difference between Probe A as a research instrument, which it is,
+and a registered detector, which it is not yet. **Row 7 is a comparison result, not a gate result** —
+consistent with what the row already disclaims, and now stated in the artifact rather than left for a
+reader to find.
+
+**Per §1.1 the artifact is final only after V-1 and V-2 close.** V-1 closes. V-2 closes **with the
+reducer gap disclosed inside the artifact.**
+
+## Still HELD for A15
+
+A35's SC-6b disclosure · SSF's "(drafted, not applied)" annotation · SC-12(w)'s limb on a zero-row
+§7.7 table · the orphaned Strategy diagnostic row · the two absences · the two structural items ·
+§AB's l.1374 pointer assertion · A39's sixteen unresolved rows · **the four pending-fold files** ·
+the `F2_DIR` transient-path fallback · **Probe A's reducer gap**.
+
+---
+
+# FOLDED AT A15-4 — `R153_PENDING_FOLD.md`, verbatim
+
+*Banked to the session scratchpad while `main` was frozen; folded here unchanged.*
+
+# R153 — BANKED TO THIS SESSION'S SCRATCHPAD. FOLD AT A15(4).
+
+**Fold list: `R149_` … `R153_PENDING_FOLD.md`.**
+
+**RE-ENTRY, 28 August 2026.** No new tag. **`main` unmoved at `b5a05c0d…`**, gate **exit 0, 23
+PASS**, A9 20/20. `phase1` `93c2c32` → `e943799`. **Not signed.**
+
+**§0's artifact check: confirmed.** `W2B_COMPARISON_FINAL.md` preserves the first run and the fix as
+a dated before/after (250 → 608 corrupted rows, verdicts unchanged), not only the final numbers.
+
+---
+
+## B-9 — Probe A under the frozen output contract. **The registered resolvers accept it.**
+
+Reported **separately** from the published row 7 (§1.1); row 7 is not restated or replaced, and the
+wrapped verdicts **agree** with it on both sides — **no divergence to report as a finding.**
+
+| side | PRESERVING | PROMOTED |
+|---|---|---|
+| contaminated | **`completed` × `finding`** — 250 cohorts, 250 records, **250 findings** | `not_applicable` × `none` |
+| corrected | **`completed` × `observed_silence`** — 250 cohorts, 250 records, **0 findings** | `not_applicable` × `none` |
+
+**Every trace was accepted by `resolve_state_pair` UNMODIFIED.** Adjusting a reducer to accept a
+trace is a halt; none was touched. **The machinery predates the tool, and that is its value.**
+
+**Three mappings, derived from the legality table rather than chosen:**
+
+- **Eligibility.** The 50 seconds with no aggregate row are **not eligible cohorts**. Including them
+  with no record would resolve to `incomplete(crash)` — *a missing slot with no recorded failure* —
+  **reporting a dead process where the truth is an empty probe surface.** The resolver's own comment
+  settles it.
+- **Promotion.** The corruption is dtype-preserving by construction, so all executions are
+  `PRESERVING`; `PROMOTED` has no resolved strategy → `not_applicable` × `none`, **emitted rather
+  than omitted**, because a combination that ran nothing is a fact.
+- **Outcome.** A moved cohort carries a `FindingRecord`; a probed cohort that didn't move is a valid
+  record with none. **The distinction the artifact drew in prose is the one the contract draws in
+  types.**
+
+**The contract caught a gap in the instrument, which is what a frozen contract is for.**
+`FindingRecord` requires a **`feature`**, and the probe compared whole-row fingerprints — it knew
+*which rows* moved, not *which columns*. **A placeholder would have been a fabricated fact inside a
+registered trace**, so per-column attribution was added and the emitter **raises** if movement is
+recorded without a named feature.
+
+**Controls re-run through the wrapped path** — the measurement now ends at `resolve_state_pair`, so
+the control must too: positive `completed × finding` (42/42), negative `completed × observed_silence`
+(42/0). A control failing there is a halt; neither did.
+
+**Row 7's classification does not change.** Traces that resolve are **necessary, not sufficient**:
+§6.2's acceptance scores them through `compute_runtime_metrics` and the rest of the apparatus, which
+has not been run. **The V-2 gap is narrowed, not closed, and the artifact says so.**
+
+## pytest note, checked rather than assumed
+
+`tests/registration` on `phase1`: **136 passed, 1 failed** —
+`test_prereg_stage_on_real_repo_exits_zero` asserts the prereg gate exits 0, true on `main` and false
+on `phase1` (declaration_values + D10). **Verified by running that same test on `main`, where it
+passes.** The known branch-split property, clearing at X1 — **not a regression from this work**.
+
+## Still HELD for A15
+
+A35's SC-6b disclosure · SSF's "(drafted, not applied)" annotation · SC-12(w)'s limb on a zero-row
+§7.7 table · orphaned Strategy diagnostic row · two absences · two structural items · §AB's l.1374
+pointer assertion · A39's sixteen unresolved rows · **the five pending-fold files** · the `F2_DIR`
+transient-path fallback · **Probe A's remaining distance to a gate result** (`compute_runtime_metrics`
+and the acceptance apparatus, unrun).
+
+---
+
+# FOLDED AT A15-4 — `R154_PENDING_FOLD.md`, verbatim
+
+*Banked to the session scratchpad while `main` was frozen; folded here unchanged.*
+
+# R154 — BANKED TO THIS SESSION'S SCRATCHPAD. FOLD AT A15(4).
+
+**Fold list: `R149_` … `R154_PENDING_FOLD.md`.**
+
+**RE-ENTRY, 28 August 2026.** No new tag. **`main` unmoved at `b5a05c0d…`**, gate **exit 0, 23
+PASS**, A9 20/20, `backup/held-banking` == `stash@{0}`, no tracked modifications. `phase1` `e943799`
+→ `d913df4`. **Not signed.**
+
+---
+
+## K2 — the Artifact-B allocation question. **NOT MOOTED BY v30a.**
+
+**Artifact: [`K2_ARTIFACT_B_ALLOCATION.md`](../amendment/K2_ARTIFACT_B_ALLOCATION.md).**
+Read-only determination; nothing acted on.
+
+I1 (R64) found the declaration's §0 allocation sentences **exactly inverted** with respect to §6.2's
+criteria 1–4. The cause is on the record: both were written when criterion 3 was a **pure silence
+test**, and **R9 replaced silence with map-scoring**, which made the criterion require a column and a
+cell. §0's allocation was never re-derived.
+
+| check, against the attested files | result |
+|---|---|
+| §0.2's *"Criteria 1-4 … are all statements about Artifact B"* | **PRESENT** |
+| §0.1's *"Nothing in §6.2's four criteria is evaluated on it"* | **PRESENT** |
+| `feature pipeline` defined in `PREREG.md` at v30a | **ABSENT — 0** |
+
+**Both inverted sentences survive verbatim in the declaration the tag will attest** (`79357d77…`).
+v30a **did** amend §6.2 line 461 — criterion 3, the very clause whose R9 change caused the
+inversion — but **amending the criterion is not re-deriving the allocation.**
+
+**I1's second condition is unmet too:** it stated that correcting §0 alone would not suffice, because
+`feature pipeline` must gain a registered definition *"or the criteria allocate to something the
+registration does not define."* At v30a it is still **zero**.
+
+**Method note, because it nearly produced the opposite answer.** The first two checks were
+line-scoped and returned a **false negative** on §0.1 — the sentence **wraps across a line break**
+*and* uses a straight apostrophe where the quoted form has a curly one. Re-run against flattened
+text, both are present. **Prose wraps; a line is not a unit of meaning** — the defect A34's sweep
+caught, met again, and caught here only by reading the section rather than trusting the count.
+
+**What it still requires:** re-derive both allocation sentences against criterion 3 as amended (the
+declaration is one of the twenty, frozen); and a registered definition of `feature pipeline` in
+`PREREG.md`, which is **CLOSED** — **that needs a further class C amendment beyond v30a.** Not
+something v30a left half-done; something v30a did not reach.
+
+**Where it queues:** post-tag, and **it does not fit the current post-tag queue as written** — one
+item edits a hashed file, the other needs a new amendment cycle with its own approval, diff and tag.
+
+**It does not block the tag.** The defect is in the declaration's *description* of which artifact
+each criterion is evaluated on, and in a term the registration uses without defining. **Both are
+disclosure-class** — they join the HELD set for `DEVIATIONS.md` at A15.
+
+## STATE: HOLDING
+
+**Pre-tag work is exhausted (R154 §1.2).** Everything remaining either requires the tag — §6.2
+acceptance, README wiring, X1 — or edits a hashed file. K2 was the last read-only item.
+
+## Still HELD for A15
+
+A35's SC-6b disclosure · SSF's "(drafted, not applied)" annotation · SC-12(w)'s limb on a zero-row
+§7.7 table · orphaned Strategy diagnostic row · two absences · two structural items · §AB's l.1374
+pointer assertion · A39's sixteen unresolved rows · the six pending-fold files · the `F2_DIR`
+transient-path fallback · Probe A's remaining distance to a gate result · **K2's two items: the §0
+allocation re-derivation and `feature pipeline`'s missing registered definition.**
