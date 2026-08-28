@@ -1,0 +1,40 @@
+{
+  "side": "contaminated",
+  "seed": 20260828,
+  "stride": 997,
+  "probe_verdict": "finding",
+  "n_picked": 300,
+  "n_eligible": 250,
+  "n_ineligible_no_aggregate": 50,
+  "determinism_ok": true,
+  "resolved": [
+    {
+      "detector_id": "probe_a_availability",
+      "case_id": "fixture_contaminated_zc_2025-01",
+      "promotion_status": "preserving",
+      "run_context": "fixture",
+      "schedule_state": "completed",
+      "schedule_reason": null,
+      "evidence_outcome": "finding",
+      "n_cohorts": 250,
+      "n_records": 250,
+      "n_findings": 250,
+      "legal_pair": true
+    },
+    {
+      "detector_id": "probe_a_availability",
+      "case_id": "fixture_contaminated_zc_2025-01",
+      "promotion_status": "promoted",
+      "run_context": "fixture",
+      "schedule_state": "not_applicable",
+      "schedule_reason": null,
+      "evidence_outcome": "none",
+      "n_cohorts": 0,
+      "n_records": 0,
+      "n_findings": 0,
+      "legal_pair": true
+    }
+  ],
+  "seconds": 223.6,
+  "agrees_with_unwrapped": true
+}

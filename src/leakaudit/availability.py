@@ -80,6 +80,11 @@ class CohortResult:
     rows_in_second: int
     moved_in_second: int          # rows whose decision time is INSIDE F
     moved_next_second: int        # rows stamped in F+1
+    # WHICH COLUMNS MOVED, not merely that a row did. The frozen output contract
+    # requires a FindingRecord to name a `feature`; a probe that reports only row
+    # movement cannot fill that field without inventing one, and a placeholder
+    # there would be a fabricated fact inside a registered trace.
+    features_in_second: tuple = ()
     def finding(self) -> bool:
         return self.moved_in_second > 0
 
@@ -263,13 +268,25 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
     fa_ = _fast_fingerprint(after)
     moved = (fb.to_numpy() != fa_.to_numpy())
 
+    # PER-COLUMN ATTRIBUTION, computed once for every column rather than per
+    # cohort: `moved_col[c]` is a boolean row mask for column c.
+    moved_col = {}
+    for c in base.columns:
+        a_ = base[c].astype("string").fillna("<NA>").to_numpy()
+        b_ = after[c].astype("string").fillna("<NA>").to_numpy()
+        m = a_ != b_
+        if m.any():
+            moved_col[c] = m
+
     for f_sec in picked:
         in_sec = (base_floor == f_sec).to_numpy()
         nxt = (base_floor == f_sec + model.window).to_numpy()
+        feats = tuple(sorted(c for c, m in moved_col.items() if (m & in_sec).any()))
         res.cohorts.append(CohortResult(
             second=f_sec,
             rows_in_second=int(in_sec.sum()),
             moved_in_second=int((moved & in_sec).sum()),
             moved_next_second=int((moved & nxt).sum()),
+            features_in_second=feats,
         ))
     return res

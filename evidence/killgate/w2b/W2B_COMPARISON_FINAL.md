@@ -162,6 +162,41 @@ between Probe A as a research instrument, which it is, and Probe A as a register
 is not yet. **Row 7 is therefore a comparison result, not a gate result** — consistent with what the
 row already disclaims, and recorded here rather than left for a reader to notice.
 
+### B-9 — the gap is now narrowed, and the row is unchanged
+
+**28 August 2026.** Probe A was wrapped in the frozen output contract and re-run. **Reported here
+separately; row 7 above is not restated or replaced** (R153 §1.1).
+
+| side | PRESERVING | PROMOTED | agrees with the published run |
+|---|---|---|---|
+| contaminated | **`completed` × `finding`** — 250 cohorts, 250 records, **250 findings** | `not_applicable` × `none` | **yes** |
+| corrected | **`completed` × `observed_silence`** — 250 cohorts, 250 records, **0 findings** | `not_applicable` × `none` | **yes** |
+
+**Every trace was accepted by `resolve_state_pair` UNMODIFIED.** Adjusting a reducer to accept a
+trace is a halt; none was touched. An illegal pair or a malformed trace raises, and none did.
+
+**Three mappings were derived from the registered legality table, not chosen:**
+
+- **Eligibility.** The 50 seconds with no aggregate row are **not eligible cohorts** — nothing to
+  corrupt, so nothing scheduled. Including them with no record would resolve to
+  `incomplete(crash)`: *a missing schedule slot with no recorded failure*, reporting a dead process
+  where the truth is an empty probe surface.
+- **Promotion.** The corruption is dtype-preserving by construction, so every execution is
+  `PRESERVING`. The `PROMOTED` combination has **no resolved strategy** → `not_applicable` × `none`,
+  a legal pair, and it is **emitted rather than omitted**: a combination that ran nothing is a fact.
+- **Outcome.** A moved cohort carries a `FindingRecord`; a probed cohort that did not move is a valid
+  record with no finding. **The distinction the artifact draws in prose is the one the contract draws
+  in types.**
+
+**One thing the contract forced that the probe could not supply.** `FindingRecord` requires a
+**`feature`**, and the probe compared whole-row fingerprints — it knew *which rows* moved, not *which
+columns*. **A placeholder there would be a fabricated fact inside a registered trace**, so per-column
+attribution was added and the emitter **raises** if movement is recorded without a named feature.
+
+**Row 7's classification does not change.** Traces that resolve are necessary for a gate result, not
+sufficient: §6.2's acceptance scores them through `compute_runtime_metrics` and the rest of the
+acceptance apparatus, which has not been run. **Row 7 remains a comparison result.**
+
 ---
 
 ## PROVENANCE
