@@ -112,10 +112,10 @@ untouched and named; several of those are stale.
 
 **Expected:** every declared range to bound its block.
 
-**Why it stands:** the instrument cannot resolve a sub-range inside a longer structure, and a number
-it cannot derive is one it must not write. Guessing would have replaced a known-stale value with an
-invented one that looks derived. The file now carries a note that its ranges are derived and must be
-re-derived before use.
+**Why it stands:** the instrument cannot resolve a sub-range inside a longer structure, and it did
+not write a number it could not derive. Guessing would have replaced a known-stale value with an
+invented one that looks derived. The file now carries a note recording that its ranges are derived,
+and that extracting inside a stale one is what truncated two blocks.
 
 ## D-V30A-09 — the declaration's artifact allocation is inverted, and a term it relies on is undefined
 
