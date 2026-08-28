@@ -2614,8 +2614,158 @@ def check_manifest_paths_committed(root: Path) -> list[Finding]:
     return f
 
 
+# ---------------------------------------------------------------------------
+# D17 - THE FROZEN INSTRUMENT.
+#
+# Every other check in this file can be silenced by editing this file. This one
+# cannot: it runs the checker AS IT WAS AT THE TAG, fetched from git by content,
+# against THIS SAME TREE, and compares the two verdict sets.
+# ---------------------------------------------------------------------------
+_FROZEN_TAG = "prereg-v30a"
+_FROZEN_CHECKER_REL = "tools/check_registration.py"
+_FROZEN_SELF = "frozen_instrument_delta"
+_FROZEN_INNER_ENV = "LEAKAUDIT_FROZEN_DELTA_INNER"
+_FROZEN_STAGE = "prereg"
+
+# Verdict differences that are RULED and disclosed. Anything else is a failure.
+#   line_citations - R163 §3. The H-34 pin carried a line number while its own
+#   recorded reason said the citation is by heading, and no document in the tree
+#   has ever cited HISTORY.md by line for H-34. The pin was re-keyed to the
+#   anchor, which is what the table's own convention assigns to heading-cited
+#   entries. The tag's checker still carries the line number, so it fails here.
+_FROZEN_PERMITTED = frozenset({"line_citations"})
+
+_FROZEN_VERDICT = re.compile(r"^\[(PASS|FAIL)\] (\S+)", re.M)
+
+
+def _frozen_verdicts(text: str) -> dict[str, str]:
+    return {m.group(2): m.group(1) for m in _FROZEN_VERDICT.finditer(text)}
+
+
+def check_frozen_instrument_delta(root: Path) -> list[Finding]:
+    """D17 - run the TAG's checker on THIS tree and diff the verdicts.
+
+    HARNESS, and it is tested before the tools are. Two properties matter and
+    neither is cosmetic:
+
+    (1) ABSOLUTE ROOT. check_control_characters does `p.relative_to(root)`
+        against a path it has already resolved to absolute. A RELATIVE root
+        makes that raise, the fallback keys the entry by its manifest-relative
+        name, the "evidence/" prefix is lost, a real exemption misses, and a
+        control_characters failure appears that belongs to neither instrument.
+        That artifact was one step from being reported as a third instrument
+        change.
+    (2) NOT A WORKTREE. A fresh worktree lacks the untracked and ignored files
+        the real tree carries, and D9/D10 then report on the difference between
+        two trees rather than between two instruments. Measured: a HEAD
+        worktree produced manifest_coverage and round_reconciliation failures
+        over four .pytest_cache paths.
+
+    The tag's checker is therefore extracted with `git show` into the same
+    relative location (tools/) in a temporary directory, and run against the
+    real root, absolute, with PYTHONPATH set so its sibling packages import.
+
+    Compares the prereg stage only; that is the stage this check is registered
+    in and the one the registration is gated on.
+    """
+    import os
+    import subprocess
+    import tempfile
+
+    rel = _FROZEN_CHECKER_REL
+    if os.environ.get(_FROZEN_INNER_ENV) == "1":
+        return [Finding(_FROZEN_SELF, rel, None,
+                        "D17: nested run - not re-entered", is_note=True)]
+
+    root = Path(root).resolve()
+
+    def git(*args):
+        return subprocess.run(["git", *args], cwd=str(root), text=True,
+                              capture_output=True, encoding="utf-8",
+                              errors="replace")
+
+    peel = git("rev-parse", "%s^{commit}" % _FROZEN_TAG)
+    if peel.returncode != 0:
+        return [Finding(_FROZEN_SELF, rel, None,
+                        "D17: cannot resolve tag %r - the frozen instrument is "
+                        "unavailable and this check cannot be believed absent. "
+                        "git said: %s" % (_FROZEN_TAG, peel.stderr.strip()))]
+    commit = peel.stdout.strip()
+
+    # Fetched as BYTES, not text: the digest below must be the digest of the
+    # file the tag attests, and decoding it first would hash something else.
+    blob = subprocess.run(
+        ["git", "show", "%s:%s" % (commit, _FROZEN_CHECKER_REL)],
+        cwd=str(root), capture_output=True)
+    if blob.returncode != 0:
+        return [Finding(_FROZEN_SELF, rel, None,
+                        "D17: %s is absent from %s - cannot compare"
+                        % (_FROZEN_CHECKER_REL, commit[:12]))]
+    frozen_sha = hashlib.sha256(blob.stdout).hexdigest()
+
+    env = dict(os.environ)
+    env["PYTHONPATH"] = str(root)
+    env[_FROZEN_INNER_ENV] = "1"
+
+    with tempfile.TemporaryDirectory() as td:
+        frozen = Path(td) / "tools" / "check_registration.py"
+        frozen.parent.mkdir(parents=True, exist_ok=True)
+        frozen.write_bytes(blob.stdout)
+        runs = {}
+        for label, script in (("frozen", frozen),
+                              ("current", root / _FROZEN_CHECKER_REL)):
+            runs[label] = subprocess.run(
+                [sys.executable, str(script), "--stage", _FROZEN_STAGE,
+                 "--root", str(root)],
+                cwd=str(root), text=True, capture_output=True,
+                encoding="utf-8", errors="replace", env=env)
+
+    old = _frozen_verdicts(runs["frozen"].stdout)
+    new = _frozen_verdicts(runs["current"].stdout)
+    if not old or not new:
+        return [Finding(_FROZEN_SELF, rel, None,
+                        "D17: a run produced no verdicts (frozen %d, current "
+                        "%d) - the harness is broken and its silence proves "
+                        "nothing" % (len(old), len(new)))]
+
+    findings = [Finding(
+        _FROZEN_SELF, rel, None,
+        "D17: frozen instrument sha256 %s… from %s: exit %d, %d checks; "
+        "current: exit %d, %d checks"
+        % (frozen_sha[:16], commit[:12], runs["frozen"].returncode,
+           len(old), runs["current"].returncode, len(new)), is_note=True)]
+
+    diff = sorted(n for n in set(old) | set(new)
+                  if n != _FROZEN_SELF and old.get(n) != new.get(n))
+    for name in diff:
+        was, now = old.get(name, "absent"), new.get(name, "absent")
+        if name in _FROZEN_PERMITTED:
+            findings.append(Finding(
+                _FROZEN_SELF, rel, None,
+                "D17: %s %s -> %s - RULED difference, disclosed" % (name, was, now),
+                is_note=True))
+            continue
+        extra = ""
+        if name == "control_characters":
+            extra = (" This one is the known harness artifact: if it appears "
+                     "here the root was not absolute. Check the harness before "
+                     "reading it as an instrument difference.")
+        findings.append(Finding(
+            _FROZEN_SELF, rel, None,
+            "D17: %s reads %s on the frozen instrument and %s on the current "
+            "one, and is not a ruled difference. The instrument that certifies "
+            "the registration disagrees with the one the tag attests.%s"
+            % (name, was, now, extra)))
+    if not diff:
+        findings.append(Finding(
+            _FROZEN_SELF, rel, None,
+            "D17: the two instruments agree on every check", is_note=True))
+    return findings
+
+
 CHECKS: tuple[tuple[str, str, object], ...] = (
     # (stage, name, callable)
+    ("prereg", "frozen_instrument_delta", check_frozen_instrument_delta),
     ("prereg", "structure", check_structure),
     ("prereg", "config_schema", check_config_schema),
     ("prereg", "lock_table", check_lock_table),
