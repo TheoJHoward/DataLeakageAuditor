@@ -35,7 +35,11 @@ stated; no instrument asserts completeness.
 - **CLAIMED CLASS.** Any enumeration of the hashed paths equals `$FILES`, order-sensitive for the
   tag-message body.
 - **ACTUAL DOMAIN.** Lines carrying ≥3 of the six basenames, judged over a five-line window
-  (idx−2 … idx+2). Plus a structural parse of the `<64 hex>  <path>` block for the tag body.
+  that reaches **one line back and three forward**, not the symmetric span recorded here until
+  R165. The slice is `lines[max(0, idx - 2): idx + 3]`, and `idx` is **1-based** (`enumerate(lines,
+  1)`) against a **0-based** list, so it covers 1-based lines `idx−1 … idx+3`. The arithmetic
+  reads as `idx−2 … idx+2` only if the index is assumed 0-based, which is how the earlier
+  description arose. Plus a structural parse of the `<64 hex>  <path>` block for the tag body.
 - **GAP.** An enumeration spread over **more than five lines**; one carrying **≤2** of the six; one
   written with paths spelled differently (relative prefixes, backslashes); an enumeration inside a
   fenced block the window splits. `git add` lines are deliberately excluded and owned by D3.
