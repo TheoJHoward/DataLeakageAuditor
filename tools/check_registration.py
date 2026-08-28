@@ -1560,7 +1560,14 @@ _LINE_PINNED_CITATIONS = (
     ("evidence/ceremony/CEREMONY_COMMANDS.md", 277, 'FILES="PREREG.md',
      "COMMIT_PLAN.md \u00a76 and DEVIATIONS_DRAFT.md cite \u00a73.2 l.180 as the authority "
      "for the hash set; the target is a shell assignment and has no heading"),
-    ("HISTORY.md", 277, "### H-34",
+    # ANCHOR-KEYED (lineno None) at A15-6, for the reason the declaration's pin
+    # was converted at R139/\u00a71.4: this one drifted 277 -> 278 the moment a
+    # review lesson was appended, and the lesson list grows by design. HISTORY.md
+    # itself already says H-34 is "cited by its `### H-34` heading, not by line --
+    # l.264-292 drifted as lessons were appended", so the line number was
+    # carrying no information the heading did not, only the ability to go stale.
+    # The heading is unique in the file, which is what makes the anchor resolve.
+    ("HISTORY.md", None, "### H-34",
      "COMMIT_PLAN.md \u00a73 cites the H-34 heading and its sha256 quotation"),
     ("HISTORY.md", 219, "13. *(12 Aug 2026)*",
      "COMMIT_PLAN.md cites H-L13 by line; the lesson list is numbered, not headed"),
