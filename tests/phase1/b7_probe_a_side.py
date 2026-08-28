@@ -39,6 +39,7 @@ ap.add_argument("--sym", default="zc")
 ap.add_argument("--month", default="2025-01")
 ap.add_argument("--stride", type=int, default=997)
 ap.add_argument("--max-cohorts", type=int, default=300)
+ap.add_argument("--seed", type=int, default=20260828)
 ap.add_argument("--out", required=True)
 a = ap.parse_args()
 
@@ -64,13 +65,14 @@ print("side=%s stride=%d max_cohorts=%d" % (a.side, a.stride, a.max_cohorts))
 t1 = time.time()
 try:
     res = run_probe_a(inputs.raw, build, model, side=a.side,
-                      cohort_stride=a.stride, max_cohorts=a.max_cohorts)
+                      cohort_stride=a.stride, max_cohorts=a.max_cohorts,
+                      seed=a.seed)
     err = None
 except ProbeError as e:
     res, err = None, str(e)
 
 rec = {"side": a.side, "sym": a.sym, "month": a.month,
-       "stride": a.stride, "max_cohorts": a.max_cohorts,
+       "stride": a.stride, "max_cohorts": a.max_cohorts, "seed": a.seed,
        "seconds": round(time.time() - t1, 1)}
 if res is None:
     rec.update(verdict="could_not_run(probe_error)", detail=err)

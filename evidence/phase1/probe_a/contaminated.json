@@ -4,7 +4,8 @@
   "month": "2025-01",
   "stride": 997,
   "max_cohorts": 300,
-  "seconds": 183.5,
+  "seed": 20260828,
+  "seconds": 162.4,
   "verdict": "finding",
   "determinism_ok": true,
   "n_cohorts": 300,
@@ -13,7 +14,7 @@
   "moved_in_second": 250,
   "moved_next_second": 250,
   "notes": [
-    "corrupted 250 aggregate row(s) across 300 second(s)"
+    "corrupted 608 aggregate row(s) across 300 second(s)"
   ],
   "per_cohort": [
     {

@@ -179,10 +179,31 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
         f = corrupt[fname]
         if keycol not in f.columns:
             raise ProbeError("frame %r has no key column %r" % (fname, keycol))
-        key_floor = pd.to_datetime(f[keycol]).dt.floor("s")
+        # TIMEZONE ALIGNMENT, AND IT IS NOT A DETAIL.
+        #
+        # `trades.ts_event` is datetime64[ns, UTC] while `snap.timestamp` and
+        # `magg.ts_floor` are naive. `isin` between aware and naive NEVER
+        # matches, so the trades frame was silently never corrupted -- an
+        # all-False mask that looks exactly like "no cells were unavailable".
+        # The decision stamps define the frame of reference; a key in another
+        # frame is converted into it, never compared across.
+        key = pd.to_datetime(f[keycol])
+        if getattr(key.dt, "tz", None) is not None:
+            key = key.dt.tz_convert("UTC").dt.tz_localize(None) if d.dt.tz is None \
+                else key.dt.tz_convert(d.dt.tz)
+        elif d.dt.tz is not None:
+            key = key.dt.tz_localize(d.dt.tz)
+        key_floor = key.dt.floor("s")
         mask = key_floor.isin(picked_set)
+        # PER-FRAME, NOT IN TOTAL. The original guard summed `touched` across
+        # frames and raised only if EVERY frame matched nothing -- so magg's 250
+        # masked trades' zero. An aggregate guard hides a per-member failure.
         if not mask.any():
-            continue
+            raise ProbeError(
+                "frame %r matched NO corrupted second. Its key %r may be in a "
+                "different timezone or resolution from the decision stamps; a "
+                "frame that is never corrupted reports a silence about the "
+                "harness, not about the pipeline." % (fname, keycol))
         num = [c for c in f.columns
                if c != keycol and pd.api.types.is_numeric_dtype(f[c])]
         for c in num:
@@ -198,8 +219,28 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
             # it reads the value. Integers get an integer offset.
             n = int(mask.sum())
             if pd.api.types.is_integer_dtype(f[c]):
-                bump = 1_000_000 + rng.integers(0, 1000, n)
-                f.loc[mask, c] = f.loc[mask, c].to_numpy() + bump
+                # THE PERTURBATION WRAPS INSIDE THE DTYPE'S RANGE.
+                #
+                # A flat +1_000_000 overflowed `uint8` and pandas refused --
+                # after the same offset had already been rejected on int64 as a
+                # float. Widening the column would be a SECOND perturbation
+                # (R152 §2.2), so the offset is made to fit instead: modular
+                # within [iinfo.min, iinfo.max], with a non-zero offset so the
+                # new value is GUARANTEED to differ from the original. A
+                # perturbation that could coincide produces a false silence.
+                info = np.iinfo(f[c].dtype)
+                lo, hi = int(info.min), int(info.max)
+                headroom = min(1000, max(1, hi - lo))
+                off = 1 + rng.integers(0, headroom, n)
+                vals = f.loc[mask, c].to_numpy()
+                # ADD, OR SUBTRACT WHERE ADDING WOULD LEAVE THE RANGE. A modular
+                # wrap was tried and overflowed: int64's span is 2**64 and does
+                # not fit in int64. Choosing the DIRECTION per element needs no
+                # arithmetic wider than the column itself, works at every width,
+                # and still guarantees new != old because the offset is >= 1.
+                up = vals <= (hi - headroom)
+                new = np.where(up, vals + off, vals - off)
+                f.loc[mask, c] = new.astype(f[c].dtype)
             elif pd.api.types.is_bool_dtype(f[c]):
                 f.loc[mask, c] = ~f.loc[mask, c].to_numpy()
             else:

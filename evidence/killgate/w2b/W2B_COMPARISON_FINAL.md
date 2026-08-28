@@ -95,6 +95,75 @@ They are aimed at different leakage classes, and this fixture's contamination is
   right. If the declaration is wrong about when cells arrive, Probe A is wrong with it — and that
   dependency is the tool's design, stated rather than hidden.
 
+---
+
+## V-1 — THE 50 SILENT COHORTS. **MECHANISM ESTABLISHED.**
+
+The contaminated side fired on 250 of 300 cohorts. **The mechanism is in the probe's own note**, not
+in a guess: it recorded corrupting **250 aggregate rows across 300 seconds** — and the shortfall is
+the answer.
+
+| | |
+|---|---|
+| picked seconds with a `magg` row | **250** |
+| picked seconds with **no aggregate row in any frame** | **50** |
+| cohorts the probe reported silent | **50** |
+| **the two sets are the same** | **yes** |
+
+**Nothing was perturbed for those fifty seconds, so nothing could move.** The silence is the probe
+having nothing to look at — **not** the probe failing to see. **Domain of the silence: 50 decision
+rows, 0.0148% of the fixture's 338,159.**
+
+**Set coherence holds.** Both sides build 338,159 rows, agree on every decision stamp, and therefore
+pick **the same 300 seconds**. A mismatch would have been a finding; there is none.
+
+*(Established without a rebuild: the picked seconds are deterministic, and whether a second carries an
+aggregate row is a property of the raw frames. That is what keeps V-1 verification of the run rather
+than a re-run.)*
+
+## V-1's SECOND FINDING — a frame that was never corrupted at all
+
+The same check showed **`trades` matched 0 of the 300 picked seconds.** `trades.ts_event` is
+`datetime64[ns, UTC]`; `snap.timestamp` and `magg.ts_floor` are naive. **`isin` between tz-aware and
+tz-naive never matches**, so the trades frame was silently never perturbed — an all-False mask that
+looks exactly like *"no cells were unavailable."*
+
+**The probe's own guard missed it because it summed across frames.** `touched == 0` raised only if
+*every* frame matched nothing, so magg's 250 masked trades' zero: **a per-frame failure hidden by an
+aggregate.** The guard is now **per frame**, and keys are converted into the decision stamps' frame of
+reference rather than compared across it.
+
+**The re-run changed the corruption and not the verdict** — which is the point of reporting it:
+
+| | before | after |
+|---|---|---|
+| aggregate rows corrupted | 250 | **608** |
+| contaminated | `finding`, 250/300 | **`finding`, 250/300** |
+| corrected | `observed_silence`, 0/300 | **`observed_silence`, 0/300** |
+
+**The fix could have weakened the separation and did not.** Two further dtype defects were fixed on
+the way, both under R152 §2.2 — *a cast to make a perturbation fit is a second perturbation*: a flat
+`+1_000_000` overflowed `uint8`, and a modular wrap overflowed `int64` (span 2⁶⁴). The offset now
+chooses its **direction** per element, needs no arithmetic wider than the column, and is `>= 1` so the
+value is guaranteed to differ.
+
+## V-2 — DISCIPLINE CONFIRMATION
+
+| | |
+|---|---|
+| determinism guard, per side | **YES** — two clean builds compared before any corruption, `determinism_ok=true` on both |
+| seed stable and recorded | **YES** — `20260828`, now written into each result file |
+| cross-process reproducibility | **YES** — both sides re-run in fresh processes reproduced every figure exactly |
+| **traces through the existing reducers, unchanged** | **NO — and this is a real gap.** |
+
+**Probe A does not emit registered traces.** It compares built outputs directly and produces no
+`CombinationTrace` / `ExecutionRecord`, so **no reducer has seen its output**. That is the difference
+between Probe A as a research instrument, which it is, and Probe A as a registered detector, which it
+is not yet. **Row 7 is therefore a comparison result, not a gate result** — consistent with what the
+row already disclaims, and recorded here rather than left for a reader to notice.
+
+---
+
 ## PROVENANCE
 
 Each side was probed in **its own process invocation**, per SC-7(d): *"a single run given more than
