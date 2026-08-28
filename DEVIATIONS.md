@@ -142,3 +142,133 @@ only, with no Bitcoin attestation, at the time of writing.
 
 **Why it stands:** this is the ordinary sequence, and v30's receipt followed it. Recorded so the
 committed receipt is not read as more than it was when written; the upgraded receipt is queued.
+
+## D-V30A-11 — the hash-set enumeration check reports a false positive, and the gate closes red
+
+**True:** `hash_set_single_source` fires on line 236 of `HISTORY.md`, the last entry of the review
+register. The flagged line is a sentence recording which registered files diverged from the tagged
+set after the tag. It names three of the twenty paths and carries no digest of any kind — scanned
+for hexadecimal runs of sixteen characters or more, the count is zero. The detector's own comment
+states its subject: path enumerations purporting to be the set. The sentence does not purport to be
+the set.
+
+**Expected:** the check to fire on a second copy of the hashed-path set, not on prose naming three
+registered files inside a paragraph about drift.
+
+**Why it stands:** three repairs were measured and none of them holds.
+
+A digest requirement was measured against the whole corpus. Every line in the detector's domain
+carrying three or more registered basenames was enumerated, with a check for any digest in its
+window:
+
+| candidate | basenames | digest in window |
+|---|---|---|
+| `PREREG.md` l.2152 | 8 | no |
+| `PREREG.md` l.2154 | 3 | no |
+| `HISTORY.md` l.236 | 3 | no |
+| `AVAILABILITY_DECLARATION.md` l.3752 | 8 | no |
+| `AVAILABILITY_DECLARATION.md` l.3855 | 3 | no |
+| `COMMIT_PLAN.md` l.243 | 4 | no |
+| `COMMIT_PLAN.md` l.357 | 3 | no |
+| `CEREMONY_COMMANDS.md` l.277 | 20 | no |
+
+Eight candidates, zero digests. A digest requirement silences the entire population, the set's own
+authoritative declaration included. That declaration is a shell assignment listing twenty paths and
+no hashes: **the authoritative set is a path list, and the digests live in the tag message.** Three
+planning-layer expectations rested on the opposite premise and were withdrawn on this measurement.
+
+A path-form test was measured next, on the premise that a construct purporting to be the set uses
+the set's own registered path forms while prose uses bare basenames. The bare column is zero across
+all eight candidates. The flagged sentence names a path in the set's own form, and so do four of the
+other seven.
+
+An enumeration-shape test was measured third, and it inverts. The flagged line is a list item, as
+are two legitimate candidates. The longest gap between consecutive paths on it is seven characters,
+a comma-and list, against eighty-two characters of sentence material between paths on `PREREG.md`
+l.2152. Under a delimited-sequence test the false positive resembles an enumeration more closely
+than a legitimate candidate does.
+
+Two measures did separate it — the share of the line occupied by paths, 4.2 per cent against a
+next-lowest 11.7, and the characters following the last path, 829 against 686. Both were refused and
+are recorded here rather than dropped. Each is a numeric cut over eight observations whose value
+comes from looking at where the offending case falls, and a threshold chosen that way is the
+suppressed finding wearing an arithmetic costume. The count threshold of three carries the same
+objection: the flagged line has exactly three.
+
+The gate therefore closes red on this single finding. The registration's substance is untouched, the
+flagged sentence is accurate, and no word of it was altered. A red gate that states the truth was
+preferred to a green one obtained by any route available. The repair is deferred to Track B, where
+the discriminator and the window are designed together.
+
+## D-V30A-12 — an exemption was added to the checking instrument during the close-out it certifies
+
+**True:** at commit `664cee7` an entry was added to the enumeration-exemption table keyed to the
+region of the review register containing the flagged sentence. Before it the stage failed; after it
+the same site reported as exempt. The entry was written in the same commit as the sentence that
+triggered it. At commit `dd12d82` it was reverted.
+
+**Expected:** an instrument inside the registered set to be unchanged by the work it grades.
+
+**Why it stands as a disclosure:** the revert removed the effect and cannot remove the fact. The
+entry would not have been written had the triggering sentence not existed, which is what separates
+an exemption from a repair. The stage ran green on the changed instrument across three planning
+rounds before anyone ran the tagged instrument against the current tree; that comparison surfaced
+from a measurement requested for an unrelated reason. A check named `frozen_instrument_delta` now
+runs the tagged checker, its digest verified against the attested value, against the working tree at
+every invocation.
+
+## D-V30A-13 — a line-pinned citation carried a number its own recorded reason contradicted
+
+**True:** the citation table pinned the kill-gate ledger heading in `HISTORY.md` to line 277 while
+the same entry's reason recorded that the citing document cites the heading rather than a line. No
+file in the tree contains the string naming that line. Three ceremony documents state the citation
+is by heading; one records the same heading drifting between line numbers at an earlier round. The
+table's own convention assigns a null line to heading-cited entries. The heading stood at line 277
+when the tag was made and stands at 281 now.
+
+**Expected:** a pinned value consistent with the reason recorded beside it.
+
+**Why it stands:** the entry was re-keyed to the anchor at commit `1b0b1d0`. The ground is that the
+value contradicted its own reason and asserted a claim no document has made, not that the alternative
+was inconvenient. An audit of the table against its reason column reaches the same place without any
+knowledge of this close-out. The tagged instrument still carries the number, so the two instruments
+disagree on this check by design, and that difference is the one difference the delta check permits.
+
+## D-V30A-14 — the enumeration window is asymmetric, and its description was wrong wherever it was written
+
+**True:** the window reaches one line back and three lines forward from the flagged line. The slice
+indexes a zero-based list with a one-based counter, so the arithmetic reads as symmetric and is not.
+For the flagged sentence the window reaches a heading three lines below and takes a fourth path from
+it — a path absent from the flagged line. One tracked file described the window, as a five-line span
+with symmetric bounds; the span is corrected at commit `f158381` and the indexing cause is named
+there. The message of commit `664cee7` describes it as a two-line window and is not rewritten.
+
+**Expected:** a description matching the code.
+
+**Why it stands:** the five recorded exemption tuples were derived from this window and reconcile
+against it exactly. Narrowing the window to the flagged line alone changes three of them and raises
+a fresh finding on each. The repair is deferred to Track B alongside the discriminator, because a
+discriminator design changes what window is correct and fixing one first constrains the other. The
+window is not the cause of the false positive: the flagged line carries three registered basenames
+on its own and fires without any window at all.
+
+## D-V30A-15 — a third instrument difference was nearly reported and belonged to the harness
+
+**True:** comparing the tagged checker against the current one, a control-character failure appeared
+in the tagged instrument's output and in neither instrument's behaviour. The exemption region is
+byte-identical in both. The cause is a relative root: the control-character check resolves a path to
+absolute and then takes it relative to the root it was given, which raises when that root is
+relative, and the fallback keys the entry by a name missing its leading directory, so a real
+exemption misses. With an absolute root the tagged instrument reports two failures rather than
+three.
+
+**Expected:** a comparison between two versions of an instrument to report differences between the
+instruments.
+
+**Why it stands:** the artifact was caught by confirming the region byte-identical in both versions
+before reporting it. Its cause was mis-stated for two rounds as an effect of running the script
+outside its own directory; the lost prefix was the symptom. The delta check named in D-V30A-12
+extracts the tagged instrument into the same relative location and passes an absolute root, and the
+absence of this failure is that harness's own test. A first harness built on a fresh worktree
+manufactured two different failures, over four cache paths present in the working tree and absent
+from a new worktree, and was discarded for that reason.
