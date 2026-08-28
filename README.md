@@ -47,7 +47,15 @@ e8cf5bbbc42762838318e2ffc8cf85b6f44ed701c3ee88f8e93a6e734fc43e0d  HISTORY.md
 
 <!-- V30A-HASH-BLOCK: FILLED AT CEREMONY TIME FROM v30a.hashes.txt. DO NOT TRANSCRIBE. -->
 
-SHA-256 of every file the `prereg-v30a` tag message enumerates, as committed. The set is the one
+**These hashes are of the files as of tag `prereg-v30a`.** `PREREG.md` is
+locked and never changes; `DEVIATIONS.md` is append-only, and `HISTORY.md`,
+`tools/check_registration.py`, `DESIGN.md` and this README are revisable, so
+`HEAD` may legitimately differ from the tagged state — verify against the
+tag (`git show prereg-v30a:PREREG.md | sha256sum`), not against `HEAD`. A
+hash mismatch at the tag is tampering; a mismatch at `HEAD` need not be.
+
+SHA-256 of every file the `prereg-v30a` tag message enumerates, as committed at
+`prereg-v30a`. The set is the one
 `PREREG.md` §11 item 8 defines and `AVAILABILITY_DECLARATION.md` §D.2 sets out; its count is read
 from the enumeration below, not stated separately:
 
