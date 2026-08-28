@@ -1022,22 +1022,6 @@ _HASH_SET_ENUM_EXEMPT = {
         "'only', no 'exactly', so a superset satisfies it and over-delivery "
         'is strictly stronger. The executed v30 tag already carried five. See '
         'AVAILABILITY_DECLARATION.md §D.3 entry (i).'),
-    ('HISTORY.md',
-     'A hash block without a temporal qualifier'): (
-        ('PREREG.md', 'HISTORY.md', 'tools/check_registration.py', 'DEVIATIONS.md'),
-        'D6 - review lesson 28 names the registered files that DIVERGED from '
-        'the set after the tag. That is the opposite of a restatement: it '
-        'asserts no hash and claims no membership, so it cannot drift from the '
-        'authority the way a partial copy of the set would. Making it the set '
-        'in order would delete the lesson, whose entire content is that exactly '
-        'three of the twenty moved - so the content fix is unavailable and the '
-        'exemption is the right instrument. NOTE THE FOURTH PATH: PREREG.md is '
-        'not on the lesson line at all. The check reads a two-line window and '
-        'borrows it from the H-30 heading below. Appending a further lesson '
-        'moves that heading out of the window, the enumeration becomes the '
-        'three actually written, and D6 re-fires. That is correct behaviour, '
-        'not a defect: re-derive the tuple at that point, do not re-pin it to '
-        'whatever the checker reports.'),
 }
 
 
