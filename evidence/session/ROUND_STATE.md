@@ -3237,3 +3237,163 @@ A35's SC-6b disclosure · SSF's "(drafted, not applied)" annotation · SC-12(w)'
 pointer assertion · A39's sixteen unresolved rows · the six pending-fold files · the `F2_DIR`
 transient-path fallback · Probe A's remaining distance to a gate result · **K2's two items: the §0
 allocation re-derivation and `feature pipeline`'s missing registered definition.**
+
+---
+
+# R158 THROUGH R168 — THE CLOSE-OUT, THE DRIFT, AND THE INSTRUMENT
+
+*Folded at A15-4. The rounds from the stamp to the push. Each ruling is recorded
+with the ground that actually decided it, not with the ground that reads best.*
+
+## The signing path — settled, verbatim, not reopened
+
+> Signing path undetermined. The machine side could not establish it; the author
+> was asked three times across R156, R158 and R159 and did not state it. The
+> signature verifies; the input method is unrecorded.
+
+## The manifest-line practice choice, and its reason
+
+The OpenTimestamps receipt was committed at A15-1 with a manifest line recording
+its size and digest, while its attestation was still calendar-only. v30 tracked
+its own receipt with **no** manifest line and so had no such appointment. The
+line was kept.
+
+The reason, and it only holds because of what follows it: a recorded hash that
+goes red when the receipt changes is a live check, and no line at all is silence.
+Upgrading the receipt rewrites the file, so the line is correct today and goes
+stale on a known future date. That obligation is named at the point of use — the
+upgrade block of the ceremony commands carries the re-hash as a step beside the
+existing block-height fill, and says to re-derive the size as well as the digest
+because an upgraded receipt is longer, not merely different, and not to copy the
+new values anywhere else.
+
+The ordering is on the record rather than tidied away: review lesson 27 asserted
+the re-hash "was written into the queue in the same breath" before the queue
+entry existed. The claim ran ahead of the fact by one commit, and was caught by
+checking the claim against the queue instead of against memory.
+
+## How state is established from here — the format change
+
+The planning layer's established-state tables were written from reports that were
+a partial view of the turn that produced them. One such table recorded four
+unpushed commits when there were eight, and recorded a step as not yet run when
+it had run twice. The cause is structural rather than careless: a report ends
+before the turn does.
+
+So the delta no longer states established state. It states assumptions, and
+re-entry derives each one and reports every row that failed. A summary of a state
+is not the state.
+
+## The drift — three of twenty, and the check nobody had run
+
+Every round had asked whether the gate passed. None had asked whether the frozen
+set was still frozen. Measured across all twenty rather than the three suspected,
+with each baseline verified against the tag commit before comparison:
+`HISTORY.md`, the checker, and the deviations record differ; the other seventeen
+do not. All three are accounted for by named close-out commits.
+
+## The instrument was changed twice inside the close-out it certifies
+
+Both changes altered what the checker passes. The stage ran green on the changed
+instrument for three planning rounds. Nobody had run the tagged instrument
+against the current tree; that comparison surfaced from a measurement requested
+for an unrelated reason.
+
+**The exemption — reverted.** A region exemption was added in the same commit as
+the sentence that triggered it. Before it the stage failed; after it the same
+site reported exempt. Ground for the revert, stated as the real ground: an
+exemption keyed to a region hides a defect instead of fixing it, and this one was
+made silently inside the work the instrument was grading. It would not have been
+written had the triggering sentence not existed, which is what separates an
+exemption from a repair.
+
+**The pin — stands, and not for the reason first offered.** The citation table
+pinned a ledger heading to a line while the same entry's reason recorded that the
+citing document cites the heading. No file in the tree contains a citation to
+that line; three ceremony documents state the citation is by heading, and one
+records the same heading drifting between line numbers at an earlier round. The
+ground is that the value contradicted its own recorded reason and asserted a
+claim no document has made. "Only this branch lets the remaining work complete"
+was offered first and is refused: a record saying a change was made because the
+alternative was inconvenient cannot be told from the bad case by anyone reading
+it later.
+
+## Four planning-layer expectations died on measurement
+
+All four rested on one wrong premise — that the hash set was hashes. The
+authoritative set is a **path list**; the digests live in the tag message.
+
+1. A digest requirement would narrow the enumeration check. Measured across its
+   whole corpus: eight candidates, zero digests, the set's own authoritative
+   declaration included. It silences the entire population. That is disabling a
+   detector, not narrowing it, and the difference is invisible from the case that
+   motivated it.
+2. Path form separates prose from a construct purporting to be the set. The bare
+   column is zero everywhere; the flagged sentence names a path in the set's own
+   form, and so do four of the other seven.
+3. Enumeration shape separates them. It inverts. The flagged line is a list item,
+   as are two legitimate candidates, and its paths sit seven characters apart
+   against eighty-two characters of sentence material on a legitimate one. Under
+   a delimited-sequence test the false positive resembles an enumeration more
+   closely than a legitimate candidate does.
+4. The comparison harness should extract the tagged instrument into a matching
+   relative location. The artifact it was prescribed against had a different
+   cause entirely, and the prescribed harness manufactured two failures of its
+   own.
+
+Two measures did separate the false positive — the share of the line occupied by
+paths, and the characters following the last path. Both were refused and both are
+recorded. A separating measure discovered by looking at where the offending case
+falls is the suppressed finding in an arithmetic costume, and dropping it quietly
+would be concealment by omission.
+
+What changed as a result: the planning layer rules on principle and asks for the
+measurement. It specifies the requirement and its test, not the mechanism. The
+test written into the delta — that the harness must not manufacture differences,
+proven by one named failure disappearing — is what caught the bad mechanism, and
+nothing else would have.
+
+## Descriptions that were repeated until they were familiar
+
+The enumeration window was called a two-line window across five deltas and every
+report. It reaches one line back and three forward: the slice indexes a
+zero-based list with a one-based counter, so the arithmetic reads symmetric and
+is not. It surfaced when a reconstruction of the recorded exemption tuples
+disagreed with the tuples themselves, which forced someone to read the
+arithmetic.
+
+The comparison artifact was called a path-location problem for four deltas. Its
+cause is a relative root argument: a resolved absolute path taken relative to a
+relative root raises, and the fallback drops a leading directory so an exemption
+key misses. The lost prefix was the symptom.
+
+## The gate closes red, pinned to one finding
+
+The enumeration check reports a false positive on a truthful sentence. No repair
+survives measurement, the sentence is not reworded, and the check is not
+adjusted. The gate is therefore red on exactly one finding, and every run reports
+whether the finding set is exactly that one. A second finding of any kind halts.
+
+A persistent red is only safe pinned. The danger is identical to a persistent
+wrong green: people stop reading it.
+
+The registration's substance is untouched. The repair joins the window and the
+relative-root defect in Track B, where the three are designed together, because
+three separate rounds established they are one subsystem.
+
+## The frozen instrument
+
+A check now runs the tagged checker — fetched by content, its digest verified
+against the attested value — against the working tree at every invocation, and
+compares the two verdict sets. It is the one check that cannot be defeated by
+editing the checker. Its permitted difference is the pin ruled above; anything
+else fails.
+
+## The test that reports the red
+
+The registration suite's whole-repo gate test asserts the stage exits zero. Under
+the pinned red it fails, and it is not touched: it reports the gate is red, which
+is true, and it goes green on its own when the discriminator lands. Re-keying it
+to assert the failure would be an exemption wearing a test's clothes; marking it
+skipped or expected-to-fail would make it invisible. It is pinned exactly as the
+gate is: one named failure, with its cause named, and any second failure halts.
