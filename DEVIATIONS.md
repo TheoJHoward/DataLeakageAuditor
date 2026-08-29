@@ -272,3 +272,53 @@ extracts the tagged instrument into the same relative location and passes an abs
 absence of this failure is that harness's own test. A first harness built on a fresh worktree
 manufactured two different failures, over four cache paths present in the working tree and absent
 from a new worktree, and was discarded for that reason.
+
+## D-V30A-16 — the checker's result depends on whether its root argument is absolute
+
+**True:** the control-character check resolves each manifest path to an absolute path and then takes
+it relative to the root it was handed. A relative root makes that operation raise, and the fallback
+keys the entry by a name whose leading directory is gone, so an exemption keyed to the full name
+finds nothing to match. Measured on the tagged instrument against this tree: with a relative root,
+three failing checks and ten findings; with an absolute root, two failing checks and two findings.
+The difference is entirely in the invocation.
+
+**Expected:** a result that is a property of the tree and the instrument, not of the form in which
+the instrument was called.
+
+**Why it stands:** every invocation path in the repository was surveyed and none of them passes a
+relative root. The argument's default is the parent of the script's own resolved location, which is
+absolute, and each documented command omits the argument: the install and verify instructions in the
+README, the ceremony commit plan's gate line, the ceremony checklist, the readiness document's two
+gate lines, the amendment diff's two, the ledger's, and the three scripted callers that spawn the
+checker as a subprocess. The registration tests pass no root either. Of the committed transcripts of
+checker runs, eight record an absolute root and two record a relative one; both of the latter predate
+the control-character check, whose name does not appear in either transcript, so neither carried the
+spurious failure. The gate's recorded history is unaffected.
+
+The repair is deferred to Track B and joins the enumeration discriminator and the window there. The
+reason is the one that governed the other two: a change to the instrument during the close-out that
+the instrument certifies, against a gate pinned to a single known finding, for a defect that is now
+measured and written down. The check named in D-V30A-12 passes an absolute root explicitly, so the
+comparison it performs is not exposed to this.
+
+## D-V30A-17 — two corrections to the record above, made by addition
+
+**True:** D-V30A-15 records that the artifact's cause was mis-stated "for two rounds". It was
+carried in four successive planning documents, each of which prescribed extracting the tagged
+instrument into a matching relative location on the strength of the same wrong diagnosis. The count
+in that entry understates the span.
+
+**True, second:** the harness those documents prescribed was built and measured before being
+accepted, and it manufactured two failures of its own — one over manifest paths absent from a fresh
+tree, one over working files absent from it — naming cache paths that are present in the working
+tree and absent from a newly created one. It was discarded on that measurement. The comparison
+described in D-V30A-12 extracts the tagged instrument to a plain file and runs it against the real
+tree with an absolute root, and its acceptance test is that exactly one check differs between the
+two instruments.
+
+**Expected:** an entry whose figures match the record it summarises.
+
+**Why it stands as an addition rather than an edit:** this file is append-only, and the entry above
+was committed in an earlier round. Correcting the figure in place would leave no trace that the
+record once said something else, which is the property the append-only form exists to preserve. The
+earlier entry is left as written and is read together with this one.
