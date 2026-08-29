@@ -1,0 +1,1 @@
+Amends PREREG.md: §6.2 Acceptance fixture: line 445, line 450, line 461; §7.7 Completion, and the two levels of state: line 855; §8.3 Three assertions: line 929; §10.1 Phase 0 kill gate — objective: line 1022; §10.2 Other kill / pause criteria: line 1030.
