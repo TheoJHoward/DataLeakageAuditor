@@ -1,0 +1,32 @@
+{
+  "tool": "leakage-buster",
+  "side": "negative",
+  "target": "fwd_move_ticks_5s",
+  "time_col": "timestamp",
+  "source": "C:/Users/ttbea/AppData/Local/Temp/claude/C--Users-ttbea-OneDrive-Desktop-MBO-2025-4mon--2026-01/33e8c843-30fa-4bfb-aa9f-814c77bdb2e6/scratchpad/b3_inputs/b3_negative.csv",
+  "restored_datetime_columns": [
+    "timestamp",
+    "ts_floor"
+  ],
+  "rows": 6000,
+  "cols": 7,
+  "status": "ran",
+  "result": {
+    "rows_in": 6000,
+    "rows_audited": 6000,
+    "rows_dropped_incomplete": 0,
+    "n_risks": 3,
+    "n_high": 0,
+    "high": [],
+    "all": [
+      "KFold leakage risk (use GroupKFold)",
+      "Time-awareness suggestion",
+      "CV strategy recommendation"
+    ],
+    "detector_errors": [],
+    "finding": false,
+    "mapping": "severity == 'high' is a leakage finding; medium/low are advisory. ANY 'Detector error' makes the verdict None -- could_not_run for that detector, never a clean null."
+  },
+  "summary": "finding=False",
+  "seconds": 1.2
+}

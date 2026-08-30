@@ -1,0 +1,119 @@
+{
+  "tool": "Leakly",
+  "version": "0.1.2",
+  "chance": 0.5,
+  "n_seeds": 15,
+  "median_leaky": 0.635,
+  "median_clean": 0.51875,
+  "seeds_separating": 13,
+  "positive_fires": true,
+  "negative_silent": true,
+  "verdict": "DISCRIMINATING",
+  "rows": [
+    {
+      "seed": 1000,
+      "leaky": 0.645,
+      "leaky_s": 0.1,
+      "clean": 0.6125,
+      "clean_s": 0.1
+    },
+    {
+      "seed": 1017,
+      "leaky": 0.61,
+      "leaky_s": 0.1,
+      "clean": 0.5,
+      "clean_s": 0.1
+    },
+    {
+      "seed": 1034,
+      "leaky": 0.6425,
+      "leaky_s": 0.1,
+      "clean": 0.54,
+      "clean_s": 0.1
+    },
+    {
+      "seed": 1051,
+      "leaky": 0.5575000000000001,
+      "leaky_s": 0.1,
+      "clean": 0.35,
+      "clean_s": 0.1
+    },
+    {
+      "seed": 1068,
+      "leaky": 0.51875,
+      "leaky_s": 0.1,
+      "clean": 0.51875,
+      "clean_s": 0.1
+    },
+    {
+      "seed": 1085,
+      "leaky": 0.6925,
+      "leaky_s": 0.1,
+      "clean": 0.5525,
+      "clean_s": 0.1
+    },
+    {
+      "seed": 1102,
+      "leaky": 0.63,
+      "leaky_s": 0.1,
+      "clean": 0.6,
+      "clean_s": 0.1
+    },
+    {
+      "seed": 1119,
+      "leaky": 0.635,
+      "leaky_s": 0.1,
+      "clean": 0.4575,
+      "clean_s": 0.1
+    },
+    {
+      "seed": 1136,
+      "leaky": 0.635,
+      "leaky_s": 0.1,
+      "clean": 0.5225,
+      "clean_s": 0.1
+    },
+    {
+      "seed": 1153,
+      "leaky": 0.6475,
+      "leaky_s": 0.1,
+      "clean": 0.5874999999999999,
+      "clean_s": 0.1
+    },
+    {
+      "seed": 1170,
+      "leaky": 0.7575000000000001,
+      "leaky_s": 0.1,
+      "clean": 0.49,
+      "clean_s": 0.1
+    },
+    {
+      "seed": 1187,
+      "leaky": 0.5525,
+      "leaky_s": 0.1,
+      "clean": 0.40499999999999997,
+      "clean_s": 0.1
+    },
+    {
+      "seed": 1204,
+      "leaky": 0.49250000000000005,
+      "leaky_s": 0.1,
+      "clean": 0.5175,
+      "clean_s": 0.1
+    },
+    {
+      "seed": 1221,
+      "leaky": 0.7174999999999999,
+      "leaky_s": 0.1,
+      "clean": 0.5449999999999999,
+      "clean_s": 0.1
+    },
+    {
+      "seed": 1238,
+      "leaky": 0.5825,
+      "leaky_s": 0.1,
+      "clean": 0.51,
+      "clean_s": 0.1
+    }
+  ]
+}

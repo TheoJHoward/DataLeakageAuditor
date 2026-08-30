@@ -1,0 +1,45 @@
+{
+  "tool": "temporalcv",
+  "version": "2.3.0",
+  "phi": 0.95,
+  "n": 4000,
+  "seed": 20260826,
+  "phi_hat": 0.9526248450244349,
+  "baseline_mae_test": 0.8172926591491241,
+  "honest_mae": 0.8078363573579703,
+  "leaky_mae": 0.016345853182982498,
+  "limbs": {
+    "POSITIVE": {
+      "status": "HALT",
+      "expected": "HALT",
+      "ok": true,
+      "improvement_ratio": 0.98,
+      "message": "Model 98.0% better than baseline (max: 20%)",
+      "model_metric": 0.016345853182982498,
+      "baseline_metric": 0.8172926591491241,
+      "metric_name": "MAE"
+    },
+    "NEGATIVE": {
+      "status": "PASS",
+      "expected": "PASS",
+      "ok": true,
+      "improvement_ratio": 0.011570276186009809,
+      "message": "Improvement 1.2% is reasonable",
+      "model_metric": 0.8078363573579703,
+      "baseline_metric": 0.8172926591491241,
+      "metric_name": "MAE"
+    },
+    "DEFECT-7": {
+      "status": "PASS",
+      "expected": "PASS",
+      "ok": true,
+      "improvement_ratio": -0.7636363636363634,
+      "message": "Improvement -76.4% is reasonable",
+      "model_metric": 0.97,
+      "baseline_metric": 0.55,
+      "metric_name": "accuracy"
+    }
+  },
+  "verdict": "DISCRIMINATING",
+  "defect7_reproduced": true
+}

@@ -1,0 +1,39 @@
+{
+  "what_this_is": "The last recorded run of the fixture-dependent tests in tests/phase1/. They are skipped by default because the acceptance fixture's inputs are hundreds of megabytes on one machine and each build takes ~25s. 'They were run' is not checkable from a clone, so this file records when, on what, and with what result.",
+  "how_to_run_them_yourself": {
+    "1_inputs": "The fixture's producing code must be present at the path named by leakaudit.fixture_adapter.F2_DIR, and its inputs (zc snapshots, trades and MBO parquets for the month) must be readable by that code.",
+    "2_opt_in": "Set LEAKAUDIT_FIXTURE=1.",
+    "3_command": "LEAKAUDIT_FIXTURE=1 python -m pytest tests/phase1/test_fixture_adapter.py -v",
+    "4_expected_cost": "~4 builds at ~25s each plus a ~29s input capture; about three minutes."
+  },
+  "last_run": {
+    "date": "2026-08-26",
+    "fixture": "zc 2025-01, corrected side",
+    "adapter_output_shape": [338159, 87],
+    "raw_frames": {"snap": [1262191, 24], "trades": [397457, 17], "magg": [464199, 6]},
+    "results": [
+      {
+        "test": "test_adapter_output_equals_the_fixture_exactly",
+        "result": "PASS",
+        "detail": "The adapter's output compared exact against an unadapted fixture_corrected run: IDENTICAL on values, dtypes, shape and index."
+      },
+      {
+        "test": "test_known_positive_perturbing_the_served_snapshots_FIRES",
+        "result": "PASS",
+        "detail": "Perturbing snap.bid_size_1 moved l1_imbalance, total_bid_depth, depth_imbalance, book_slope_bid and others. The equality check FIRED, so it is capable of detecting a corrupted adapter."
+      },
+      {
+        "test": "test_known_positive_perturbing_trades_reaches_the_output",
+        "result": "PASS",
+        "detail": "Perturbing trades.size moved net_delta, sell_volume, trade_volume, large_trade_count, net_delta_1s. The cross-frame ts_floor join is live under the adapter, which is why raw is a dict of frames rather than a single frame."
+      },
+      {
+        "test": "test_serving_does_not_let_one_run_alter_the_next",
+        "result": "PASS",
+        "detail": "The builder assigns columns onto what it reads; the served frames are deep-copied, so the caller's raw is unchanged after a build."
+      }
+    ],
+    "negative_control": "An unperturbed adapted build compared IDENTICAL to the reference, so the two known-positives above are detections and not a check that always fires."
+  },
+  "why_a_record_and_not_an_assertion": "A stranger cloning this repository sees '39 passed, 4 skipped' and cannot tell whether those four have ever passed or how to run them. A skip marker keeps a test runnable; it does not stand in for having run it. This file is the checkable part."
+}

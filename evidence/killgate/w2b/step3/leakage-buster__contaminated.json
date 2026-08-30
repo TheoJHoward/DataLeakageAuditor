@@ -1,0 +1,38 @@
+{
+  "tool": "leakage-buster",
+  "side": "contaminated",
+  "target": "fwd_move_ticks_5s",
+  "time_col": "timestamp",
+  "source": "C:/Users/ttbea/AppData/Local/Temp/claude/C--Users-ttbea-OneDrive-Desktop-MBO-2025-4mon--2026-01/33e8c843-30fa-4bfb-aa9f-814c77bdb2e6/scratchpad/b2_inputs/acceptance_zc_2025-01_contaminated.csv",
+  "restored_datetime_columns": [
+    "timestamp",
+    "ts_floor"
+  ],
+  "rows": 338159,
+  "cols": 87,
+  "status": "ran",
+  "result": {
+    "rows_in": 338159,
+    "rows_audited": 93646,
+    "rows_dropped_incomplete": 244513,
+    "n_risks": 6,
+    "n_high": 2,
+    "high": [
+      "Target Encoding leakage risk",
+      "WOE leakage risk"
+    ],
+    "all": [
+      "Target leakage (categorical purity)",
+      "Target Encoding leakage risk",
+      "WOE leakage risk",
+      "KFold leakage risk (use GroupKFold)",
+      "Time-awareness suggestion",
+      "CV strategy recommendation"
+    ],
+    "detector_errors": [],
+    "finding": true,
+    "mapping": "severity == 'high' is a leakage finding; medium/low are advisory. ANY 'Detector error' makes the verdict None -- could_not_run for that detector, never a clean null."
+  },
+  "summary": "finding=True",
+  "seconds": 6.2
+}

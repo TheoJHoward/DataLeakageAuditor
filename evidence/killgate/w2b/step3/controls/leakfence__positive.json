@@ -1,0 +1,52 @@
+{
+  "tool": "leakfence",
+  "side": "positive",
+  "target": "fwd_move_ticks_5s",
+  "time_col": "timestamp",
+  "source": "C:/Users/ttbea/AppData/Local/Temp/claude/C--Users-ttbea-OneDrive-Desktop-MBO-2025-4mon--2026-01/33e8c843-30fa-4bfb-aa9f-814c77bdb2e6/scratchpad/b3_inputs/b3_positive.csv",
+  "restored_datetime_columns": [
+    "timestamp",
+    "ts_floor"
+  ],
+  "rows": 6000,
+  "cols": 7,
+  "status": "ran",
+  "result": {
+    "split": "chronological 80/20 by row order",
+    "group_check": "armed on ts_floor (596 groups)",
+    "duplicate_check": "ran on 5 numeric columns",
+    "n_violations": 26,
+    "violations": [
+      "group_overlap",
+      "duplicate_rows",
+      "duplicate_rows",
+      "duplicate_rows",
+      "duplicate_rows",
+      "duplicate_rows",
+      "duplicate_rows",
+      "duplicate_rows",
+      "duplicate_rows",
+      "duplicate_rows",
+      "duplicate_rows",
+      "duplicate_rows",
+      "duplicate_rows",
+      "duplicate_rows",
+      "duplicate_rows",
+      "duplicate_rows",
+      "duplicate_rows",
+      "duplicate_rows",
+      "duplicate_rows",
+      "duplicate_rows",
+      "duplicate_rows",
+      "duplicate_rows",
+      "duplicate_rows",
+      "duplicate_rows",
+      "duplicate_rows",
+      "duplicate_rows"
+    ],
+    "finding": true,
+    "mapping": "a non-empty Violation list is a finding. The GROUP check is unposable on this fixture (no subject grouping exists) and contributes NO evidence either way; the DUPLICATE check ran and its zero is a real result."
+  },
+  "summary": "finding=True",
+  "seconds": 0.1
+}

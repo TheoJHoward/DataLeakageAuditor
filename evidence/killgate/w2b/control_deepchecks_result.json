@@ -1,0 +1,40 @@
+{
+  "tool": "deepchecks",
+  "version": "0.19.1",
+  "licence_classifier": "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",
+  "license_field": "UNKNOWN",
+  "licence_determination": "AGPL-3.0-or-later. Invoked as a separate program in its own venv; not vendored, modified or redistributed; \u00a713 network clause not engaged. Lapses if any of those change.",
+  "vendor_fixture": false,
+  "vendor_negative": false,
+  "limbs": {
+    "index/POSITIVE": {
+      "value": 1.0,
+      "fired": true,
+      "expected": true,
+      "ok": true,
+      "raw_type": "float"
+    },
+    "index/NEGATIVE": {
+      "value": 0.0,
+      "fired": false,
+      "expected": false,
+      "ok": true,
+      "raw_type": "int"
+    },
+    "corr/POSITIVE": {
+      "value": 1.0,
+      "fired": true,
+      "expected": true,
+      "ok": true,
+      "raw_type": "dict"
+    },
+    "corr/NEGATIVE": {
+      "value": 0.0,
+      "fired": false,
+      "expected": false,
+      "ok": true,
+      "raw_type": "dict"
+    }
+  },
+  "verdict": "DISCRIMINATING"
+}
