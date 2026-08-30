@@ -14,8 +14,17 @@ map is the scoring key, and PREREG.md SC-7(b)/(c) withhold it from the tool:
 The reducers already draw that boundary: `compute_runtime_metrics(traces,
 labels)` takes `CaseLabels` as a SEPARATE argument. This package produces
 `CombinationTrace` and never accepts, imports, or constructs `CaseLabels` -- so
-the withholding is structural. `leakaudit.trace.assert_key_free` states the
-invariant executably.
+the withholding is structural.
+
+`tests/phase1/sc7c.py` states the invariant executably: `assert_key_free` parses
+every module here and fails if any imports the name, binds the harness module,
+constructs it, or reaches it by attribute. It is exercised against one violating
+copy per route, with a negative control, in `tests/phase1/test_sc7c.py`.
+
+*(Until R173 this cited `leakaudit.trace.assert_key_free`, which did not exist.
+The invariant held -- verified across nine modules -- but nothing checked it, and
+a cited checker that is absent is a false statement in the code carrying the
+claim.)*
 """
 from .contract import ContractError, audit, normalise_raw
 from .determinism import DeterminismResult, check_frame, frames_equal

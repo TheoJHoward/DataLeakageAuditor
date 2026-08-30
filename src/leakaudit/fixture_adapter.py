@@ -34,6 +34,7 @@ ever passed has not been shown to detect anything.
 from __future__ import annotations
 
 import contextlib
+import os
 import sys
 from dataclasses import dataclass
 from pathlib import Path
@@ -41,14 +42,23 @@ from typing import Callable
 
 import pandas as pd
 
-# The fixture's own code, resident in the spike directory. It is imported, never
-# copied: `fixture.py` defines fixture_corrected as the pre-fix builder plus the
-# universal shift(1), and `phase5_ml_fixture.py` is a byte-verified copy of the
-# archive builder with write paths redirected.
-F2_DIR = Path(
-    r"C:\Users\ttbea\AppData\Local\Temp\claude"
-    r"\C--Users-ttbea-OneDrive-Desktop-MBO-2025-4mon--2026-01"
-    r"\8b1d67a4-ce4f-4c55-b09d-1c72e7b6b5e1\scratchpad\fixture_spike\f2")
+# The fixture's own code. It is imported, never copied: `fixture.py` defines
+# fixture_corrected as the pre-fix builder plus the universal shift(1), and
+# `phase5_ml_fixture.py` is a byte-verified copy of the archive builder with
+# write paths redirected.
+#
+# THIS RESOLVES INSIDE THE REPOSITORY. Until R173 it was a hard-coded absolute
+# path into one machine's session scratchpad, so four of this suite's tests could
+# run on exactly one computer -- and the skip message told everyone else the code
+# "is not part of this repository", which was not true. It is committed at
+# evidence/fixture_spike/f2, byte-identical to the scratchpad copy, and
+# INSTALL.md already named that location. The repository, the install document
+# and the test now agree.
+#
+# LEAKAUDIT_F2_DIR overrides it, for running against a spike copy without
+# editing source. The override is explicit and never the default.
+_REPO_F2 = Path(__file__).resolve().parents[2] / "evidence" / "fixture_spike" / "f2"
+F2_DIR = Path(os.environ.get("LEAKAUDIT_F2_DIR") or _REPO_F2)
 
 
 class FixtureUnavailable(RuntimeError):
@@ -58,14 +68,26 @@ class FixtureUnavailable(RuntimeError):
 def _import_fixture():
     if not F2_DIR.exists():
         raise FixtureUnavailable(
-            "the fixture's producing code is not at %s. It is a session "
-            "scratchpad and is not guaranteed to survive; the committed copy of "
-            "phase7_l2_sim.py pins the CLASSIFICATIONS' meaning, not this "
-            "builder." % F2_DIR)
+            "the fixture's producing code is not at %s. The committed copy is at "
+            "evidence/fixture_spike/f2; if this path is elsewhere, "
+            "LEAKAUDIT_F2_DIR points at an override that does not exist, and "
+            "unsetting it restores the committed copy." % F2_DIR)
     if str(F2_DIR) not in sys.path:
         sys.path.insert(0, str(F2_DIR))
-    import fixture as fx                      # noqa: PLC0415
-    import phase5_ml_fixture as p5            # noqa: PLC0415
+    # NO BYTECODE INTO THE EVIDENCE TREE. F2_DIR now resolves inside
+    # evidence/, and every file there is attested individually by
+    # evidence/MANIFEST.sha256. Importing normally writes __pycache__/*.pyc
+    # beside the sources, which the manifest does not list and the coverage
+    # check reports as unattested files in the evidence tree -- measured, not
+    # anticipated: the first repoint produced exactly two such findings. The
+    # suppression is scoped to these two imports and restored afterwards.
+    prior = sys.dont_write_bytecode
+    sys.dont_write_bytecode = True
+    try:
+        import fixture as fx                  # noqa: PLC0415
+        import phase5_ml_fixture as p5        # noqa: PLC0415
+    finally:
+        sys.dont_write_bytecode = prior
     return fx, p5
 
 

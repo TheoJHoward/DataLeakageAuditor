@@ -36,10 +36,16 @@ def _why_skipped():
     inputs. Which of the two is missing changes what they should do.
     """
     if not fa.F2_DIR.exists():
-        return ("the acceptance fixture's producing code is not at %s. It is a "
-                "session scratchpad and is not part of this repository; without it "
-                "these tests cannot run anywhere. See %s for what they proved when "
-                "they last ran." % (fa.F2_DIR, os.path.basename(RECORD)))
+        # Until R173 this said the producing code "is a session scratchpad and
+        # is not part of this repository", which was false: it is committed at
+        # evidence/fixture_spike/f2. The message explained the skip away with an
+        # untrue reason, which stops anyone looking -- worse than a bare skip.
+        return ("the acceptance fixture's producing code is not at %s. It is "
+                "normally the committed copy at evidence/fixture_spike/f2; this "
+                "path is elsewhere, so LEAKAUDIT_F2_DIR is set to an override "
+                "that does not exist. Unset it to use the committed copy. See %s "
+                "for what these proved when they last ran."
+                % (fa.F2_DIR, os.path.basename(RECORD)))
     if not FIXTURE:
         return ("opt in with LEAKAUDIT_FIXTURE=1. The fixture's code IS present "
                 "here, so these will run: about three minutes, four builds at "

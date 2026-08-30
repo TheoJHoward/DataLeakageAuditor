@@ -221,14 +221,17 @@ def test_events_deduplicate_across_strategies_within_a_combination():
 
 
 def test_the_package_never_touches_the_scoring_key():
-    """SC-7(c) by signature: CaseLabels is the harness's, never the tool's."""
+    """SC-7(c) by signature: CaseLabels is the harness's, never the tool's.
+
+    Delegates to `sc7c.assert_key_free`, which parses rather than text-matches.
+    This test previously scanned text itself, and its first assertion carried
+    `or True` and so could never fail; the two that could were narrow, catching
+    `import CaseLabels` and `CaseLabels(` but not `import protocol...`, which
+    reaches the key by attribute. Parsing removes both problems at once, and the
+    check is exercised against one violating copy per route in test_sc7c.py.
+    """
     import pathlib
     import leakaudit
+    from sc7c import assert_key_free
     src = pathlib.Path(leakaudit.__file__).parent
-    for p in sorted(src.glob("*.py")):
-        body = p.read_text(encoding="utf-8")
-        code = "\n".join(l for l in body.split("\n") if not l.strip().startswith("#"))
-        assert "CaseLabels" not in code.replace('"""', "\x00").split("\x00")[-1] or True
-        # the executable form: it is never imported
-        assert "import CaseLabels" not in code
-        assert "CaseLabels(" not in code
+    assert assert_key_free(src) >= 9
