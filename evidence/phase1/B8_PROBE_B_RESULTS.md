@@ -101,7 +101,18 @@ a null.
 **`compatibility` means the strategy had no realisation on that dtype** — no
 in-dtype out-of-range value exists for those object columns.
 
-## 4. A FINDING THE PROBE SURFACED — the aggressor predicate never matches
+## 4. INDEPENDENT AGREEMENT WITH A DECLARED PROPERTY — the aggressor predicate never matches
+
+*(Heading changed 28 August 2026. It read verbatim: **"A FINDING THE PROBE
+SURFACED — the aggressor predicate never matches"**. A reader who skims headings
+took from it the claim this section's own body withdraws four paragraphs below —
+that the probe found something previously unknown. It did not: the declaration
+records the mechanism at its column-level gate dispositions and the seven
+affected columns at its as-built defects section, both dated 13 August, thirteen
+days before this run. The heading is a label rather than a dated claim, and a
+label its own body contradicts is a defect rather than a record, so it is
+corrected here and the original wording is kept in the file rather than only in
+git. What the section establishes is unchanged and is stated below.)*
 
 **`trades.aggressor_side` is silent under a VALID shuffle, and the builder
 demonstrably reads it.** That combination is either a real property of the
