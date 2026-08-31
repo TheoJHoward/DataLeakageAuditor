@@ -1,0 +1,9 @@
+[10:32:27] ground truth: 11 REQUIRED, 4 CLEAN, 6 DESCENDANT (harness side only)
+[10:32:27] capturing inputs once
+[10:33:32] side contaminated: building and probing
+[10:36:30] side contaminated: 177 s, 250 cohort(s) eligible, 5220 finding record(s), 5220 event(s)
+[10:36:30] checkpointed after side contaminated -> criteria_12_run.json
+[10:37:00] side corrected: building and probing
+[10:39:51] side corrected: 172 s, 250 cohort(s) eligible, 0 finding record(s), 0 event(s)
+[10:39:51] checkpointed after side corrected -> criteria_12_run.json
+[10:39:51] done -> C:\Users\ttbea\OneDrive\Desktop\MBO_2025(4mon)+2026-01\evidence\phase1\criteria_12_run.json
