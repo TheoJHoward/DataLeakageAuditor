@@ -217,6 +217,63 @@ extra call.
 
 ---
 
+## TB-07 — *(31 August 2026)* A registration can be signed, internally consistent, and still have an acceptance gate that cannot be run
+
+The gate's ground truth is enumerated per column and counted per cell of a key
+whose elements are side, instrument, month and class. The gate's scorer is keyed
+on a pair whose second element is a decision cohort — a set of output rows
+sharing a decision time. Both statements are in the registration. Neither
+mentions the other, and no declared object crosses between them.
+
+Everything else reconciles. The map's figures cross-check against two
+independent measurement rounds with zero disagreeing cells. The denominator
+derives from a registered rule and prints its partition check. The exclusions
+are declared pre-run with grounds and artifact citations. The input surface is
+declared and the scoring key is withheld from the tool. The one place it comes
+apart is the join between the two halves, which is exactly the place a document
+this careful would not think to look, because each half is complete on its own
+terms.
+
+**What made it findable was a rule about what may not be done.** Every earlier
+round proposed a repair at the level of a field: the field carries the wrong
+value, so change the value. Each was refused for want of a declared source for
+the new value. The refusals accumulated. When the question finally moved from
+*which value does this field carry* to *which unit does the registration
+declare*, the answer was already written down in two places that had never been
+read against each other.
+
+The transferable part is not the finding. It is that a discipline forbidding the
+invention of a missing piece converts a silent incompatibility into a loud one.
+Had a labels producer been written at any point in the preceding eight rounds,
+it would have worked, produced numbers, and buried this.
+
+---
+
+## TB-08 — *(31 August 2026)* When a registration enumerates a closed scope, the first question about any artifact is which row of it that artifact occupies
+
+The coverage table names eleven detector rows and says of itself that the table
+is the scope and that it closes. The acceptance criteria attach to two of those
+rows. Eight rounds of work went into a field of an instrument that is none of
+the eleven.
+
+The question was never asked. "The tool" was treated as one thing, and the
+field-level questions that followed were all well-formed and all aimed at
+nothing the acceptance section reads. The instrument's own module header had
+said so from the day it was written — that its cohort is a whole column and is
+not a decision cohort, because that layer has no availability model — and it was
+read past for eight rounds because nobody was asking the question it answers.
+
+The cost of asking is one read of a table that declares itself closed. The cost
+of not asking was every field-level round that followed, a pre-commitment frozen
+on the wrong instrument, and a two-hour run launched against it.
+
+The rule generalises past detectors: before what an artifact does, before what
+it emits, before any question about its fields — which row of the closed
+enumeration is it. If the answer is *none*, that is the finding, and it outranks
+everything downstream of it.
+
+---
+
 ## Open items — recorded, not acted on
 
 - **Whether SC-7(c) belongs in the registration gate.** A pytest-only check is
@@ -226,3 +283,19 @@ extra call.
   checker. Deferred to the D2 subsystem — discriminator, window, relative-root
   defect — which touches that instrument anyway, so the two changes are ruled and
   disclosed together rather than separately. Raised R175 §6.
+
+- **The install on a second machine.** The author's to run, and the only limb of
+  criterion 5 that nothing incidental can discharge. It settles the dependency
+  floors as a by-product: they are `numpy>=1.26`, `pandas>=2.1`, `pyarrow>=14`,
+  and every result recorded here was measured against numpy 2.4.2, pandas 3.0.1
+  and pyarrow 23.0.1 on one machine. Whether a resolver that picks pandas 2.x
+  yields a working package is unknown. Recorded as unknown; widening or pinning
+  the floors to dispose of it would swap an untested risk for an untested claim.
+  Raised R189 §4.
+
+- **Whether the acceptance section is scored at column granularity.** Its four
+  criteria are worded about columns; the metric family and the kill criterion's
+  gates read the feature-and-cohort pair. So the label gap of TB-07 blocks the
+  second and not obviously the first. Reading it either way is a choice about a
+  scoring key made after the detectors ran, which is why it is recorded here and
+  put to the author rather than settled. Raised R188 §3.2, framed R189 §3.

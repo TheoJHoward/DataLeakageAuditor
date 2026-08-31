@@ -1,15 +1,55 @@
-# Data Leakage Auditor — pre-registration (v30)
+# Data Leakage Auditor
 
 **Working name:** TBD (placeholder: `leakaudit`)
 **Author:** Theo Johann Howard
 **Repository:** https://github.com/TheoJHoward/DataLeakageAuditor.git
 
-This repository is a **pre-registration, not a tool**. It contains the locked
-specification (`PREREG.md` v30), its revisable companion (`DESIGN.md`), the
-version ledger (`HISTORY.md`), and the protocol tooling `PREREG.md` §11
-item 1 requires in the first commit: a reference reducer for the runtime
-measurement semantics, its exhaustive trace suite, and a staged registration
-checker. **No detector implementation exists.**
+This repository holds a **pre-registration** and the **tool being built against
+it**. They are kept apart deliberately, and the front page says which is which,
+because a reader who cannot tell a specification from a claim has been given no
+way to check either.
+
+## The pre-registration
+
+Signed and externally timestamped. The specification is changed only through the
+class C amendment route it registers for itself, and has been changed once —
+`v30a`.
+
+- **`PREREG.md`** — the locked specification: scope, metrics, acceptance gates,
+  and what every published number is allowed to mean.
+- **`DESIGN.md`** — its revisable companion.
+- **`HISTORY.md`** — the version ledger and the review register.
+- **`AVAILABILITY_DECLARATION.md`** — the acceptance fixture's reconstructed
+  availability declaration, which carries the ground truth the acceptance gate
+  is scored against.
+- **`DEVIATIONS.md`** — append-only. Every departure, defect and disclosure,
+  including the ones that make the project look worse.
+- **`protocol/runtime_reference.py`** and `tools/check_registration.py` — the
+  protocol tooling `PREREG.md` §11 item 1 requires in the first commit: a
+  reference reducer for the runtime measurement semantics, its exhaustive trace
+  suite, and a staged registration checker.
+
+## The tool
+
+**`leakaudit`** — Phase 1, under development, and installable now. Install
+instructions, verified by execution rather than by reading, are in
+[`INSTALL.md`](INSTALL.md).
+
+**Status, stated plainly so that nothing here is mistaken for a result.** **No
+acceptance gate has been executed.** No detector output in this repository is
+published as a satisfied gate, none of it carries acceptance weight, and the
+question of which detectors the acceptance criteria are even evaluated on was
+settled — from the specification's own text — later than the code that assumed
+an answer to it. What exists is an installable package, a runtime probe suite,
+and a test suite that runs. That is not a validated instrument and is not
+offered as one.
+
+> *Two sentences stood here until 31 August 2026 and were false by the time
+> anyone read them: "This repository is a pre-registration, not a tool" and "No
+> detector implementation exists." Both were true when written. They are
+> recorded as corrected rather than quietly deleted, because a public front page
+> asserting something untrue about its own contents is the most visible possible
+> instance of the defect class this project exists to detect.*
 
 **Phase 0 — the kill gate that can end the project (`PREREG.md` §10.1) — is
 partly run.** Of its four work items, **prior-art verification is signed off**
@@ -19,6 +59,30 @@ the licence check is incomplete. Under the author's routing of 25 August 2026,
 **§9.2 and the licence check are Phase 1 entry obligations, not open blockers on
 this tag** — H-34's verdict is the sign-off the tag requires, and neither
 outstanding item is waived.
+
+## Install
+
+```bash
+python -m pip install .
+```
+
+Editable, for development:
+
+```bash
+python -m pip install -e ".[dev]"
+```
+
+Requires **Python ≥ 3.11**. Two packages are installed: the auditor and the
+protocol reducers it imports.
+
+**What a stranger gets, and what they do not.** They get the auditor. They do
+**not** get the acceptance fixture, which is not packaged; `import leakaudit`
+succeeds without it and the adapter raises with its reason when the fixture's
+own producing code is absent.
+
+Runtime dependencies and their licence determinations, the record of what was
+verified by execution rather than by reading, and the two defects that record
+found are in [`INSTALL.md`](INSTALL.md).
 
 ## Registration integrity (`PREREG.md` §11)
 
@@ -95,15 +159,58 @@ Key fingerprint = 991F 5331 C584 CE5E AF7D  6939 B29C F0E8 4711 9AD7
 
 ## Verify
 
-```
+```bash
 python -m pytest tests/registration
+```
+
+```bash
 python tools/check_registration.py --stage prereg
 ```
 
 The trace suite must be green and the prereg stage must exit 0 — that is
-the tag gate (`PREREG.md` §6.8). The `implementation` and `release` stages
-are expected to fail until the phases that own their artifacts exist; every
-stage prints the checks it defers and the stage that owns them.
+the tag gate (`PREREG.md` §6.8).
+
+### What you will actually see, and what it means
+
+**Both of those commands are currently red, and both are red for the same
+disclosed reason.** A stranger who cannot tell a disclosed false positive from a
+real failure has not been given a working front door, so it is stated here
+beside the commands that produce it rather than left to be found in the ledger.
+
+Measured 31 August 2026 at `HEAD` on the author's machine, Python 3.12.10:
+
+| command | what it prints |
+|---|---|
+| `python -m pytest tests/registration` | 137 collected — **136 passed, 1 failed** |
+| `python tools/check_registration.py --stage prereg` | **exit 1 — 1 check failed, 1 finding** |
+
+The single finding is `hash_set_single_source`, and the single failing test is
+`test_prereg_stage_on_real_repo_exits_zero`, which asserts that stage exits zero
+and therefore fails on that same finding. **They are one fact reported twice, not
+two problems.**
+
+**It is a known false positive, disclosed at `DEVIATIONS.md` entry D-V30A-11.**
+The check exists to catch prose that restates the registered path enumeration
+without carrying the digests, because a restated list drifts from the list the
+signed tag attests. It fires on a note in the version ledger that names several
+registered paths in passing and asserts nothing about them.
+
+**It is pinned, not silenced, and that is the point.** Adding an exemption to
+make the tree pass is exactly what this file's own header forbids — "no
+exemption may be added to make current files pass" — and an instrument that can
+be edited into agreement with the tree certifies nothing. A red gate that is
+disclosed and understood is worth more than a green one that was arranged.
+
+**Any other finding, and any other failing test, is a real one.**
+
+The full suite, `python -m pytest tests`, additionally runs the Phase 1 tests:
+330 collected on the same machine and date, of which 4 skip. Those 4 are opt-in
+behind `LEAKAUDIT_FIXTURE=1` because they build the acceptance fixture and take
+minutes.
+
+The `implementation` and `release` stages are expected to fail until the phases
+that own their artifacts exist; every stage prints the checks it defers and the
+stage that owns them.
 
 ## What this registration claims
 

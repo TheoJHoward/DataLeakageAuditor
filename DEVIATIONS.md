@@ -732,3 +732,149 @@ the display requirement that a finding print its probe cohort and its affected
 output cohort as two separate things; the enumeration of those sections is the
 population of that read. The digests are of the three quarantined files as they
 stood before and after the move.
+
+## D-V30A-27 — the acceptance criteria attach to two named detector rows, and the instrument seven rounds of field work went into is not one of them
+
+**True, and stated plainly rather than reorganised around.** The instrument the acceptance
+criteria are evaluated on is the availability probe, with the label probe where it applies. The
+field work of the preceding eight rounds, the affected-output-cohort repair, and the harness the
+void pre-commitment named were all aimed at the column probe, which the acceptance section does
+not score.
+
+**How the attachment is established, by reading the sections that carry it rather than by keyword
+search.** The criteria adjudicate *runtime findings*, and the first of them turns on whether the
+finding's promotion status makes the reported tier proven or review. The tier section defines a
+runtime finding by that field and draws the boundary in terms: the review rows that are not
+runtime detectors are named and excluded. The metrics section then assigns both runtime rows —
+preserving and promoted — to exactly two rows of the coverage map and to no others. The coverage
+section says of those same two rows that they emit at a tier derived from promotion status alone,
+which is the exact property the first criterion turns on. The declaration section records that
+every finding of those two rows prints its declaration and its cohorts. The kill criterion gates
+both of their combinations by name; the ambiguity-branch clause computes its yield per runtime
+detector. The routing clause makes jurisdiction between detectors a declared object, and the
+declaration performs it in those terms for the fixture's one dual-ground column. The coverage
+table closes itself: eleven detector rows, and the table is the scope.
+
+**The negative half of the population, because an attachment claim needs one.** The column probe's
+identifier appears in no registered document — not the specification, not the design companion,
+not the declaration. Neither do the two identifiers of the value-read and null-read detectors. The
+phrase the machinery keys its records on appears in the specification zero times.
+
+**The tool said so in its own header, from the day it was written.** The column probe's module
+documents that its cohort is one whole source column and states that it is not a decision cohort,
+because that layer has none, because it has no availability model. The coverage row it would have
+to be needs an availability model. It is therefore neither of the two rows, and the header was
+never in disagreement with the registration — only with the reader.
+
+**Expected:** work on an instrument to begin by establishing which row of a closed enumeration
+that instrument occupies.
+
+**Why it stands:** the enumeration is closed, and it was closed before any of this work started.
+Nothing in the tool changes as a consequence of this entry, and nothing is reverted on account of
+it. What changes is which artifact a later acceptance run reads.
+
+---
+
+## D-V30A-28 — the acceptance gate cannot be executed as registered: its ground truth and its scorer are declared in different units
+
+**True.** The declared expected findings are enumerated per column and counted per cell. The
+scoring machinery is keyed on a pair whose second element is a decision cohort. No declared object
+crosses between the two, so the labels the machinery consumes cannot be transcribed from the
+declaration — they can only be invented, and inventing them after the detectors have run is
+choosing a component of the scoring key after the fact.
+
+**The population of the read, by heading.** The conformance walk's criterion-3 subsection, which
+names its own supply list; the ground-truth map section and its subsections (a) through (d); the
+two-sided enumeration section with its per-column tables and its column-level dispositions; the
+required-list subsection of the walk. Then, on the other side: the section defining a probe's
+silence and its cohort, the runtime scoring-unit table, and the labels, event and metric
+definitions of the reference reducer.
+
+**What the declaration supplies, in its own words.** The map artifact and its schema; the cell key,
+named — side, instrument, month, class; the declared violation classes; the declared scored
+population; the per-cell expected findings; the unscored ledger; the reporting re-aggregation. The
+cell key is named and it is not a cohort. The map's schema carries a boundary field, two violation
+counts and a row count per cell, and its boundary reads the same value on every row.
+
+**What the per-cell expected findings actually look like.** The two-sided enumeration lists them by
+column, each with the map class that governs it; the required-list subsection does the same for the
+eleven units of the first criterion's denominator. The per-instrument-month statements are counts
+and rates, not row sets.
+
+**The one row-level object, and why it does not close the gap.** The declared cohort predicate says
+a row shares a wall-clock second with its predecessor. It is a predicate over output rows, and it
+is checkable before any detector runs from the lattice timestamp alone — but it is one set per
+side rather than a family indexed by decision time, and the declaration itself declares it
+necessary and not sufficient: in-cohort means a violation is possible and adjudicated against the
+map cell. Its own figures make the insufficiency measurable — the cohort is 1,966,088 rows of
+24,768,472 corrected rows, of which at least 1,024,196 violate in some class, leaving up to
+941,892 that violate in none. The declaration records that it does not know which cohort rows
+leak, and it never states it per column at all.
+
+**Why that is fatal to transcription rather than merely awkward.** The labels object is a frozen
+set of feature-and-cohort pairs. The cohort sensitivity metric intersects the labels' cohort
+strings with the identifiers the detector itself emitted, so the labels' cohort component lives in
+the detector's own identifier namespace. Nothing declared is in that namespace, and no declared
+rule maps a cell of the map into it. The freeze clause asks that every declared object the gate
+consumes be regenerable and checkable from the declared inputs alone before any detector runs; the
+pairs are not.
+
+**Expected:** a signed registration's ground truth and its scorer to be stated in the same unit.
+
+**Why it stands:** it is a finding about the registration, not a blocker on the tool, and it is
+recorded as one. No labels producer is built. Closing the gap decides what every published gate
+number means and is therefore class C, which is the author's and not an implementer's. The
+partial-scope note that follows from it: the criteria of the acceptance section are themselves
+worded at column granularity, while the metric family and the kill criterion's gates read the
+pair — so the blockage is not uniform, and which level the section is scored at is part of the
+same decision.
+
+**How it was found, recorded because the method is the transferable part.** By a discipline that
+forbade supplying the missing piece. Each earlier round proposed a repair at the level of a field;
+each was refused for want of a declared source; the refusals accumulated until the question moved
+from which value a field carries to which unit the registration declares, and there the answer was
+already written down in two incompatible places.
+
+---
+
+## D-V30A-29 — criterion 5's own instrument had never measured the thing it names, and asserted a falsehood while declining to
+
+**True.** The registration checker carries a check named for installability, wired to the release
+stage and cited to the kill criterion with the only date on it. Its body returned "the installable
+package does not exist yet; this check cannot pass before the implementation it verifies". The
+package had existed for days: packaging metadata, two shipped packages, a recorded install into a
+clean directory and an import from that installed copy alone.
+
+**And the front page asserted the same falsehood, more visibly.** The repository's README stated
+that it is a pre-registration and not a tool, and that no detector implementation exists. Both
+sentences were true when written. Both were false by the time anyone read them, on the public
+front page of a public repository.
+
+**What was done, and in what order.** The check was implemented against the real package, over six
+limbs, each of which is a defect that happened here rather than one imagined for completeness:
+packaging metadata that exists and parses; a declared licence file that is present; every
+first-party package a shipped module imports being itself shipped; every declared package
+directory existing and carrying a module; every third-party import of a shipped module being a
+declared dependency; and a front page that is true and names the install document. The third limb
+is the one that fired for real — a shipped module imports the reducer package, that package was
+absent from the first distribution, and the install succeeded and then raised on first use after
+the metadata build had already gone green.
+
+**Its clean result was not believed until it had failed.** Twenty-two cases were written before the
+result was quoted: one violating synthetic per route, a negative control that stays silent, a
+paired test that the historical defect's synthetic goes silent once the package is shipped, a case
+proving the false front-page claim is caught across a line wrap because the real one was wrapped,
+and a case proving that quoting a retired claim inside a blockquote does not fire — so that the
+check cannot push the repository into deleting its own history to go green.
+
+**What the check does not do, recorded beside what it does.** It builds nothing, installs nothing
+and imports nothing, and it reads one machine's checkout. Its passing note says so in its own
+output. The dependency floors are untested downward against an older resolution of one of them,
+and that stays recorded as unknown rather than disposed of by widening or pinning them.
+
+**Expected:** the instrument for a dated obligation to have been pointed at the obligation.
+
+**Why it stands:** the check was a placeholder that outlived its subject, and a placeholder that
+asserts the subject does not exist is worse than an absent check, because it reads as a measurement.
+The corrected sentences on the front page are recorded as corrections rather than deleted, for the
+reason the ledger exists.

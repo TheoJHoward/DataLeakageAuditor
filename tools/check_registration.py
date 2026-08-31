@@ -2118,8 +2118,255 @@ def check_package_defaults(root: Path) -> list[Finding]:
     return _artifact_absent("package_defaults", "the built package", "PREREG §6.8")
 
 
+# ---------------------------------------------------------------------------
+# CRITERION 5 - INSTALLABLE BY A STRANGER (PREREG.md section 10.2 item 5).
+#
+# WHY THIS CHECK HAS TEETH AND ITS PREDECESSOR DID NOT. Until 31 August 2026
+# this function returned `_artifact_absent(...)`: "the installable package does
+# not exist yet; this check cannot pass before the implementation it verifies".
+# The package had existed for days. The criterion carrying the only DATE in the
+# kill list had an instrument that had never looked at the thing it names, and
+# that stated a falsehood while declining to look.
+#
+# WHAT IT TESTS. Every limb below is a defect that HAPPENED here, not one
+# imagined for completeness:
+#
+#   (1) PACKAGING METADATA EXISTS AND PARSES. A project with no build backend
+#       cannot be installed by anyone, and a pyproject that only PARSES is not
+#       evidence of anything - the metadata build failed on a PEP 639 licence
+#       conflict while the file parsed cleanly throughout.
+#   (2) THE DECLARED LICENCE FILE IS PRESENT. `license-files` naming a file that
+#       is not in the tree ships a package a stranger has no licence to use.
+#   (3) EVERY FIRST-PARTY PACKAGE A SHIPPED MODULE IMPORTS IS ITSELF SHIPPED.
+#       This is the limb that fired for real. `leakaudit.contract` imports
+#       `protocol.runtime_reference`; `protocol/` was not in the distribution;
+#       the first SUCCESSFUL install raised ModuleNotFoundError on first use,
+#       after the metadata build had already gone green. BUILDING IS NOT
+#       INSTALLING AND INSTALLING IS NOT IMPORTING.
+#   (4) EVERY DECLARED PACKAGE DIRECTORY EXISTS AND CARRIES A MODULE.
+#   (5) EVERY THIRD-PARTY IMPORT OF A SHIPPED MODULE IS A DECLARED DEPENDENCY.
+#       An import satisfied by the development environment and undeclared in the
+#       metadata works on this machine and nowhere else, which is precisely the
+#       failure mode "installable by a stranger" names.
+#   (6) THE FRONT DOOR IS TRUE AND REACHABLE. A public README asserting that no
+#       implementation exists, beside a package that installs, is a stranger's
+#       first and worst encounter with this repository. It stood for days. The
+#       assertion is a check now rather than a memory.
+#
+# WHAT IT DOES NOT TEST, stated so a green result is not read as more than it
+# is: it does not build, install, or import anything, and it reads one
+# machine's checkout. It cannot see a dependency floor that fails to resolve
+# elsewhere - `numpy>=1.26`, `pandas>=2.1`, `pyarrow>=14` are untested downward
+# against a pandas 2.x resolution (INSTALL.md records this). AN INSTALL ON A
+# SECOND MACHINE IS THE TEST THIS CANNOT BE, and this check never stands in for
+# it.
+# ---------------------------------------------------------------------------
+_INSTALL_PYPROJECT = "pyproject.toml"
+_INSTALL_README = "README.md"
+_INSTALL_DOC = "INSTALL.md"
+
+# Any import, indented or not, so a LAZY import inside a function is seen. The
+# lazy ones are exactly the ones a stranger discovers at run time rather than at
+# install time, which makes them the ones worth catching.
+_INSTALL_IMPORT = re.compile(
+    r"^[ \t]*(?:from|import)[ \t]+([A-Za-z_][A-Za-z0-9_]*)", re.M)
+
+# Imports that are deliberately NOT dependencies, each with its ground. An
+# exemption that matches nothing is reported as a note, per the D12 rule: an
+# exemption nobody exercises is either stale or was never right.
+_INSTALL_UNDECLARED_OK = {
+    "fixture":
+        "the acceptance fixture's own producing module, imported lazily by "
+        "fixture_adapter and NOT packaged. A stranger installing this gets the "
+        "auditor, not the fixture; the adapter raises FixtureUnavailable with "
+        "its reason when it is absent. Declared in pyproject.toml's own header "
+        "and in INSTALL.md's 'what a stranger gets' section.",
+    "phase5_ml_fixture":
+        "same ground: the fixture's second producing module, same lazy import "
+        "site, same non-packaging decision.",
+}
+
+# The sentence that stood on the public front page while the package installed.
+# Keyed to the claim, not to a line, because the line will move.
+_INSTALL_README_FALSE_CLAIMS = (
+    "No detector implementation exists",
+    "pre-registration, not a tool",
+)
+
+
+def _install_first_party(root: Path) -> dict[str, Path]:
+    """Top-level importable directories of this repository, by name."""
+    out: dict[str, Path] = {}
+    for parent in (root, root / "src"):
+        if not parent.is_dir():
+            continue
+        for child in sorted(parent.iterdir()):
+            if not child.is_dir() or child.name.startswith((".", "_")):
+                continue
+            if any(child.glob("*.py")):
+                out.setdefault(child.name, child)
+    return out
+
+
+def _install_requirement_names(deps) -> set[str]:
+    names = set()
+    for spec in deps or ():
+        m = re.match(r"[A-Za-z0-9._-]+", str(spec))
+        if m:
+            names.add(m.group(0).lower().replace("-", "_"))
+    return names
+
+
 def check_installability(root: Path) -> list[Finding]:
-    return _artifact_absent("installability", "the installable package", "PREREG §10.2 c5")
+    """Criterion 5 - is this installable by a stranger? Reads, never installs."""
+    root = Path(root).resolve()
+    f: list[Finding] = []
+
+    # ---- (1) metadata --------------------------------------------------
+    ppath = root / _INSTALL_PYPROJECT
+    if not ppath.exists():
+        return [Finding("installability", _INSTALL_PYPROJECT, None,
+                        "C5: there is no packaging metadata. Nothing below can "
+                        "be judged and the criterion is not discharged.")]
+    try:
+        cfg = tomllib.loads(ppath.read_text(encoding="utf-8"))
+    except Exception as exc:                                # noqa: BLE001
+        return [Finding("installability", _INSTALL_PYPROJECT, None,
+                        "C5: packaging metadata does not parse: %s" % exc)]
+
+    project = cfg.get("project") or {}
+    build = cfg.get("build-system") or {}
+    if not build.get("build-backend"):
+        f.append(Finding("installability", _INSTALL_PYPROJECT, None,
+                         "C5: no [build-system] build-backend; pip has nothing "
+                         "to build this with"))
+    for field in ("name", "version", "requires-python"):
+        if not project.get(field):
+            f.append(Finding("installability", _INSTALL_PYPROJECT, None,
+                             "C5: [project] declares no %s" % field))
+
+    # ---- (2) licence ---------------------------------------------------
+    if not project.get("license"):
+        f.append(Finding("installability", _INSTALL_PYPROJECT, None,
+                         "C5: no licence expression; a stranger has no licence "
+                         "to use what they installed"))
+    licence_files = project.get("license-files") or []
+    if not licence_files:
+        f.append(Finding("installability", _INSTALL_PYPROJECT, None,
+                         "C5: license-files is empty; the licence text is not "
+                         "shipped with the distribution"))
+    for pattern in licence_files:
+        if not list(root.glob(str(pattern))):
+            f.append(Finding("installability", _INSTALL_PYPROJECT, None,
+                             "C5: license-files names %r and no file in the "
+                             "tree matches it" % pattern))
+
+    # ---- (3)/(4) what ships, and whether it holds together -------------
+    tools_cfg = (cfg.get("tool") or {}).get("setuptools") or {}
+    shipped = list(tools_cfg.get("packages") or [])
+    pkg_dir = dict(tools_cfg.get("package-dir") or {})
+    if not shipped:
+        f.append(Finding("installability", _INSTALL_PYPROJECT, None,
+                         "C5: no explicit package list. Auto-discovery decides "
+                         "what ships, and what ships is exactly the question "
+                         "this check exists to answer."))
+    dirs: dict[str, Path] = {}
+    for name in shipped:
+        rel = pkg_dir.get(name, name)
+        d = root / rel
+        if not d.is_dir():
+            f.append(Finding("installability", _INSTALL_PYPROJECT, None,
+                             "C5: package %r maps to %s, which is not a "
+                             "directory" % (name, rel)))
+            continue
+        if not any(d.glob("*.py")):
+            f.append(Finding("installability", _INSTALL_PYPROJECT, None,
+                             "C5: package %r maps to %s, which carries no "
+                             "module" % (name, rel)))
+            continue
+        dirs[name] = d
+
+    first_party = _install_first_party(root)
+    declared = _install_requirement_names(project.get("dependencies"))
+    stdlib = set(getattr(sys, "stdlib_module_names", ()))
+    seen_exempt: set[str] = set()
+    modules = 0
+    for name, d in sorted(dirs.items()):
+        for src in sorted(d.rglob("*.py")):
+            modules += 1
+            text = src.read_text(encoding="utf-8", errors="replace")
+            rel = src.relative_to(root).as_posix()
+            for m in _INSTALL_IMPORT.finditer(text):
+                mod = m.group(1)
+                line = text.count("\n", 0, m.start()) + 1
+                if mod in ("__future__",) or mod in stdlib or mod in dirs:
+                    continue
+                if mod in first_party:
+                    f.append(Finding(
+                        "installability", rel, line,
+                        "C5: imports first-party package %r, which is NOT in "
+                        "the shipped package list. This installs and then "
+                        "fails to import - the exact defect that shipped once "
+                        "already." % mod))
+                    continue
+                if mod in _INSTALL_UNDECLARED_OK:
+                    seen_exempt.add(mod)
+                    continue
+                if mod.lower().replace("-", "_") not in declared:
+                    f.append(Finding(
+                        "installability", rel, line,
+                        "C5: imports %r, which is neither stdlib, nor shipped, "
+                        "nor a declared dependency. It resolves here because "
+                        "this environment happens to carry it." % mod))
+    for mod, why in sorted(_INSTALL_UNDECLARED_OK.items()):
+        if mod not in seen_exempt:
+            f.append(Finding("installability", _INSTALL_PYPROJECT, None,
+                             "C5: the exemption for %r fired on nothing. An "
+                             "exemption nobody exercises is stale or was never "
+                             "right. Ground on record: %s" % (mod, why),
+                             is_note=True))
+
+    # ---- (6) the front door --------------------------------------------
+    readme = root / _INSTALL_README
+    doc = root / _INSTALL_DOC
+    if not doc.exists():
+        f.append(Finding("installability", _INSTALL_DOC, None,
+                         "C5: there are no install instructions"))
+    if not readme.exists():
+        f.append(Finding("installability", _INSTALL_README, None,
+                         "C5: there is no front page"))
+    else:
+        rtext = readme.read_text(encoding="utf-8", errors="replace")
+        if doc.exists() and _INSTALL_DOC not in rtext:
+            f.append(Finding("installability", _INSTALL_README, None,
+                             "C5: the front page never mentions %s. "
+                             "Instructions a stranger cannot find are not "
+                             "instructions." % _INSTALL_DOC))
+        # Blockquoted lines are the RECORD of a retired claim and are excluded;
+        # everything else is the page ASSERTING it. Whitespace is collapsed
+        # across the remainder because a claim that wraps across two lines is
+        # the same claim, and a line-by-line scan would miss it -- which is how
+        # this one survived a line-wrap already.
+        body = [raw for raw in rtext.split("\n")
+                if not raw.lstrip().startswith(">")]
+        flat = re.sub(r"\s+", " ", " ".join(body))
+        for claim in _INSTALL_README_FALSE_CLAIMS:
+            if claim in flat:
+                f.append(Finding(
+                    "installability", _INSTALL_README, None,
+                    "C5: the front page asserts %r beside a package that "
+                    "installs. Keeping the retired sentence on the record in a "
+                    "blockquote is how it stays visible; asserting it is not."
+                    % claim))
+
+    f.append(Finding(
+        "installability", _INSTALL_PYPROJECT, None,
+        "C5: %d package(s) shipped (%s), %d module(s) scanned, %d declared "
+        "dependency(ies). NOT TESTED HERE: build, install, import, or any "
+        "resolution other than this machine's."
+        % (len(dirs), ", ".join(sorted(dirs)) or "none", modules,
+           len(declared)), is_note=True))
+    return f
 
 
 # ---------------------------------------------------------------------------
