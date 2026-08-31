@@ -322,3 +322,80 @@ two instruments.
 was committed in an earlier round. Correcting the figure in place would leave no trace that the
 record once said something else, which is the property the append-only form exists to preserve. The
 earlier entry is left as written and is read together with this one.
+
+## D-V30A-18 — §6.2 criterion 3 has no scoring key that reaches the tool's output
+
+**True:** the ground-truth map and the scorer that adjudicates against it are stated in different
+units, and no declared correspondence joins them.
+
+The map's cell key is declared and named twice in the availability declaration, at line 1617 and
+again at line 2153:
+
+> (`side`, `instrument`, `month`, `class`) — the unit this declaration partitions the fixture into.
+
+The scorer consumes a different unit. Its labels carry `leaking_pairs`, a set of pairs of a feature
+and an affected output cohort, and the tool emits a cohort identifier of the form `col:<frame>.<column>`
+— a column of a frame. A cell of the map is an availability class over an instrument-month; a pair
+in the labels is a column. Neither is derivable from the other without a statement of which classes
+implicate which columns, and the registration contains no such statement.
+
+**Searched, with the population named:** the availability declaration, for `leaking_pairs`, for a
+feature and cohort co-occurring, and for the `col:` cohort prefix. Zero matches for each. The
+declared class set is the ten named at declaration line 2164 — trades_all, trades_buy, trades_sell,
+trades_large, mbo_all, mbo_bid_add, mbo_ask_add, mbo_bid_cancel, mbo_ask_cancel, mbo_cancel_any —
+and the column ground truth is the thirty-five columns of the fixture manifest, classified 25
+LEAK-SOURCE, 6 DESCENDANT, 4 CLEAN. Nothing maps the first set onto the second.
+
+**Expected:** a scoring key that reaches the tool's output, so findings can be adjudicated against
+the cells the map declares.
+
+**Why it stands:** the correspondence is not plumbing, and it is not available to be written now.
+
+Which classes implicate which columns decides whether a finding counts as hitting a predicted cell,
+so different plausible correspondences produce different criterion-3 numbers. That makes it the
+scoring key, and §6.2 SC-3(e) registers one scoring key and only one. SC-3(h) registers the map as
+declared and frozen before any detector runs, and records that a map frozen after a run is a key
+shaped by the result. Detectors have run: the column-dependency and null-reading sweeps covered the
+fixture, both probes executed, and the availability probe was wrapped in the frozen output contract.
+Their behaviour is known. A correspondence authored at this point would be a part of the key chosen
+after the freeze with the fixture in hand.
+
+The registered surface is closed, so a correspondence the registration does not declare is not
+addable except through an amended and signed registration.
+
+**Recorded in the repository before this round.** The Phase 1 harness carries the position in its
+own words: *"This file holds no labels either; it is here so that when scoring is added, it is added
+on this side of the boundary."* The scoring half was known to be absent; what this entry adds is
+that it cannot be completed as the registration stands.
+
+**Carried consequence:** criterion 3 is unscoreable as registered, and §6.2 is therefore unsatisfied
+rather than failed. Criteria 1, 2 and 4 are scoreable, because each is keyed by column and the
+column ground truth exists. A run of those three is not a gate result, since §6.2's criteria as
+amended are the whole gate.
+
+**Two populations, each naming what it counts (SC-3(a)).** Statements about how much the corrected
+side leaks depend on which count is meant, and both are true of the same map:
+
+| population, on SCORED cells of the corrected side | instrument-months |
+|---|---|
+| `strict_count > 0` — strictly-post-decision absorption | **18 of 48** |
+| `equal_count > 0` — same-second absorption | **35 of 48** |
+
+The first is the figure the declaration carries at lines 1625 and 1889. Earlier reports of "18 of
+48" did not name the population, and a reader taking it as the count of instrument-months that leak
+at all would understate the corrected side by seventeen.
+
+## D-V30A-19 — the map's own figures reconcile, and are recorded here
+
+**True:** the map artifact holds 984 rows: 960 declared-class cells, being two sides by eight
+instruments by six months by ten declared classes, plus 24 rows of the eleventh class `mbo_all_rows`,
+which the declaration declares diagnostic and which are not cells. Of the 960, 888 are SCORED and 72
+are UNSCORED_FOR_LACK_OF_DATA. The boundary field reads `decision_T` on every row. The scope is eight
+instruments — cl, es, gc, he, le, nq, zc, zs — over six months.
+
+**Expected:** the artifact to match the declaration's description of it.
+
+**Why it stands:** it does. Each figure above was recomputed from the artifact and compared with the
+declaration's own statement of it, and every one agrees. This entry records the reconciliation so
+that the defect disclosed at D-V30A-18 is not read as a defect in the map. The map is sound; what is
+absent is a correspondence between its unit and the scorer's.

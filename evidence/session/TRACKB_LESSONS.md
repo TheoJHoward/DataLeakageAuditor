@@ -77,6 +77,42 @@ what the work leaves behind.**
 
 ---
 
+## TB-03 — *(28 August 2026)* A registration can be internally consistent and still unscoreable
+
+The acceptance gate's third criterion scores findings against a declared
+ground-truth map. The map is sound: 984 rows reconciling exactly against the
+declaration's own description, its cell key declared and named twice, its scored
+and unscored counts matching, its boundary uniform. The scorer is sound: it
+consumes labels, applies registered gates, and its separation from the tool is
+now checked executably. **Every part is right and the two do not meet.** The
+map's cell is an availability class over an instrument-month; the scorer's unit
+is a column. Nothing in the registration says which classes implicate which
+columns, and without that the criterion cannot be adjudicated at all.
+
+**What is worth remembering is when it surfaced.** The gap had been present since
+the map was declared, through a signing ceremony, a close-out, a branch merge and
+several rounds of work on the surrounding code. Reading the criterion did not
+reveal it. Reading the map did not. Reading the scorer did not. It appeared the
+moment a delta required a **numeric threshold and a falsifiable expectation,
+stated per criterion, before anything ran** — because writing the expectation for
+that criterion meant naming the unit it would be measured in, and there was no
+unit to name.
+
+Without that requirement the sequence would have been: notice the units differ,
+write a small translation to bridge them, run, obtain numbers, and publish them.
+The numbers would have looked exactly like a gate result. The translation would
+have been a part of the scoring key, authored after the detectors' behaviour was
+known — which is the specific failure this tool exists to detect.
+
+**Two things follow.** A pre-commitment is not only a guard against tuning a
+threshold to a result; it is a **completeness check on the specification**, and it
+finds holes that reading cannot, because reading tolerates an unstated step and
+writing an expectation does not. And an unscoreable criterion is a finding about
+the registration, not an obstacle to route around: it is worth more published
+than the passing gate it displaced.
+
+---
+
 ## Open items — recorded, not acted on
 
 - **Whether SC-7(c) belongs in the registration gate.** A pytest-only check is
