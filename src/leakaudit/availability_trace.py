@@ -58,6 +58,13 @@ def _cohort_id(second) -> str:
     return cid
 
 
+def _exec(case_id: str, cid: str, finding) -> ExecutionRecord:
+    return ExecutionRecord(
+        detector_id=DETECTOR_ID, case_id=case_id,
+        strategy_id=STRATEGY_ID, promotion_status=PromotionStatus.PRESERVING,
+        cohort_id=cid, attempted=True, valid=True, finding=finding)
+
+
 def traces_for(result: ProbeAResult,
                eligible_seconds: Iterable,
                case_id: str) -> list[CombinationTrace]:
@@ -71,25 +78,46 @@ def traces_for(result: ProbeAResult,
             continue                      # no aggregate row: nothing to schedule
         cid = _cohort_id(c.second)
         cohorts.append(cid)
-        finding = None
-        if c.moved_in_second > 0:
-            feats = c.features_in_second or ()
-            if not feats:
-                # A finding must name a feature. If the probe recorded movement
-                # but no column, the trace cannot be honestly emitted.
-                raise ValueError(
-                    "cohort %s moved %d row(s) but named no feature; a "
-                    "FindingRecord may not be filled with a placeholder"
-                    % (cid, c.moved_in_second))
-            finding = FindingRecord(
-                feature=feats[0],
+        if c.moved_in_second == 0:
+            records.append(_exec(case_id, cid, None))
+            continue
+        feats = c.features_in_second or ()
+        if not feats:
+            # A finding must name a feature. If the probe recorded movement
+            # but no column, the trace cannot be honestly emitted.
+            raise ValueError(
+                "cohort %s moved %d row(s) but named no feature; a "
+                "FindingRecord may not be filled with a placeholder"
+                % (cid, c.moved_in_second))
+        # ONE RECORD PER MOVED FEATURE. R190 §2.
+        #
+        # This emitted `feats[0]` -- the alphabetically first moved column --
+        # and dropped the rest. The probe had them: `features_in_second` is the
+        # full tuple. The loss was at the trace boundary, and it is not
+        # cosmetic in either direction:
+        #
+        #   criterion 1 asks that every ground-truth leaking source column
+        #   receive a finding attributed to IT. Ten columns moving in one
+        #   second produced one attribution and nine silences, so the criterion
+        #   would read as nine misses that never happened.
+        #
+        #   criterion 2 forbids ANY finding of any tier on a manifest-clean
+        #   column. A clean column that moved and sorted after `feats[0]`
+        #   vanished from the trace -- a false NEGATIVE, in the direction that
+        #   hides a violation of the criterion the tool is being examined by.
+        #
+        # PREREG.md section 7.2 keys an EvidenceEvent on (detector, promotion
+        # status, feature, affected output cohort), so distinct features in one
+        # cohort are distinct events by the registered unit and were never one
+        # record to begin with. The schedule resolver takes the set of
+        # (strategy, cohort) pairs, so repeating a cohort across records leaves
+        # `completed` meaning exactly what it meant.
+        for feat in feats:
+            records.append(_exec(case_id, cid, FindingRecord(
+                feature=feat,
                 probe_cohort=cid,          # must equal the executing cohort
                 affected_output_cohort=cid,
-                is_secondary=False)
-        records.append(ExecutionRecord(
-            detector_id=DETECTOR_ID, case_id=case_id,
-            strategy_id=STRATEGY_ID, promotion_status=PromotionStatus.PRESERVING,
-            cohort_id=cid, attempted=True, valid=True, finding=finding))
+                is_secondary=False)))
 
     preserving = CombinationTrace(
         detector_id=DETECTOR_ID, case_id=case_id,
