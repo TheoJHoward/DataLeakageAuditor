@@ -1,0 +1,7 @@
+[19:14:04] ground truth: 11 REQUIRED units, 4 CLEAN columns
+[19:14:04] side corrected: capturing inputs
+[19:14:43] side corrected: probing 47 source columns
+[20:57:02] side corrected: probe finished in 6138 s
+[20:57:02] checkpointed after side corrected -> acceptance_run.json
+[20:57:02] side contaminated: capturing inputs
+[20:57:36] side contaminated: probing 47 source columns

@@ -657,3 +657,78 @@ headings and reading them, and that enumeration is the population of the read.
 **What this entry does not decide.** The re-derivation of the two artifact-allocation sentences is
 already recorded elsewhere as a disclosure-class item requiring a further amendment; this entry names
 a consequence of that allocation which that record does not name, and does not reopen it.
+
+## D-V30A-26 — a pre-commitment was frozen on a refuted premise, and the cohort it turned on is a set of rows
+
+**True, and in the order it happened.**
+
+A pre-commitment for the acceptance run was committed and pushed. Its stated
+premise was that the criteria are scored from a finding's feature field alone and
+that the affected-output-cohort field is an input to none of them. A run began
+against it and reached the end of its first side.
+
+The premise is false. The event's pair is the feature together with the affected
+output cohort, and every metric in the registered machinery is gated by a match of
+that pair against the labels — the two yields, the conditional recall, the cohort
+sensitivity, the unprobed rate, and the feature discovery recall, which projects
+to the feature but filters through the pair match first. Not one reads the feature
+alone.
+
+The run was stopped before the premise was checked, and no output was read at any
+point. That ordering is what preserved the pre-commitment property for whatever
+is written next: nothing was seen, so a later expectation is still genuinely
+written before a result.
+
+**Expected:** a claim recorded as unverified to be verified before it is frozen,
+rather than after.
+
+**Why it stands:** the pre-commitment is void as a pre-commitment and superseded.
+It is not edited, amended or deleted. Editing one stops it being a
+pre-commitment; deleting one removes the record of the premise it froze. Its
+output is quarantined under a directory named for it, with a README stating its
+status, and the three files' digests were recorded before anything moved them —
+which is what makes "never read, never altered" checkable rather than promised.
+The digests were recomputed after the move and are unchanged.
+
+**The machinery is registered, and that settles the direction.** The metrics, the
+gates and the event derivation are all defined in the runtime reference module,
+which is one of the twenty hashed paths and is byte-identical to what the tag
+attests. Its behaviour is not a candidate defect; the tool conforms to it.
+
+**What the registration means by cohort, established by reading the sections that
+define it rather than by inference.** A mask built for a decision time corrupts
+the cells unavailable at that time; for an output ROW whose own decision time is
+earlier, the unavailable set is larger, so that row can leak silently. A change at
+any row whose decision time is at or before the mask's is a valid finding, and
+silence is informative only for the rows whose decision time equals it. The
+scoring unit is then locked as the feature together with the affected output
+cohort.
+
+**So a cohort is a set of output ROWS sharing a decision time.** It is not a
+column. The availability probe emits cohorts of exactly that kind — its cohorts
+are seconds, and a cohort whose in-second rows moved carries a finding. The column
+probe emits cohorts that are columns of a frame.
+
+**Carried consequence:** the affected-output-cohort field as the column probe
+writes it does not denote a decision cohort under either form it has carried — not
+the probed input column it held until this round, and not the moved output column
+it holds now. Both name columns. The repair is therefore neither confirmed nor
+simply reversible, and it is left in place rather than reverted on suspicion; its
+own test still shows the field carries what the code intends, which is a different
+claim from carrying what the registration intends.
+
+**What this makes open.** Supplying the labels for this detector requires stating
+what its affected output cohort is, and the registration's answer is a unit the
+detector does not emit. Constructing that correspondence now would be choosing a
+component of the scoring key after the detectors have run, which the registration
+forbids for the same reason it forbids a map frozen after a run. It is recorded
+here and not chosen.
+
+**Populations, named.** The field question was settled by reading the metrics
+function and the event derivation in the runtime reference module, and the lines
+are quoted in the round's report. The cohort question was settled by reading the
+section that defines a probe's silence and its cohort, the scoring-unit table, and
+the display requirement that a finding print its probe cohort and its affected
+output cohort as two separate things; the enumeration of those sections is the
+population of that read. The digests are of the three quarantined files as they
+stood before and after the move.

@@ -1,0 +1,4606 @@
+{
+ "clean_columns": [
+  "minutes_since_open",
+  "session_close",
+  "session_mid",
+  "session_open"
+ ],
+ "criteria_scored": [
+  1,
+  2,
+  3
+ ],
+ "criterion_3_scope": "THIS_INSTRUMENT_MONTH_ONLY_20_OF_960_CELLS",
+ "criterion_4": "UNSCOREABLE_NO_IDENTITY_CONTROL_IMPLEMENTED",
+ "gate_result": "NOT_A_GATE_RESULT_PARTIAL_SCOPE",
+ "gate_status_of_repository": {
+  "disposition": "known false positive, disclosed at D-V30A-11; the detector fires on prose naming three registered paths and carries no digest",
+  "exit": 1,
+  "finding": "hash_set_single_source at HISTORY.md:236"
+ },
+ "required_units": [
+  {
+   "column": "net_delta_1s",
+   "governing_map_class": "trades_all"
+  },
+  {
+   "column": "net_delta_5s",
+   "governing_map_class": "trades_all"
+  },
+  {
+   "column": "net_delta_10s",
+   "governing_map_class": "trades_all"
+  },
+  {
+   "column": "net_delta_30s",
+   "governing_map_class": "trades_all"
+  },
+  {
+   "column": "net_delta_60s",
+   "governing_map_class": "trades_all"
+  },
+  {
+   "column": "sell_volume_10s",
+   "governing_map_class": "trades_sell"
+  },
+  {
+   "column": "large_trade_count_10s",
+   "governing_map_class": "trades_large"
+  },
+  {
+   "column": "vwap_distance",
+   "governing_map_class": "trades_all"
+  },
+  {
+   "column": "trade_volume_1s",
+   "governing_map_class": "trades_all"
+  },
+  {
+   "column": "trade_count_1s",
+   "governing_map_class": "trades_all"
+  },
+  {
+   "column": "dollar_volume_1s",
+   "governing_map_class": "trades_all"
+  }
+ ],
+ "scope": {
+  "artifact": "A (the f2 rebuild pair)",
+  "instrument": "zc",
+  "month": "2025-01",
+  "sides": [
+   "corrected",
+   "contaminated"
+  ]
+ },
+ "sides": {
+  "corrected": {
+   "case_id": "fixture_corrected_zc_2025-01",
+   "cohorts": [
+    "col:snap.bid_price_1",
+    "col:snap.bid_size_1",
+    "col:snap.bid_price_2",
+    "col:snap.bid_size_2",
+    "col:snap.bid_price_3",
+    "col:snap.bid_size_3",
+    "col:snap.bid_price_4",
+    "col:snap.bid_size_4",
+    "col:snap.bid_price_5",
+    "col:snap.bid_size_5",
+    "col:snap.ask_price_1",
+    "col:snap.ask_size_1",
+    "col:snap.ask_price_2",
+    "col:snap.ask_size_2",
+    "col:snap.ask_price_3",
+    "col:snap.ask_size_3",
+    "col:snap.ask_price_4",
+    "col:snap.ask_size_4",
+    "col:snap.ask_price_5",
+    "col:snap.ask_size_5",
+    "col:snap.spread",
+    "col:snap.mid_price",
+    "col:snap.book_imbalance",
+    "col:snap.timestamp",
+    "col:trades.ts_recv",
+    "col:trades.ts_event",
+    "col:trades.rtype",
+    "col:trades.publisher_id",
+    "col:trades.instrument_id",
+    "col:trades.action",
+    "col:trades.side",
+    "col:trades.price",
+    "col:trades.size",
+    "col:trades.channel_id",
+    "col:trades.order_id",
+    "col:trades.flags",
+    "col:trades.ts_in_delta",
+    "col:trades.sequence",
+    "col:trades.symbol",
+    "col:trades.aggressor_side",
+    "col:trades.is_buy_aggressor",
+    "col:magg.ts_floor",
+    "col:magg.bid_adds",
+    "col:magg.ask_adds",
+    "col:magg.bid_cancels",
+    "col:magg.ask_cancels",
+    "col:magg.total_events"
+   ],
+   "dependency_map": {
+    "col:magg.ask_adds": [
+     "ask_add_rate_10s",
+     "ask_add_rate_5s",
+     "ask_adds"
+    ],
+    "col:magg.ask_cancels": [
+     "ask_cancel_rate_10s",
+     "ask_cancel_rate_5s",
+     "ask_cancels",
+     "cancel_ratio_asymmetry"
+    ],
+    "col:magg.bid_adds": [
+     "bid_add_rate_10s",
+     "bid_add_rate_5s",
+     "bid_adds"
+    ],
+    "col:magg.bid_cancels": [
+     "bid_cancel_rate_10s",
+     "bid_cancel_rate_5s",
+     "bid_cancels",
+     "cancel_ratio_asymmetry"
+    ],
+    "col:magg.total_events": [
+     "event_rate_10s",
+     "order_flow_accel",
+     "total_events"
+    ],
+    "col:magg.ts_floor": [
+     "ask_add_rate_10s",
+     "ask_add_rate_5s",
+     "ask_adds",
+     "ask_cancel_rate_10s",
+     "ask_cancel_rate_5s",
+     "ask_cancels",
+     "bid_add_rate_10s",
+     "bid_add_rate_5s",
+     "bid_adds",
+     "bid_cancel_rate_10s",
+     "bid_cancel_rate_5s",
+     "bid_cancels",
+     "cancel_ratio_asymmetry",
+     "event_rate_10s",
+     "order_flow_accel",
+     "total_events"
+    ],
+    "col:snap.ask_price_1": [
+     "ask_price_1"
+    ],
+    "col:snap.ask_price_2": [
+     "ask_price_2"
+    ],
+    "col:snap.ask_price_3": [
+     "ask_price_3"
+    ],
+    "col:snap.ask_price_4": [
+     "ask_price_4"
+    ],
+    "col:snap.ask_price_5": [
+     "ask_price_5"
+    ],
+    "col:snap.ask_size_1": [
+     "ask_size_1",
+     "book_slope_ask",
+     "depth_change_1s",
+     "depth_change_30s",
+     "depth_change_5s",
+     "depth_imbalance",
+     "depth_pctile_300s",
+     "depth_pctile_60s",
+     "l1_imbalance",
+     "total_ask_depth"
+    ],
+    "col:snap.ask_size_2": [
+     "ask_size_2",
+     "depth_change_1s",
+     "depth_change_30s",
+     "depth_change_5s",
+     "depth_imbalance",
+     "depth_pctile_300s",
+     "depth_pctile_60s",
+     "total_ask_depth"
+    ],
+    "col:snap.ask_size_3": [
+     "ask_size_3",
+     "depth_change_1s",
+     "depth_change_30s",
+     "depth_change_5s",
+     "depth_imbalance",
+     "depth_pctile_300s",
+     "depth_pctile_60s",
+     "total_ask_depth"
+    ],
+    "col:snap.ask_size_4": [
+     "ask_size_4",
+     "depth_change_1s",
+     "depth_change_30s",
+     "depth_change_5s",
+     "depth_imbalance",
+     "depth_pctile_300s",
+     "depth_pctile_60s",
+     "total_ask_depth"
+    ],
+    "col:snap.ask_size_5": [
+     "ask_size_5",
+     "book_slope_ask",
+     "depth_change_1s",
+     "depth_change_30s",
+     "depth_change_5s",
+     "depth_imbalance",
+     "depth_pctile_300s",
+     "depth_pctile_60s",
+     "total_ask_depth"
+    ],
+    "col:snap.bid_price_1": [
+     "bid_price_1"
+    ],
+    "col:snap.bid_price_2": [
+     "bid_price_2"
+    ],
+    "col:snap.bid_price_3": [
+     "bid_price_3"
+    ],
+    "col:snap.bid_price_4": [
+     "bid_price_4"
+    ],
+    "col:snap.bid_price_5": [
+     "bid_price_5"
+    ],
+    "col:snap.bid_size_1": [
+     "bid_size_1",
+     "book_slope_bid",
+     "depth_change_1s",
+     "depth_change_30s",
+     "depth_change_5s",
+     "depth_imbalance",
+     "depth_pctile_300s",
+     "depth_pctile_60s",
+     "l1_imbalance",
+     "total_bid_depth"
+    ],
+    "col:snap.bid_size_2": [
+     "bid_size_2",
+     "depth_change_1s",
+     "depth_change_30s",
+     "depth_change_5s",
+     "depth_imbalance",
+     "depth_pctile_300s",
+     "depth_pctile_60s",
+     "total_bid_depth"
+    ],
+    "col:snap.bid_size_3": [
+     "bid_size_3",
+     "depth_change_1s",
+     "depth_change_30s",
+     "depth_change_5s",
+     "depth_imbalance",
+     "depth_pctile_300s",
+     "depth_pctile_60s",
+     "total_bid_depth"
+    ],
+    "col:snap.bid_size_4": [
+     "bid_size_4",
+     "depth_change_1s",
+     "depth_change_30s",
+     "depth_change_5s",
+     "depth_imbalance",
+     "depth_pctile_300s",
+     "depth_pctile_60s",
+     "total_bid_depth"
+    ],
+    "col:snap.bid_size_5": [
+     "bid_size_5",
+     "book_slope_bid",
+     "depth_change_1s",
+     "depth_change_30s",
+     "depth_change_5s",
+     "depth_imbalance",
+     "depth_pctile_300s",
+     "depth_pctile_60s",
+     "total_bid_depth"
+    ],
+    "col:snap.book_imbalance": [
+     "book_imbalance"
+    ],
+    "col:snap.mid_price": [
+     "fwd_move_ticks_10s",
+     "fwd_move_ticks_30s",
+     "fwd_move_ticks_5s",
+     "fwd_move_ticks_60s",
+     "mid_price",
+     "mid_return_10s",
+     "mid_return_1s",
+     "mid_return_300s",
+     "mid_return_30s",
+     "mid_return_5s",
+     "mid_return_60s",
+     "range_300s",
+     "range_60s",
+     "volatility_300s",
+     "volatility_30s",
+     "vwap_distance"
+    ],
+    "col:snap.spread": [
+     "spread",
+     "spread_ticks"
+    ],
+    "col:snap.timestamp": [
+     "ask_price_1",
+     "ask_price_2",
+     "ask_price_3",
+     "ask_price_4",
+     "ask_price_5",
+     "ask_size_1",
+     "ask_size_2",
+     "ask_size_3",
+     "ask_size_4",
+     "ask_size_5",
+     "bid_price_1",
+     "bid_price_2",
+     "bid_price_3",
+     "bid_price_4",
+     "bid_price_5",
+     "bid_size_1",
+     "bid_size_2",
+     "bid_size_3",
+     "bid_size_4",
+     "bid_size_5",
+     "book_imbalance",
+     "book_slope_ask",
+     "book_slope_bid",
+     "depth_change_1s",
+     "depth_change_30s",
+     "depth_change_5s",
+     "depth_imbalance",
+     "depth_pctile_300s",
+     "depth_pctile_60s",
+     "fwd_move_ticks_10s",
+     "fwd_move_ticks_30s",
+     "fwd_move_ticks_5s",
+     "fwd_move_ticks_60s",
+     "l1_imbalance",
+     "mid_price",
+     "mid_return_10s",
+     "mid_return_1s",
+     "mid_return_300s",
+     "mid_return_30s",
+     "mid_return_5s",
+     "mid_return_60s",
+     "range_300s",
+     "range_60s",
+     "spread",
+     "spread_ticks",
+     "total_ask_depth",
+     "total_bid_depth",
+     "volatility_300s",
+     "volatility_30s",
+     "vwap_distance"
+    ],
+    "col:trades.price": [
+     "vwap",
+     "vwap_distance"
+    ],
+    "col:trades.size": [
+     "large_trade_count",
+     "large_trade_count_10s",
+     "net_delta",
+     "net_delta_10s",
+     "net_delta_1s",
+     "net_delta_30s",
+     "net_delta_5s",
+     "net_delta_60s",
+     "sell_volume",
+     "sell_volume_10s",
+     "trade_count",
+     "trade_count_10s",
+     "trade_volume",
+     "vwap",
+     "vwap_distance"
+    ],
+    "col:trades.ts_event": [
+     "large_trade_count",
+     "large_trade_count_10s",
+     "net_delta",
+     "net_delta_10s",
+     "net_delta_1s",
+     "net_delta_30s",
+     "net_delta_5s",
+     "net_delta_60s",
+     "sell_volume",
+     "sell_volume_10s",
+     "trade_count",
+     "trade_count_10s",
+     "trade_volume",
+     "vwap",
+     "vwap_distance"
+    ]
+   },
+   "findings": [
+    {
+     "affected_output_cohort": "col:out.bid_price_1",
+     "feature": "bid_price_1",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_price_1",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.bid_price_1",
+     "feature": "bid_price_1",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_price_1",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.bid_size_1",
+     "feature": "bid_size_1",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_1",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.l1_imbalance",
+     "feature": "l1_imbalance",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_1",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.total_bid_depth",
+     "feature": "total_bid_depth",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_1",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_imbalance",
+     "feature": "depth_imbalance",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_1",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.book_slope_bid",
+     "feature": "book_slope_bid",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_1",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_1s",
+     "feature": "depth_change_1s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_1",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_5s",
+     "feature": "depth_change_5s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_1",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_30s",
+     "feature": "depth_change_30s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_1",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_pctile_60s",
+     "feature": "depth_pctile_60s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_1",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_pctile_300s",
+     "feature": "depth_pctile_300s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_1",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.bid_size_1",
+     "feature": "bid_size_1",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_1",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.l1_imbalance",
+     "feature": "l1_imbalance",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_1",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.total_bid_depth",
+     "feature": "total_bid_depth",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_1",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_imbalance",
+     "feature": "depth_imbalance",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_1",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.book_slope_bid",
+     "feature": "book_slope_bid",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_1",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_1s",
+     "feature": "depth_change_1s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_1",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_5s",
+     "feature": "depth_change_5s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_1",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_30s",
+     "feature": "depth_change_30s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_1",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_pctile_60s",
+     "feature": "depth_pctile_60s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_1",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_pctile_300s",
+     "feature": "depth_pctile_300s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_1",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.bid_price_2",
+     "feature": "bid_price_2",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_price_2",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.bid_price_2",
+     "feature": "bid_price_2",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_price_2",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.bid_size_2",
+     "feature": "bid_size_2",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_2",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.total_bid_depth",
+     "feature": "total_bid_depth",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_2",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_imbalance",
+     "feature": "depth_imbalance",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_2",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_1s",
+     "feature": "depth_change_1s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_2",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_5s",
+     "feature": "depth_change_5s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_2",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_30s",
+     "feature": "depth_change_30s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_2",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_pctile_60s",
+     "feature": "depth_pctile_60s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_2",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_pctile_300s",
+     "feature": "depth_pctile_300s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_2",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.bid_size_2",
+     "feature": "bid_size_2",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_2",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.total_bid_depth",
+     "feature": "total_bid_depth",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_2",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_imbalance",
+     "feature": "depth_imbalance",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_2",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_1s",
+     "feature": "depth_change_1s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_2",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_5s",
+     "feature": "depth_change_5s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_2",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_30s",
+     "feature": "depth_change_30s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_2",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_pctile_60s",
+     "feature": "depth_pctile_60s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_2",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_pctile_300s",
+     "feature": "depth_pctile_300s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_2",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.bid_price_3",
+     "feature": "bid_price_3",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_price_3",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.bid_price_3",
+     "feature": "bid_price_3",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_price_3",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.bid_size_3",
+     "feature": "bid_size_3",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_3",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.total_bid_depth",
+     "feature": "total_bid_depth",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_3",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_imbalance",
+     "feature": "depth_imbalance",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_3",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_1s",
+     "feature": "depth_change_1s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_3",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_5s",
+     "feature": "depth_change_5s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_3",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_30s",
+     "feature": "depth_change_30s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_3",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_pctile_60s",
+     "feature": "depth_pctile_60s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_3",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_pctile_300s",
+     "feature": "depth_pctile_300s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_3",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.bid_size_3",
+     "feature": "bid_size_3",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_3",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.total_bid_depth",
+     "feature": "total_bid_depth",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_3",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_imbalance",
+     "feature": "depth_imbalance",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_3",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_1s",
+     "feature": "depth_change_1s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_3",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_5s",
+     "feature": "depth_change_5s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_3",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_30s",
+     "feature": "depth_change_30s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_3",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_pctile_60s",
+     "feature": "depth_pctile_60s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_3",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_pctile_300s",
+     "feature": "depth_pctile_300s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_3",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.bid_price_4",
+     "feature": "bid_price_4",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_price_4",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.bid_price_4",
+     "feature": "bid_price_4",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_price_4",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.bid_size_4",
+     "feature": "bid_size_4",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_4",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.total_bid_depth",
+     "feature": "total_bid_depth",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_4",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_imbalance",
+     "feature": "depth_imbalance",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_4",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_1s",
+     "feature": "depth_change_1s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_4",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_5s",
+     "feature": "depth_change_5s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_4",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_30s",
+     "feature": "depth_change_30s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_4",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_pctile_60s",
+     "feature": "depth_pctile_60s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_4",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_pctile_300s",
+     "feature": "depth_pctile_300s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_4",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.bid_size_4",
+     "feature": "bid_size_4",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_4",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.total_bid_depth",
+     "feature": "total_bid_depth",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_4",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_imbalance",
+     "feature": "depth_imbalance",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_4",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_1s",
+     "feature": "depth_change_1s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_4",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_5s",
+     "feature": "depth_change_5s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_4",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_30s",
+     "feature": "depth_change_30s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_4",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_pctile_60s",
+     "feature": "depth_pctile_60s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_4",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_pctile_300s",
+     "feature": "depth_pctile_300s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_4",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.bid_price_5",
+     "feature": "bid_price_5",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_price_5",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.bid_price_5",
+     "feature": "bid_price_5",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_price_5",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.bid_size_5",
+     "feature": "bid_size_5",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_5",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.total_bid_depth",
+     "feature": "total_bid_depth",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_5",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_imbalance",
+     "feature": "depth_imbalance",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_5",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.book_slope_bid",
+     "feature": "book_slope_bid",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_5",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_1s",
+     "feature": "depth_change_1s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_5",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_5s",
+     "feature": "depth_change_5s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_5",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_30s",
+     "feature": "depth_change_30s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_5",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_pctile_60s",
+     "feature": "depth_pctile_60s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_5",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_pctile_300s",
+     "feature": "depth_pctile_300s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_5",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.bid_size_5",
+     "feature": "bid_size_5",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_5",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.total_bid_depth",
+     "feature": "total_bid_depth",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_5",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_imbalance",
+     "feature": "depth_imbalance",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_5",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.book_slope_bid",
+     "feature": "book_slope_bid",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_5",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_1s",
+     "feature": "depth_change_1s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_5",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_5s",
+     "feature": "depth_change_5s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_5",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_30s",
+     "feature": "depth_change_30s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_5",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_pctile_60s",
+     "feature": "depth_pctile_60s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_5",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_pctile_300s",
+     "feature": "depth_pctile_300s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_5",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.ask_price_1",
+     "feature": "ask_price_1",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_price_1",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.ask_price_1",
+     "feature": "ask_price_1",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_price_1",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.ask_size_1",
+     "feature": "ask_size_1",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_1",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.l1_imbalance",
+     "feature": "l1_imbalance",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_1",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.total_ask_depth",
+     "feature": "total_ask_depth",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_1",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_imbalance",
+     "feature": "depth_imbalance",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_1",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.book_slope_ask",
+     "feature": "book_slope_ask",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_1",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_1s",
+     "feature": "depth_change_1s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_1",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_5s",
+     "feature": "depth_change_5s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_1",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_30s",
+     "feature": "depth_change_30s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_1",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_pctile_60s",
+     "feature": "depth_pctile_60s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_1",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_pctile_300s",
+     "feature": "depth_pctile_300s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_1",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.ask_size_1",
+     "feature": "ask_size_1",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_1",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.l1_imbalance",
+     "feature": "l1_imbalance",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_1",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.total_ask_depth",
+     "feature": "total_ask_depth",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_1",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_imbalance",
+     "feature": "depth_imbalance",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_1",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.book_slope_ask",
+     "feature": "book_slope_ask",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_1",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_1s",
+     "feature": "depth_change_1s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_1",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_5s",
+     "feature": "depth_change_5s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_1",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_30s",
+     "feature": "depth_change_30s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_1",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_pctile_60s",
+     "feature": "depth_pctile_60s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_1",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_pctile_300s",
+     "feature": "depth_pctile_300s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_1",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.ask_price_2",
+     "feature": "ask_price_2",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_price_2",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.ask_price_2",
+     "feature": "ask_price_2",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_price_2",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.ask_size_2",
+     "feature": "ask_size_2",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_2",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.total_ask_depth",
+     "feature": "total_ask_depth",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_2",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_imbalance",
+     "feature": "depth_imbalance",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_2",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_1s",
+     "feature": "depth_change_1s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_2",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_5s",
+     "feature": "depth_change_5s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_2",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_30s",
+     "feature": "depth_change_30s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_2",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_pctile_60s",
+     "feature": "depth_pctile_60s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_2",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_pctile_300s",
+     "feature": "depth_pctile_300s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_2",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.ask_size_2",
+     "feature": "ask_size_2",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_2",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.total_ask_depth",
+     "feature": "total_ask_depth",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_2",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_imbalance",
+     "feature": "depth_imbalance",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_2",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_1s",
+     "feature": "depth_change_1s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_2",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_5s",
+     "feature": "depth_change_5s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_2",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_30s",
+     "feature": "depth_change_30s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_2",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_pctile_60s",
+     "feature": "depth_pctile_60s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_2",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_pctile_300s",
+     "feature": "depth_pctile_300s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_2",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.ask_price_3",
+     "feature": "ask_price_3",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_price_3",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.ask_price_3",
+     "feature": "ask_price_3",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_price_3",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.ask_size_3",
+     "feature": "ask_size_3",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_3",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.total_ask_depth",
+     "feature": "total_ask_depth",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_3",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_imbalance",
+     "feature": "depth_imbalance",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_3",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_1s",
+     "feature": "depth_change_1s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_3",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_5s",
+     "feature": "depth_change_5s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_3",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_30s",
+     "feature": "depth_change_30s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_3",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_pctile_60s",
+     "feature": "depth_pctile_60s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_3",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_pctile_300s",
+     "feature": "depth_pctile_300s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_3",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.ask_size_3",
+     "feature": "ask_size_3",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_3",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.total_ask_depth",
+     "feature": "total_ask_depth",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_3",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_imbalance",
+     "feature": "depth_imbalance",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_3",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_1s",
+     "feature": "depth_change_1s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_3",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_5s",
+     "feature": "depth_change_5s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_3",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_30s",
+     "feature": "depth_change_30s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_3",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_pctile_60s",
+     "feature": "depth_pctile_60s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_3",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_pctile_300s",
+     "feature": "depth_pctile_300s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_3",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.ask_price_4",
+     "feature": "ask_price_4",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_price_4",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.ask_price_4",
+     "feature": "ask_price_4",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_price_4",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.ask_size_4",
+     "feature": "ask_size_4",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_4",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.total_ask_depth",
+     "feature": "total_ask_depth",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_4",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_imbalance",
+     "feature": "depth_imbalance",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_4",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_1s",
+     "feature": "depth_change_1s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_4",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_5s",
+     "feature": "depth_change_5s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_4",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_30s",
+     "feature": "depth_change_30s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_4",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_pctile_60s",
+     "feature": "depth_pctile_60s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_4",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_pctile_300s",
+     "feature": "depth_pctile_300s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_4",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.ask_size_4",
+     "feature": "ask_size_4",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_4",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.total_ask_depth",
+     "feature": "total_ask_depth",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_4",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_imbalance",
+     "feature": "depth_imbalance",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_4",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_1s",
+     "feature": "depth_change_1s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_4",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_5s",
+     "feature": "depth_change_5s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_4",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_30s",
+     "feature": "depth_change_30s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_4",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_pctile_60s",
+     "feature": "depth_pctile_60s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_4",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_pctile_300s",
+     "feature": "depth_pctile_300s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_4",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.ask_price_5",
+     "feature": "ask_price_5",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_price_5",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.ask_price_5",
+     "feature": "ask_price_5",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_price_5",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.ask_size_5",
+     "feature": "ask_size_5",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_5",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.total_ask_depth",
+     "feature": "total_ask_depth",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_5",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_imbalance",
+     "feature": "depth_imbalance",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_5",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.book_slope_ask",
+     "feature": "book_slope_ask",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_5",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_1s",
+     "feature": "depth_change_1s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_5",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_5s",
+     "feature": "depth_change_5s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_5",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_30s",
+     "feature": "depth_change_30s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_5",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_pctile_60s",
+     "feature": "depth_pctile_60s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_5",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_pctile_300s",
+     "feature": "depth_pctile_300s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_5",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.ask_size_5",
+     "feature": "ask_size_5",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_5",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.total_ask_depth",
+     "feature": "total_ask_depth",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_5",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_imbalance",
+     "feature": "depth_imbalance",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_5",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.book_slope_ask",
+     "feature": "book_slope_ask",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_5",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_1s",
+     "feature": "depth_change_1s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_5",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_5s",
+     "feature": "depth_change_5s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_5",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_30s",
+     "feature": "depth_change_30s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_5",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_pctile_60s",
+     "feature": "depth_pctile_60s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_5",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_pctile_300s",
+     "feature": "depth_pctile_300s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_5",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.spread",
+     "feature": "spread",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.spread",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.spread_ticks",
+     "feature": "spread_ticks",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.spread",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.spread",
+     "feature": "spread",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.spread",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.spread_ticks",
+     "feature": "spread_ticks",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.spread",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.mid_price",
+     "feature": "mid_price",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.mid_price",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.mid_return_1s",
+     "feature": "mid_return_1s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.mid_price",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.mid_return_5s",
+     "feature": "mid_return_5s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.mid_price",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.mid_return_10s",
+     "feature": "mid_return_10s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.mid_price",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.mid_return_30s",
+     "feature": "mid_return_30s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.mid_price",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.mid_return_60s",
+     "feature": "mid_return_60s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.mid_price",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.mid_return_300s",
+     "feature": "mid_return_300s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.mid_price",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.volatility_30s",
+     "feature": "volatility_30s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.mid_price",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.volatility_300s",
+     "feature": "volatility_300s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.mid_price",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.range_60s",
+     "feature": "range_60s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.mid_price",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.range_300s",
+     "feature": "range_300s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.mid_price",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.fwd_move_ticks_5s",
+     "feature": "fwd_move_ticks_5s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.mid_price",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.fwd_move_ticks_10s",
+     "feature": "fwd_move_ticks_10s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.mid_price",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.fwd_move_ticks_30s",
+     "feature": "fwd_move_ticks_30s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.mid_price",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.fwd_move_ticks_60s",
+     "feature": "fwd_move_ticks_60s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.mid_price",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.vwap_distance",
+     "feature": "vwap_distance",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.mid_price",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.mid_price",
+     "feature": "mid_price",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.mid_price",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.mid_return_1s",
+     "feature": "mid_return_1s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.mid_price",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.mid_return_5s",
+     "feature": "mid_return_5s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.mid_price",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.mid_return_10s",
+     "feature": "mid_return_10s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.mid_price",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.mid_return_30s",
+     "feature": "mid_return_30s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.mid_price",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.mid_return_60s",
+     "feature": "mid_return_60s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.mid_price",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.mid_return_300s",
+     "feature": "mid_return_300s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.mid_price",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.volatility_30s",
+     "feature": "volatility_30s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.mid_price",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.volatility_300s",
+     "feature": "volatility_300s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.mid_price",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.range_60s",
+     "feature": "range_60s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.mid_price",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.range_300s",
+     "feature": "range_300s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.mid_price",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.fwd_move_ticks_5s",
+     "feature": "fwd_move_ticks_5s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.mid_price",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.fwd_move_ticks_10s",
+     "feature": "fwd_move_ticks_10s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.mid_price",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.fwd_move_ticks_30s",
+     "feature": "fwd_move_ticks_30s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.mid_price",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.fwd_move_ticks_60s",
+     "feature": "fwd_move_ticks_60s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.mid_price",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.vwap_distance",
+     "feature": "vwap_distance",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.mid_price",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.book_imbalance",
+     "feature": "book_imbalance",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.book_imbalance",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.book_imbalance",
+     "feature": "book_imbalance",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.book_imbalance",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.bid_price_1",
+     "feature": "bid_price_1",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.timestamp",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.bid_size_1",
+     "feature": "bid_size_1",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.timestamp",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.bid_price_2",
+     "feature": "bid_price_2",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.timestamp",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.bid_size_2",
+     "feature": "bid_size_2",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.timestamp",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.bid_price_3",
+     "feature": "bid_price_3",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.timestamp",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.bid_size_3",
+     "feature": "bid_size_3",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.timestamp",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.bid_price_4",
+     "feature": "bid_price_4",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.timestamp",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.bid_size_4",
+     "feature": "bid_size_4",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.timestamp",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.bid_price_5",
+     "feature": "bid_price_5",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.timestamp",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.bid_size_5",
+     "feature": "bid_size_5",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.timestamp",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.ask_price_1",
+     "feature": "ask_price_1",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.timestamp",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.ask_size_1",
+     "feature": "ask_size_1",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.timestamp",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.ask_price_2",
+     "feature": "ask_price_2",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.timestamp",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.ask_size_2",
+     "feature": "ask_size_2",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.timestamp",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.ask_price_3",
+     "feature": "ask_price_3",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.timestamp",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.ask_size_3",
+     "feature": "ask_size_3",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.timestamp",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.ask_price_4",
+     "feature": "ask_price_4",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.timestamp",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.ask_size_4",
+     "feature": "ask_size_4",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.timestamp",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.ask_price_5",
+     "feature": "ask_price_5",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.timestamp",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.ask_size_5",
+     "feature": "ask_size_5",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.timestamp",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.spread",
+     "feature": "spread",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.timestamp",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.mid_price",
+     "feature": "mid_price",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.timestamp",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.book_imbalance",
+     "feature": "book_imbalance",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.timestamp",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.spread_ticks",
+     "feature": "spread_ticks",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.timestamp",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.mid_return_1s",
+     "feature": "mid_return_1s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.timestamp",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.mid_return_5s",
+     "feature": "mid_return_5s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.timestamp",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.mid_return_10s",
+     "feature": "mid_return_10s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.timestamp",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.mid_return_30s",
+     "feature": "mid_return_30s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.timestamp",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.mid_return_60s",
+     "feature": "mid_return_60s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.timestamp",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.mid_return_300s",
+     "feature": "mid_return_300s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.timestamp",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.volatility_30s",
+     "feature": "volatility_30s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.timestamp",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.volatility_300s",
+     "feature": "volatility_300s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.timestamp",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.range_60s",
+     "feature": "range_60s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.timestamp",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.range_300s",
+     "feature": "range_300s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.timestamp",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.l1_imbalance",
+     "feature": "l1_imbalance",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.timestamp",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.total_bid_depth",
+     "feature": "total_bid_depth",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.timestamp",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.total_ask_depth",
+     "feature": "total_ask_depth",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.timestamp",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_imbalance",
+     "feature": "depth_imbalance",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.timestamp",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.book_slope_bid",
+     "feature": "book_slope_bid",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.timestamp",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.book_slope_ask",
+     "feature": "book_slope_ask",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.timestamp",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_1s",
+     "feature": "depth_change_1s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.timestamp",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_5s",
+     "feature": "depth_change_5s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.timestamp",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_30s",
+     "feature": "depth_change_30s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.timestamp",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_pctile_60s",
+     "feature": "depth_pctile_60s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.timestamp",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_pctile_300s",
+     "feature": "depth_pctile_300s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.timestamp",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.fwd_move_ticks_5s",
+     "feature": "fwd_move_ticks_5s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.timestamp",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.fwd_move_ticks_10s",
+     "feature": "fwd_move_ticks_10s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.timestamp",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.fwd_move_ticks_30s",
+     "feature": "fwd_move_ticks_30s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.timestamp",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.fwd_move_ticks_60s",
+     "feature": "fwd_move_ticks_60s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.timestamp",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.vwap_distance",
+     "feature": "vwap_distance",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.timestamp",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.net_delta",
+     "feature": "net_delta",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.ts_event",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.sell_volume",
+     "feature": "sell_volume",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.ts_event",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.trade_volume",
+     "feature": "trade_volume",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.ts_event",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.large_trade_count",
+     "feature": "large_trade_count",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.ts_event",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.vwap",
+     "feature": "vwap",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.ts_event",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.net_delta_1s",
+     "feature": "net_delta_1s",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.ts_event",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.net_delta_5s",
+     "feature": "net_delta_5s",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.ts_event",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.net_delta_10s",
+     "feature": "net_delta_10s",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.ts_event",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.net_delta_30s",
+     "feature": "net_delta_30s",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.ts_event",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.net_delta_60s",
+     "feature": "net_delta_60s",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.ts_event",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.sell_volume_10s",
+     "feature": "sell_volume_10s",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.ts_event",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.large_trade_count_10s",
+     "feature": "large_trade_count_10s",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.ts_event",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.vwap_distance",
+     "feature": "vwap_distance",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.ts_event",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.net_delta",
+     "feature": "net_delta",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.ts_event",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.sell_volume",
+     "feature": "sell_volume",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.ts_event",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.trade_count",
+     "feature": "trade_count",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.ts_event",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.trade_volume",
+     "feature": "trade_volume",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.ts_event",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.large_trade_count",
+     "feature": "large_trade_count",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.ts_event",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.vwap",
+     "feature": "vwap",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.ts_event",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.net_delta_1s",
+     "feature": "net_delta_1s",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.ts_event",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.net_delta_5s",
+     "feature": "net_delta_5s",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.ts_event",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.net_delta_10s",
+     "feature": "net_delta_10s",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.ts_event",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.net_delta_30s",
+     "feature": "net_delta_30s",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.ts_event",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.net_delta_60s",
+     "feature": "net_delta_60s",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.ts_event",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.sell_volume_10s",
+     "feature": "sell_volume_10s",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.ts_event",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.trade_count_10s",
+     "feature": "trade_count_10s",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.ts_event",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.large_trade_count_10s",
+     "feature": "large_trade_count_10s",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.ts_event",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.vwap_distance",
+     "feature": "vwap_distance",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.ts_event",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.vwap",
+     "feature": "vwap",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.price",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.vwap_distance",
+     "feature": "vwap_distance",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.price",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.vwap",
+     "feature": "vwap",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.price",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.vwap_distance",
+     "feature": "vwap_distance",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.price",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.net_delta",
+     "feature": "net_delta",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.size",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.sell_volume",
+     "feature": "sell_volume",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.size",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.trade_volume",
+     "feature": "trade_volume",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.size",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.large_trade_count",
+     "feature": "large_trade_count",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.size",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.vwap",
+     "feature": "vwap",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.size",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.net_delta_1s",
+     "feature": "net_delta_1s",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.size",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.net_delta_5s",
+     "feature": "net_delta_5s",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.size",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.net_delta_10s",
+     "feature": "net_delta_10s",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.size",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.net_delta_30s",
+     "feature": "net_delta_30s",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.size",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.net_delta_60s",
+     "feature": "net_delta_60s",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.size",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.sell_volume_10s",
+     "feature": "sell_volume_10s",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.size",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.large_trade_count_10s",
+     "feature": "large_trade_count_10s",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.size",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.vwap_distance",
+     "feature": "vwap_distance",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.size",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.net_delta",
+     "feature": "net_delta",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.size",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.sell_volume",
+     "feature": "sell_volume",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.size",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.trade_volume",
+     "feature": "trade_volume",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.size",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.large_trade_count",
+     "feature": "large_trade_count",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.size",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.vwap",
+     "feature": "vwap",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.size",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.net_delta_1s",
+     "feature": "net_delta_1s",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.size",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.net_delta_5s",
+     "feature": "net_delta_5s",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.size",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.net_delta_10s",
+     "feature": "net_delta_10s",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.size",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.net_delta_30s",
+     "feature": "net_delta_30s",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.size",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.net_delta_60s",
+     "feature": "net_delta_60s",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.size",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.sell_volume_10s",
+     "feature": "sell_volume_10s",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.size",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.large_trade_count_10s",
+     "feature": "large_trade_count_10s",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.size",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.vwap_distance",
+     "feature": "vwap_distance",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.size",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.bid_adds",
+     "feature": "bid_adds",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.ts_floor",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.ask_adds",
+     "feature": "ask_adds",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.ts_floor",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.bid_cancels",
+     "feature": "bid_cancels",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.ts_floor",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.ask_cancels",
+     "feature": "ask_cancels",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.ts_floor",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.total_events",
+     "feature": "total_events",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.ts_floor",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.bid_add_rate_5s",
+     "feature": "bid_add_rate_5s",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.ts_floor",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.ask_add_rate_5s",
+     "feature": "ask_add_rate_5s",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.ts_floor",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.bid_cancel_rate_5s",
+     "feature": "bid_cancel_rate_5s",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.ts_floor",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.ask_cancel_rate_5s",
+     "feature": "ask_cancel_rate_5s",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.ts_floor",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.bid_add_rate_10s",
+     "feature": "bid_add_rate_10s",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.ts_floor",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.ask_add_rate_10s",
+     "feature": "ask_add_rate_10s",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.ts_floor",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.bid_cancel_rate_10s",
+     "feature": "bid_cancel_rate_10s",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.ts_floor",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.ask_cancel_rate_10s",
+     "feature": "ask_cancel_rate_10s",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.ts_floor",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.cancel_ratio_asymmetry",
+     "feature": "cancel_ratio_asymmetry",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.ts_floor",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.event_rate_10s",
+     "feature": "event_rate_10s",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.ts_floor",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.order_flow_accel",
+     "feature": "order_flow_accel",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.ts_floor",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.bid_adds",
+     "feature": "bid_adds",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.ts_floor",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.ask_adds",
+     "feature": "ask_adds",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.ts_floor",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.bid_cancels",
+     "feature": "bid_cancels",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.ts_floor",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.ask_cancels",
+     "feature": "ask_cancels",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.ts_floor",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.total_events",
+     "feature": "total_events",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.ts_floor",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.bid_add_rate_5s",
+     "feature": "bid_add_rate_5s",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.ts_floor",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.ask_add_rate_5s",
+     "feature": "ask_add_rate_5s",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.ts_floor",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.bid_cancel_rate_5s",
+     "feature": "bid_cancel_rate_5s",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.ts_floor",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.ask_cancel_rate_5s",
+     "feature": "ask_cancel_rate_5s",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.ts_floor",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.bid_add_rate_10s",
+     "feature": "bid_add_rate_10s",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.ts_floor",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.ask_add_rate_10s",
+     "feature": "ask_add_rate_10s",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.ts_floor",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.bid_cancel_rate_10s",
+     "feature": "bid_cancel_rate_10s",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.ts_floor",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.ask_cancel_rate_10s",
+     "feature": "ask_cancel_rate_10s",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.ts_floor",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.cancel_ratio_asymmetry",
+     "feature": "cancel_ratio_asymmetry",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.ts_floor",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.event_rate_10s",
+     "feature": "event_rate_10s",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.ts_floor",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.order_flow_accel",
+     "feature": "order_flow_accel",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.ts_floor",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.bid_adds",
+     "feature": "bid_adds",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.bid_adds",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.bid_add_rate_5s",
+     "feature": "bid_add_rate_5s",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.bid_adds",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.bid_add_rate_10s",
+     "feature": "bid_add_rate_10s",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.bid_adds",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.bid_adds",
+     "feature": "bid_adds",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.bid_adds",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.bid_add_rate_5s",
+     "feature": "bid_add_rate_5s",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.bid_adds",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.bid_add_rate_10s",
+     "feature": "bid_add_rate_10s",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.bid_adds",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.ask_adds",
+     "feature": "ask_adds",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.ask_adds",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.ask_add_rate_5s",
+     "feature": "ask_add_rate_5s",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.ask_adds",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.ask_add_rate_10s",
+     "feature": "ask_add_rate_10s",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.ask_adds",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.ask_adds",
+     "feature": "ask_adds",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.ask_adds",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.ask_add_rate_5s",
+     "feature": "ask_add_rate_5s",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.ask_adds",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.ask_add_rate_10s",
+     "feature": "ask_add_rate_10s",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.ask_adds",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.bid_cancels",
+     "feature": "bid_cancels",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.bid_cancels",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.bid_cancel_rate_5s",
+     "feature": "bid_cancel_rate_5s",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.bid_cancels",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.bid_cancel_rate_10s",
+     "feature": "bid_cancel_rate_10s",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.bid_cancels",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.cancel_ratio_asymmetry",
+     "feature": "cancel_ratio_asymmetry",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.bid_cancels",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.bid_cancels",
+     "feature": "bid_cancels",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.bid_cancels",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.bid_cancel_rate_5s",
+     "feature": "bid_cancel_rate_5s",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.bid_cancels",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.bid_cancel_rate_10s",
+     "feature": "bid_cancel_rate_10s",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.bid_cancels",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.cancel_ratio_asymmetry",
+     "feature": "cancel_ratio_asymmetry",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.bid_cancels",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.ask_cancels",
+     "feature": "ask_cancels",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.ask_cancels",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.ask_cancel_rate_5s",
+     "feature": "ask_cancel_rate_5s",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.ask_cancels",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.ask_cancel_rate_10s",
+     "feature": "ask_cancel_rate_10s",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.ask_cancels",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.cancel_ratio_asymmetry",
+     "feature": "cancel_ratio_asymmetry",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.ask_cancels",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.ask_cancels",
+     "feature": "ask_cancels",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.ask_cancels",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.ask_cancel_rate_5s",
+     "feature": "ask_cancel_rate_5s",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.ask_cancels",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.ask_cancel_rate_10s",
+     "feature": "ask_cancel_rate_10s",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.ask_cancels",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.cancel_ratio_asymmetry",
+     "feature": "cancel_ratio_asymmetry",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.ask_cancels",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.total_events",
+     "feature": "total_events",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.total_events",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.event_rate_10s",
+     "feature": "event_rate_10s",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.total_events",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.order_flow_accel",
+     "feature": "order_flow_accel",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.total_events",
+     "promotion_status": "preserving",
+     "strategy": "shuffle"
+    },
+    {
+     "affected_output_cohort": "col:out.total_events",
+     "feature": "total_events",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.total_events",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.event_rate_10s",
+     "feature": "event_rate_10s",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.total_events",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.order_flow_accel",
+     "feature": "order_flow_accel",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.total_events",
+     "promotion_status": "preserving",
+     "strategy": "sentinel"
+    },
+    {
+     "affected_output_cohort": "col:out.bid_size_1",
+     "feature": "bid_size_1",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_1",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.l1_imbalance",
+     "feature": "l1_imbalance",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_1",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.total_bid_depth",
+     "feature": "total_bid_depth",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_1",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_imbalance",
+     "feature": "depth_imbalance",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_1",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.book_slope_bid",
+     "feature": "book_slope_bid",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_1",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_1s",
+     "feature": "depth_change_1s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_1",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_5s",
+     "feature": "depth_change_5s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_1",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_30s",
+     "feature": "depth_change_30s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_1",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_pctile_60s",
+     "feature": "depth_pctile_60s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_1",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_pctile_300s",
+     "feature": "depth_pctile_300s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_1",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.bid_size_2",
+     "feature": "bid_size_2",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_2",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.total_bid_depth",
+     "feature": "total_bid_depth",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_2",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_imbalance",
+     "feature": "depth_imbalance",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_2",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_1s",
+     "feature": "depth_change_1s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_2",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_5s",
+     "feature": "depth_change_5s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_2",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_30s",
+     "feature": "depth_change_30s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_2",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_pctile_60s",
+     "feature": "depth_pctile_60s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_2",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_pctile_300s",
+     "feature": "depth_pctile_300s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_2",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.bid_size_3",
+     "feature": "bid_size_3",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_3",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.total_bid_depth",
+     "feature": "total_bid_depth",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_3",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_imbalance",
+     "feature": "depth_imbalance",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_3",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_1s",
+     "feature": "depth_change_1s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_3",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_5s",
+     "feature": "depth_change_5s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_3",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_30s",
+     "feature": "depth_change_30s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_3",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_pctile_60s",
+     "feature": "depth_pctile_60s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_3",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_pctile_300s",
+     "feature": "depth_pctile_300s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_3",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.bid_size_4",
+     "feature": "bid_size_4",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_4",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.total_bid_depth",
+     "feature": "total_bid_depth",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_4",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_imbalance",
+     "feature": "depth_imbalance",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_4",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_1s",
+     "feature": "depth_change_1s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_4",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_5s",
+     "feature": "depth_change_5s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_4",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_30s",
+     "feature": "depth_change_30s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_4",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_pctile_60s",
+     "feature": "depth_pctile_60s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_4",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_pctile_300s",
+     "feature": "depth_pctile_300s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_4",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.bid_size_5",
+     "feature": "bid_size_5",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_5",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.total_bid_depth",
+     "feature": "total_bid_depth",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_5",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_imbalance",
+     "feature": "depth_imbalance",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_5",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.book_slope_bid",
+     "feature": "book_slope_bid",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_5",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_1s",
+     "feature": "depth_change_1s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_5",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_5s",
+     "feature": "depth_change_5s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_5",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_30s",
+     "feature": "depth_change_30s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_5",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_pctile_60s",
+     "feature": "depth_pctile_60s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_5",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_pctile_300s",
+     "feature": "depth_pctile_300s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.bid_size_5",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.ask_size_1",
+     "feature": "ask_size_1",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_1",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.l1_imbalance",
+     "feature": "l1_imbalance",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_1",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.total_ask_depth",
+     "feature": "total_ask_depth",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_1",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_imbalance",
+     "feature": "depth_imbalance",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_1",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.book_slope_ask",
+     "feature": "book_slope_ask",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_1",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_1s",
+     "feature": "depth_change_1s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_1",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_5s",
+     "feature": "depth_change_5s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_1",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_30s",
+     "feature": "depth_change_30s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_1",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_pctile_60s",
+     "feature": "depth_pctile_60s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_1",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_pctile_300s",
+     "feature": "depth_pctile_300s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_1",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.ask_size_2",
+     "feature": "ask_size_2",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_2",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.total_ask_depth",
+     "feature": "total_ask_depth",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_2",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_imbalance",
+     "feature": "depth_imbalance",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_2",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_1s",
+     "feature": "depth_change_1s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_2",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_5s",
+     "feature": "depth_change_5s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_2",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_30s",
+     "feature": "depth_change_30s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_2",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_pctile_60s",
+     "feature": "depth_pctile_60s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_2",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_pctile_300s",
+     "feature": "depth_pctile_300s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_2",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.ask_size_3",
+     "feature": "ask_size_3",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_3",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.total_ask_depth",
+     "feature": "total_ask_depth",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_3",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_imbalance",
+     "feature": "depth_imbalance",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_3",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_1s",
+     "feature": "depth_change_1s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_3",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_5s",
+     "feature": "depth_change_5s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_3",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_30s",
+     "feature": "depth_change_30s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_3",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_pctile_60s",
+     "feature": "depth_pctile_60s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_3",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_pctile_300s",
+     "feature": "depth_pctile_300s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_3",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.ask_size_4",
+     "feature": "ask_size_4",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_4",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.total_ask_depth",
+     "feature": "total_ask_depth",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_4",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_imbalance",
+     "feature": "depth_imbalance",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_4",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_1s",
+     "feature": "depth_change_1s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_4",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_5s",
+     "feature": "depth_change_5s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_4",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_30s",
+     "feature": "depth_change_30s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_4",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_pctile_60s",
+     "feature": "depth_pctile_60s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_4",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_pctile_300s",
+     "feature": "depth_pctile_300s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_4",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.ask_size_5",
+     "feature": "ask_size_5",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_5",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.total_ask_depth",
+     "feature": "total_ask_depth",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_5",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_imbalance",
+     "feature": "depth_imbalance",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_5",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.book_slope_ask",
+     "feature": "book_slope_ask",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_5",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_1s",
+     "feature": "depth_change_1s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_5",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_5s",
+     "feature": "depth_change_5s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_5",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_change_30s",
+     "feature": "depth_change_30s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_5",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_pctile_60s",
+     "feature": "depth_pctile_60s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_5",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.depth_pctile_300s",
+     "feature": "depth_pctile_300s",
+     "is_secondary": false,
+     "probe_cohort": "col:snap.ask_size_5",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.net_delta",
+     "feature": "net_delta",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.size",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.sell_volume",
+     "feature": "sell_volume",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.size",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.trade_count",
+     "feature": "trade_count",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.size",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.trade_volume",
+     "feature": "trade_volume",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.size",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.large_trade_count",
+     "feature": "large_trade_count",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.size",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.vwap",
+     "feature": "vwap",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.size",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.net_delta_1s",
+     "feature": "net_delta_1s",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.size",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.net_delta_5s",
+     "feature": "net_delta_5s",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.size",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.net_delta_10s",
+     "feature": "net_delta_10s",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.size",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.net_delta_30s",
+     "feature": "net_delta_30s",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.size",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.net_delta_60s",
+     "feature": "net_delta_60s",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.size",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.sell_volume_10s",
+     "feature": "sell_volume_10s",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.size",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.trade_count_10s",
+     "feature": "trade_count_10s",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.size",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.large_trade_count_10s",
+     "feature": "large_trade_count_10s",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.size",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.vwap_distance",
+     "feature": "vwap_distance",
+     "is_secondary": false,
+     "probe_cohort": "col:trades.size",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.bid_adds",
+     "feature": "bid_adds",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.bid_adds",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.bid_add_rate_5s",
+     "feature": "bid_add_rate_5s",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.bid_adds",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.bid_add_rate_10s",
+     "feature": "bid_add_rate_10s",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.bid_adds",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.ask_adds",
+     "feature": "ask_adds",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.ask_adds",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.ask_add_rate_5s",
+     "feature": "ask_add_rate_5s",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.ask_adds",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.ask_add_rate_10s",
+     "feature": "ask_add_rate_10s",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.ask_adds",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.bid_cancels",
+     "feature": "bid_cancels",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.bid_cancels",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.bid_cancel_rate_5s",
+     "feature": "bid_cancel_rate_5s",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.bid_cancels",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.bid_cancel_rate_10s",
+     "feature": "bid_cancel_rate_10s",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.bid_cancels",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.cancel_ratio_asymmetry",
+     "feature": "cancel_ratio_asymmetry",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.bid_cancels",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.ask_cancels",
+     "feature": "ask_cancels",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.ask_cancels",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.ask_cancel_rate_5s",
+     "feature": "ask_cancel_rate_5s",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.ask_cancels",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.ask_cancel_rate_10s",
+     "feature": "ask_cancel_rate_10s",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.ask_cancels",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.cancel_ratio_asymmetry",
+     "feature": "cancel_ratio_asymmetry",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.ask_cancels",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.total_events",
+     "feature": "total_events",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.total_events",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.event_rate_10s",
+     "feature": "event_rate_10s",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.total_events",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    },
+    {
+     "affected_output_cohort": "col:out.order_flow_accel",
+     "feature": "order_flow_accel",
+     "is_secondary": false,
+     "probe_cohort": "col:magg.total_events",
+     "promotion_status": "promoted",
+     "strategy": "nan"
+    }
+   ]
+  }
+ }
+}
