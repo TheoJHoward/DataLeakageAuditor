@@ -399,3 +399,101 @@ instruments — cl, es, gc, he, le, nq, zc, zs — over six months.
 declaration's own statement of it, and every one agrees. This entry records the reconciliation so
 that the defect disclosed at D-V30A-18 is not read as a defect in the map. The map is sound; what is
 absent is a correspondence between its unit and the scorer's.
+
+## D-V30A-20 — D-V30A-18's criterion-3 finding is withdrawn: the correspondence is registered
+
+**True:** entry D-V30A-18 records that criterion 3 is unscoreable as registered, on the ground that
+the declared map's cells and the runtime scoring unit are in different units with no declared
+correspondence joining them. **That ground does not hold.** The correspondence is registered, and
+this entry supersedes D-V30A-18's carried consequence. D-V30A-18 and D-V30A-19 are left as written;
+this entry is read with them.
+
+**What the registration carries, with citations.** Each was located after D-V30A-18 was committed.
+
+- The scoring unit is registered at `PREREG.md` line 291 as the feature and the affected output
+  cohort, and section 7.2 distinguishes probe cohorts, which corroborate, from the affected output
+  cohort, which keys the unit.
+- Criterion 1's denominator and the rule constituting it are registered at `PREREG.md` line 702,
+  which states that the denominator is derived from the declared map by the rule registered there,
+  and that the declaration shows the derivation. Three classes are registered: required, out of
+  jurisdiction, and unscored.
+- The declaration carries the derivation per unit, ex ante, at its section A.6, with the required
+  list at line 1316 and the count of eleven stated as the only quantity that is N.
+- The class-to-column correspondence is carried in the required table's fourth column, headed
+  **Governing map class**: eight columns governed by `trades_all`, one by `trades_sell`, one by
+  `trades_large`, and one by `trades_all` through a merged aggregate. With the side, instrument and
+  month supplied by the case identity, that completes the map's four-part cell key for every unit of
+  the criterion-1 denominator.
+- The coverage limit is declared too. Section 13(j) records that none of the thirty-five fed columns
+  is MBO-fed, so the six MBO classes attach to no fed column; they remain scored cells of the map and
+  what changes is what they may be quoted for.
+- The consequence was disclosed in the registration itself, at `PREREG.md` line 1435: criterion 1's
+  effective requirement reverses on fourteen of the twenty-five leaking sources, eleven being
+  required, thirteen out of jurisdiction and one unscored.
+
+**Expected:** an absence claim about a registered document to rest on a stated search population,
+as every other absence claim in this record does.
+
+**Why it stands as a correction rather than an edit:** the four claims below were each asserted from
+a partial read, and each is recorded here with what was believed and when, because the record showing
+a wrong statement followed by its correction is worth more than a record showing neither.
+
+| asserted | when | measured |
+|---|---|---|
+| the map's cells and the scoring unit have no declared correspondence | at D-V30A-18 | the required table's governing-class column carries it |
+| criteria 1 and 2 are not scoreable, the ground truth being unreachable | after D-V30A-18, in report only | the finding's feature field carries the moved output column, which is the unit the criteria are keyed on |
+| criterion 2 is vacuous, none of its clean columns being reachable | after D-V30A-18, in report only | measured against probe cohorts, the wrong population; one of the four clean columns is present in the built output |
+| criterion 1's denominator is twenty-five | implicitly, in report only | the registered denominator is eleven, and no other quantity is N |
+
+Only the first of the four reached this file. The other three were reported and are recorded here so
+the sequence is legible.
+
+## D-V30A-21 — the tool discards the field the registered scoring unit is keyed on
+
+**True:** the finding record declares three distinct fields — the feature, the affected output
+cohort, and the probe cohort. At `src/leakaudit/probe.py` lines 319 and 320 the tool writes the
+probe cohort's identifier into both the probe-cohort field and the affected-output-cohort field, so
+the two carry identical values on every finding the tool emits.
+
+The information the second field wants is present at that point. Three lines earlier the comparator
+returns the set of output columns that differ between the baseline build and the perturbed one, and
+the loop iterates that set; the feature field is populated from it correctly. The dependency map the
+same run publishes records those moved outputs, and they cover eight of the eleven units of the
+criterion-1 denominator.
+
+**Expected:** three declared fields to carry three values.
+
+**Why it stands:** it is recorded rather than repaired in the round that found it. The repair
+conforms the tool to a registered contract and writes no registration, so it is a defect repair
+rather than a choice of scoring key; it is ruled, disclosed and tested against a known positive
+before its clean result is relied on.
+
+**Carried consequence:** while the field carries the probe cohort, the registered scoring unit
+degenerates from the feature and its affected output cohort to the feature and the probe cohort.
+Whether a criterion-1 result computed in that state means anything is not settled here.
+
+## D-V30A-22 — three required columns and three clean columns are absent from the built output
+
+**True:** the criterion-1 denominator names eleven columns. Built from the acceptance fixture's
+corrected side for one instrument-month, the output frame carries 338,159 rows and 87 columns, and
+**eight of the eleven are present in it. Three are not: `trade_volume_1s`, `trade_count_1s` and
+`dollar_volume_1s`.** They are absent from the frame, not present and unmoved.
+
+Of the four columns the fixture manifest classes as clean, **one is present in that output frame —
+`minutes_since_open` — and three are not**: `session_open`, `session_mid` and `session_close`.
+
+Measured on the corrected side of one instrument-month, zc 2025-01, by building the fixture and
+reading the frame's columns. The population is that build; other instrument-months are not measured
+here and the figures are not generalised to them.
+
+**Expected:** the columns a criterion scores over to exist in the artifact the criterion is
+evaluated on.
+
+**Why it stands:** it is disclosed rather than resolved, because which of two readings applies is not
+established. The absent columns may be produced on a side or an instrument-month not measured here,
+or the fed-column set the manifest records may differ from the built frame's columns for a reason
+the declaration states elsewhere. Both are checkable and neither is checked here.
+
+**Carried consequence:** a criterion-1 result computed on this build has at most eight of its eleven
+denominator units observable, and a criterion-2 result at most one of its four clean units. Any such
+figure names that coverage beside it.

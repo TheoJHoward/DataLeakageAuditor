@@ -113,6 +113,55 @@ than the passing gate it displaced.
 
 ---
 
+## TB-04 — *(28 August 2026)* An absence claim about a registered document needs a population too
+
+*"The registration declares no correspondence"* was asserted four times across
+three rounds, each time from a partial read, and each time it was wrong. What was
+actually registered:
+
+- the scoring unit, at `PREREG.md` line 291 — the feature and the affected
+  output cohort — with section 7.2 distinguishing probe cohorts, which
+  corroborate, from the cohort that keys the unit;
+- criterion 1's denominator and the rule constituting it, at line 702, stating
+  that the denominator is derived from the declared map by the registered rule
+  and that the declaration shows the derivation;
+- the per-unit partition, ex ante and in full, in the declaration's section A.6,
+  with the required list of eleven;
+- **the class-to-column correspondence itself**, as the fourth column of that
+  table, headed *Governing map class* — the very thing declared absent;
+- the coverage limit, at section 13(j): none of the thirty-five fed columns is
+  MBO-fed, so six of the ten classes attach to no fed column;
+- and the consequence, disclosed in the registration at line 1435, that
+  criterion 1's requirement reverses on fourteen of twenty-five.
+
+**This project already had the rule and applied it everywhere else.** A
+zero-match search over the file set is reported with its population and its
+exclusions; a figure from the map names which population it counts; a check whose
+population is empty raises rather than passing. The one place the discipline was
+not applied was to claims about the registration itself — the largest document in
+the repository, 2,228 lines beside a declaration of some 4,400, exactly where a
+partial read is likeliest and least visible.
+
+**The tell was available and was not read as one.** Four successive absence
+claims, each narrowing after a fifth search, is not four independent findings; it
+is one search that keeps being too small. The second one should have prompted a
+change of method rather than another grep.
+
+**What replaces it.** An absence claim about the registration carries the same
+apparatus as any other: the files searched, the terms, the sections excluded and
+why. And where the claim would rule something unscoreable or unavailable, the
+positive form is searched for first — not *"does it say there is no
+correspondence"* but *"where would a correspondence be declared if one existed"*,
+which in this case was a table column two lines from a section heading already
+cited for a different figure.
+
+**The failure was symmetrical, and the record says so.** The planning layer wrote
+the requirement into the deltas and did not apply it to its own assertions; the
+execution layer reported the absence claims as findings without demanding a
+population of itself. Neither noticed for three rounds.
+
+---
+
 ## Open items — recorded, not acted on
 
 - **Whether SC-7(c) belongs in the registration gate.** A pytest-only check is
