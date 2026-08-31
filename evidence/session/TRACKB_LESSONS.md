@@ -162,6 +162,61 @@ population of itself. Neither noticed for three rounds.
 
 ---
 
+## TB-05 — *(28 August 2026)* A ceiling is a property of the frame, not of the tool
+
+The same ceiling was quoted four times in four rounds and gave a different number
+each time:
+
+| quoted | figure | frame the question was actually about |
+|---|---|---|
+| first | 0 of 4 reachable | the probed **input** cohorts |
+| second | 8 of 11 | the Phase 5 built frame |
+| third | 11 of 11 | the Phase 7 fed set, where the columns are defined |
+| fourth | 8 of 11 | the rebuild pair, which is what the criteria are evaluated on |
+
+**Every one of those was correct about its frame and none of them named it.**
+The figure moved because the question moved, and because the answer was written
+as though the figure were a property of the detector — "the tool reaches eight of
+eleven" — when it is a property of which artifact the question was asked about.
+
+This is the population rule the registration already imposes on any figure
+published from the declared map, met again one level down. A ceiling names its
+frame every time it is quoted, exactly as a count names the population it counts.
+
+The cost of not doing so was three rounds: a ceiling attributed to the tool
+invites a repair to the tool, and two of those rounds went looking for one.
+
+## TB-06 — *(28 August 2026)* Backticks in a commit message, and a heredoc in a file edit
+
+Two shell-quoting slips in one round, both after the hazard was named in this
+project's own register.
+
+**A commit message passed inline through the shell.** Its body quoted five terms
+in backticks, the shell substituted each as a command, and all five vanished from
+a message that was then pushed. Four sentences read with holes in them where the
+subject used to be. Rewriting pushed history is barred here, so the message stays
+wrong and the correction appends — which is the right outcome and a worse artifact
+than getting it right once.
+
+Every other commit this round used a message written to a file and passed by
+reference, which is immune. The regression was reaching for the inline form
+because the message was short. **It was not short.**
+
+**A file edited through a heredoc.** A one-line substitution in a test file was
+made by piping a script into the interpreter, which is the indirect write path
+the drafting rule forbids for file content, for the reason demonstrated twice in
+this register: content that passes through a quoting layer arrives changed, and
+the change is invisible until something downstream disagrees.
+
+**What both have in common** is that the tool for the job was already built and
+already in use, and the shortcut was taken because the edit looked too small to
+be worth it. That is the same shape as lesson 44 in the closed register: a named
+hazard is not an avoided one, and the defence is to make the bad path
+unavailable rather than to remember not to take it. Here the good path costs one
+extra call.
+
+---
+
 ## Open items — recorded, not acted on
 
 - **Whether SC-7(c) belongs in the registration gate.** A pytest-only check is
