@@ -878,3 +878,130 @@ and that stays recorded as unknown rather than disposed of by widening or pinnin
 asserts the subject does not exist is worse than an absent check, because it reads as a measurement.
 The corrected sentences on the front page are recorded as corrections rather than deleted, for the
 reason the ledger exists.
+
+## D-V30A-30 — the availability probe's trace emitter kept one moved column per cohort and discarded the rest
+
+**True.** The trace builder recorded the alphabetically first column that moved
+in a probed second and dropped every other one. The probe itself had them all —
+its cohort record carries the full tuple of moved columns — so the loss happened
+at the boundary between the probe and the registered output contract, and it is
+silent: a trace carrying one finding where ten belong is well formed, resolves
+legally, and reports a completed schedule.
+
+**It is wrong in both directions the two scoreable criteria turn on.**
+
+The first criterion asks that every ground-truth leaking source column receive a
+finding attributed to **it**. Ten columns moving in one second produced one
+attribution and nine silences, and the criterion would have read as nine misses
+that never occurred — an understatement of the tool, which is the direction
+people notice.
+
+The second criterion forbids a finding of any tier on a manifest-clean column on
+the characterized side. A clean column that moved and sorted after the survivor
+disappeared from the trace entirely — a false negative in the direction that
+hides a violation of the criterion the tool is being examined by. **A detector
+whose trace can silently drop its own false positives is grading itself**, which
+is the defect the registration's own note about primary and secondary
+classification was written against.
+
+**The registered unit was never one record per cohort.** An evidence event is
+keyed on the detector, the promotion status, the feature and the affected output
+cohort, so two features in one second are two events by the registered
+definition. The schedule resolver takes the set of strategy-and-cohort pairs, so
+emitting several records for one cohort leaves the completion state meaning
+exactly what it meant.
+
+**Expected:** an emitter to carry what the probe measured.
+
+**Why it stands:** the repair was made before the run that depends on it and is
+disclosed in the pre-commitment rather than in the result, so no number here was
+produced by an instrument changed after a number was visible. Eleven cases cover
+the emission on synthetic cohorts; two of them were run against the replaced
+emitter, fetched from the history by content, to establish that they fail on it —
+a clean column sorting last, and ten required columns in one second. Both
+produced one finding then and the full set now.
+
+---
+
+## D-V30A-31 — the front-page check excused every blockquote, and a live claim can sit in one
+
+**True.** The criterion-5 check excludes blockquoted lines from its scan of the
+front page, so that a retired claim kept on the record does not fire it —
+otherwise the cheapest way to pass would be to delete the history, which is the
+incentive this project exists to resist.
+
+**The exemption was too wide.** It excused any blockquote at all. A blockquote is
+used for emphasis at least as often as for quotation, so a live false assertion
+parked in one would have passed the check while reading to a human as the page's
+own voice. The exemption was right and its form was not.
+
+**Narrowed.** A blockquote block is excused only where the block itself says the
+claim is retired, matched over the whole block rather than per line — because
+once the text wraps, the marker and the claim are rarely on the same line, which
+is the same wrapping mistake the body scan had already made once. Every excused
+block is reported as a note naming the marker that excused it, so an exemption is
+visible rather than silent.
+
+**Expected:** an exemption to be as narrow as its reason.
+
+**Why it stands:** five further cases cover it — a marked block stays silent, an
+unmarked one fires, an unmarked block of innocent text stays silent so the
+narrowing did not make the check fire on blockquotes as such, the marker and the
+claim on different lines are still matched, and the excusing note names its
+marker. The question was asked by the planning layer rather than found by the
+instrument, and it is recorded that way.
+
+---
+
+## D-V30A-32 — two of the four acceptance criteria are scored, on one instrument-month, and this is not a gate result
+
+**True, and the order it happened in is the point.** A pre-commitment was
+committed, naming the harness, the exact invocation, the inputs, the declared
+lists, the disposition of everything unreachable, and one falsifiable
+expectation per criterion. Then the harness ran once, exit 0, empty stderr. Then
+its output was committed exactly as written. Nothing between those steps was
+adjusted, and the two commits are in the history in that order for anyone to
+check.
+
+**The result.** Scored on the characterized side of the pair, for one
+instrument-month of forty-eight.
+
+- **The first criterion, denominator eleven: eight satisfied, three unsupported,
+  none missed.** Each of the eight rests on at least one primary finding
+  attributed to that column, in a declared cell the map records as non-zero —
+  89,568 strict violations for the eight units governed by the all-trades and
+  sell-trades classes, 23,633 for the large-trades one. The cell is checked per
+  unit by the harness rather than carried over from the pre-commitment.
+- **The three unsupported are the columns the later builder adds and the earlier
+  one does not carry.** They are neither hits nor misses, they stay in the
+  denominator, and no display puts them where a pass could be read.
+- **The second criterion: the one reachable clean column receives no finding of
+  any tier; the other three are unsupported on the same ground.** The reachable
+  population is one, which the pre-commitment stated as thin rather than
+  vacuous, and the thing that would have failed it did not occur.
+- **The control side is silent** — 250 eligible cohorts, zero findings — which
+  is the discrimination the pair exists to demonstrate.
+- **No descendant column receives a finding**, which was a stated prior and
+  holds.
+
+**Twenty-one moved columns are in neither declared list, and they are named and
+left unclassified.** They are the merge intermediates and the earlier builder's
+order-book-derived columns; none appears in the thirty-five-column manifest,
+because the frame the criteria run on carries eighty-seven columns while the
+manifest describes the fed set of the other artifact. A column the manifest does
+not carry is neither declared leaking nor declared clean, so it enters no
+criterion. Choosing a state for it would be selecting a disposition the
+registration does not select, which is the same move refused twice already this
+round.
+
+**Expected:** a stated expectation to be compared against a result, in that
+order, with any difference reported as a finding.
+
+**Why it stands:** it is recorded because the numbers are good and that is
+exactly when a scope statement is worth writing down. **This is not a gate
+result and is not published as one.** Two criteria of four; one instrument-month
+of forty-eight; one side of two scored. The remaining two criteria are blocked
+on the label gap recorded above, which is a finding about the registration
+rather than a property of this run. Nothing here licenses a claim about the
+tool's performance, and the run file carries every one of those limits as data
+rather than as prose.

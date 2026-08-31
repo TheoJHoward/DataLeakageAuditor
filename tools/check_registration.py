@@ -2193,6 +2193,25 @@ _INSTALL_README_FALSE_CLAIMS = (
     "pre-registration, not a tool",
 )
 
+# QUOTING A RETIRED CLAIM IS ALLOWED. PARKING A LIVE ONE IN A BLOCKQUOTE IS NOT.
+#
+# R190 §3. The first version excluded EVERY blockquoted line, which is too wide
+# in the direction that matters: a false assertion sitting in an unmarked
+# blockquote passes the check and reads to a human as the page's own voice --
+# blockquotes are used for emphasis at least as often as for quotation. The
+# exemption is meant for the RECORD of a claim that has been withdrawn, so it
+# now asks the block to say so.
+#
+# A blockquote block is excluded from the scan only if the block itself carries
+# one of these markers. They are matched case-insensitively over the whole
+# block, not per line, because the marker and the claim are rarely on the same
+# line once the text wraps. Each excluded block is REPORTED as a note naming the
+# marker that excused it, so the exemption is visible rather than silent.
+_INSTALL_RETIREMENT_MARKERS = (
+    "stood here until", "retired", "no longer", "superseded", "corrected",
+    "was false", "were false", "formerly", "used to say", "withdrawn",
+)
+
 
 def _install_first_party(root: Path) -> dict[str, Path]:
     """Top-level importable directories of this repository, by name."""
@@ -2215,6 +2234,38 @@ def _install_requirement_names(deps) -> set[str]:
         if m:
             names.add(m.group(0).lower().replace("-", "_"))
     return names
+
+
+def _install_readme_body(text: str) -> tuple[str, list[tuple[int, str]]]:
+    """The page's own assertions, with MARKED retirement blocks removed.
+
+    Returns the body with whitespace collapsed -- a claim that wraps across two
+    lines is the same claim, and a line-by-line scan misses it, which is how the
+    real one survived -- together with (line, marker) for each block excused, so
+    every exemption is printed.
+    """
+    lines = text.split("\n")
+    kept: list[str] = []
+    excused: list[tuple[int, str]] = []
+    i = 0
+    while i < len(lines):
+        if not lines[i].lstrip().startswith(">"):
+            kept.append(lines[i])
+            i += 1
+            continue
+        start = i
+        block = []
+        while i < len(lines) and lines[i].lstrip().startswith(">"):
+            block.append(lines[i])
+            i += 1
+        joined = " ".join(block).lower()
+        marker = next((m for m in _INSTALL_RETIREMENT_MARKERS if m in joined), None)
+        if marker is None:
+            # An unmarked blockquote is the page speaking, not the page quoting.
+            kept.extend(block)
+        else:
+            excused.append((start + 1, marker))
+    return re.sub(r"\s+", " ", " ".join(kept)), excused
 
 
 def check_installability(root: Path) -> list[Finding]:
@@ -2342,22 +2393,20 @@ def check_installability(root: Path) -> list[Finding]:
                              "C5: the front page never mentions %s. "
                              "Instructions a stranger cannot find are not "
                              "instructions." % _INSTALL_DOC))
-        # Blockquoted lines are the RECORD of a retired claim and are excluded;
-        # everything else is the page ASSERTING it. Whitespace is collapsed
-        # across the remainder because a claim that wraps across two lines is
-        # the same claim, and a line-by-line scan would miss it -- which is how
-        # this one survived a line-wrap already.
-        body = [raw for raw in rtext.split("\n")
-                if not raw.lstrip().startswith(">")]
-        flat = re.sub(r"\s+", " ", " ".join(body))
+        flat, excused = _install_readme_body(rtext)
+        for line, marker in excused:
+            f.append(Finding("installability", _INSTALL_README, line,
+                             "C5: blockquote excluded from the scan as the "
+                             "record of a retired claim, on the marker %r"
+                             % marker, is_note=True))
         for claim in _INSTALL_README_FALSE_CLAIMS:
             if claim in flat:
                 f.append(Finding(
                     "installability", _INSTALL_README, None,
                     "C5: the front page asserts %r beside a package that "
-                    "installs. Keeping the retired sentence on the record in a "
-                    "blockquote is how it stays visible; asserting it is not."
-                    % claim))
+                    "installs. A blockquote excuses it only where the block "
+                    "says the claim is retired; an unmarked blockquote is the "
+                    "page speaking, not the page quoting." % claim))
 
     f.append(Finding(
         "installability", _INSTALL_PYPROJECT, None,

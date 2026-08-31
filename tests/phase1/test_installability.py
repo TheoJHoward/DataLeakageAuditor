@@ -227,12 +227,51 @@ def test_the_false_claim_is_caught_across_a_line_wrap(tmp_path):
     assert any("No detector implementation exists" in x.message for x in f)
 
 
-def test_the_claim_quoted_in_a_blockquote_does_not_fire(tmp_path):
+def test_the_claim_in_a_blockquote_MARKED_AS_RETIRED_does_not_fire(tmp_path):
     """Keeping a retired claim on the record must stay available, or the check
     would push the repository into deleting its own history to go green."""
     assert _failures(_mk(tmp_path, readme=(
         "# Widget\n\nSee INSTALL.md.\n\n"
-        "> It once said: No detector implementation exists.\n"))) == []
+        "> This stood here until August and is corrected: No detector\n"
+        "> implementation exists.\n"))) == []
+
+
+def test_an_excused_blockquote_is_reported_with_the_marker_that_excused_it(tmp_path):
+    findings = cr.check_installability(_mk(tmp_path, readme=(
+        "# Widget\n\nSee INSTALL.md.\n\n"
+        "> Retired: No detector implementation exists.\n")))
+    notes = [x for x in findings if "blockquote excluded" in x.message]
+    assert len(notes) == 1 and notes[0].is_note
+    assert "'retired'" in notes[0].message
+
+
+def test_the_claim_in_an_UNMARKED_blockquote_still_fires(tmp_path):
+    """R190 §3. A blockquote is used for emphasis at least as often as for
+    quotation, so an unmarked one reads to a human as the page's own voice. The
+    exemption is for the record of a withdrawn claim, and it now asks the block
+    to say that it is one."""
+    f = _failures(_mk(tmp_path, readme=(
+        "# Widget\n\nSee INSTALL.md.\n\n"
+        "> No detector implementation exists.\n")))
+    assert any("No detector implementation exists" in x.message for x in f)
+
+
+def test_an_unmarked_blockquote_of_innocent_text_is_still_silent(tmp_path):
+    """The pair to the test above: including unmarked blockquotes in the scan
+    may not make the check fire on blockquotes as such."""
+    assert _failures(_mk(tmp_path, readme=(
+        "# Widget\n\nSee INSTALL.md.\n\n> A perfectly ordinary quotation.\n"))) == []
+
+
+def test_the_marker_and_the_claim_may_sit_on_different_lines(tmp_path):
+    """Matched over the whole block, because once the text wraps the marker and
+    the claim are rarely on the same line -- which is the same wrapping mistake
+    the line-by-line body scan already made once."""
+    assert _failures(_mk(tmp_path, readme=(
+        "# Widget\n\nSee INSTALL.md.\n\n"
+        "> No detector implementation exists.\n"
+        ">\n"
+        "> That sentence is retired.\n"))) == []
 
 
 # ---------------------------------------------------------------------------
