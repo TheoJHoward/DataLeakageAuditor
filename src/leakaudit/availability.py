@@ -96,6 +96,14 @@ class ProbeAResult:
     cohorts: list = field(default_factory=list)
     determinism_ok: bool = True
     notes: list = field(default_factory=list)
+    # THE COLUMNS OF THE FRAME THE PROBE ACTUALLY COMPARED. R192 §1.
+    #
+    # A caller that needs the output's column set was building the frame a
+    # second time to get it, which costs a build per side and -- worse -- takes
+    # the column set from a DIFFERENT build than the one the findings came from.
+    # The probe has the baseline in hand; carrying its columns out is free and
+    # removes the possibility of the two disagreeing.
+    base_columns: tuple = ()
 
     @property
     def findings(self):
@@ -151,6 +159,7 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
     res = ProbeAResult(side=side, n_cohorts=0)
 
     base = build(dict(raw))
+    res.base_columns = tuple(base.columns)
     base2 = build(dict(raw))
     if not base.equals(base2):
         res.determinism_ok = False
