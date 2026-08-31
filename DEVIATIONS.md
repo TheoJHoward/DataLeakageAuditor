@@ -497,3 +497,57 @@ the declaration states elsewhere. Both are checkable and neither is checked here
 **Carried consequence:** a criterion-1 result computed on this build has at most eight of its eleven
 denominator units observable, and a criterion-2 result at most one of its four clean units. Any such
 figure names that coverage beside it.
+
+## D-V30A-23 — criterion 3 is scoreable, and D-V30A-22's absent columns have a declared reason
+
+**True, and this entry supersedes two carried consequences of earlier entries.** D-V30A-18 recorded
+criterion 3 as unscoreable; D-V30A-20 withdrew that on its ground. This entry answers the question
+D-V30A-20 left open — whether the correspondence reaches far enough — and it does. D-V30A-22
+recorded six columns as absent from the built artifact; the absence has a declared reason and is not
+a defect.
+
+**Criterion 3's scored population is fully dispositioned, and every disposition is declared before
+any detector runs.** The criterion scores over the map's cells: the criterion's own clause registers
+that the map covers the whole declared scored population, and the declaration's criterion-3 entry
+lists what it supplies under it — the artifact and its schema, the named cell key, the ten violation
+classes, the declared scored population and its subclasses, the per-cell expected findings, the
+unscored ledger, and the reporting re-aggregation. Of the 960 declared-class cells:
+
+| cells | how the population is reached | declared at |
+|---|---|---|
+| 288 | the governing-class column of the required table, three classes | section A.6.1 |
+| 576 | the six MBO classes, attaching to no fed column | section 13(j) |
+| 96 | the `trades_buy` class, a degenerate unit excluded before any run | section C.4(a) |
+
+The third was the residue this record would otherwise have reported as undeclared. It is not: the
+class is zero strict and zero equal in every one of its 96 cells on both sides, because the buy-side
+aggressor test matches none of the values the source actually carries, so the column it feeds is
+identically zero. It is excluded on the registered degenerate-unit ground, declared out before any
+run, and its reporting as excluded rather than as missed is registered too.
+
+**The six absent columns are Phase-7-added, and the declaration says so.** The declaration carries a
+section for the columns Phase 7 feeds that are absent from the Phase 5 set — nine of them, tabulated
+with a declared role and verbatim construction evidence for each. The six recorded absent at
+D-V30A-22 are a subset of those nine. The build measured there was the Phase 5 builder, which by
+declaration does not carry them.
+
+So the ceiling recorded at D-V30A-22 is an artefact of which stage was built, not a property of the
+fixture. **The columns are absent from the Phase 5 frame, not from the fixture**, and D-V30A-22's
+two open readings are closed by the first of them.
+
+**Expected:** a measurement to name the stage it was taken at, as it names its side and its
+instrument-month.
+
+**Why it stands:** the operational consequence is worth recording, because it decides where a run of
+criteria 1 and 2 would have to happen. Eight of the eleven required units and one of the four clean
+units are present in the Phase 5 frame; three required and three clean are added at Phase 7. A probe
+over the Phase 5 frame therefore cannot observe the whole of either criterion's population, and the
+surface a scoring run needs is the frame that carries all thirty-five fed columns. That is a fact
+about where to run, not a defect in what was run.
+
+**Populations, named.** The cell figures are over the 960 declared-class cells of the map artifact,
+the 24 diagnostic rows excluded. The column figures are over one build: corrected side, zc 2025-01,
+338,159 rows and 87 columns, and they are not generalised to other sides or instrument-months. The
+readings behind this entry were taken by enumerating the sections that would house each answer, by
+their own headings, and reading them; the enumeration is the population, and it replaces the keyword
+searches that produced four wrong absence claims in the three rounds before this one.
