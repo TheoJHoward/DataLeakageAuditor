@@ -22,7 +22,7 @@ from __future__ import annotations
 import pandas as pd
 import pytest
 
-from leakaudit.probe import probe_columns
+from leakaudit.probe import output_cohort_id, output_column_of, probe_columns
 
 READS = "reads_a"      # output built from src.a -- perturbing a MUST move it
 IGNORES = "ignores_b"  # output built from src.c -- perturbing b must move nothing
@@ -100,3 +100,46 @@ def test_the_probed_cohort_is_still_recorded_as_corroboration():
     assert hits
     assert all(f.probe_cohort.startswith("col:src.") for f in hits), (
         "probe_cohort no longer names the probed input column")
+
+
+# ---------------------------------------------------------------------------
+# The identifier's form: a collision guard, and the one sanctioned inverse.
+# ---------------------------------------------------------------------------
+
+def test_an_input_frame_named_out_is_refused():
+    """The output frame's name is a free choice, so nothing stops a caller
+    choosing it too. Both would print as `col:out.<column>` and no consumer
+    could tell a probed input from a moved output -- a silent collision, which
+    is the kind this project stops by making the path unavailable rather than by
+    noticing it later."""
+    frames = _frames()
+    frames["out"] = pd.DataFrame({"x": [1.0, 2.0, 3.0, 4.0, 5.0, 6.0]})
+    with pytest.raises(ValueError) as exc:
+        probe_columns(frames, _build, case_id="synthetic")
+    assert "col:out." in str(exc.value)
+
+
+def test_the_matching_rule_round_trips():
+    """A harness matching this field back to a column name uses ONE function.
+    String surgery repeated at call sites is several chances to disagree about
+    the prefix, and the disagreement shows up as a silent non-match."""
+    for col in ("net_delta_1s", "trade_volume_1s", "a.b", "x"):
+        assert output_column_of(output_cohort_id(col)) == col
+
+
+def test_the_matching_rule_refuses_a_probe_cohort():
+    """Passing a probe cohort by mistake returns nothing, not a plausible wrong
+    column. `col:src.a` is a real cohort id of the other kind."""
+    assert output_column_of("col:src.a") is None
+    assert output_column_of("not-a-cohort-id") is None
+
+
+def test_the_field_the_probe_emits_is_readable_by_that_rule():
+    """The two halves have to agree: the id the probe writes is the id the
+    inverse reads. Testing them separately would let them drift apart."""
+    result = probe_columns(_frames(), _build, case_id="synthetic")
+    hits = [f for f in _findings(result) if f.probe_cohort == "col:src.a"]
+    assert hits
+    for f in hits:
+        assert output_column_of(f.affected_output_cohort) == f.feature, (
+            "the inverse does not recover the feature the probe recorded")

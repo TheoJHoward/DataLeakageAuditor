@@ -119,7 +119,37 @@ def cohort_id_for(frame_name: str, column: str) -> str:
 # affected-output cohort distinguishable at a glance from the input cohort that
 # was probed -- `col:out.net_delta_1s` against `col:trades.size` -- which is the
 # distinction the previous code lost by writing one value into both.
+#
+# The registration fixes the UNIT (feature x affected output cohort, PREREG.md
+# l.291) and not the identifier's string form; its own fixtures use abstract ids.
+# So this form is a free choice, recorded as one. `probe_columns` refuses a
+# caller frame of this name, because a collision would print two different things
+# the same way and nothing downstream could tell them apart.
 _OUTPUT_FRAME = "out"
+
+
+def output_cohort_id(column: str) -> str:
+    """The affected-output cohort id for a column of the built frame."""
+    return cohort_id_for(_OUTPUT_FRAME, column)
+
+
+def output_column_of(cohort_id: str) -> str | None:
+    """The built-frame column an affected-output cohort id names, or None.
+
+    The inverse of `output_cohort_id`, and the ONLY sanctioned way to get from
+    the field back to a column name. A harness matching this field against the
+    manifest's bare column names or the declared map's cells uses this rather
+    than slicing the string at a call site: string surgery repeated at three
+    sites is three chances to disagree about the prefix, and the disagreement
+    surfaces as a silent non-match rather than an error.
+
+    Returns None for an input cohort id, so a caller that passes a probe cohort
+    by mistake gets nothing rather than a plausible wrong column.
+    """
+    prefix = "col:%s." % _OUTPUT_FRAME
+    if not cohort_id.startswith(prefix):
+        return None
+    return cohort_id[len(prefix):]
 
 
 @dataclass
@@ -171,6 +201,13 @@ def probe_columns(
     columns: tuple[str, ...] | None = None,
 ) -> ProbeResult:
     """Run the column probe over every source column and emit both traces."""
+    if _OUTPUT_FRAME in frames:
+        raise ValueError(
+            "an input frame is named %r, which is the name this probe gives the "
+            "BUILT frame when it identifies an affected output cohort. Both "
+            "would print as 'col:%s.<column>' and nothing downstream could tell "
+            "a probed input from a moved output. Rename the input frame."
+            % (_OUTPUT_FRAME, _OUTPUT_FRAME))
     targets: list[tuple[str, str]] = []
     for fname, f in frames.items():
         for c in f.columns:
