@@ -113,6 +113,15 @@ def cohort_id_for(frame_name: str, column: str) -> str:
     return "col:%s.%s" % (frame_name, column)
 
 
+# The built frame the probe compares against its baseline. Input frames carry
+# their own names from the caller's dict; the output has none, so it is named
+# here rather than left to a literal at the one site that needs it. It keeps an
+# affected-output cohort distinguishable at a glance from the input cohort that
+# was probed -- `col:out.net_delta_1s` against `col:trades.size` -- which is the
+# distinction the previous code lost by writing one value into both.
+_OUTPUT_FRAME = "out"
+
+
 @dataclass
 class ProbeResult:
     """Both combinations, plus Layer 1's own product: the dependency map."""
@@ -316,8 +325,19 @@ def _run_one(build, frames, bare, baseline, fname, col, strat, cid, case_id, sta
         recs.append(ExecutionRecord(
             detector_id=detector_id, case_id=case_id, strategy_id=strat,
             promotion_status=status, cohort_id=cid, attempted=True, valid=True,
+            # THE AFFECTED OUTPUT COHORT IS THE OUTPUT THAT MOVED, NOT THE
+            # COHORT THAT WAS PROBED. PREREG.md l.291 registers the scoring unit
+            # as feature x affected output cohort, and §7.2 keeps probe cohorts
+            # separate from it as corroborating evidence -- three declared
+            # fields, three values. Until R184 this wrote `cid` into both the
+            # probe field and the affected-output field, so the dimension the
+            # registered unit is keyed on carried no information: every finding
+            # reported the column it perturbed, never the column that moved.
+            # `feat` is a column of the built output frame (frames_equal iterates
+            # the baseline's columns), so it is the moved output by construction.
             finding=FindingRecord(feature=str(feat), probe_cohort=cid,
-                                  affected_output_cohort=cid)))
+                                  affected_output_cohort=cohort_id_for(
+                                      _OUTPUT_FRAME, str(feat)))))
     return recs, {str(c) for c in differing}
 
 

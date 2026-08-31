@@ -603,3 +603,57 @@ was called, and the whole denominator is present in the frame the fed set is def
 by searching the declaration's history for each disposition's own distinctive text and by taking the
 first commit that added each run's artifact. The column figures remain those of one build: corrected
 side, zc 2025-01, 338,159 rows and 87 columns, not generalised to other sides or instrument-months.
+
+## D-V30A-25 — three units of criterion 1's denominator are absent from the artifact its criteria are evaluated on
+
+**True:** criterion 1's denominator is the eleven units the declaration derives at its section A.6.1,
+drawn from the thirty-five-column fed set. The criteria are evaluated on the rebuild pair, whose
+column universe the declaration gives as the forty-five-column set of the earlier builder. Three of
+the eleven — `trade_volume_1s`, `trade_count_1s` and `dollar_volume_1s` — are among the nine columns
+the later stage adds and the earlier set does not carry, so they are absent from the frame the
+criteria are evaluated on.
+
+Measured on one build of that frame: corrected side, zc 2025-01, 338,159 rows and 87 columns. Eight
+of the eleven are present in it and three are not. The figure is not generalised to other sides or
+instrument-months, and it is a property of that frame rather than of the tool.
+
+**Expected:** the units a criterion scores over to be present in the artifact the criterion is
+evaluated on.
+
+**Why it stands, and how the registration disposes of it.** Three registered rules settle this
+between them and none of them is discretionary.
+
+The denominator does not move. It is derived from the declared map by the rule the registration
+carries, and reachability is not that rule. Scoring the criterion over the eight that are reachable
+would substitute a different denominator for the registered one, and the count of the required list
+is the only quantity that is N.
+
+Neither registered exclusion ground reaches them. Exactly two are registered: a degenerate unit that
+cannot carry a finding of the scored class at all, and a unit whose construction or lag treatment is
+declared unresolved. Absence from the evaluation artifact is neither, and reinstating or removing a
+unit is a class C amendment in any case.
+
+The state they take is registered, and it is not `unscored`. The unscored state is entered only by a
+unit named in the declaration's unscored ledger with its ground, frozen before any detector runs, and
+the registration states expressly that absence of data at run time is not that state but the not-run
+state its cause selects. The section that selects it draws the boundary: missing or impossible inputs
+are `unsupported`, supplied-and-valid inputs that then fail are `could-not-run`. These three are
+missing inputs on this frame.
+
+**Carried consequence:** on the rebuild pair, criterion 1 has eleven required units of which eight
+are observable and three take the `unsupported` coverage state, on the ground that the column is not
+present in the evaluation artifact's universe. The registration adds that an entry in that state may
+name a covering detector, which reduces the gap without closing it, and that none of these states is
+displayed in a way mistakable for a pass. A published criterion-1 figure therefore carries all three
+numbers — the denominator, the observable count, and the unsupported count with its ground — and a
+result at eight of eleven is a statement about the artifact rather than about the detector.
+
+**Populations, named.** The eleven are the required list of the declaration's section A.6.1. The
+thirty-five and the forty-five are the two column universes the declaration names in its two artifact
+sections. The eight and the three are from the single build named above. The reading was taken by
+enumerating the exclusion clause, the unscored clause and the not-run states section by their own
+headings and reading them, and that enumeration is the population of the read.
+
+**What this entry does not decide.** The re-derivation of the two artifact-allocation sentences is
+already recorded elsewhere as a disclosure-class item requiring a further amendment; this entry names
+a consequence of that allocation which that record does not name, and does not reopen it.
