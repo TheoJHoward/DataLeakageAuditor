@@ -551,3 +551,55 @@ the 24 diagnostic rows excluded. The column figures are over one build: correcte
 readings behind this entry were taken by enumerating the sections that would house each answer, by
 their own headings, and reading them; the enumeration is the population, and it replaces the keyword
 searches that produced four wrong absence claims in the three rounds before this one.
+
+## D-V30A-24 — "declared before any run" is verified from the history, and the ceiling is a stage, not a defect
+
+**True:** three dispositions carry the whole of criterion 3's scoreability and the exclusion of 96
+cells between them — the governing-class column of the required table, the six-class coverage limit,
+and the column-level gate dispositions whose heading asserts that they are declared before any run.
+That assertion is now checked against the commit history rather than taken on its own word.
+
+| what | commit | date |
+|---|---|---|
+| the declaration's first commit, carrying all three dispositions | `ffa6d94` | 2026-08-13 |
+| the governing-class column revised | `0acab4e` | 2026-08-25 |
+| the column probe and the two detectors | `6e256d1`, `66063da` | 2026-08-26 |
+| the dependency-map run and its results | `e84c711`, `7e8b902` | 2026-08-26 |
+| the detector sweep's results | `8121549` | 2026-08-26 |
+| the availability probe | `2ceb3c9` | 2026-08-27 |
+| that probe under the frozen output contract | `e943799` | 2026-08-28 |
+
+**Every disposition predates every run, by thirteen days.** The later revision of the governing-class
+column predates the first run by one. The claim holds.
+
+**The degenerate-predicate disposition anticipated the run that would have found it.** The
+column-level dispositions record, on 13 August, that the buy-side aggressor test matches none of the
+values the source carries, so the column it feeds is identically zero and its class is zero in every
+one of its 96 cells on both sides. The dependency-map machinery surfaced the same constantly-false
+predicate on 26 August. The order is the favourable one: the registration named the degeneracy
+before any detector was in a position to report it.
+
+**Expected:** an ex ante claim to be verifiable as ex ante.
+
+**Why it stands:** it is recorded because three dispositions now carry weight they did not carry
+before, and because the check is cheap and was not otherwise going to be made. A disposition frozen
+after a run scores nothing under the criterion's own clause; these were not.
+
+**The clean columns are disposed of, and the two questions about them are different.** Their absence
+from the measured frame and the treatment of a finding on them are separate matters with separate
+answers. The absence is the Phase 7 addendum's: they are among the nine columns Phase 7 feeds that
+the Phase 5 set does not carry. The treatment is the column-level dispositions': the session flags
+are lagged deterministic clock functions, which is staleness rather than unavailability, declared as
+a documented as-built property so it cannot later be re-read as a discovery, and licensing no
+corrected-side finding.
+
+**Criterion 1's ceiling is a stage, and the stage is reachable.** The fed set is defined in the Phase
+7 simulator, one of the registered twenty, as the thirty-five features its two feature lists compose.
+The frame measured at D-V30A-22 came from the Phase 5 builder, which the declaration records as
+carrying nine fewer. So the ceiling of eight of eleven recorded there is a property of which builder
+was called, and the whole denominator is present in the frame the fed set is defined over.
+
+**Populations, named.** The dates are over the commits reachable from the current branch tip, found
+by searching the declaration's history for each disposition's own distinctive text and by taking the
+first commit that added each run's artifact. The column figures remain those of one build: corrected
+side, zc 2025-01, 338,159 rows and 87 columns, not generalised to other sides or instrument-months.
