@@ -1005,3 +1005,96 @@ on the label gap recorded above, which is a finding about the registration
 rather than a property of this run. Nothing here licenses a claim about the
 tool's performance, and the run file carries every one of those limits as data
 rather than as prose.
+
+## D-V30A-33 — the violation predicate was reading equal counts as violations, and the tie rule says otherwise
+
+**True.** The harness that scored one instrument-month treated a declared cell as
+carrying no violation only when its strict count **and** its equal count were both
+zero. The tie rule is declared `available`, so the comparator reads a value as
+available when its instant is at or before the decision instant. **An event at
+exactly the decision instant is therefore available, and an equal count is a
+violation only under the branch the declaration did not take.**
+
+**It changed nothing where it was written and two cells where it was extended.**
+At the single instrument-month it was written for, the governing cells carry
+89,568 strict, so the predicate never reached the equal counts. Across the whole
+declared population two cells have zero strict and one equal — **es 2025-10 and
+es 2025-11 on the corrected side** — and the old predicate would have scored them
+as declaring a violation the declaration does not declare, then recorded a miss
+when no finding arrived.
+
+**Corrected before the run, not after.** The predicate is a strict count alone.
+The correction is disclosed in the pre-commitment the run was made under rather
+than in the result, so no number was produced by an instrument changed once a
+number was visible.
+
+**Expected:** a predicate to follow the declared branch rather than the union of
+both branches.
+
+**Why it stands:** the defect was invisible at the scale it was written at and
+became visible only when the population widened. That is worth recording as the
+shape of the thing rather than as a one-line fix: a predicate that is
+conservative in the direction of finding more violations is not safe, because
+here it would have manufactured two misses out of two cells the map declares
+clean under the rule the declaration actually chose.
+
+---
+
+## D-V30A-34 — criteria 1 and 2 are scored across the whole declared population, and this is still not a gate result
+
+**True, and in the order it happened.** A pre-commitment was committed and
+**pushed before the run began**, so the ordering is checkable off this machine.
+It enumerated the population, fixed the invocation, stated the cost model and its
+halt, named what did not carry over from the single-instrument-month run, and
+stated one falsifiable expectation per criterion together with four further
+priors. Then the harness ran once, exit 0, empty stderr, 46,976 seconds. Then its
+output was committed exactly as written.
+
+**The population is the whole declared one.** Forty-eight instrument-months,
+eight instruments by six months. The archive carries all forty-eight, verified by
+enumerating the files the fixture's own loader reads. **Nothing was sampled and
+there is no absence list.** One partial absence is recorded because it is real
+and belongs to the fixture rather than to the run: one instrument carries no
+order-book file in any of its six months, which the declaration already states,
+and every required unit is trade-derived so no criterion is touched by it.
+
+**The result.**
+
+- **Criterion 1: 66 scoring contexts — 48 on the characterized side and 18 on the
+  other, which is the count derived from the map before the run and matches the
+  declaration's own list of eighteen. Across 726 unit contexts: 528 satisfied,
+  198 unsupported, ZERO missed.**
+- **Criterion 2: 48 clean, 144 unsupported, zero violated.** Its reach did not
+  grow: **one reachable column per instrument-month**, forty-eight in total,
+  exactly as it was for one, and the figure is never stated without that.
+- **The three later-builder columns were predicted absent everywhere and are
+  absent in all forty-eight on both sides.**
+- **The dual-ground column's condition was asserted per instrument-month rather
+  than inherited, and holds in all forty-eight.**
+- **The control held in both directions:** thirty instrument-months silent where
+  the map declares nothing, eighteen carrying findings where it does, split by a
+  list computed before the run.
+- **No descendant column received a finding anywhere.**
+- **Forty-eight of forty-eight completed.** The named memory risk did not fire.
+
+**Twenty-one features in neither declared list, and they are still named and left
+unclassified.** Five appear in all forty-eight and sixteen in forty-two, the six
+missing being the instrument with no order-book stream. **They are not coverage
+and are never quoted as coverage.**
+
+**Where the estimate was wrong, it was the half labelled unpredicted.** 13.05
+hours against about eight. The term the single measured point actually measured
+is the term the halt watched, and it never fired on any instrument-month. The
+other term was refused as a prediction in advance, on the ground that one
+warm-cache measurement cannot be extrapolated across a two-hundred-fold range,
+and quoted only as an order of magnitude. The overrun landed there.
+
+**Expected:** stated expectations to be compared against a result, in that order,
+with any difference reported as a finding.
+
+**Why it stands:** the numbers are good, which is exactly when the scope
+statement earns its place. **This is not a gate result and is not published as
+one.** Two criteria of four. The remaining two are blocked on the label gap
+recorded above, which is a finding about the registration rather than a property
+of this run, and no amendment has been opened. Nothing here licenses a claim
+about the tool's performance.
