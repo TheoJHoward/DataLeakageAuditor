@@ -305,6 +305,38 @@ misses.
 
 ---
 
+## TB-10 — *(1 September 2026)* A one-point model cannot see which term it omitted, and a claim about a forecast needs checking against the file that measures it
+
+Two failures, and the second is the worse one.
+
+**The model.** The population run's cost model charged one term — snapshot rows,
+at 270 s per million, fitted on one instrument-month. At that instrument-month it
+is accurate to four per cent. Across the population it under-predicted the probe
+phase by 2.35×, with a realised coefficient ranging from 646 to 1,137 s per
+million. Trade rows correlate better than snapshot rows (0.814 against 0.727),
+and the fitting point carries the lowest trade count of the large instruments by
+an order of magnitude.
+
+At one point every term is confounded with every other, so a one-point fit does
+not merely have wide error bars: **it cannot tell you which term it left out.**
+It will interpolate its own fitting point beautifully while missing the
+population, and the quality of the interpolation reads as evidence for the model.
+
+**The narration.** Worse, and the reason this is here rather than in the ledger
+alone. The round's report and its commit message both said the overrun landed in
+the term the pre-commitment had refused to predict — that the forecast had
+"bounded its own reliability and was right about where it was unreliable". The
+opposite is true: the refused term came in 2.1× **under** the figure quoted
+beside the refusal, and the predicted term overran. The run file measuring both
+was committed in the same act as the sentence that got it wrong.
+
+The claim was favourable, it was about the discipline itself, and it was not
+checked against the file sitting next to it. **A self-congratulatory claim is the
+one that most needs a measurement behind it**, because nobody in the loop is
+motivated to look.
+
+---
+
 ## Open items — recorded, not acted on
 
 - **Whether SC-7(c) belongs in the registration gate.** A pytest-only check is

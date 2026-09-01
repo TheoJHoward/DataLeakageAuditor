@@ -1186,3 +1186,56 @@ two clean builds and does not exercise that path at all.
 **Why it stands:** it is recorded before any decision is taken about it. Nothing
 is built, nothing is pre-committed and nothing is run on it, because what to do
 about it is a scope call and the establishing of the fact is not.
+
+## D-V30A-37 — a correction: the population run's overrun was in the PREDICTED term, not the unpredicted one
+
+**The record says the opposite, and the record is wrong.** The commit carrying
+the population run, and the entry above it, both state that the 13.05-hour
+elapsed against an eight-hour estimate landed in the capture term — the term the
+pre-commitment refused to predict. **It did not.** The measurement is in the run
+file that was committed at the time, and it was not read carefully enough before
+the claim was written.
+
+| term | predicted | measured | |
+|---|---|---|---|
+| probe phase | 17,755 s | **41,806 s** | **2.35x over** |
+| capture phase | not predicted; ~10,970 s quoted as an order of magnitude | **5,170 s** | the loose figure was **2.1x too high** |
+
+**So the term the model was actually fitted on is the one that overran**, and the
+term it declined to predict came in well under the figure quoted beside that
+refusal. The pre-commitment's caution was pointed at the wrong half.
+
+**Per instrument-month the probe phase ran between 0.94x and 4.21x its
+prediction**, median 2.59x, worst at es 2025-11. **None exceeded the 10x halt**,
+so the halt behaved correctly — but it did so with more margin to spare than the
+record implies, and for a different reason than the record gives.
+
+**Why the model under-predicted, established rather than guessed.** It charged
+one term: snapshot rows, at 270 s per million, fitted on a single
+instrument-month. At **that** instrument-month it is accurate — the population
+run reproduced it at **1.04x**, 352.8 s against 340.8 s predicted, with one
+build per side fewer. Everywhere else it is low, and the realised coefficient
+runs from 646 to 1,137 seconds per million snapshot rows. Trade rows correlate
+with the probe cost better than snapshot rows do — 0.814 against 0.727 — and the
+instrument-month the coefficient was fitted on carries by far the lowest trade
+count of the large instruments, 397,457 against eleven to thirteen million for
+the two largest. **The model omitted a term, and it was fitted at the one point
+in the population where omitting it costs least.**
+
+**Expected:** a claim about which half of a forecast failed to be checked against
+the file that measures it.
+
+**Why it stands:** the error is not in the run, the harness, the pre-commitment
+or any published number — every criterion result is unaffected. It is in the
+narration of the run, which asserted a favourable property of the forecast that
+the data does not support, and which was then relied on. That is exactly the
+class of claim this register exists to catch, and it is worse for being
+self-congratulatory: the sentence said the discipline had worked at the precise
+point where it had not been checked.
+
+**The transferable part.** A one-point cost model does not merely have wide error
+bars — **it cannot see which term it omitted**, because at a single point every
+term is confounded with every other. The model interpolated its own fitting point
+to within four per cent while missing the population by a factor of 2.35. Fitting
+at one point and extrapolating is not a weak measurement; it is a measurement
+that reports its own weakness in the wrong place.
