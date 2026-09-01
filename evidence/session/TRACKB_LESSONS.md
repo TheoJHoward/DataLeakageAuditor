@@ -274,6 +274,37 @@ everything downstream of it.
 
 ---
 
+## TB-09 — *(1 September 2026)* A frame can be interpretive, and TB-05 applies to it unchanged
+
+TB-05 recorded that a ceiling is a property of the frame rather than of the
+tool, after the same figure was quoted four times with four values. That was a
+numerical frame — which artifact, which column universe.
+
+The population run produced a headline shape of 66 scoring contexts and 726 unit
+contexts. Both figures are true, and both are true **under a reading**: that the
+first criterion is scored per side and instrument-month wherever the map carries
+a strict count. Under a contaminated-only reading the same output bytes read 48
+and 528. Nothing about the run differs; the denominators differ by a factor
+approaching 1.4 because two defensible readings of one clause partition the
+result differently.
+
+**An interpretive frame is a frame.** It travels with the figure exactly as a
+numerical one does, and for the same reason: a reader given the number without
+it cannot check it.
+
+Two things kept this honest rather than convenient. The reading was fixed in the
+pre-commitment before any number existed, so it could not have been chosen for
+its effect on a count. And it is the **harder** reading — it adds eighteen
+contexts in which the tool could have failed. A reading that made the
+examination easier would deserve suspicion; one that adds tests to it is
+suspicious only if adopted after seeing that they pass, which the commit order
+rules out.
+
+The figure that survives both readings is the one worth leading with: zero
+misses.
+
+---
+
 ## Open items — recorded, not acted on
 
 - **Whether SC-7(c) belongs in the registration gate.** A pytest-only check is

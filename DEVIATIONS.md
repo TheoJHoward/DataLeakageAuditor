@@ -1098,3 +1098,91 @@ one.** Two criteria of four. The remaining two are blocked on the label gap
 recorded above, which is a finding about the registration rather than a property
 of this run, and no amendment has been opened. Nothing here licenses a claim
 about the tool's performance.
+
+## D-V30A-35 — the context count is true under a reading, and the reading travels with the figure
+
+**True.** The population run's headline shape — **66 scoring contexts and 726
+unit contexts** — holds under the reading that criterion 1 is scored per side and
+instrument-month wherever the declared map carries a strict count. **Under a
+contaminated-only reading the same run reads 48 contexts and 528 unit contexts**,
+over the same output bytes, with the same zero misses.
+
+**The reading, and its three grounds.** The routing clause satisfies a required
+entry only by a finding on the side the map declares, which makes the first
+criterion side-relative by its own incorporated clause, while the second names
+the characterized side in its own text and the first does not. The derivation
+reproduced the declaration's own list of eighteen corrected instrument-months
+exactly, from the map, before the run — a reading that regenerates an independent
+declared figure is corroborated rather than merely available. And it is the
+harder reading: it adds eighteen contexts in which the tool could have failed. A
+reading that made the examination easier would deserve suspicion; one that adds
+tests to it does not.
+
+**It is still a reading, and the figure carries it.** Wherever 66 contexts or 726
+unit contexts appears, the reading appears with it. This is the same discipline
+the register already records for a ceiling quoted four times with four values:
+the figure is a property of the frame, and here the frame is interpretive rather
+than numerical.
+
+**What does not move under either reading.** Zero misses. Zero violations of the
+clean-source criterion. Thirty silent and eighteen non-silent corrected
+instrument-months, split by a list computed before the run. The three
+later-builder columns absent in all forty-eight on both sides. The dual-ground
+condition holding in all forty-eight. Forty-eight of forty-eight completed.
+
+**Expected:** an interpretive frame to travel with the number it produces.
+
+**Why it stands:** the two readings differ by a factor approaching 1.4 in the
+denominator of the most quotable figure this project has produced. A reader
+given the larger number without the reading has been given a number they cannot
+check, and the smaller number is the one that survives every reading.
+
+---
+
+## D-V30A-36 — the identity control criterion needs no labels, and no identity control exists to run it against
+
+**True, and the two halves matter separately.**
+
+**It needs no labels.** The criterion is one sentence: silent under the identity
+control on both sides. The control it names replaces the unavailable cells with
+an exact copy of themselves, so any difference in the output is a measurement
+artifact rather than a detection. What is scored is whether the detector emitted
+anything at all — a property of its own output, compared against nothing. The
+routing clause adds one further way for it to fail: a declared sentinel, an
+as-built artefact present identically on every side, which cannot differentiate
+the sides, so a detector firing on it has produced a false positive under this
+control. That sentinel is enumerated ex ante in the declaration, with its
+signature. **Neither route reads the pair-keyed labels the metric family
+consumes, and neither reads the declared map.** This criterion is not blocked by
+the correspondence gap recorded earlier in this register.
+
+**No identity control exists.** The availability probe's perturbation is written
+inline and is unconditionally a change: an in-range offset for integers, a
+negation for booleans, a large deterministic addition for everything else. There
+is no strategy that writes the cells back unchanged. The strategy vocabulary of
+the corruption module carries four names and none of them is identity. The one
+place the word appears in the instrument is the column probe's handling of a
+shuffle that happens to be the identity permutation, which is recorded as a
+control artifact — the detection of a degenerate perturbation, and the opposite
+of a control run: it records that a probe did not happen, where a control run
+records that one happened and moved nothing.
+
+**What building it would take, stated so the size of the thing is visible.** A
+perturbation mode that writes the unavailable cells back unchanged; a run of it
+on both sides; a check that the emitted output is empty; and a check against the
+declared sentinel's signature. Its cost is the same three builds per side as a
+real probe, because the expense is the rebuild rather than the perturbation.
+
+**Why it is worth building rather than dismissing as a tautology.** An identity
+perturbation over a deterministic builder is trivially silent in its values — and
+that is not what the control tests. It tests the mechanism that writes values
+back: an assignment that preserves the values can still alter a column's dtype or
+its index, and a difference introduced there would appear in every real probe's
+output as a finding that belongs to the harness. The determinism guard compares
+two clean builds and does not exercise that path at all.
+
+**Expected:** a criterion that is scoreable to have an instrument.
+
+**Why it stands:** it is recorded before any decision is taken about it. Nothing
+is built, nothing is pre-committed and nothing is run on it, because what to do
+about it is a scope call and the establishing of the fact is not.
