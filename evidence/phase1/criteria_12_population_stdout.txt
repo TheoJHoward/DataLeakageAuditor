@@ -1,0 +1,194 @@
+[10:59:36] population: 48 instrument-month(s); 11 REQUIRED, 4 CLEAN (harness side)
+[10:59:36] cl 2025-01: capturing
+[11:10:21]   cl 2025-01 contaminated  finding, 5707 record(s), 29 feature(s), 523 s
+[11:19:11]   cl 2025-01 corrected     finding, 447 record(s), 29 feature(s), 530 s
+[11:19:11]   checkpointed after cl 2025-01 (1175 s; 1175 s total)
+[11:19:11] cl 2025-08: capturing
+[11:27:26]   cl 2025-08 contaminated  finding, 5067 record(s), 29 feature(s), 404 s
+[11:34:13]   cl 2025-08 corrected     finding, 482 record(s), 29 feature(s), 407 s
+[11:34:13]   checkpointed after cl 2025-08 (902 s; 2077 s total)
+[11:34:13] cl 2025-09: capturing
+[11:42:23]   cl 2025-09 contaminated  finding, 5046 record(s), 29 feature(s), 402 s
+[11:49:12]   cl 2025-09 corrected     finding, 576 record(s), 29 feature(s), 409 s
+[11:49:12]   checkpointed after cl 2025-09 (899 s; 2976 s total)
+[11:49:12] cl 2025-10: capturing
+[11:59:08]   cl 2025-10 contaminated  finding, 5112 record(s), 29 feature(s), 490 s
+[12:07:25]   cl 2025-10 corrected     finding, 725 record(s), 29 feature(s), 497 s
+[12:07:25]   checkpointed after cl 2025-10 (1093 s; 4069 s total)
+[12:07:25] cl 2025-11: capturing
+[12:15:40]   cl 2025-11 contaminated  finding, 5336 record(s), 29 feature(s), 406 s
+[12:22:36]   cl 2025-11 corrected     finding, 771 record(s), 29 feature(s), 415 s
+[12:22:36]   checkpointed after cl 2025-11 (910 s; 4979 s total)
+[12:22:36] cl 2025-12: capturing
+[12:30:49]   cl 2025-12 contaminated  finding, 5043 record(s), 29 feature(s), 411 s
+[12:37:49]   cl 2025-12 corrected     finding, 796 record(s), 29 feature(s), 420 s
+[12:37:49]   checkpointed after cl 2025-12 (913 s; 5892 s total)
+[12:37:49] es 2025-01: capturing
+[12:53:55]   es 2025-01 contaminated  finding, 7740 record(s), 29 feature(s), 732 s
+[13:06:10]   es 2025-01 corrected     observed_silence, 0 record(s), 0 feature(s), 734 s
+[13:06:10]   checkpointed after es 2025-01 (1701 s; 7593 s total)
+[13:06:10] es 2025-08: capturing
+[13:20:25]   es 2025-08 contaminated  finding, 7256 record(s), 29 feature(s), 650 s
+[13:31:20]   es 2025-08 corrected     observed_silence, 0 record(s), 0 feature(s), 654 s
+[13:31:20]   checkpointed after es 2025-08 (1510 s; 9103 s total)
+[13:31:20] es 2025-09: capturing
+[13:45:15]   es 2025-09 contaminated  finding, 7271 record(s), 29 feature(s), 636 s
+[13:55:54]   es 2025-09 corrected     observed_silence, 0 record(s), 0 feature(s), 638 s
+[13:55:54]   checkpointed after es 2025-09 (1474 s; 10577 s total)
+[13:55:54] es 2025-10: capturing
+[14:13:56]   es 2025-10 contaminated  finding, 7548 record(s), 29 feature(s), 816 s
+[14:29:21]   es 2025-10 corrected     observed_silence, 0 record(s), 0 feature(s), 925 s
+[14:29:21]   checkpointed after es 2025-10 (2007 s; 12585 s total)
+[14:29:21] es 2025-11: capturing
+[14:49:25]   es 2025-11 contaminated  finding, 8013 record(s), 29 feature(s), 892 s
+[15:04:55]   es 2025-11 corrected     observed_silence, 0 record(s), 0 feature(s), 930 s
+[15:04:55]   checkpointed after es 2025-11 (2134 s; 14719 s total)
+[15:04:55] es 2025-12: capturing
+[15:24:07]   es 2025-12 contaminated  finding, 7819 record(s), 29 feature(s), 881 s
+[15:38:12]   es 2025-12 corrected     observed_silence, 0 record(s), 0 feature(s), 846 s
+[15:38:12]   checkpointed after es 2025-12 (1997 s; 16716 s total)
+[15:38:12] gc 2025-01: capturing
+[15:50:53]   gc 2025-01 contaminated  finding, 5815 record(s), 29 feature(s), 617 s
+[16:01:16]   gc 2025-01 corrected     finding, 678 record(s), 29 feature(s), 623 s
+[16:01:16]   checkpointed after gc 2025-01 (1384 s; 18100 s total)
+[16:01:16] gc 2025-08: capturing
+[16:14:07]   gc 2025-08 contaminated  finding, 5898 record(s), 29 feature(s), 621 s
+[16:25:05]   gc 2025-08 corrected     finding, 467 record(s), 29 feature(s), 658 s
+[16:25:05]   checkpointed after gc 2025-08 (1429 s; 19529 s total)
+[16:25:05] gc 2025-09: capturing
+[16:42:23]   gc 2025-09 contaminated  finding, 6127 record(s), 29 feature(s), 828 s
+[16:56:19]   gc 2025-09 corrected     finding, 1055 record(s), 29 feature(s), 837 s
+[16:56:19]   checkpointed after gc 2025-09 (1874 s; 21403 s total)
+[16:56:19] gc 2025-10: capturing
+[17:17:49]   gc 2025-10 contaminated  finding, 6593 record(s), 29 feature(s), 1018 s
+[17:34:29]   gc 2025-10 corrected     finding, 754 record(s), 29 feature(s), 1000 s
+[17:34:29]   checkpointed after gc 2025-10 (2290 s; 23692 s total)
+[17:34:29] gc 2025-11: capturing
+[17:48:41]   gc 2025-11 contaminated  finding, 6267 record(s), 29 feature(s), 682 s
+[18:00:24]   gc 2025-11 corrected     finding, 483 record(s), 29 feature(s), 703 s
+[18:00:24]   checkpointed after gc 2025-11 (1555 s; 25248 s total)
+[18:00:24] gc 2025-12: capturing
+[18:17:02]   gc 2025-12 contaminated  finding, 6458 record(s), 29 feature(s), 798 s
+[18:30:16]   gc 2025-12 corrected     finding, 547 record(s), 29 feature(s), 794 s
+[18:30:16]   checkpointed after gc 2025-12 (1792 s; 27039 s total)
+[18:30:16] he 2025-01: capturing
+[18:32:32]   he 2025-01 contaminated  finding, 3481 record(s), 29 feature(s), 124 s
+[18:34:37]   he 2025-01 corrected     observed_silence, 0 record(s), 0 feature(s), 124 s
+[18:34:37]   checkpointed after he 2025-01 (261 s; 27300 s total)
+[18:34:37] he 2025-08: capturing
+[18:36:39]   he 2025-08 contaminated  finding, 2731 record(s), 29 feature(s), 110 s
+[18:38:33]   he 2025-08 corrected     observed_silence, 0 record(s), 0 feature(s), 113 s
+[18:38:33]   checkpointed after he 2025-08 (236 s; 27536 s total)
+[18:38:33] he 2025-09: capturing
+[18:40:37]   he 2025-09 contaminated  finding, 2596 record(s), 29 feature(s), 112 s
+[18:42:32]   he 2025-09 corrected     observed_silence, 0 record(s), 0 feature(s), 114 s
+[18:42:32]   checkpointed after he 2025-09 (239 s; 27775 s total)
+[18:42:32] he 2025-10: capturing
+[18:44:43]   he 2025-10 contaminated  finding, 2321 record(s), 29 feature(s), 119 s
+[18:46:44]   he 2025-10 corrected     observed_silence, 0 record(s), 0 feature(s), 120 s
+[18:46:44]   checkpointed after he 2025-10 (252 s; 28027 s total)
+[18:46:44] he 2025-11: capturing
+[18:48:47]   he 2025-11 contaminated  finding, 3038 record(s), 29 feature(s), 111 s
+[18:50:41]   he 2025-11 corrected     observed_silence, 0 record(s), 0 feature(s), 114 s
+[18:50:41]   checkpointed after he 2025-11 (237 s; 28264 s total)
+[18:50:41] he 2025-12: capturing
+[18:52:51]   he 2025-12 contaminated  finding, 2568 record(s), 29 feature(s), 120 s
+[18:54:59]   he 2025-12 corrected     observed_silence, 0 record(s), 0 feature(s), 128 s
+[18:54:59]   checkpointed after he 2025-12 (259 s; 28523 s total)
+[18:54:59] le 2025-01: capturing
+[18:57:45]   le 2025-01 contaminated  finding, 4109 record(s), 29 feature(s), 147 s
+[19:00:12]   le 2025-01 corrected     observed_silence, 0 record(s), 0 feature(s), 146 s
+[19:00:12]   checkpointed after le 2025-01 (312 s; 28835 s total)
+[19:00:12] le 2025-08: capturing
+[19:02:48]   le 2025-08 contaminated  finding, 3701 record(s), 29 feature(s), 136 s
+[19:05:02]   le 2025-08 corrected     observed_silence, 0 record(s), 0 feature(s), 135 s
+[19:05:02]   checkpointed after le 2025-08 (291 s; 29126 s total)
+[19:05:02] le 2025-09: capturing
+[19:07:28]   le 2025-09 contaminated  finding, 3583 record(s), 29 feature(s), 128 s
+[19:09:47]   le 2025-09 corrected     observed_silence, 0 record(s), 0 feature(s), 139 s
+[19:09:48]   checkpointed after le 2025-09 (285 s; 29411 s total)
+[19:09:48] le 2025-10: capturing
+[19:12:44]   le 2025-10 contaminated  finding, 3632 record(s), 29 feature(s), 153 s
+[19:15:23]   le 2025-10 corrected     observed_silence, 0 record(s), 0 feature(s), 159 s
+[19:15:23]   checkpointed after le 2025-10 (335 s; 29746 s total)
+[19:15:23] le 2025-11: capturing
+[19:17:52]   le 2025-11 contaminated  finding, 3598 record(s), 29 feature(s), 132 s
+[19:20:15]   le 2025-11 corrected     observed_silence, 0 record(s), 0 feature(s), 143 s
+[19:20:15]   checkpointed after le 2025-11 (292 s; 30038 s total)
+[19:20:15] le 2025-12: capturing
+[19:22:51]   le 2025-12 contaminated  finding, 2512 record(s), 29 feature(s), 141 s
+[19:25:17]   le 2025-12 corrected     observed_silence, 0 record(s), 0 feature(s), 146 s
+[19:25:17]   checkpointed after le 2025-12 (302 s; 30340 s total)
+[19:25:17] nq 2025-01: capturing
+[19:44:11]   nq 2025-01 contaminated  finding, 3345 record(s), 13 feature(s), 890 s
+[19:59:05]   nq 2025-01 corrected     observed_silence, 0 record(s), 0 feature(s), 894 s
+[19:59:05]   checkpointed after nq 2025-01 (2028 s; 32369 s total)
+[19:59:05] nq 2025-08: capturing
+[20:15:55]   nq 2025-08 contaminated  finding, 3250 record(s), 13 feature(s), 792 s
+[20:29:15]   nq 2025-08 corrected     observed_silence, 0 record(s), 0 feature(s), 800 s
+[20:29:15]   checkpointed after nq 2025-08 (1810 s; 34179 s total)
+[20:29:15] nq 2025-09: capturing
+[20:45:35]   nq 2025-09 contaminated  finding, 2990 record(s), 13 feature(s), 768 s
+[20:58:17]   nq 2025-09 corrected     observed_silence, 0 record(s), 0 feature(s), 762 s
+[20:58:17]   checkpointed after nq 2025-09 (1742 s; 35921 s total)
+[20:58:17] nq 2025-10: capturing
+[21:17:32]   nq 2025-10 contaminated  finding, 3264 record(s), 13 feature(s), 906 s
+[21:32:51]   nq 2025-10 corrected     observed_silence, 0 record(s), 0 feature(s), 919 s
+[21:32:51]   checkpointed after nq 2025-10 (2074 s; 37994 s total)
+[21:32:51] nq 2025-11: capturing
+[21:50:50]   nq 2025-11 contaminated  finding, 3379 record(s), 13 feature(s), 842 s
+[22:04:57]   nq 2025-11 corrected     observed_silence, 0 record(s), 0 feature(s), 847 s
+[22:04:57]   checkpointed after nq 2025-11 (1926 s; 39920 s total)
+[22:04:57] nq 2025-12: capturing
+[22:21:24]   nq 2025-12 contaminated  finding, 3268 record(s), 13 feature(s), 779 s
+[22:34:30]   nq 2025-12 corrected     observed_silence, 0 record(s), 0 feature(s), 787 s
+[22:34:30]   checkpointed after nq 2025-12 (1774 s; 41694 s total)
+[22:34:30] zc 2025-01: capturing
+[22:38:00]   zc 2025-01 contaminated  finding, 5220 record(s), 29 feature(s), 177 s
+[22:40:56]   zc 2025-01 corrected     observed_silence, 0 record(s), 0 feature(s), 176 s
+[22:40:56]   checkpointed after zc 2025-01 (386 s; 42080 s total)
+[22:40:56] zc 2025-08: capturing
+[22:44:55]   zc 2025-08 contaminated  finding, 3856 record(s), 29 feature(s), 211 s
+[22:48:32]   zc 2025-08 corrected     finding, 1706 record(s), 29 feature(s), 217 s
+[22:48:32]   checkpointed after zc 2025-08 (456 s; 42536 s total)
+[22:48:32] zc 2025-09: capturing
+[22:52:57]   zc 2025-09 contaminated  finding, 4410 record(s), 29 feature(s), 233 s
+[22:57:04]   zc 2025-09 corrected     finding, 1859 record(s), 29 feature(s), 247 s
+[22:57:04]   checkpointed after zc 2025-09 (511 s; 43047 s total)
+[22:57:04] zc 2025-10: capturing
+[23:02:09]   zc 2025-10 contaminated  finding, 4248 record(s), 29 feature(s), 268 s
+[23:06:46]   zc 2025-10 corrected     finding, 1849 record(s), 29 feature(s), 276 s
+[23:06:46]   checkpointed after zc 2025-10 (582 s; 43629 s total)
+[23:06:46] zc 2025-11: capturing
+[23:09:40]   zc 2025-11 contaminated  finding, 4404 record(s), 29 feature(s), 149 s
+[23:12:12]   zc 2025-11 corrected     observed_silence, 0 record(s), 0 feature(s), 152 s
+[23:12:12]   checkpointed after zc 2025-11 (327 s; 43956 s total)
+[23:12:12] zc 2025-12: capturing
+[23:15:25]   zc 2025-12 contaminated  finding, 4310 record(s), 29 feature(s), 163 s
+[23:18:11]   zc 2025-12 corrected     observed_silence, 0 record(s), 0 feature(s), 166 s
+[23:18:11]   checkpointed after zc 2025-12 (359 s; 44314 s total)
+[23:18:11] zs 2025-01: capturing
+[23:22:14]   zs 2025-01 contaminated  finding, 5138 record(s), 29 feature(s), 203 s
+[23:25:37]   zs 2025-01 corrected     observed_silence, 0 record(s), 0 feature(s), 203 s
+[23:25:37]   checkpointed after zs 2025-01 (446 s; 44760 s total)
+[23:25:37] zs 2025-08: capturing
+[23:30:00]   zs 2025-08 contaminated  finding, 4867 record(s), 29 feature(s), 225 s
+[23:33:47]   zs 2025-08 corrected     finding, 1584 record(s), 29 feature(s), 227 s
+[23:33:47]   checkpointed after zs 2025-08 (490 s; 45250 s total)
+[23:33:47] zs 2025-09: capturing
+[23:37:40]   zs 2025-09 contaminated  finding, 4455 record(s), 29 feature(s), 199 s
+[23:41:02]   zs 2025-09 corrected     finding, 1060 record(s), 29 feature(s), 202 s
+[23:41:02]   checkpointed after zs 2025-09 (435 s; 45685 s total)
+[23:41:02] zs 2025-10: capturing
+[23:45:47]   zs 2025-10 contaminated  finding, 4548 record(s), 29 feature(s), 244 s
+[23:49:54]   zs 2025-10 corrected     finding, 1189 record(s), 29 feature(s), 247 s
+[23:49:54]   checkpointed after zs 2025-10 (532 s; 46218 s total)
+[23:49:54] zs 2025-11: capturing
+[23:53:31]   zs 2025-11 contaminated  finding, 5129 record(s), 29 feature(s), 179 s
+[23:56:31]   zs 2025-11 corrected     observed_silence, 0 record(s), 0 feature(s), 180 s
+[23:56:31]   checkpointed after zs 2025-11 (397 s; 46615 s total)
+[23:56:31] zs 2025-12: capturing
+[23:59:45]   zs 2025-12 contaminated  finding, 4116 record(s), 29 feature(s), 166 s
+[00:02:33]   zs 2025-12 corrected     observed_silence, 0 record(s), 0 feature(s), 168 s
+[00:02:33]   checkpointed after zs 2025-12 (362 s; 46976 s total)
+[00:02:33] done -> C:\Users\ttbea\OneDrive\Desktop\MBO_2025(4mon)+2026-01\evidence\phase1\criteria_12_population.json (46976 s)
