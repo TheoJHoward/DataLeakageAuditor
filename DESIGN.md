@@ -544,3 +544,110 @@ Guarantees implemented here are locked in `PREREG.md` §8: the report never says
 **Hazard specific to this project.** Models trained on the same corpus share its blind spots, and the modal error in that corpus *is* the rolling window that silently includes the current bar. A panel of models will unanimously approve a leaking window. The controls in §4 and the availability model exist because model consensus cannot catch the error this tool is built to catch.
 
 **Review lessons are recorded in `HISTORY.md` as the `H-L` review-lesson series** (open range; the list grows as lessons are appended, and this cross-reference does not enumerate the current tail so appending a lesson cannot desynchronize this document). They are process history, not implementation guidance, and an implementer needs none of them to build the tool correctly.
+
+---
+
+## 10. Phase 1 as built
+
+**Placed at the end, and the reason is mechanical rather than editorial.** A
+registered line-pinned citation resolves to line 546 of this file. Inserting
+these sections where they belong by topic — beside §2.11 — moved that line and
+raised the citation check. Re-keying the pin to an anchor would be the better
+long-term fix, and it is not made here: it would be an instrument change caused
+by the content that triggered it, which is the shape this project has ruled
+against twice. The content moved instead.
+
+### 10.1 The detector-row allocation
+
+`PREREG.md` §4's table enumerates eleven detector rows and closes itself. The
+acceptance criteria adjudicate runtime findings, and the runtime rows are **L2a
+and L3.1** — the label probe and the availability probe.
+
+**The column probe of this package is none of the eleven.** It needs no
+availability model, no decision time and no split, and its cohorts are columns of
+a frame rather than sets of output rows sharing a decision time. It is a
+**dependency instrument**: it answers which source columns the output reads,
+which is a different question from whether the output reads a cell that had not
+yet arrived. The same holds for the value-read and null-read detectors built
+alongside it.
+
+That allocation is a design fact with a cost attached, and the cost is recorded
+in `DEVIATIONS.md` rather than smoothed over: field-level work went into the
+column probe for eight rounds before anyone asked which row of the closed table
+it occupies. The rule that generalises is cheap — where a specification
+enumerates a closed scope, the first question about any artifact is which row of
+it that artifact occupies.
+
+### 10.2 The availability probe
+
+§2.6's method, built. Corrupt a **sparse** set of wall-clock seconds in the
+declared aggregate frames, rebuild once, and read **which rows moved**.
+
+- A row stamped inside a corrupted second moving means the build read that
+  second's aggregate at a decision instant inside it, which the declared model
+  marks unavailable.
+- Only rows in the following second moving means it read the aggregate one second
+  later, when the model says it had arrived.
+
+**The discrimination is in the row indices, not in the fact of movement**, and
+that is what lets a single rebuild separate a pair. The stride keeps corrupted
+seconds far apart: adjacent corruption makes "own second" and "previous second"
+indistinguishable, which is the entire separation.
+
+The corrected side's next-second movements are the liveness evidence. A silence
+without them would be the silence of a probe that never reached the build.
+
+### 10.3 The identity control
+
+`PREREG.md` §6.11's second control, built for this probe: write the selected
+cells back unchanged through the same assignment path the perturbation uses,
+rebuild, compare.
+
+**It is not a tautology.** An identity write over a deterministic builder is
+trivially silent in its *values*, and what it tests is the mechanism that writes
+them back — where an assignment preserving every value can still promote a
+column's dtype or replace its index. A silent promotion there moves the tier
+every real finding is reported at, and no other instrument touches that path: the
+determinism guard compares two clean builds and assigns nothing.
+
+A second limb checks the perturbed frames themselves for value, dtype and index
+equality. **That limb is beyond the registered criterion**, is reported apart from
+it, and is never quoted as satisfying it. It exists because a builder can absorb
+an input-side change, so the registered limb can pass while the write-back has
+altered the frame the promotion status is computed from — which is exactly what
+one of its synthetic positives demonstrates.
+
+### 10.4 The dependency map, and what its aggressor-side result is
+
+The map surfaced a constantly-false predicate in the fixture's builder: the
+buy-side test compares against values the source does not carry, so the column it
+feeds is identically zero.
+
+**That is independent agreement with a declared property, not a discovery.** The
+availability declaration recorded the same degeneracy, with the same mechanism
+and the same consequence, on 13 August 2026 — before the instrument that found it
+existed. The honest description of the tool's contribution is that a second and
+independent route reached the same conclusion. Describing it as a finding the
+declaration missed would invert the order in which the two happened.
+
+### 10.5 The measured comparison, as distinct from §2.11
+
+**§2.11 compares capabilities; it is not a measurement.** A measured comparison
+exists and is a different object: six external comparators and this tool against
+the same acceptance-fixture pair, **one instrument-month**, both sides, recorded
+under `evidence/killgate/w2b/`.
+
+**Its shape is four-and-two, and the two matter.** Four comparators were
+interpretable and none separated the pair — one fires identically on both sides,
+one finds nothing to count and cannot pose its grouping check, one passes both,
+and one scores the corrected side *higher*, which points the wrong way. Two rows
+are covered with exclusion and are never a pass: one detects by varying pipeline
+order and a built table has no pipeline to reorder; the other is applicable in
+principle and could not run because of a dependency pin **in this project's own
+harness, which is a limit of the harness rather than of the tool.**
+
+**Each of the six was first shown to fire on a documented positive and stay
+silent on a documented negative, through the same adapter path the measurement
+used.** Before both limbs held, a tool's result was recorded as uninterpretable
+rather than as a null — because a tool never seen to fire through its adapter has
+not been tested, it has been mishandled.

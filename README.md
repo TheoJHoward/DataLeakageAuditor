@@ -29,20 +29,30 @@ class C amendment route it registers for itself, and has been changed once —
   reference reducer for the runtime measurement semantics, its exhaustive trace
   suite, and a staged registration checker.
 
+- **`NEXT_REGISTRATION_REQUIREMENTS.md`** — what a next pre-registration needs to
+  declare that this one did not, each item naming the round and the disclosure
+  that produced it. The durable artifact of the acceptance work.
+
 ## The tool
 
 **`leakaudit`** — Phase 1, under development, and installable now. Install
 instructions, verified by execution rather than by reading, are in
 [`INSTALL.md`](INSTALL.md).
 
-**Status, stated plainly so that nothing here is mistaken for a result.** **No
-acceptance gate has been executed.** No detector output in this repository is
-published as a satisfied gate, none of it carries acceptance weight, and the
-question of which detectors the acceptance criteria are even evaluated on was
-settled — from the specification's own text — later than the code that assumed
-an answer to it. What exists is an installable package, a runtime probe suite,
-and a test suite that runs. That is not a validated instrument and is not
-offered as one.
+**Status, stated plainly so that nothing here is mistaken for a result.** Three
+of the four registered acceptance criteria have been executed and satisfied
+across the declared population; **the gate as a whole is not satisfied and is
+nowhere described as such**, because its fourth criterion cannot be run under
+this registration. Details, with every qualification beside the figure it
+qualifies, are under **The result** below. What exists is an installable package,
+a runtime probe with a measured comparison behind it, and a documented account of
+the one criterion that cannot be scored. That is not a finished instrument and is
+not offered as one.
+
+> *An earlier version of this sentence read "No acceptance gate has been
+> executed", which was true when written and false once three criteria had been
+> scored. It is corrected rather than deleted, for the same reason as the two
+> below.*
 
 > *Two sentences stood here until 31 August 2026 and were false by the time
 > anyone read them: "This repository is a pre-registration, not a tool" and "No
@@ -59,6 +69,71 @@ the licence check is incomplete. Under the author's routing of 25 August 2026,
 **§9.2 and the licence check are Phase 1 entry obligations, not open blockers on
 this tag** — H-34's verdict is the sign-off the tag requires, and neither
 outstanding item is waived.
+
+## The result
+
+**Three of the four registered acceptance criteria are satisfied across the
+entire declared scored population** — 48 instrument-months, both sides, 96 sides
+in all. **The fourth cannot be run, and why is documented rather than glossed.**
+
+Every qualification below sits beside the number it qualifies, not in a footnote.
+A reader who takes only the headline should not take away something false.
+
+| criterion | result | the qualification that travels with it |
+|---|---|---|
+| **1** — every ground-truth leaking source column receives at least one primary runtime finding | **528 satisfied, 198 unsupported, 0 missed** of 726 unit contexts | The 726 holds under a **named side-relative reading**: criterion 1 scored per side and instrument-month wherever the declared map carries a strict count, giving 66 contexts. Under a characterized-side-only reading the same output reads **48 contexts and 528 unit contexts**. The 198 are three columns the built frame does not carry; they stay in the denominator and are never shown as passes. |
+| **2** — no manifest-clean source column receives any finding of any tier on the characterized side | **48 clean, 144 unsupported, 0 violated** | **Its reachable population is one column per instrument-month.** Of four manifest-clean columns, one is present in the built frame, so the criterion is **thin, not vacuous** — it can fail, and did not. |
+| **3** — findings scored against the declared ground-truth map | **not scored** | **Unrunnable as registered.** The map's cells are keyed one way and the scorer's unit another, with no declared object crossing between them. Not amended, and not computed in any other form. |
+| **4** — silent under the identity control on both sides | **satisfied — 96 of 96 sides silent** | Its compatibility branch was **never reached in production**; what stands behind that branch is a synthetic case, not this run. |
+
+Both scored runs were made under expectations committed and pushed **before** the
+run began, and their outputs are committed unmodified. The ordering is checkable
+from the history rather than asserted.
+
+### What is not claimed
+
+- **Not a gate pass.** Three criteria of four, with the fourth documented as
+  unrunnable, is not a satisfied gate and is nowhere described as one.
+- **Not coverage.** Twenty-one further columns moved under the probe that appear
+  in neither declared list. They enter no criterion, correct detection and false
+  positive are indistinguishable for them, and they are named and left
+  unclassified.
+- **Not a discovery.** The probe's constantly-false buy-side predicate result is
+  **independent agreement** with a property the availability declaration recorded
+  on 13 August 2026, before the instrument that found it existed.
+
+## The measured comparison
+
+**Six external comparators and this tool against the same acceptance-fixture
+pair** — one instrument-month, both sides, 338,159 rows by 87 columns each, with
+hashes recorded. **One instrument-month is the scope, and it is not the 48 above.**
+
+| tool | characterized side | corrected side | separates? |
+|---|---|---|---|
+| leakage-buster 1.0.2 | finding — 2 HIGH | finding — **the same** 2 HIGH | **no** — constant firing is not detection |
+| leakfence 0.5.0 | duplicates 0; grouping unposable | duplicates 0; grouping unposable | **no** — nothing to count, and the fixture has no subject grouping |
+| temporalcv 2.3.0 | −2.04, pass | −2.07, pass | **no** — a Ridge fit beats persistence on neither side |
+| deepchecks 0.19.1 | max PPS 0.023 | max PPS **0.046** | **no** — the corrected side scores *higher*, the opposite of a leakage signal |
+| Leakly 0.1.2 | unsupported | unsupported | — covered with exclusion; it varies pipeline order and a built table has none |
+| leak-detect 0.0.1 | could not run | could not run | — covered with exclusion; **a dependency pin in this project's own harness, which is our limit and not the tool's** |
+| **this tool — the availability probe** | **finding** — 250 of 300 cohorts | **observed silence** — 0 of 300 | **yes** |
+
+**The shape is four-and-two, and the two matter.** Four comparators were
+interpretable and none separated the pair; two are covered with exclusion and are
+**never a pass**, one of them for a reason that belongs to this harness.
+
+**Each of the six was first shown to fire on a documented positive and stay
+silent on a documented negative, through the same adapter path the measurement
+used.** Until both limbs held, a tool's result was recorded as **uninterpretable
+rather than as a null** — a tool never seen to fire through its adapter has not
+been tested, it has been mishandled. An earlier comparison round is superseded
+for exactly that reason, and it recorded in its own headline that its defects all
+leaned toward the conclusion this project wanted.
+
+**Why the corrected side's silence is evidence rather than absence:** on that
+side 250 cohorts moved in the *following* second. The corruption landed and the
+aggregate was read — one second later, when the declared model says it had
+arrived. A silent side without that number would be worthless.
 
 ## Install
 

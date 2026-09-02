@@ -1332,3 +1332,83 @@ exercised, and conflating them is how an untested path acquires a reputation.
 
 **Why it stands:** the same discipline that separates a control run from a probe
 that did not happen. Both look alike in a log and mean opposite things.
+
+## D-V30A-40 — criterion 3 is not scored, not amended, and not computed in any other form
+
+**The author has ruled: do not amend.** Criterion 3 stands documented as
+unrunnable as registered. It is not scored, no amendment is opened, and it is not
+computed as exploratory analysis beside the gate.
+
+**The ground, recorded so the ruling is legible later.** The criterion scores
+findings against a declared map whose cells are keyed one way and a scorer keyed
+another, with no declared object crossing between them — the finding recorded
+above at `D-V30A-28`, established by reading the declaration's own supply list,
+the map's declared cell key, the per-column enumerations, and the labels and
+metric definitions of the reference reducer.
+
+**Closing that gap needs a correspondence, and nobody in this project can author
+one blind.** Three of the four criteria have by now been scored across the entire
+declared population, and the record carries 243,211 findings from one run and a
+silent identity control from another. A correspondence written after that is
+written by someone who has seen how the detector behaves, which is the objection
+the registration's own withholding clause exists to prevent — and the objection
+sharpens as the evidence base grows rather than weakening.
+
+**What is preferred to a number, and why.** A gate honestly not satisfied, with
+its reason documented and its analysis in the open, is a better artifact than a
+gate satisfied on a key authored after the fact. The criterion's absence is
+recorded in the acceptance results as data rather than as prose, and no report
+here describes the gate as passed.
+
+**No labels producer is built for this registration, now or later.** The
+requirement moves to the next registration, where it can be declared before any
+detector runs, and it is written down as such in a standalone requirements
+document rather than left in this ledger to be found.
+
+**Expected:** a criterion that cannot be scored honestly to be reported as not
+scored.
+
+**Why it stands:** the alternative was available, cheap and defensible-sounding,
+and it was declined. That is the whole of the record here.
+
+---
+
+## D-V30A-41 — the cross-tool claim is narrowed to what its own artifact supports
+
+**True.** The headline this project is entitled to is narrower than a flat
+statement that no external tool separates the acceptance pair, and the narrowing
+is measured rather than modest.
+
+**What the final comparison establishes**, for one instrument-month — `zc`
+`2025-01`, both sides, 338,159 rows by 87 columns each, hashes recorded:
+
+- **Four comparators were interpretable and none separated the pair.** One fires
+  identically on both sides, and constant firing is not detection. One finds no
+  duplicated rows on either side and cannot pose its grouping check at all. One
+  passes both sides, its gate in its own regime with nothing to flag. One scores
+  the corrected side *higher* than the characterized side, which is the opposite
+  of a leakage signal.
+- **Two rows are covered with exclusion and are never a pass.** One detects by
+  varying pipeline order and a built table has no pipeline to reorder. The other
+  is applicable in principle and could not run because of a dependency pin **in
+  this project's own harness — a limit of the harness, not of the tool**.
+- **Every one of the six was first shown to fire on a documented positive and
+  stay silent on a documented negative, through the same adapter path the
+  measurement used.** Until both limbs held, a tool's result was recorded as
+  uninterpretable rather than as a null.
+
+**Why the narrowing is not optional.** The earlier comparison round recorded, in
+its own headline, that five of its defects all leaned the same way — toward the
+conclusion this project wants — and it forbade citing any form of its five-tool
+claim until the controls landed. They landed, and what they support is the
+four-and-two shape above for one instrument-month, not a general statement about
+external tooling.
+
+**Expected:** a comparative claim to be stated at the strength its artifact
+supports, with the scope of that artifact attached.
+
+**Why it stands:** this is the strongest claim the project has, which is exactly
+why it is the one most worth checking before it is repeated. The claim as
+proposed was flattering, and the artifact behind it carries a prohibition on the
+looser form of it. Recording the narrower form is what lets the claim be made at
+all.
