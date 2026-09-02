@@ -44,7 +44,7 @@ from __future__ import annotations
 
 import hashlib
 from dataclasses import dataclass, field
-from typing import Callable, Mapping, Sequence
+from typing import Callable, Iterable, Mapping, Sequence
 
 import numpy as np
 import pandas as pd
@@ -125,6 +125,99 @@ class ProbeAResult:
         if not self.cohorts:
             return "could_not_run(no_cohorts)"
         return "finding" if self.findings else "observed_silence"
+
+
+@dataclass
+class EligibleCohorts:
+    """Which selected seconds an aggregate frame actually carries a row in."""
+    eligible: tuple = ()
+    ineligible: tuple = ()
+    per_frame: dict = field(default_factory=dict)
+    notes: list = field(default_factory=list)
+
+
+def align_key(key: pd.Series, decision: pd.Series, *, frame: str,
+              column: str) -> pd.Series:
+    """Put an aggregate frame's key into the decision stamps' frame of reference.
+
+    THIS IS THE FUNCTION THAT USED TO LIVE IN A TEST HARNESS, AND IT IS A
+    SILENT-WRONG-ANSWER GENERATOR IF IT IS WRONG. `trades.ts_event` is
+    tz-aware UTC while the snapshot stamps are naive. `isin` between aware and
+    naive NEVER matches, so the trades frame was silently never corrupted -- an
+    all-False mask that looks exactly like "no cells were unavailable". It was
+    found by measurement, not by review, and the harness copy of it dropped
+    every key to naive UTC unconditionally, which is a DIFFERENT rule from the
+    one the probe uses and produces an empty intersection whenever the decision
+    stamps are the aware ones.
+
+    So the two cases are separated and neither is silent:
+
+      * both sides carry a timezone, or neither does -> convert into the
+        decision stamps' zone and return;
+      * exactly one side carries one -> the two are not comparable and no
+        conversion is derivable from the data. RAISE. Returning an empty match
+        here is the failure this function exists to prevent.
+    """
+    k_tz = getattr(key.dt, "tz", None)
+    d_tz = getattr(decision.dt, "tz", None)
+    if (k_tz is None) != (d_tz is None):
+        raise ProbeError(
+            "frame %r column %r is %s and the decision stamps are %s. A "
+            "comparison between them matches NOTHING, which is indistinguishable "
+            "from a frame that carries no row in any selected second -- and that "
+            "silence would be reported as though the pipeline had been probed. "
+            "Localise one of them and say which is right; this cannot be "
+            "guessed from the data."
+            % (frame, column,
+               "timezone-aware (%s)" % k_tz if k_tz is not None else "naive",
+               "timezone-aware (%s)" % d_tz if d_tz is not None else "naive"))
+    if k_tz is not None and str(k_tz) != str(d_tz):
+        return key.dt.tz_convert(d_tz)
+    return key
+
+
+def eligible_cohorts(frames: Mapping[str, pd.DataFrame],
+                     model: AvailabilityModel,
+                     picked: Iterable,
+                     decision: pd.Series) -> EligibleCohorts:
+    """The selected seconds some declared aggregate frame carries a row in.
+
+    A second with no aggregate row has nothing to corrupt, so nothing can be
+    scheduled there. Emitting a record for it anyway would resolve to a missing
+    schedule slot with no recorded failure -- reporting a dead process where the
+    truth is an empty probe surface.
+
+    Extracted from two test harnesses at R201 P2. It was duplicated there and
+    reimplemented in a third form inside the identity control, which is three
+    chances for the timezone rule above to be got wrong in three places.
+    """
+    picked = list(picked)
+    pset = set(picked)
+    have: set = set()
+    res = EligibleCohorts()
+    for fname, keycol in model.aggregate_frames.items():
+        f = frames.get(fname)
+        if f is None:
+            res.notes.append(
+                "aggregate frame %r is declared and absent from the supplied "
+                "frames; it contributed no eligible second" % fname)
+            res.per_frame[fname] = 0
+            continue
+        if keycol not in f.columns:
+            raise ProbeError("frame %r has no key column %r" % (fname, keycol))
+        key = align_key(pd.to_datetime(f[keycol]), decision,
+                        frame=fname, column=keycol)
+        matched = set(key.dt.floor("s").unique()) & pset
+        res.per_frame[fname] = len(matched)
+        have |= matched
+    res.eligible = tuple(s for s in picked if s in have)
+    res.ineligible = tuple(s for s in picked if s not in have)
+    if picked and not res.eligible:
+        res.notes.append(
+            "NO selected second is carried by any declared aggregate frame. "
+            "Every cohort is ineligible, so this run would probe nothing and "
+            "its silence would be `none` rather than `observed_silence`.")
+    return res
 
 
 def _fingerprint(df: pd.DataFrame) -> np.ndarray:

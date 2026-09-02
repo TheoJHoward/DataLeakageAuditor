@@ -212,8 +212,8 @@ def audit(
     *,
     case_id: str = "user",
     run_context: RunContext = RunContext.USER,
-) -> CombinationTrace:
-    """Audit one pipeline and return its preserving-combination trace.
+) -> "AuditResult":
+    """Audit one pipeline and return a view over what the probe emitted.
 
     TWO ARGUMENTS IS THE ENTRY POINT. `audit(raw, build)` runs Layer 1 -- the
     column dependency probe -- and needs no availability model, no decision
@@ -225,13 +225,21 @@ def audit(
     without declared elements there is nothing to violate. It does not mean no
     result: the dependency map is Layer 1's product.
 
-    Returns the PRESERVING trace. `leakaudit.probe.probe_columns` returns both
-    combinations plus the dependency map, and is what a harness calls.
+    Returns an `AuditResult` -- a VIEW over both combination traces, with
+    `.findings`, `.outcome` and `.explain()`. It stores nothing derived, so it
+    cannot disagree with the traces it wraps, and `.traces` reaches them
+    unchanged. `leakaudit.probe.probe_columns` returns the raw result including
+    the dependency map, and is what a harness calls.
+
+    *(It returned the bare preserving trace until R201, which left a caller to
+    import `protocol.runtime_reference` and walk records to learn what had been
+    found -- four of the seventeen steps a stranger needed.)*
 
     THE OTHER FIVE PARAMETERS RAISE. They are kept in the signature so that the
     refusal names them; removing them would turn a wrong answer into a
     TypeError that says nothing about why.
     """
+    from .findings import AuditResult
     from .probe import probe_columns
 
     _refuse_unwired(availability=availability, decision_time=decision_time,
@@ -250,4 +258,4 @@ def audit(
         decision_time=decision_time, availability=availability,
         train_idx=train_idx, test_idx=test_idx, meta=meta,
     )
-    return result.preserving
+    return AuditResult(result.traces, source=result)

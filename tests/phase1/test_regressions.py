@@ -39,9 +39,9 @@ def test_bare_frame_reaches_build_as_a_frame_not_as_a_dict():
         seen["type"] = type(d).__name__
         return _reads_a(d)
 
-    trace = audit(_frame(), spy)
+    result = audit(_frame(), spy)
     assert seen["type"] == "DataFrame", "build was handed a %s" % seen["type"]
-    state, outcome = resolve_state_pair(trace)
+    state, outcome = resolve_state_pair(result.traces[0])
     assert state.kind is ScheduleStateKind.COMPLETED
     assert outcome is EvidenceOutcome.FINDING
 

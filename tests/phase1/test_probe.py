@@ -71,10 +71,13 @@ def test_non_frame_inputs_are_refused_with_a_reason():
 
 def test_two_argument_entry_point_works():
     """availability=None, decision_time=None -- the one-click surface."""
-    trace = audit(_raw(), _build)
-    state, outcome = resolve_state_pair(trace)
+    result = audit(_raw(), _build)
+    # R201 P1: audit() returns a VIEW now, and `.traces` reaches the traces
+    # unchanged, so the registered reducer still judges the same object.
+    state, outcome = resolve_state_pair(result.traces[0])
     assert state.kind is ScheduleStateKind.COMPLETED
     assert outcome is EvidenceOutcome.FINDING
+    assert result.outcome == EvidenceOutcome.FINDING.value
 
 
 def test_index_misalignment_is_alignment_not_a_crash():

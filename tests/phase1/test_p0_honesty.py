@@ -94,13 +94,12 @@ def test_several_at_once_are_all_named():
 def test_the_two_argument_surface_still_works():
     """The negative control. A refusal that also broke the good path would be a
     worse tool, not a more honest one."""
-    trace = audit(_raw(), _build)
-    features = {r.finding.feature for r in trace.records if r.finding}
-    assert features == {"reads_a"}
+    result = audit(_raw(), _build)
+    assert {f.feature for f in result.findings} == {"reads_a"}
 
 
 def test_explicit_none_is_not_a_refusal():
-    assert audit(_raw(), _build, availability=None, meta=None).records
+    assert audit(_raw(), _build, availability=None, meta=None).findings
 
 
 # ---------------------------------------------------------------------------
@@ -228,3 +227,20 @@ def test_an_unmarked_historical_citation_still_fires(tmp_path):
 def test_an_empty_population_raises_rather_than_passing(tmp_path):
     with pytest.raises(citations.DeadCitation, match="empty population"):
         citations.assert_citations_resolve(tmp_path)
+
+
+def test_every_citation_inside_a_refusal_message_resolves():
+    """R201 §1's condition. The refusals cite module paths, which are exactly
+    what the citation check polices -- so a refusal cannot become the next dead
+    citation. Read from the dict at RUN TIME rather than from the source, so a
+    message composed rather than written literally is still covered."""
+    from leakaudit.contract import _UNWIRED
+    assert _UNWIRED, "a check over an empty registry proves nothing"
+    seen = 0
+    for name, message in _UNWIRED.items():
+        for m in citations._CITATION.finditer(message):
+            seen += 1
+            assert citations._resolves(m.group(1)), (
+                "the refusal for %r cites `%s`, which does not resolve"
+                % (name, m.group(1)))
+    assert seen >= 2, "no refusal cited anything; this check would pass vacuously"

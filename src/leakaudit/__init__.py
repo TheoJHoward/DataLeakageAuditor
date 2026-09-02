@@ -33,16 +33,29 @@ without the check reading it as a live claim; every exempt line is reported.)*
 from .contract import (
     Alignment, ContractError, audit, normalise_raw, resolve_decision_time)
 from .determinism import DeterminismResult, check_frame, frames_equal
+from .findings import AuditResult, Finding
 from .probe import DETECTOR_ID, ProbeResult, cohort_id_for, probe_columns
 from .detectors import (
     NULL_DETECTOR_ID, VALUE_DETECTOR_ID, probe_nulls, probe_values)
+from .availability import (
+    AvailabilityModel, EligibleCohorts, ProbeAResult, ProbeError,
+    align_key, eligible_cohorts, run_probe_a)
+from .availability_trace import traces_for
+from .identity_control import IdentityControlResult, run_identity_control
 from . import fixture_adapter
 
 __all__ = [
-    "audit", "normalise_raw", "ContractError",
-    "resolve_decision_time", "Alignment",
+    # the entry point and what it returns
+    "audit", "AuditResult", "Finding",
+    "normalise_raw", "ContractError", "resolve_decision_time", "Alignment",
     "check_frame", "frames_equal", "DeterminismResult",
+    # Layer 1 -- the column dependency probe. No availability model needed.
     "probe_columns", "ProbeResult", "cohort_id_for", "DETECTOR_ID",
     "probe_values", "probe_nulls", "VALUE_DETECTOR_ID", "NULL_DETECTOR_ID",
+    # THE AVAILABILITY PROBE. Exported at R201 P2: it is the only instrument
+    # that separated the acceptance pair, and it was not in this list.
+    "AvailabilityModel", "run_probe_a", "ProbeAResult", "ProbeError",
+    "eligible_cohorts", "EligibleCohorts", "align_key", "traces_for",
+    "run_identity_control", "IdentityControlResult",
     "fixture_adapter",
 ]

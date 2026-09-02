@@ -70,6 +70,12 @@ classifiers = [
 [project.optional-dependencies]
 dev = ["pytest>=8"]
 
+# ONE COMMAND. R201 P3. The definition of done says a stranger runs one command
+# and gets findings without reading the source; until now there was no command
+# at all, and every path to a result went through writing Python.
+[project.scripts]
+leakaudit = "leakaudit.cli:main"
+
 # TWO PACKAGES, AND `protocol` IS SHIPPED FROM WHERE IT STANDS.
 #
 # `leakaudit.contract` imports `protocol.runtime_reference`, so a distribution
