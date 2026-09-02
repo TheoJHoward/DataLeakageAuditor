@@ -22,6 +22,8 @@ from __future__ import annotations
 import argparse
 import importlib
 import sys
+
+import pandas as pd
 from pathlib import Path
 
 EXIT_OK_SILENT = 0          # probes ran, nothing moved
@@ -96,9 +98,52 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--frame", action="append", metavar="name=path",
                      help="an input frame; repeat for several. .parquet, .csv "
                           "or .json")
+    run.add_argument("--model", metavar="path.json",
+                     help="an availability model FILE. With it, the run is the "
+                          "availability probe: which cells the output read "
+                          "before the model says they had arrived. Without it, "
+                          "the run is the column dependency probe, which needs "
+                          "no model. `leakaudit schema` prints the format")
+    run.add_argument("--stride", type=int, default=97, metavar="N",
+                     help="probe every Nth second (availability runs only). "
+                          "Corrupted seconds are kept far apart so a moved row "
+                          "is attributable to exactly one of them")
+    run.add_argument("--max-cohorts", type=int, default=400, metavar="N",
+                     help="cap on probed seconds (availability runs only)")
     run.add_argument("--quiet", action="store_true",
                      help="print the findings only, without the explanation")
+
+    sub.add_parser("schema", help="print the availability model file format")
     return ap
+
+
+def _run_availability(frames, build, model_path, stride, max_cohorts):
+    """The availability probe, end to end, from a declared model file."""
+    from .availability import eligible_cohorts, run_probe_a
+    from .availability_trace import traces_for
+    from .findings import AuditResult
+    from .model_file import ModelFileError, load_model
+
+    try:
+        model = load_model(model_path)
+    except ModelFileError as e:
+        raise SystemExit(str(e))
+
+    result = run_probe_a(frames, build, model, side="user",
+                         cohort_stride=stride, max_cohorts=max_cohorts)
+    # Eligibility is derived, not assumed: a second no aggregate frame carries a
+    # row in has nothing to corrupt, and scheduling it would report a dead
+    # process where the truth is an empty probe surface.
+    built = build(dict(frames))
+    picked = sorted(
+        pd.to_datetime(built[model.decision_column]).dt.floor("s").unique()
+    )[::stride][:max_cohorts]
+    elig = eligible_cohorts(frames, model, picked,
+                            pd.to_datetime(built[model.decision_column]))
+    traces = traces_for(result, elig.eligible, case_id="user")
+    for note in elig.notes:
+        result.notes.append(note)
+    return AuditResult(traces, source=result)
 
 
 def main(argv=None) -> int:
@@ -106,6 +151,10 @@ def main(argv=None) -> int:
 
     ap = build_parser()
     args = ap.parse_args(sys.argv[1:] if argv is None else argv)
+    if args.command == "schema":
+        from .model_file import SCHEMA_DOC
+        print(SCHEMA_DOC)
+        return 0
     if args.command != "run":
         ap.print_help()
         return EXIT_USAGE
@@ -115,7 +164,11 @@ def main(argv=None) -> int:
     # never going to happen.
     build = _load_callable(args.pipeline)
     frames = _parse_frames(args.frame)
-    result = audit(frames, build)
+    if args.model:
+        result = _run_availability(frames, build, args.model,
+                                   args.stride, args.max_cohorts)
+    else:
+        result = audit(frames, build)
 
     if args.quiet:
         for f in result.findings:

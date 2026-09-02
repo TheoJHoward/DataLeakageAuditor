@@ -39,6 +39,11 @@ class C amendment route it registers for itself, and has been changed once —
 instructions, verified by execution rather than by reading, are in
 [`INSTALL.md`](INSTALL.md).
 
+**The API is unstable before 1.0.** The version is `0.1.0.dev0`, and shapes may
+change without deprecation — `audit()`'s return type already has. This is written
+here rather than discovered: the first external user should learn the API is
+unstable by reading it, not by being broken by it.
+
 **Status, stated plainly so that nothing here is mistaken for a result.** Three
 of the four registered acceptance criteria have been executed and satisfied
 across the declared population; **the gate as a whole is not satisfied and is

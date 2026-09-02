@@ -1,5 +1,32 @@
 {
-  "STALE — READ THIS FIRST": "Recorded 2026-08-26. TWELVE commits have touched src/leakaudit/fixture_adapter.py, probe.py, availability.py or availability_trace.py since that date, including bbc7298 which moved F2_DIR inside the repository and dc407c7 which changed what affected_output_cohort carries. THIS RECORD ATTESTS A RUN OF CODE THAT NO LONGER EXISTS. It is kept and superseded rather than rewritten, per this project's rule that a dated record is never edited toward a later truth. A re-run is due after the Phase 2 entry-point work settles, and its result will be recorded beside this one with both dates rather than in place of it. Added 2026-09-02: the record carried its date only inside last_run, where a reader could take the file as current.",
+  "STALE — READ THIS FIRST": "Recorded 2026-08-26. TWELVE commits have touched src/leakaudit/fixture_adapter.py, probe.py, availability.py or availability_trace.py since that date, including bbc7298 which moved F2_DIR inside the repository and dc407c7 which changed what affected_output_cohort carries. THIS RECORD ATTESTS A RUN OF CODE THAT NO LONGER EXISTS. It is kept and superseded rather than rewritten, per this project's rule that a dated record is never edited toward a later truth. A re-run is due after the Phase 2 entry-point work settles, and its result will be recorded beside this one with both dates rather than in place of it. Added 2026-09-02: the record carried its date only inside last_run, where a reader could take the file as current. SUPERSEDED 2026-09-02 — the re-run is at `run_2026_09_02` below. This banner and the 2026-08-26 result under `last_run` both stay: the older one is what was true then, and deleting it would remove the evidence that the code moved underneath it.",
+  "run_2026_09_02": {
+    "date": "2026-09-02",
+    "supersedes": "last_run, dated 2026-08-26",
+    "commit": "8320a20",
+    "fixture": "zc 2025-01, corrected side — the same instrument-month and side as the superseded run",
+    "command": "LEAKAUDIT_FIXTURE=1 python -m pytest tests/phase1/test_fixture_adapter.py -v",
+    "result": "10 passed in 223.19s. Every opt-in test, including both known positives and the mutation-isolation case.",
+    "tests": [
+      "test_raw_excludes_the_captured_but_unread_frame",
+      "test_the_exclusion_is_visible_not_silent",
+      "test_a_none_frame_is_not_offered_to_the_probe",
+      "test_side_must_be_one_of_the_two",
+      "test_adapter_output_equals_the_fixture_exactly",
+      "test_known_positive_perturbing_the_served_snapshots_FIRES",
+      "test_known_positive_perturbing_trades_reaches_the_output",
+      "test_serving_does_not_let_one_run_alter_the_next",
+      "test_every_opt_in_test_has_a_recorded_result",
+      "test_the_skip_reason_names_what_is_missing"
+    ],
+    "what_changed_between_the_two_runs": {
+      "the_code": "Twelve commits touched the adapter, the column probe, the availability probe or its trace emitter. Two changed behaviour the adapter is downstream of: bbc7298 moved F2_DIR from a hard-coded session scratchpad path to a location inside the repository, and dc407c7 changed what affected_output_cohort carries. The 2026-08-26 run therefore exercised a different adapter from this one.",
+      "the_test_count": "Four opt-in tests at the time of the older record; ten now. The six added are the non-fixture-dependent cases of the same file, which the older record did not enumerate.",
+      "the_result": "Unchanged in substance: every test that existed then passes now, and the two known positives still fire. Nothing in the older record is contradicted by this one.",
+      "the_measured_shapes": "Not re-measured by this run, which is a pytest run and prints no shapes. The adapter output was 338159 x 87 and the raw frames snap 1262191 x 24, trades 397457 x 17, magg 464199 x 6 in the older record; the committed population run at evidence/phase1/criteria_12_population.json records the same three raw shapes and the same 87 columns for this instrument-month, measured 2026-08-31. They are cited from there rather than asserted from here."
+    },
+    "why_this_re_run_happened": "The older record's inputs had moved underneath it. A recorded result whose inputs changed is stale whatever it says, and this project supersedes rather than rewrites: both dates stand, and the difference between them is stated rather than left for a reader to reconstruct."
+  },
   "what_this_is": "The last recorded run of the fixture-dependent tests in tests/phase1/. They are skipped by default because the acceptance fixture's inputs are hundreds of megabytes on one machine and each build takes ~25s. 'They were run' is not checkable from a clone, so this file records when, on what, and with what result.",
   "how_to_run_them_yourself": {
     "1_inputs": "The fixture's producing code must be present at the path named by leakaudit.fixture_adapter.F2_DIR, and its inputs (zc snapshots, trades and MBO parquets for the month) must be readable by that code.",
