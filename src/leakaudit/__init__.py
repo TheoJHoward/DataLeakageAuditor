@@ -21,12 +21,17 @@ every module here and fails if any imports the name, binds the harness module,
 constructs it, or reaches it by attribute. It is exercised against one violating
 copy per route, with a negative control, in `tests/phase1/test_sc7c.py`.
 
-*(Until R173 this cited `leakaudit.trace.assert_key_free`, which did not exist.
+*(Until R173 this cited `leakaudit.trace.assert_key_free`, which did not exist.  [dead-citation-recorded]
 The invariant held -- verified across nine modules -- but nothing checked it, and
 a cited checker that is absent is a false statement in the code carrying the
-claim.)*
+claim. That fix addressed the INSTANCE. `tests/phase1/citations.py` addresses the
+class, and the first thing it did was find two more live ones -- in
+`contract.py` and `corruption.py` -- neither of which review had caught. The
+marker on the line above is what keeps a quoted historical citation on the record
+without the check reading it as a live claim; every exempt line is reported.)*
 """
-from .contract import ContractError, audit, normalise_raw
+from .contract import (
+    Alignment, ContractError, audit, normalise_raw, resolve_decision_time)
 from .determinism import DeterminismResult, check_frame, frames_equal
 from .probe import DETECTOR_ID, ProbeResult, cohort_id_for, probe_columns
 from .detectors import (
@@ -35,6 +40,7 @@ from . import fixture_adapter
 
 __all__ = [
     "audit", "normalise_raw", "ContractError",
+    "resolve_decision_time", "Alignment",
     "check_frame", "frames_equal", "DeterminismResult",
     "probe_columns", "ProbeResult", "cohort_id_for", "DETECTOR_ID",
     "probe_values", "probe_nulls", "VALUE_DETECTOR_ID", "NULL_DETECTOR_ID",

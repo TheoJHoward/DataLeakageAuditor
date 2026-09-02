@@ -31,8 +31,20 @@ unchanged with two positional arguments.
 WHAT THE GATE MAY PASS IS NARROWER THAN THIS SIGNATURE. PREREG.md SC-7(a): at
 gate time a detector receives exactly two things, for one side at a time -- the
 pipeline for that side, and the availability declaration's declared elements.
-This signature is the library surface; `leakaudit.trace.gate_inputs_only`
-enforces the narrower gate surface at the call site that matters.
+This signature is the library surface. **Nothing in this package enforces the
+narrower gate surface**; the harnesses that produced the Phase 1 results hold the
+map on their own side and hand the tool only the pipeline and the model, and
+`tests/phase1/sc7c.py` states executably that the package never reaches the label
+type. *(This paragraph previously cited a function that enforced the narrower
+surface at a call site. It was never written. The citation was found by the
+citation check of `tests/phase1/citations.py`, not by review.)*
+
+FIVE PARAMETERS ARE REFUSED RATHER THAN IGNORED. `availability`,
+`decision_time`, `train_idx`, `test_idx` and `meta` were accepted and silently
+discarded: a caller who supplied an availability model got a Layer 1 dependency
+map and no availability verdict, with no error. For a tool whose product is a
+silence, that is the worst available failure -- the caller acts on a silence that
+was never a probe. Each now raises, naming what consumes it and what does not.
 """
 from __future__ import annotations
 
@@ -145,6 +157,50 @@ def resolve_decision_time(built: pd.DataFrame, decision_time) -> tuple[pd.Series
     return series, Alignment(True)
 
 
+# WHAT EACH REFUSED PARAMETER WOULD NEED, so the refusal is a direction and not
+# just a wall. Each names the thing that does consume it, where one exists.
+_UNWIRED = {
+    "availability": (
+        "the column probe consumes no availability model -- it needs none, which "
+        "is why `audit(raw, build)` is the two-argument surface. The probe that "
+        "DOES consume one is `leakaudit.availability.run_probe_a`, which takes an "
+        "`AvailabilityModel` and is not yet reachable through this entry point"),
+    "decision_time": (
+        "the column probe has no decision times: its cohorts are columns, not "
+        "sets of output rows sharing a decision instant. "
+        "`leakaudit.availability.AvailabilityModel.decision_column` is where a "
+        "decision time is declared, and `resolve_decision_time` in this module "
+        "validates one against a built frame"),
+    "train_idx": (
+        "no split-based detector is built in this package. Nothing consumes a "
+        "training index"),
+    "test_idx": (
+        "no split-based detector is built in this package. Nothing consumes a "
+        "test index"),
+    "meta": "nothing in this package reads it",
+}
+
+
+def _refuse_unwired(**supplied) -> None:
+    """Raise on any parameter that is accepted and not consumed.
+
+    A PARAMETER THAT IS NEITHER USED NOR REFUSED IS THE WORST OF THE THREE
+    OPTIONS. Used is best; refused tells the caller the truth; ignored tells them
+    a falsehood in the one direction that matters, because what they carry away
+    is a silence they believe was a probe.
+    """
+    given = [k for k, v in supplied.items() if v is not None]
+    if not given:
+        return
+    lines = ["audit() does not consume %s." % ", ".join(sorted(given))]
+    for k in sorted(given):
+        lines.append("  %s: %s." % (k, _UNWIRED[k]))
+    lines.append(
+        "Refused rather than ignored: a discarded argument returns a result "
+        "that looks clean and is not.")
+    raise NotImplementedError("\n".join(lines))
+
+
 def audit(
     raw,
     build: Callable[[Any], pd.DataFrame],
@@ -171,9 +227,15 @@ def audit(
 
     Returns the PRESERVING trace. `leakaudit.probe.probe_columns` returns both
     combinations plus the dependency map, and is what a harness calls.
+
+    THE OTHER FIVE PARAMETERS RAISE. They are kept in the signature so that the
+    refusal names them; removing them would turn a wrong answer into a
+    TypeError that says nothing about why.
     """
     from .probe import probe_columns
 
+    _refuse_unwired(availability=availability, decision_time=decision_time,
+                    train_idx=train_idx, test_idx=test_idx, meta=meta)
     frames = normalise_raw(raw)
     check_build(build)
     # `bare` is carried, not re-derived: a caller who passed one frame gets that

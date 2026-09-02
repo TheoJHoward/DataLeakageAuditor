@@ -104,6 +104,16 @@ class ProbeAResult:
     # The probe has the baseline in hand; carrying its columns out is free and
     # removes the possibility of the two disagreeing.
     base_columns: tuple = ()
+    # FRAMES THE CALLER SUPPLIED AND THE MODEL DOES NOT DESCRIBE. R200 P0.
+    #
+    # Such a frame is not perturbed, so nothing it feeds can move, so every
+    # column downstream of it is silent -- and that silence is `none`, a probe
+    # that did not happen, NOT `observed_silence`, a probe that happened and
+    # found nothing. The registration fixes that distinction and the package
+    # was collapsing it: an undeclared frame produced no note at all, so a
+    # caller who forgot to declare one received a silence about their own
+    # configuration and could not tell it from a silence about their pipeline.
+    unmodelled_frames: tuple = ()
 
     @property
     def findings(self):
@@ -184,6 +194,20 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
     picked_set = set(picked)
     corrupt = {k: v.copy() for k, v in raw.items()}
     rng = np.random.default_rng(seed)
+
+    res.unmodelled_frames = tuple(
+        sorted(k for k in raw if k not in model.aggregate_frames))
+    if res.unmodelled_frames:
+        res.notes.append(
+            "NOT PROBED: %s. %s in `raw` and absent from the model's aggregate "
+            "frames, so nothing in %s was perturbed and any silence downstream "
+            "of %s is `none` -- a probe that did not happen -- rather than "
+            "`observed_silence`. Declare %s, or read that silence as the absence "
+            "it is."
+            % ((", ".join(res.unmodelled_frames),)
+               + (("They are", "them", "them", "them")
+                  if len(res.unmodelled_frames) > 1
+                  else ("It is", "it", "it", "it"))))
 
     touched = 0
     for fname, keycol in model.aggregate_frames.items():

@@ -176,6 +176,16 @@ def run_identity_control(
     picked_set = set(picked)
 
     control = {k: v.copy() for k, v in raw.items()}
+    unmodelled = sorted(k for k in raw if k not in model.aggregate_frames)
+    if unmodelled:
+        # R200 P0, the same silence the probe was collapsing: a frame the model
+        # does not describe is never written to, so the control says nothing
+        # about it. That is `none`, not `observed_silence`.
+        res.notes.append(
+            "NOT WRITTEN: %s. Absent from the model's aggregate frames, so the "
+            "write-back path was never exercised on %s and this control says "
+            "nothing about it."
+            % (", ".join(unmodelled), "them" if len(unmodelled) > 1 else "it"))
     touched = 0
     for fname, keycol in model.aggregate_frames.items():
         if fname not in control or control[fname] is None:

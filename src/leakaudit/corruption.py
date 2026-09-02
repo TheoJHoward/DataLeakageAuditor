@@ -21,9 +21,15 @@ PREREG.md §6.6 line 1053:
     cohort, regardless of any finding. No terminal short-circuit applies at any
     level.
 
-So ordering holds everywhere; stopping early is licensed only in a user-facing
-run (`RunContext.USER`), where it yields `short_circuited` and leaves every
-metric denominator. See `leakaudit.trace.may_short_circuit`.
+So ordering holds everywhere. The registration licenses stopping early only in a
+user-facing run, where it yields `short_circuited` and leaves every metric
+denominator; the rule is PREREG.md §6.6 and §7.7 and is not restated here.
+
+**NO SHORT-CIRCUIT IS IMPLEMENTED IN THIS PACKAGE.** Every trace it emits carries
+`terminal_decision_occurred=False`, in all four emitters. *(This sentence
+previously cited a helper that decides the policy. No such helper was ever
+written, and the citation was found by the citation check rather than by review
+-- which is the case that check was built for.)*
 
 Comparison is exact throughout (PREREG.md §6.9: bitwise equality, not a
 tolerance).
