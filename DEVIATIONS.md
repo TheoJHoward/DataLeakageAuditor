@@ -1239,3 +1239,96 @@ term is confounded with every other. The model interpolated its own fitting poin
 to within four per cent while missing the population by a factor of 2.35. Fitting
 at one point and extrapolating is not a weak measurement; it is a measurement
 that reports its own weakness in the wrong place.
+
+## D-V30A-38 — criterion 4 is scored across the declared population, and a stated prediction inside its pre-commitment was falsified
+
+**True, and in the order it happened.** A pre-commitment was committed and pushed
+before the run, carrying the invocation, the alignment-family count with its
+ground, the audit population with the ground it was chosen on, the cost model,
+the disposition of a shape change, and four falsifiable expectations. Then the
+harness ran once, exit 0, empty stderr, 37,598 seconds. Then its output was
+committed exactly as written.
+
+**The result.** Forty-eight instrument-months, ninety-six sides, **every one
+silent under the identity control. Criterion 4 is satisfied in all forty-eight**,
+with zero moved columns and zero sides in a not-run state.
+
+**The limb beyond the registered text, reported apart and never as the
+criterion:** input invariance holds on all ninety-six sides — every checked
+column unchanged in value, dtype and index, sixteen columns per side where the
+order-book aggregate is present and eleven where it is not.
+
+**The declared sentinel route produced no false positives, trivially, because
+nothing moved** — and that is how it is reported rather than as a pass. The
+signature is present on every one of the ninety-six sides: the wrapped column and
+its five rolling descendants on eighty-eight, five of the six on eight. Present
+identically on both sides in every instrument-month, which is what makes it a
+sentinel and what the declaration declared ex ante. The enumeration was read from
+the declaration and was not extended.
+
+**THE FALSIFIED PREDICTION, AND IT IS MINE.** The pre-commitment predicted **one
+distinct dtype signature** across the population for the frames the write-back
+touches, on the argument that the control's subject is then the same object
+everywhere. **Measured: two.** Forty-two instrument-months in one group; six in
+another, and the six are the instrument whose order-book file does not exist, so
+its signature carries an absence where the others carry a column list.
+
+**The cause is the part worth recording.** That absence was established two
+rounds earlier, named in the population pre-commitment, and reported in the round
+that ran the population. The prediction was then written about a signature that
+includes that frame, asserting uniformity anyway. **It contradicted a fact
+already in this register.**
+
+**What it costs, stated without minimising it.** Nothing in the result. Something
+in the argument: the comparability ground for running everything stands on its
+own and never rested on uniformity, but the claim that the larger reading "adds
+no information" was offered as a reason the choice was cheap to make, and that
+claim is false for six of forty-eight. The control's subject is **not** the same
+object everywhere — on that instrument the write-back touches one frame rather
+than two — and the six ran silent, which is information the smaller reading would
+not have produced.
+
+**The cost model, assessed term by term from the measured output rather than
+against its total:** control phase predicted 33,863 s and measured 32,195 s
+(0.95x); capture expected 5,170 s and measured 5,403 s (1.05x); total estimated
+39,032 s and measured 37,598 s (0.96x). Per instrument-month the control ratio
+runs 0.51x to 1.19x, median 0.88x, none reaching twice its prediction. The
+forty-eight-point model is accurate on both terms and on their sum.
+
+**Expected:** a prediction stated so it can fail, and reported as failed when it
+does.
+
+**Why it stands:** the prediction was made falsifiable at the planning layer's
+insistence, precisely because it was the kind of claim that gets believed instead
+of tested. It was tested and it was wrong. **This is not a gate result and is not
+published as one:** one criterion of four, with criterion 3 blocked on the
+declared-units gap recorded earlier in this register.
+
+---
+
+## D-V30A-39 — the compatibility branch of the identity control was never exercised by the run, and the synthetic case is what stands behind it
+
+**True.** The pre-commitment settled, from the registration, that a shape or
+column-set change under the identity control is a compatibility failure rather
+than a finding or a control artifact — the third control owns shape and index and
+says every comparison past a shape change is meaningless including one that looks
+clean, the head of that section says control failures are never recorded as
+findings, and the reason precedence puts compatibility ahead of control artifact.
+It is not a pass: no not-run state is displayed in a way mistakable for one, so
+the criterion has no answer on such a side.
+
+**No side reached it.** All ninety-six were silent, so the branch is unexercised
+by the run.
+
+**It is recorded here so that the branch is not later described as tested by this
+run.** What stands behind it is a synthetic case built for the purpose, in which
+a write-back appends a row and the builder drops one, and the control returns the
+compatibility state with its comparison recorded as void rather than clean. The
+distinction matters: a branch demonstrated on a synthetic and never met in
+production is in a different evidentiary position from one the production run
+exercised, and conflating them is how an untested path acquires a reputation.
+
+**Expected:** a branch's evidence to be named as what it is.
+
+**Why it stands:** the same discipline that separates a control run from a probe
+that did not happen. Both look alike in a log and mean opposite things.

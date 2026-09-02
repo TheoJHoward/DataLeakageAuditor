@@ -337,6 +337,52 @@ motivated to look.
 
 ---
 
+## TB-11 — *(1 September 2026)* Claims that could be unfavourable were verified; claims that flatter the process were accepted
+
+This is the entry a reader of this project should find first.
+
+Every claim in this register that could have embarrassed the record was checked
+hard. The instrument change that reverted. The provenance of the column-level
+dispositions, verified from the commit history rather than from their own
+heading. The label gap, found by refusing eight rounds of field-level repairs.
+The detector allocation, which cost eight rounds of work aimed at an instrument
+the acceptance section does not score. Each of those was adversarial toward the
+record, and each was pursued to a citation.
+
+**The calibration claim could only make the record look good, and it was the one
+claim nobody examined.** The round that ran the full population said the cost
+overrun had landed in the term the forecast declined to predict — that the
+forecast "bounded its own reliability and was right about where it was
+unreliable". The opposite was true, and the file measuring it was committed in
+the same act as the sentence.
+
+**The asymmetry is the finding.** It is the most dangerous one available, because
+it is the direction that silently inflates a record and because nothing in a
+review process is motivated to catch it. An adversarial reviewer attacks claims
+that would embarrass the author; nobody is assigned to attack the ones that
+please everyone.
+
+**What follows from it, in practice rather than as a resolution:**
+
+1. A claim about the method's own performance is a claim, carrying the same
+   evidence standard as any other — and in practice a higher one, because no
+   participant is motivated to falsify it.
+2. A favourable self-assessment is checked against the artifact **before** it is
+   repeated, not praised first and audited later.
+3. A prediction is assessed **term by term from the measured output**, never
+   against its total. The total that started this was 1.63x, and the story told
+   about it was wrong in both directions at once — the predicted term overran by
+   2.35x while the unpredicted one came in 2.1x under.
+
+The round that followed put both of its own favourable claims to the test. The
+cost model was stated as a per-instrument-month prediction with a halt, and came
+in at 0.95x, 1.05x and 0.96x on its three terms. The schema-uniformity claim was
+stated so it could fail, and it failed — against a fact already recorded in this
+register two rounds earlier. **Two claims, both flattering, both tested, one
+wrong.** That ratio is the argument for the rule.
+
+---
+
 ## Open items — recorded, not acted on
 
 - **Whether SC-7(c) belongs in the registration gate.** A pytest-only check is
