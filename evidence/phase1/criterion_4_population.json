@@ -1,0 +1,8569 @@
+{
+ "alignment_families": {
+  "F": 1,
+  "coverage_fact": "the promoted-family path is UNEXERCISED by this detector. Recorded, not repaired.",
+  "ground": "the perturbation is dtype-preserving by construction, so no promoting strategy resolves; F is one original frame plus one per promoted family",
+  "promoted_families": 0
+ },
+ "audit_population_ground": "the registration does not settle how many audits criterion 4 is evaluated over; the full population is run for COMPARABILITY with criteria 1 and 2, not for cost and not for safety",
+ "control_id": "probe_a_identity",
+ "cost_model": {
+  "basis": "48 measured points -- each instrument-month's own probe cost in the committed population run",
+  "control_to_probe_ratio": 0.81,
+  "halt_multiple": 10.0
+ },
+ "criteria_1_2": "SCORED SEPARATELY at criteria_12_population.json",
+ "criteria_scored": [
+  4
+ ],
+ "criterion_3": "BLOCKED_LABEL_GAP_SEE_DEVIATIONS_D_V30A_28",
+ "detector": "L3.1 -- the availability probe, under section 6.11 control 2",
+ "elapsed_seconds": 37598.0,
+ "frame_signature_groups": {
+  "groups": {
+   "{\"magg\": [[\"ts_floor\", \"...": [
+    "cl 2025-01",
+    "cl 2025-08",
+    "cl 2025-09",
+    "cl 2025-10",
+    "cl 2025-11",
+    "cl 2025-12",
+    "es 2025-01",
+    "es 2025-08",
+    "es 2025-09",
+    "es 2025-10",
+    "es 2025-11",
+    "es 2025-12",
+    "gc 2025-01",
+    "gc 2025-08",
+    "gc 2025-09",
+    "gc 2025-10",
+    "gc 2025-11",
+    "gc 2025-12",
+    "he 2025-01",
+    "he 2025-08",
+    "he 2025-09",
+    "he 2025-10",
+    "he 2025-11",
+    "he 2025-12",
+    "le 2025-01",
+    "le 2025-08",
+    "le 2025-09",
+    "le 2025-10",
+    "le 2025-11",
+    "le 2025-12",
+    "zc 2025-01",
+    "zc 2025-08",
+    "zc 2025-09",
+    "zc 2025-10",
+    "zc 2025-11",
+    "zc 2025-12",
+    "zs 2025-01",
+    "zs 2025-08",
+    "zs 2025-09",
+    "zs 2025-10",
+    "zs 2025-11",
+    "zs 2025-12"
+   ],
+   "{\"magg\": null, \"trades\":...": [
+    "nq 2025-01",
+    "nq 2025-08",
+    "nq 2025-09",
+    "nq 2025-10",
+    "nq 2025-11",
+    "nq 2025-12"
+   ]
+  },
+  "n_distinct": 2
+ },
+ "gate_result": "NOT_A_GATE_RESULT_ONE_CRITERION",
+ "instrument_months": [
+  {
+   "capture_seconds": 148.2,
+   "control_seconds": 852.0,
+   "frame_signature": {
+    "magg": [
+     [
+      "ts_floor",
+      "datetime64[ns]"
+     ],
+     [
+      "bid_adds",
+      "int64"
+     ],
+     [
+      "ask_adds",
+      "int64"
+     ],
+     [
+      "bid_cancels",
+      "int64"
+     ],
+     [
+      "ask_cancels",
+      "int64"
+     ],
+     [
+      "total_events",
+      "int64"
+     ]
+    ],
+    "trades": [
+     [
+      "ts_recv",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "ts_event",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "rtype",
+      "uint8"
+     ],
+     [
+      "publisher_id",
+      "uint16"
+     ],
+     [
+      "instrument_id",
+      "uint32"
+     ],
+     [
+      "action",
+      "str"
+     ],
+     [
+      "side",
+      "str"
+     ],
+     [
+      "price",
+      "float64"
+     ],
+     [
+      "size",
+      "uint32"
+     ],
+     [
+      "channel_id",
+      "uint8"
+     ],
+     [
+      "order_id",
+      "uint64"
+     ],
+     [
+      "flags",
+      "uint8"
+     ],
+     [
+      "ts_in_delta",
+      "int32"
+     ],
+     [
+      "sequence",
+      "uint32"
+     ],
+     [
+      "symbol",
+      "str"
+     ],
+     [
+      "aggressor_side",
+      "str"
+     ],
+     [
+      "is_buy_aggressor",
+      "bool"
+     ]
+    ]
+   },
+   "instrument": "cl",
+   "month": "2025-01",
+   "predicted_control_seconds": 853.3,
+   "run_status": "ok",
+   "scoring": {
+    "criterion_4": "satisfied",
+    "ground": "the output did not move under the identity write, on either side",
+    "sentinel_columns_contaminated": {
+     "net_delta": 113043,
+     "net_delta_10s": 31832,
+     "net_delta_1s": 113043,
+     "net_delta_30s": 6613,
+     "net_delta_5s": 61557,
+     "net_delta_60s": 1011
+    },
+    "sentinel_columns_corrected": {
+     "net_delta": 113043,
+     "net_delta_10s": 31832,
+     "net_delta_1s": 113043,
+     "net_delta_30s": 6613,
+     "net_delta_5s": 61557,
+     "net_delta_60s": 1011
+    },
+    "sentinel_false_positives": []
+   },
+   "seconds": 1000.2,
+   "sides": {
+    "contaminated": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 751 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 427.9,
+     "sentinel_columns": {
+      "net_delta": 113043,
+      "net_delta_10s": 31832,
+      "net_delta_1s": 113043,
+      "net_delta_30s": 6613,
+      "net_delta_5s": 61557,
+      "net_delta_60s": 1011
+     },
+     "verdict": "silent"
+    },
+    "corrected": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 751 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 424.0,
+     "sentinel_columns": {
+      "net_delta": 113043,
+      "net_delta_10s": 31832,
+      "net_delta_1s": 113043,
+      "net_delta_30s": 6613,
+      "net_delta_5s": 61557,
+      "net_delta_60s": 1011
+     },
+     "verdict": "silent"
+    }
+   }
+  },
+  {
+   "capture_seconds": 106.5,
+   "control_seconds": 605.5,
+   "frame_signature": {
+    "magg": [
+     [
+      "ts_floor",
+      "datetime64[ns]"
+     ],
+     [
+      "bid_adds",
+      "int64"
+     ],
+     [
+      "ask_adds",
+      "int64"
+     ],
+     [
+      "bid_cancels",
+      "int64"
+     ],
+     [
+      "ask_cancels",
+      "int64"
+     ],
+     [
+      "total_events",
+      "int64"
+     ]
+    ],
+    "trades": [
+     [
+      "ts_recv",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "ts_event",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "rtype",
+      "uint8"
+     ],
+     [
+      "publisher_id",
+      "uint16"
+     ],
+     [
+      "instrument_id",
+      "uint32"
+     ],
+     [
+      "action",
+      "str"
+     ],
+     [
+      "side",
+      "str"
+     ],
+     [
+      "price",
+      "float64"
+     ],
+     [
+      "size",
+      "uint32"
+     ],
+     [
+      "channel_id",
+      "uint8"
+     ],
+     [
+      "order_id",
+      "uint64"
+     ],
+     [
+      "flags",
+      "uint8"
+     ],
+     [
+      "ts_in_delta",
+      "int32"
+     ],
+     [
+      "sequence",
+      "uint32"
+     ],
+     [
+      "symbol",
+      "str"
+     ],
+     [
+      "aggressor_side",
+      "str"
+     ],
+     [
+      "is_buy_aggressor",
+      "bool"
+     ]
+    ]
+   },
+   "instrument": "cl",
+   "month": "2025-08",
+   "predicted_control_seconds": 656.9,
+   "run_status": "ok",
+   "scoring": {
+    "criterion_4": "satisfied",
+    "ground": "the output did not move under the identity write, on either side",
+    "sentinel_columns_contaminated": {
+     "net_delta": 81949,
+     "net_delta_10s": 43697,
+     "net_delta_1s": 81949,
+     "net_delta_30s": 11166,
+     "net_delta_5s": 72159,
+     "net_delta_60s": 1980
+    },
+    "sentinel_columns_corrected": {
+     "net_delta": 81949,
+     "net_delta_10s": 43697,
+     "net_delta_1s": 81949,
+     "net_delta_30s": 11166,
+     "net_delta_5s": 72159,
+     "net_delta_60s": 1980
+    },
+    "sentinel_false_positives": []
+   },
+   "seconds": 712.0,
+   "sides": {
+    "contaminated": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 698 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 304.9,
+     "sentinel_columns": {
+      "net_delta": 81949,
+      "net_delta_10s": 43697,
+      "net_delta_1s": 81949,
+      "net_delta_30s": 11166,
+      "net_delta_5s": 72159,
+      "net_delta_60s": 1980
+     },
+     "verdict": "silent"
+    },
+    "corrected": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 698 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 300.6,
+     "sentinel_columns": {
+      "net_delta": 81949,
+      "net_delta_10s": 43697,
+      "net_delta_1s": 81949,
+      "net_delta_30s": 11166,
+      "net_delta_5s": 72159,
+      "net_delta_60s": 1980
+     },
+     "verdict": "silent"
+    }
+   }
+  },
+  {
+   "capture_seconds": 100.4,
+   "control_seconds": 615.3,
+   "frame_signature": {
+    "magg": [
+     [
+      "ts_floor",
+      "datetime64[ns]"
+     ],
+     [
+      "bid_adds",
+      "int64"
+     ],
+     [
+      "ask_adds",
+      "int64"
+     ],
+     [
+      "bid_cancels",
+      "int64"
+     ],
+     [
+      "ask_cancels",
+      "int64"
+     ],
+     [
+      "total_events",
+      "int64"
+     ]
+    ],
+    "trades": [
+     [
+      "ts_recv",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "ts_event",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "rtype",
+      "uint8"
+     ],
+     [
+      "publisher_id",
+      "uint16"
+     ],
+     [
+      "instrument_id",
+      "uint32"
+     ],
+     [
+      "action",
+      "str"
+     ],
+     [
+      "side",
+      "str"
+     ],
+     [
+      "price",
+      "float64"
+     ],
+     [
+      "size",
+      "uint32"
+     ],
+     [
+      "channel_id",
+      "uint8"
+     ],
+     [
+      "order_id",
+      "uint64"
+     ],
+     [
+      "flags",
+      "uint8"
+     ],
+     [
+      "ts_in_delta",
+      "int32"
+     ],
+     [
+      "sequence",
+      "uint32"
+     ],
+     [
+      "symbol",
+      "str"
+     ],
+     [
+      "aggressor_side",
+      "str"
+     ],
+     [
+      "is_buy_aggressor",
+      "bool"
+     ]
+    ]
+   },
+   "instrument": "cl",
+   "month": "2025-09",
+   "predicted_control_seconds": 656.9,
+   "run_status": "ok",
+   "scoring": {
+    "criterion_4": "satisfied",
+    "ground": "the output did not move under the identity write, on either side",
+    "sentinel_columns_contaminated": {
+     "net_delta": 79909,
+     "net_delta_10s": 53283,
+     "net_delta_1s": 79909,
+     "net_delta_30s": 18882,
+     "net_delta_5s": 78310,
+     "net_delta_60s": 6152
+    },
+    "sentinel_columns_corrected": {
+     "net_delta": 79909,
+     "net_delta_10s": 53283,
+     "net_delta_1s": 79909,
+     "net_delta_30s": 18882,
+     "net_delta_5s": 78310,
+     "net_delta_60s": 6152
+    },
+    "sentinel_false_positives": []
+   },
+   "seconds": 715.6,
+   "sides": {
+    "contaminated": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 726 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 304.7,
+     "sentinel_columns": {
+      "net_delta": 79909,
+      "net_delta_10s": 53283,
+      "net_delta_1s": 79909,
+      "net_delta_30s": 18882,
+      "net_delta_5s": 78310,
+      "net_delta_60s": 6152
+     },
+     "verdict": "silent"
+    },
+    "corrected": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 726 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 310.6,
+     "sentinel_columns": {
+      "net_delta": 79909,
+      "net_delta_10s": 53283,
+      "net_delta_1s": 79909,
+      "net_delta_30s": 18882,
+      "net_delta_5s": 78310,
+      "net_delta_60s": 6152
+     },
+     "verdict": "silent"
+    }
+   }
+  },
+  {
+   "capture_seconds": 126.9,
+   "control_seconds": 794.5,
+   "frame_signature": {
+    "magg": [
+     [
+      "ts_floor",
+      "datetime64[ns]"
+     ],
+     [
+      "bid_adds",
+      "int64"
+     ],
+     [
+      "ask_adds",
+      "int64"
+     ],
+     [
+      "bid_cancels",
+      "int64"
+     ],
+     [
+      "ask_cancels",
+      "int64"
+     ],
+     [
+      "total_events",
+      "int64"
+     ]
+    ],
+    "trades": [
+     [
+      "ts_recv",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "ts_event",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "rtype",
+      "uint8"
+     ],
+     [
+      "publisher_id",
+      "uint16"
+     ],
+     [
+      "instrument_id",
+      "uint32"
+     ],
+     [
+      "action",
+      "str"
+     ],
+     [
+      "side",
+      "str"
+     ],
+     [
+      "price",
+      "float64"
+     ],
+     [
+      "size",
+      "uint32"
+     ],
+     [
+      "channel_id",
+      "uint8"
+     ],
+     [
+      "order_id",
+      "uint64"
+     ],
+     [
+      "flags",
+      "uint8"
+     ],
+     [
+      "ts_in_delta",
+      "int32"
+     ],
+     [
+      "sequence",
+      "uint32"
+     ],
+     [
+      "symbol",
+      "str"
+     ],
+     [
+      "aggressor_side",
+      "str"
+     ],
+     [
+      "is_buy_aggressor",
+      "bool"
+     ]
+    ]
+   },
+   "instrument": "cl",
+   "month": "2025-10",
+   "predicted_control_seconds": 799.9,
+   "run_status": "ok",
+   "scoring": {
+    "criterion_4": "satisfied",
+    "ground": "the output did not move under the identity write, on either side",
+    "sentinel_columns_contaminated": {
+     "net_delta": 96268,
+     "net_delta_10s": 42539,
+     "net_delta_1s": 96268,
+     "net_delta_30s": 10591,
+     "net_delta_5s": 72223,
+     "net_delta_60s": 1645
+    },
+    "sentinel_columns_corrected": {
+     "net_delta": 96268,
+     "net_delta_10s": 42539,
+     "net_delta_1s": 96268,
+     "net_delta_30s": 10591,
+     "net_delta_5s": 72223,
+     "net_delta_60s": 1645
+    },
+    "sentinel_false_positives": []
+   },
+   "seconds": 921.4,
+   "sides": {
+    "contaminated": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 678 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 395.1,
+     "sentinel_columns": {
+      "net_delta": 96268,
+      "net_delta_10s": 42539,
+      "net_delta_1s": 96268,
+      "net_delta_30s": 10591,
+      "net_delta_5s": 72223,
+      "net_delta_60s": 1645
+     },
+     "verdict": "silent"
+    },
+    "corrected": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 678 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 399.4,
+     "sentinel_columns": {
+      "net_delta": 96268,
+      "net_delta_10s": 42539,
+      "net_delta_1s": 96268,
+      "net_delta_30s": 10591,
+      "net_delta_5s": 72223,
+      "net_delta_60s": 1645
+     },
+     "verdict": "silent"
+    }
+   }
+  },
+  {
+   "capture_seconds": 109.2,
+   "control_seconds": 622.8,
+   "frame_signature": {
+    "magg": [
+     [
+      "ts_floor",
+      "datetime64[ns]"
+     ],
+     [
+      "bid_adds",
+      "int64"
+     ],
+     [
+      "ask_adds",
+      "int64"
+     ],
+     [
+      "bid_cancels",
+      "int64"
+     ],
+     [
+      "ask_cancels",
+      "int64"
+     ],
+     [
+      "total_events",
+      "int64"
+     ]
+    ],
+    "trades": [
+     [
+      "ts_recv",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "ts_event",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "rtype",
+      "uint8"
+     ],
+     [
+      "publisher_id",
+      "uint16"
+     ],
+     [
+      "instrument_id",
+      "uint32"
+     ],
+     [
+      "action",
+      "str"
+     ],
+     [
+      "side",
+      "str"
+     ],
+     [
+      "price",
+      "float64"
+     ],
+     [
+      "size",
+      "uint32"
+     ],
+     [
+      "channel_id",
+      "uint8"
+     ],
+     [
+      "order_id",
+      "uint64"
+     ],
+     [
+      "flags",
+      "uint8"
+     ],
+     [
+      "ts_in_delta",
+      "int32"
+     ],
+     [
+      "sequence",
+      "uint32"
+     ],
+     [
+      "symbol",
+      "str"
+     ],
+     [
+      "aggressor_side",
+      "str"
+     ],
+     [
+      "is_buy_aggressor",
+      "bool"
+     ]
+    ]
+   },
+   "instrument": "cl",
+   "month": "2025-11",
+   "predicted_control_seconds": 665.3,
+   "run_status": "ok",
+   "scoring": {
+    "criterion_4": "satisfied",
+    "ground": "the output did not move under the identity write, on either side",
+    "sentinel_columns_contaminated": {
+     "net_delta": 88405,
+     "net_delta_10s": 47946,
+     "net_delta_1s": 88405,
+     "net_delta_30s": 14248,
+     "net_delta_5s": 77044,
+     "net_delta_60s": 4284
+    },
+    "sentinel_columns_corrected": {
+     "net_delta": 88405,
+     "net_delta_10s": 47946,
+     "net_delta_1s": 88405,
+     "net_delta_30s": 14248,
+     "net_delta_5s": 77044,
+     "net_delta_60s": 4284
+    },
+    "sentinel_false_positives": []
+   },
+   "seconds": 732.0,
+   "sides": {
+    "contaminated": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 695 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 310.7,
+     "sentinel_columns": {
+      "net_delta": 88405,
+      "net_delta_10s": 47946,
+      "net_delta_1s": 88405,
+      "net_delta_30s": 14248,
+      "net_delta_5s": 77044,
+      "net_delta_60s": 4284
+     },
+     "verdict": "silent"
+    },
+    "corrected": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 695 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 312.1,
+     "sentinel_columns": {
+      "net_delta": 88405,
+      "net_delta_10s": 47946,
+      "net_delta_1s": 88405,
+      "net_delta_30s": 14248,
+      "net_delta_5s": 77044,
+      "net_delta_60s": 4284
+     },
+     "verdict": "silent"
+    }
+   }
+  },
+  {
+   "capture_seconds": 100.9,
+   "control_seconds": 594.6,
+   "frame_signature": {
+    "magg": [
+     [
+      "ts_floor",
+      "datetime64[ns]"
+     ],
+     [
+      "bid_adds",
+      "int64"
+     ],
+     [
+      "ask_adds",
+      "int64"
+     ],
+     [
+      "bid_cancels",
+      "int64"
+     ],
+     [
+      "ask_cancels",
+      "int64"
+     ],
+     [
+      "total_events",
+      "int64"
+     ]
+    ],
+    "trades": [
+     [
+      "ts_recv",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "ts_event",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "rtype",
+      "uint8"
+     ],
+     [
+      "publisher_id",
+      "uint16"
+     ],
+     [
+      "instrument_id",
+      "uint32"
+     ],
+     [
+      "action",
+      "str"
+     ],
+     [
+      "side",
+      "str"
+     ],
+     [
+      "price",
+      "float64"
+     ],
+     [
+      "size",
+      "uint32"
+     ],
+     [
+      "channel_id",
+      "uint8"
+     ],
+     [
+      "order_id",
+      "uint64"
+     ],
+     [
+      "flags",
+      "uint8"
+     ],
+     [
+      "ts_in_delta",
+      "int32"
+     ],
+     [
+      "sequence",
+      "uint32"
+     ],
+     [
+      "symbol",
+      "str"
+     ],
+     [
+      "aggressor_side",
+      "str"
+     ],
+     [
+      "is_buy_aggressor",
+      "bool"
+     ]
+    ]
+   },
+   "instrument": "cl",
+   "month": "2025-12",
+   "predicted_control_seconds": 673.4,
+   "run_status": "ok",
+   "scoring": {
+    "criterion_4": "satisfied",
+    "ground": "the output did not move under the identity write, on either side",
+    "sentinel_columns_contaminated": {
+     "net_delta": 87324,
+     "net_delta_10s": 63522,
+     "net_delta_1s": 87324,
+     "net_delta_30s": 18821,
+     "net_delta_5s": 94523,
+     "net_delta_60s": 5437
+    },
+    "sentinel_columns_corrected": {
+     "net_delta": 87324,
+     "net_delta_10s": 63522,
+     "net_delta_1s": 87324,
+     "net_delta_30s": 18821,
+     "net_delta_5s": 94523,
+     "net_delta_60s": 5437
+    },
+    "sentinel_false_positives": []
+   },
+   "seconds": 695.5,
+   "sides": {
+    "contaminated": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 795 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 296.6,
+     "sentinel_columns": {
+      "net_delta": 87324,
+      "net_delta_10s": 63522,
+      "net_delta_1s": 87324,
+      "net_delta_30s": 18821,
+      "net_delta_5s": 94523,
+      "net_delta_60s": 5437
+     },
+     "verdict": "silent"
+    },
+    "corrected": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 795 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 297.9,
+     "sentinel_columns": {
+      "net_delta": 87324,
+      "net_delta_10s": 63522,
+      "net_delta_1s": 87324,
+      "net_delta_30s": 18821,
+      "net_delta_5s": 94523,
+      "net_delta_60s": 5437
+     },
+     "verdict": "silent"
+    }
+   }
+  },
+  {
+   "capture_seconds": 280.5,
+   "control_seconds": 1418.5,
+   "frame_signature": {
+    "magg": [
+     [
+      "ts_floor",
+      "datetime64[ns]"
+     ],
+     [
+      "bid_adds",
+      "int64"
+     ],
+     [
+      "ask_adds",
+      "int64"
+     ],
+     [
+      "bid_cancels",
+      "int64"
+     ],
+     [
+      "ask_cancels",
+      "int64"
+     ],
+     [
+      "total_events",
+      "int64"
+     ]
+    ],
+    "trades": [
+     [
+      "ts_recv",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "ts_event",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "rtype",
+      "uint8"
+     ],
+     [
+      "publisher_id",
+      "uint16"
+     ],
+     [
+      "instrument_id",
+      "uint32"
+     ],
+     [
+      "action",
+      "str"
+     ],
+     [
+      "side",
+      "str"
+     ],
+     [
+      "price",
+      "float64"
+     ],
+     [
+      "size",
+      "uint32"
+     ],
+     [
+      "channel_id",
+      "uint8"
+     ],
+     [
+      "order_id",
+      "uint64"
+     ],
+     [
+      "flags",
+      "uint8"
+     ],
+     [
+      "ts_in_delta",
+      "int32"
+     ],
+     [
+      "sequence",
+      "uint32"
+     ],
+     [
+      "symbol",
+      "str"
+     ],
+     [
+      "aggressor_side",
+      "str"
+     ],
+     [
+      "is_buy_aggressor",
+      "bool"
+     ]
+    ]
+   },
+   "instrument": "es",
+   "month": "2025-01",
+   "predicted_control_seconds": 1187.9,
+   "run_status": "ok",
+   "scoring": {
+    "criterion_4": "satisfied",
+    "ground": "the output did not move under the identity write, on either side",
+    "sentinel_columns_contaminated": {
+     "net_delta": 50000,
+     "net_delta_10s": 3005,
+     "net_delta_1s": 50000,
+     "net_delta_30s": 58,
+     "net_delta_5s": 8746
+    },
+    "sentinel_columns_corrected": {
+     "net_delta": 50000,
+     "net_delta_10s": 3005,
+     "net_delta_1s": 50000,
+     "net_delta_30s": 58,
+     "net_delta_5s": 8746
+    },
+    "sentinel_false_positives": []
+   },
+   "seconds": 1699.0,
+   "sides": {
+    "contaminated": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 4973 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 723.2,
+     "sentinel_columns": {
+      "net_delta": 50000,
+      "net_delta_10s": 3005,
+      "net_delta_1s": 50000,
+      "net_delta_30s": 58,
+      "net_delta_5s": 8746
+     },
+     "verdict": "silent"
+    },
+    "corrected": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 4973 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 695.3,
+     "sentinel_columns": {
+      "net_delta": 50000,
+      "net_delta_10s": 3005,
+      "net_delta_1s": 50000,
+      "net_delta_30s": 58,
+      "net_delta_5s": 8746
+     },
+     "verdict": "silent"
+    }
+   }
+  },
+  {
+   "capture_seconds": 235.3,
+   "control_seconds": 1218.4,
+   "frame_signature": {
+    "magg": [
+     [
+      "ts_floor",
+      "datetime64[ns]"
+     ],
+     [
+      "bid_adds",
+      "int64"
+     ],
+     [
+      "ask_adds",
+      "int64"
+     ],
+     [
+      "bid_cancels",
+      "int64"
+     ],
+     [
+      "ask_cancels",
+      "int64"
+     ],
+     [
+      "total_events",
+      "int64"
+     ]
+    ],
+    "trades": [
+     [
+      "ts_recv",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "ts_event",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "rtype",
+      "uint8"
+     ],
+     [
+      "publisher_id",
+      "uint16"
+     ],
+     [
+      "instrument_id",
+      "uint32"
+     ],
+     [
+      "action",
+      "str"
+     ],
+     [
+      "side",
+      "str"
+     ],
+     [
+      "price",
+      "float64"
+     ],
+     [
+      "size",
+      "uint32"
+     ],
+     [
+      "channel_id",
+      "uint8"
+     ],
+     [
+      "order_id",
+      "uint64"
+     ],
+     [
+      "flags",
+      "uint8"
+     ],
+     [
+      "ts_in_delta",
+      "int32"
+     ],
+     [
+      "sequence",
+      "uint32"
+     ],
+     [
+      "symbol",
+      "str"
+     ],
+     [
+      "aggressor_side",
+      "str"
+     ],
+     [
+      "is_buy_aggressor",
+      "bool"
+     ]
+    ]
+   },
+   "instrument": "es",
+   "month": "2025-08",
+   "predicted_control_seconds": 1056.6,
+   "run_status": "ok",
+   "scoring": {
+    "criterion_4": "satisfied",
+    "ground": "the output did not move under the identity write, on either side",
+    "sentinel_columns_contaminated": {
+     "net_delta": 38193,
+     "net_delta_10s": 871,
+     "net_delta_1s": 38193,
+     "net_delta_30s": 4,
+     "net_delta_5s": 3622,
+     "net_delta_60s": 1
+    },
+    "sentinel_columns_corrected": {
+     "net_delta": 38193,
+     "net_delta_10s": 871,
+     "net_delta_1s": 38193,
+     "net_delta_30s": 4,
+     "net_delta_5s": 3622,
+     "net_delta_60s": 1
+    },
+    "sentinel_false_positives": []
+   },
+   "seconds": 1453.7,
+   "sides": {
+    "contaminated": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 3905 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 618.4,
+     "sentinel_columns": {
+      "net_delta": 38193,
+      "net_delta_10s": 871,
+      "net_delta_1s": 38193,
+      "net_delta_30s": 4,
+      "net_delta_5s": 3622,
+      "net_delta_60s": 1
+     },
+     "verdict": "silent"
+    },
+    "corrected": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 3905 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 599.9,
+     "sentinel_columns": {
+      "net_delta": 38193,
+      "net_delta_10s": 871,
+      "net_delta_1s": 38193,
+      "net_delta_30s": 4,
+      "net_delta_5s": 3622,
+      "net_delta_60s": 1
+     },
+     "verdict": "silent"
+    }
+   }
+  },
+  {
+   "capture_seconds": 218.5,
+   "control_seconds": 1177.2,
+   "frame_signature": {
+    "magg": [
+     [
+      "ts_floor",
+      "datetime64[ns]"
+     ],
+     [
+      "bid_adds",
+      "int64"
+     ],
+     [
+      "ask_adds",
+      "int64"
+     ],
+     [
+      "bid_cancels",
+      "int64"
+     ],
+     [
+      "ask_cancels",
+      "int64"
+     ],
+     [
+      "total_events",
+      "int64"
+     ]
+    ],
+    "trades": [
+     [
+      "ts_recv",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "ts_event",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "rtype",
+      "uint8"
+     ],
+     [
+      "publisher_id",
+      "uint16"
+     ],
+     [
+      "instrument_id",
+      "uint32"
+     ],
+     [
+      "action",
+      "str"
+     ],
+     [
+      "side",
+      "str"
+     ],
+     [
+      "price",
+      "float64"
+     ],
+     [
+      "size",
+      "uint32"
+     ],
+     [
+      "channel_id",
+      "uint8"
+     ],
+     [
+      "order_id",
+      "uint64"
+     ],
+     [
+      "flags",
+      "uint8"
+     ],
+     [
+      "ts_in_delta",
+      "int32"
+     ],
+     [
+      "sequence",
+      "uint32"
+     ],
+     [
+      "symbol",
+      "str"
+     ],
+     [
+      "aggressor_side",
+      "str"
+     ],
+     [
+      "is_buy_aggressor",
+      "bool"
+     ]
+    ]
+   },
+   "instrument": "es",
+   "month": "2025-09",
+   "predicted_control_seconds": 1032.4,
+   "run_status": "ok",
+   "scoring": {
+    "criterion_4": "satisfied",
+    "ground": "the output did not move under the identity write, on either side",
+    "sentinel_columns_contaminated": {
+     "net_delta": 44173,
+     "net_delta_10s": 2368,
+     "net_delta_1s": 44173,
+     "net_delta_30s": 115,
+     "net_delta_5s": 6376,
+     "net_delta_60s": 2
+    },
+    "sentinel_columns_corrected": {
+     "net_delta": 44173,
+     "net_delta_10s": 2368,
+     "net_delta_1s": 44173,
+     "net_delta_30s": 115,
+     "net_delta_5s": 6376,
+     "net_delta_60s": 2
+    },
+    "sentinel_false_positives": []
+   },
+   "seconds": 1395.7,
+   "sides": {
+    "contaminated": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 3319 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 578.7,
+     "sentinel_columns": {
+      "net_delta": 44173,
+      "net_delta_10s": 2368,
+      "net_delta_1s": 44173,
+      "net_delta_30s": 115,
+      "net_delta_5s": 6376,
+      "net_delta_60s": 2
+     },
+     "verdict": "silent"
+    },
+    "corrected": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 3319 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 598.5,
+     "sentinel_columns": {
+      "net_delta": 44173,
+      "net_delta_10s": 2368,
+      "net_delta_1s": 44173,
+      "net_delta_30s": 115,
+      "net_delta_5s": 6376,
+      "net_delta_60s": 2
+     },
+     "verdict": "silent"
+    }
+   }
+  },
+  {
+   "capture_seconds": 301.1,
+   "control_seconds": 1496.7,
+   "frame_signature": {
+    "magg": [
+     [
+      "ts_floor",
+      "datetime64[ns]"
+     ],
+     [
+      "bid_adds",
+      "int64"
+     ],
+     [
+      "ask_adds",
+      "int64"
+     ],
+     [
+      "bid_cancels",
+      "int64"
+     ],
+     [
+      "ask_cancels",
+      "int64"
+     ],
+     [
+      "total_events",
+      "int64"
+     ]
+    ],
+    "trades": [
+     [
+      "ts_recv",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "ts_event",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "rtype",
+      "uint8"
+     ],
+     [
+      "publisher_id",
+      "uint16"
+     ],
+     [
+      "instrument_id",
+      "uint32"
+     ],
+     [
+      "action",
+      "str"
+     ],
+     [
+      "side",
+      "str"
+     ],
+     [
+      "price",
+      "float64"
+     ],
+     [
+      "size",
+      "uint32"
+     ],
+     [
+      "channel_id",
+      "uint8"
+     ],
+     [
+      "order_id",
+      "uint64"
+     ],
+     [
+      "flags",
+      "uint8"
+     ],
+     [
+      "ts_in_delta",
+      "int32"
+     ],
+     [
+      "sequence",
+      "uint32"
+     ],
+     [
+      "symbol",
+      "str"
+     ],
+     [
+      "aggressor_side",
+      "str"
+     ],
+     [
+      "is_buy_aggressor",
+      "bool"
+     ]
+    ]
+   },
+   "instrument": "es",
+   "month": "2025-10",
+   "predicted_control_seconds": 1410.2,
+   "run_status": "ok",
+   "scoring": {
+    "criterion_4": "satisfied",
+    "ground": "the output did not move under the identity write, on either side",
+    "sentinel_columns_contaminated": {
+     "net_delta": 31060,
+     "net_delta_10s": 507,
+     "net_delta_1s": 31060,
+     "net_delta_30s": 5,
+     "net_delta_5s": 2564
+    },
+    "sentinel_columns_corrected": {
+     "net_delta": 31060,
+     "net_delta_10s": 507,
+     "net_delta_1s": 31060,
+     "net_delta_30s": 5,
+     "net_delta_5s": 2564
+    },
+    "sentinel_false_positives": []
+   },
+   "seconds": 1797.8,
+   "sides": {
+    "contaminated": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 4925 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 752.3,
+     "sentinel_columns": {
+      "net_delta": 31060,
+      "net_delta_10s": 507,
+      "net_delta_1s": 31060,
+      "net_delta_30s": 5,
+      "net_delta_5s": 2564
+     },
+     "verdict": "silent"
+    },
+    "corrected": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 4925 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 744.4,
+     "sentinel_columns": {
+      "net_delta": 31060,
+      "net_delta_10s": 507,
+      "net_delta_1s": 31060,
+      "net_delta_30s": 5,
+      "net_delta_5s": 2564
+     },
+     "verdict": "silent"
+    }
+   }
+  },
+  {
+   "capture_seconds": 293.4,
+   "control_seconds": 1464.6,
+   "frame_signature": {
+    "magg": [
+     [
+      "ts_floor",
+      "datetime64[ns]"
+     ],
+     [
+      "bid_adds",
+      "int64"
+     ],
+     [
+      "ask_adds",
+      "int64"
+     ],
+     [
+      "bid_cancels",
+      "int64"
+     ],
+     [
+      "ask_cancels",
+      "int64"
+     ],
+     [
+      "total_events",
+      "int64"
+     ]
+    ],
+    "trades": [
+     [
+      "ts_recv",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "ts_event",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "rtype",
+      "uint8"
+     ],
+     [
+      "publisher_id",
+      "uint16"
+     ],
+     [
+      "instrument_id",
+      "uint32"
+     ],
+     [
+      "action",
+      "str"
+     ],
+     [
+      "side",
+      "str"
+     ],
+     [
+      "price",
+      "float64"
+     ],
+     [
+      "size",
+      "uint32"
+     ],
+     [
+      "channel_id",
+      "uint8"
+     ],
+     [
+      "order_id",
+      "uint64"
+     ],
+     [
+      "flags",
+      "uint8"
+     ],
+     [
+      "ts_in_delta",
+      "int32"
+     ],
+     [
+      "sequence",
+      "uint32"
+     ],
+     [
+      "symbol",
+      "str"
+     ],
+     [
+      "aggressor_side",
+      "str"
+     ],
+     [
+      "is_buy_aggressor",
+      "bool"
+     ]
+    ]
+   },
+   "instrument": "es",
+   "month": "2025-11",
+   "predicted_control_seconds": 1476.0,
+   "run_status": "ok",
+   "scoring": {
+    "criterion_4": "satisfied",
+    "ground": "the output did not move under the identity write, on either side",
+    "sentinel_columns_contaminated": {
+     "net_delta": 34536,
+     "net_delta_10s": 3208,
+     "net_delta_1s": 34536,
+     "net_delta_30s": 208,
+     "net_delta_5s": 8055,
+     "net_delta_60s": 22
+    },
+    "sentinel_columns_corrected": {
+     "net_delta": 34536,
+     "net_delta_10s": 3208,
+     "net_delta_1s": 34536,
+     "net_delta_30s": 208,
+     "net_delta_5s": 8055,
+     "net_delta_60s": 22
+    },
+    "sentinel_false_positives": []
+   },
+   "seconds": 1758.0,
+   "sides": {
+    "contaminated": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 5050 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 737.7,
+     "sentinel_columns": {
+      "net_delta": 34536,
+      "net_delta_10s": 3208,
+      "net_delta_1s": 34536,
+      "net_delta_30s": 208,
+      "net_delta_5s": 8055,
+      "net_delta_60s": 22
+     },
+     "verdict": "silent"
+    },
+    "corrected": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 5050 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 726.9,
+     "sentinel_columns": {
+      "net_delta": 34536,
+      "net_delta_10s": 3208,
+      "net_delta_1s": 34536,
+      "net_delta_30s": 208,
+      "net_delta_5s": 8055,
+      "net_delta_60s": 22
+     },
+     "verdict": "silent"
+    }
+   }
+  },
+  {
+   "capture_seconds": 248.2,
+   "control_seconds": 1334.8,
+   "frame_signature": {
+    "magg": [
+     [
+      "ts_floor",
+      "datetime64[ns]"
+     ],
+     [
+      "bid_adds",
+      "int64"
+     ],
+     [
+      "ask_adds",
+      "int64"
+     ],
+     [
+      "bid_cancels",
+      "int64"
+     ],
+     [
+      "ask_cancels",
+      "int64"
+     ],
+     [
+      "total_events",
+      "int64"
+     ]
+    ],
+    "trades": [
+     [
+      "ts_recv",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "ts_event",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "rtype",
+      "uint8"
+     ],
+     [
+      "publisher_id",
+      "uint16"
+     ],
+     [
+      "instrument_id",
+      "uint32"
+     ],
+     [
+      "action",
+      "str"
+     ],
+     [
+      "side",
+      "str"
+     ],
+     [
+      "price",
+      "float64"
+     ],
+     [
+      "size",
+      "uint32"
+     ],
+     [
+      "channel_id",
+      "uint8"
+     ],
+     [
+      "order_id",
+      "uint64"
+     ],
+     [
+      "flags",
+      "uint8"
+     ],
+     [
+      "ts_in_delta",
+      "int32"
+     ],
+     [
+      "sequence",
+      "uint32"
+     ],
+     [
+      "symbol",
+      "str"
+     ],
+     [
+      "aggressor_side",
+      "str"
+     ],
+     [
+      "is_buy_aggressor",
+      "bool"
+     ]
+    ]
+   },
+   "instrument": "es",
+   "month": "2025-12",
+   "predicted_control_seconds": 1398.5,
+   "run_status": "ok",
+   "scoring": {
+    "criterion_4": "satisfied",
+    "ground": "the output did not move under the identity write, on either side",
+    "sentinel_columns_contaminated": {
+     "net_delta": 38822,
+     "net_delta_10s": 1398,
+     "net_delta_1s": 38822,
+     "net_delta_30s": 7,
+     "net_delta_5s": 5295
+    },
+    "sentinel_columns_corrected": {
+     "net_delta": 38822,
+     "net_delta_10s": 1398,
+     "net_delta_1s": 38822,
+     "net_delta_30s": 7,
+     "net_delta_5s": 5295
+    },
+    "sentinel_false_positives": []
+   },
+   "seconds": 1583.0,
+   "sides": {
+    "contaminated": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 5009 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 658.1,
+     "sentinel_columns": {
+      "net_delta": 38822,
+      "net_delta_10s": 1398,
+      "net_delta_1s": 38822,
+      "net_delta_30s": 7,
+      "net_delta_5s": 5295
+     },
+     "verdict": "silent"
+    },
+    "corrected": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 5009 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 676.6,
+     "sentinel_columns": {
+      "net_delta": 38822,
+      "net_delta_10s": 1398,
+      "net_delta_1s": 38822,
+      "net_delta_30s": 7,
+      "net_delta_5s": 5295
+     },
+     "verdict": "silent"
+    }
+   }
+  },
+  {
+   "capture_seconds": 148.9,
+   "control_seconds": 849.0,
+   "frame_signature": {
+    "magg": [
+     [
+      "ts_floor",
+      "datetime64[ns]"
+     ],
+     [
+      "bid_adds",
+      "int64"
+     ],
+     [
+      "ask_adds",
+      "int64"
+     ],
+     [
+      "bid_cancels",
+      "int64"
+     ],
+     [
+      "ask_cancels",
+      "int64"
+     ],
+     [
+      "total_events",
+      "int64"
+     ]
+    ],
+    "trades": [
+     [
+      "ts_recv",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "ts_event",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "rtype",
+      "uint8"
+     ],
+     [
+      "publisher_id",
+      "uint16"
+     ],
+     [
+      "instrument_id",
+      "uint32"
+     ],
+     [
+      "action",
+      "str"
+     ],
+     [
+      "side",
+      "str"
+     ],
+     [
+      "price",
+      "float64"
+     ],
+     [
+      "size",
+      "uint32"
+     ],
+     [
+      "channel_id",
+      "uint8"
+     ],
+     [
+      "order_id",
+      "uint64"
+     ],
+     [
+      "flags",
+      "uint8"
+     ],
+     [
+      "ts_in_delta",
+      "int32"
+     ],
+     [
+      "sequence",
+      "uint32"
+     ],
+     [
+      "symbol",
+      "str"
+     ],
+     [
+      "aggressor_side",
+      "str"
+     ],
+     [
+      "is_buy_aggressor",
+      "bool"
+     ]
+    ]
+   },
+   "instrument": "gc",
+   "month": "2025-01",
+   "predicted_control_seconds": 1004.2,
+   "run_status": "ok",
+   "scoring": {
+    "criterion_4": "satisfied",
+    "ground": "the output did not move under the identity write, on either side",
+    "sentinel_columns_contaminated": {
+     "net_delta": 124352,
+     "net_delta_10s": 52618,
+     "net_delta_1s": 124352,
+     "net_delta_30s": 15760,
+     "net_delta_5s": 87263,
+     "net_delta_60s": 6393
+    },
+    "sentinel_columns_corrected": {
+     "net_delta": 124351,
+     "net_delta_10s": 52618,
+     "net_delta_1s": 124351,
+     "net_delta_30s": 15760,
+     "net_delta_5s": 87263,
+     "net_delta_60s": 6393
+    },
+    "sentinel_false_positives": []
+   },
+   "seconds": 997.9,
+   "sides": {
+    "contaminated": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 744 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 436.3,
+     "sentinel_columns": {
+      "net_delta": 124352,
+      "net_delta_10s": 52618,
+      "net_delta_1s": 124352,
+      "net_delta_30s": 15760,
+      "net_delta_5s": 87263,
+      "net_delta_60s": 6393
+     },
+     "verdict": "silent"
+    },
+    "corrected": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 744 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 412.8,
+     "sentinel_columns": {
+      "net_delta": 124351,
+      "net_delta_10s": 52618,
+      "net_delta_1s": 124351,
+      "net_delta_30s": 15760,
+      "net_delta_5s": 87263,
+      "net_delta_60s": 6393
+     },
+     "verdict": "silent"
+    }
+   }
+  },
+  {
+   "capture_seconds": 154.3,
+   "control_seconds": 920.1,
+   "frame_signature": {
+    "magg": [
+     [
+      "ts_floor",
+      "datetime64[ns]"
+     ],
+     [
+      "bid_adds",
+      "int64"
+     ],
+     [
+      "ask_adds",
+      "int64"
+     ],
+     [
+      "bid_cancels",
+      "int64"
+     ],
+     [
+      "ask_cancels",
+      "int64"
+     ],
+     [
+      "total_events",
+      "int64"
+     ]
+    ],
+    "trades": [
+     [
+      "ts_recv",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "ts_event",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "rtype",
+      "uint8"
+     ],
+     [
+      "publisher_id",
+      "uint16"
+     ],
+     [
+      "instrument_id",
+      "uint32"
+     ],
+     [
+      "action",
+      "str"
+     ],
+     [
+      "side",
+      "str"
+     ],
+     [
+      "price",
+      "float64"
+     ],
+     [
+      "size",
+      "uint32"
+     ],
+     [
+      "channel_id",
+      "uint8"
+     ],
+     [
+      "order_id",
+      "uint64"
+     ],
+     [
+      "flags",
+      "uint8"
+     ],
+     [
+      "ts_in_delta",
+      "int32"
+     ],
+     [
+      "sequence",
+      "uint32"
+     ],
+     [
+      "symbol",
+      "str"
+     ],
+     [
+      "aggressor_side",
+      "str"
+     ],
+     [
+      "is_buy_aggressor",
+      "bool"
+     ]
+    ]
+   },
+   "instrument": "gc",
+   "month": "2025-08",
+   "predicted_control_seconds": 1035.9,
+   "run_status": "ok",
+   "scoring": {
+    "criterion_4": "satisfied",
+    "ground": "the output did not move under the identity write, on either side",
+    "sentinel_columns_contaminated": {
+     "net_delta": 116256,
+     "net_delta_10s": 38122,
+     "net_delta_1s": 116256,
+     "net_delta_30s": 6023,
+     "net_delta_5s": 74039,
+     "net_delta_60s": 758
+    },
+    "sentinel_columns_corrected": {
+     "net_delta": 116256,
+     "net_delta_10s": 38122,
+     "net_delta_1s": 116256,
+     "net_delta_30s": 6023,
+     "net_delta_5s": 74039,
+     "net_delta_60s": 758
+    },
+    "sentinel_false_positives": []
+   },
+   "seconds": 1074.3,
+   "sides": {
+    "contaminated": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 816 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 454.6,
+     "sentinel_columns": {
+      "net_delta": 116256,
+      "net_delta_10s": 38122,
+      "net_delta_1s": 116256,
+      "net_delta_30s": 6023,
+      "net_delta_5s": 74039,
+      "net_delta_60s": 758
+     },
+     "verdict": "silent"
+    },
+    "corrected": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 816 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 465.5,
+     "sentinel_columns": {
+      "net_delta": 116256,
+      "net_delta_10s": 38122,
+      "net_delta_1s": 116256,
+      "net_delta_30s": 6023,
+      "net_delta_5s": 74039,
+      "net_delta_60s": 758
+     },
+     "verdict": "silent"
+    }
+   }
+  },
+  {
+   "capture_seconds": 191.4,
+   "control_seconds": 1190.6,
+   "frame_signature": {
+    "magg": [
+     [
+      "ts_floor",
+      "datetime64[ns]"
+     ],
+     [
+      "bid_adds",
+      "int64"
+     ],
+     [
+      "ask_adds",
+      "int64"
+     ],
+     [
+      "bid_cancels",
+      "int64"
+     ],
+     [
+      "ask_cancels",
+      "int64"
+     ],
+     [
+      "total_events",
+      "int64"
+     ]
+    ],
+    "trades": [
+     [
+      "ts_recv",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "ts_event",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "rtype",
+      "uint8"
+     ],
+     [
+      "publisher_id",
+      "uint16"
+     ],
+     [
+      "instrument_id",
+      "uint32"
+     ],
+     [
+      "action",
+      "str"
+     ],
+     [
+      "side",
+      "str"
+     ],
+     [
+      "price",
+      "float64"
+     ],
+     [
+      "size",
+      "uint32"
+     ],
+     [
+      "channel_id",
+      "uint8"
+     ],
+     [
+      "order_id",
+      "uint64"
+     ],
+     [
+      "flags",
+      "uint8"
+     ],
+     [
+      "ts_in_delta",
+      "int32"
+     ],
+     [
+      "sequence",
+      "uint32"
+     ],
+     [
+      "symbol",
+      "str"
+     ],
+     [
+      "aggressor_side",
+      "str"
+     ],
+     [
+      "is_buy_aggressor",
+      "bool"
+     ]
+    ]
+   },
+   "instrument": "gc",
+   "month": "2025-09",
+   "predicted_control_seconds": 1348.1,
+   "run_status": "ok",
+   "scoring": {
+    "criterion_4": "satisfied",
+    "ground": "the output did not move under the identity write, on either side",
+    "sentinel_columns_contaminated": {
+     "net_delta": 136838,
+     "net_delta_10s": 24891,
+     "net_delta_1s": 136838,
+     "net_delta_30s": 2343,
+     "net_delta_5s": 60283,
+     "net_delta_60s": 310
+    },
+    "sentinel_columns_corrected": {
+     "net_delta": 136838,
+     "net_delta_10s": 24891,
+     "net_delta_1s": 136838,
+     "net_delta_30s": 2343,
+     "net_delta_5s": 60283,
+     "net_delta_60s": 310
+    },
+    "sentinel_false_positives": []
+   },
+   "seconds": 1382.0,
+   "sides": {
+    "contaminated": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 786 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 585.1,
+     "sentinel_columns": {
+      "net_delta": 136838,
+      "net_delta_10s": 24891,
+      "net_delta_1s": 136838,
+      "net_delta_30s": 2343,
+      "net_delta_5s": 60283,
+      "net_delta_60s": 310
+     },
+     "verdict": "silent"
+    },
+    "corrected": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 786 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 605.5,
+     "sentinel_columns": {
+      "net_delta": 136838,
+      "net_delta_10s": 24891,
+      "net_delta_1s": 136838,
+      "net_delta_30s": 2343,
+      "net_delta_5s": 60283,
+      "net_delta_60s": 310
+     },
+     "verdict": "silent"
+    }
+   }
+  },
+  {
+   "capture_seconds": 268.4,
+   "control_seconds": 1609.3,
+   "frame_signature": {
+    "magg": [
+     [
+      "ts_floor",
+      "datetime64[ns]"
+     ],
+     [
+      "bid_adds",
+      "int64"
+     ],
+     [
+      "ask_adds",
+      "int64"
+     ],
+     [
+      "bid_cancels",
+      "int64"
+     ],
+     [
+      "ask_cancels",
+      "int64"
+     ],
+     [
+      "total_events",
+      "int64"
+     ]
+    ],
+    "trades": [
+     [
+      "ts_recv",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "ts_event",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "rtype",
+      "uint8"
+     ],
+     [
+      "publisher_id",
+      "uint16"
+     ],
+     [
+      "instrument_id",
+      "uint32"
+     ],
+     [
+      "action",
+      "str"
+     ],
+     [
+      "side",
+      "str"
+     ],
+     [
+      "price",
+      "float64"
+     ],
+     [
+      "size",
+      "uint32"
+     ],
+     [
+      "channel_id",
+      "uint8"
+     ],
+     [
+      "order_id",
+      "uint64"
+     ],
+     [
+      "flags",
+      "uint8"
+     ],
+     [
+      "ts_in_delta",
+      "int32"
+     ],
+     [
+      "sequence",
+      "uint32"
+     ],
+     [
+      "symbol",
+      "str"
+     ],
+     [
+      "aggressor_side",
+      "str"
+     ],
+     [
+      "is_buy_aggressor",
+      "bool"
+     ]
+    ]
+   },
+   "instrument": "gc",
+   "month": "2025-10",
+   "predicted_control_seconds": 1634.9,
+   "run_status": "ok",
+   "scoring": {
+    "criterion_4": "satisfied",
+    "ground": "the output did not move under the identity write, on either side",
+    "sentinel_columns_contaminated": {
+     "net_delta": 135697,
+     "net_delta_10s": 11816,
+     "net_delta_1s": 135697,
+     "net_delta_30s": 655,
+     "net_delta_5s": 37150,
+     "net_delta_60s": 30
+    },
+    "sentinel_columns_corrected": {
+     "net_delta": 135697,
+     "net_delta_10s": 11816,
+     "net_delta_1s": 135697,
+     "net_delta_30s": 655,
+     "net_delta_5s": 37150,
+     "net_delta_60s": 30
+    },
+    "sentinel_false_positives": []
+   },
+   "seconds": 1877.7,
+   "sides": {
+    "contaminated": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 1196 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 802.9,
+     "sentinel_columns": {
+      "net_delta": 135697,
+      "net_delta_10s": 11816,
+      "net_delta_1s": 135697,
+      "net_delta_30s": 655,
+      "net_delta_5s": 37150,
+      "net_delta_60s": 30
+     },
+     "verdict": "silent"
+    },
+    "corrected": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 1196 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 806.4,
+     "sentinel_columns": {
+      "net_delta": 135697,
+      "net_delta_10s": 11816,
+      "net_delta_1s": 135697,
+      "net_delta_30s": 655,
+      "net_delta_5s": 37150,
+      "net_delta_60s": 30
+     },
+     "verdict": "silent"
+    }
+   }
+  },
+  {
+   "capture_seconds": 174.0,
+   "control_seconds": 1018.9,
+   "frame_signature": {
+    "magg": [
+     [
+      "ts_floor",
+      "datetime64[ns]"
+     ],
+     [
+      "bid_adds",
+      "int64"
+     ],
+     [
+      "ask_adds",
+      "int64"
+     ],
+     [
+      "bid_cancels",
+      "int64"
+     ],
+     [
+      "ask_cancels",
+      "int64"
+     ],
+     [
+      "total_events",
+      "int64"
+     ]
+    ],
+    "trades": [
+     [
+      "ts_recv",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "ts_event",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "rtype",
+      "uint8"
+     ],
+     [
+      "publisher_id",
+      "uint16"
+     ],
+     [
+      "instrument_id",
+      "uint32"
+     ],
+     [
+      "action",
+      "str"
+     ],
+     [
+      "side",
+      "str"
+     ],
+     [
+      "price",
+      "float64"
+     ],
+     [
+      "size",
+      "uint32"
+     ],
+     [
+      "channel_id",
+      "uint8"
+     ],
+     [
+      "order_id",
+      "uint64"
+     ],
+     [
+      "flags",
+      "uint8"
+     ],
+     [
+      "ts_in_delta",
+      "int32"
+     ],
+     [
+      "sequence",
+      "uint32"
+     ],
+     [
+      "symbol",
+      "str"
+     ],
+     [
+      "aggressor_side",
+      "str"
+     ],
+     [
+      "is_buy_aggressor",
+      "bool"
+     ]
+    ]
+   },
+   "instrument": "gc",
+   "month": "2025-11",
+   "predicted_control_seconds": 1121.7,
+   "run_status": "ok",
+   "scoring": {
+    "criterion_4": "satisfied",
+    "ground": "the output did not move under the identity write, on either side",
+    "sentinel_columns_contaminated": {
+     "net_delta": 120045,
+     "net_delta_10s": 30076,
+     "net_delta_1s": 120045,
+     "net_delta_30s": 11036,
+     "net_delta_5s": 58311,
+     "net_delta_60s": 5053
+    },
+    "sentinel_columns_corrected": {
+     "net_delta": 120045,
+     "net_delta_10s": 30075,
+     "net_delta_1s": 120045,
+     "net_delta_30s": 11036,
+     "net_delta_5s": 58310,
+     "net_delta_60s": 5053
+    },
+    "sentinel_false_positives": []
+   },
+   "seconds": 1192.9,
+   "sides": {
+    "contaminated": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 949 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 508.5,
+     "sentinel_columns": {
+      "net_delta": 120045,
+      "net_delta_10s": 30076,
+      "net_delta_1s": 120045,
+      "net_delta_30s": 11036,
+      "net_delta_5s": 58311,
+      "net_delta_60s": 5053
+     },
+     "verdict": "silent"
+    },
+    "corrected": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 949 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 510.4,
+     "sentinel_columns": {
+      "net_delta": 120045,
+      "net_delta_10s": 30075,
+      "net_delta_1s": 120045,
+      "net_delta_30s": 11036,
+      "net_delta_5s": 58310,
+      "net_delta_60s": 5053
+     },
+     "verdict": "silent"
+    }
+   }
+  },
+  {
+   "capture_seconds": 196.9,
+   "control_seconds": 1206.6,
+   "frame_signature": {
+    "magg": [
+     [
+      "ts_floor",
+      "datetime64[ns]"
+     ],
+     [
+      "bid_adds",
+      "int64"
+     ],
+     [
+      "ask_adds",
+      "int64"
+     ],
+     [
+      "bid_cancels",
+      "int64"
+     ],
+     [
+      "ask_cancels",
+      "int64"
+     ],
+     [
+      "total_events",
+      "int64"
+     ]
+    ],
+    "trades": [
+     [
+      "ts_recv",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "ts_event",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "rtype",
+      "uint8"
+     ],
+     [
+      "publisher_id",
+      "uint16"
+     ],
+     [
+      "instrument_id",
+      "uint32"
+     ],
+     [
+      "action",
+      "str"
+     ],
+     [
+      "side",
+      "str"
+     ],
+     [
+      "price",
+      "float64"
+     ],
+     [
+      "size",
+      "uint32"
+     ],
+     [
+      "channel_id",
+      "uint8"
+     ],
+     [
+      "order_id",
+      "uint64"
+     ],
+     [
+      "flags",
+      "uint8"
+     ],
+     [
+      "ts_in_delta",
+      "int32"
+     ],
+     [
+      "sequence",
+      "uint32"
+     ],
+     [
+      "symbol",
+      "str"
+     ],
+     [
+      "aggressor_side",
+      "str"
+     ],
+     [
+      "is_buy_aggressor",
+      "bool"
+     ]
+    ]
+   },
+   "instrument": "gc",
+   "month": "2025-12",
+   "predicted_control_seconds": 1289.3,
+   "run_status": "ok",
+   "scoring": {
+    "criterion_4": "satisfied",
+    "ground": "the output did not move under the identity write, on either side",
+    "sentinel_columns_contaminated": {
+     "net_delta": 146034,
+     "net_delta_10s": 26149,
+     "net_delta_1s": 146034,
+     "net_delta_30s": 3832,
+     "net_delta_5s": 62626,
+     "net_delta_60s": 458
+    },
+    "sentinel_columns_corrected": {
+     "net_delta": 146034,
+     "net_delta_10s": 26149,
+     "net_delta_1s": 146034,
+     "net_delta_30s": 3832,
+     "net_delta_5s": 62626,
+     "net_delta_60s": 458
+    },
+    "sentinel_false_positives": []
+   },
+   "seconds": 1403.5,
+   "sides": {
+    "contaminated": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 847 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 598.0,
+     "sentinel_columns": {
+      "net_delta": 146034,
+      "net_delta_10s": 26149,
+      "net_delta_1s": 146034,
+      "net_delta_30s": 3832,
+      "net_delta_5s": 62626,
+      "net_delta_60s": 458
+     },
+     "verdict": "silent"
+    },
+    "corrected": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 847 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 608.5,
+     "sentinel_columns": {
+      "net_delta": 146034,
+      "net_delta_10s": 26149,
+      "net_delta_1s": 146034,
+      "net_delta_30s": 3832,
+      "net_delta_5s": 62626,
+      "net_delta_60s": 458
+     },
+     "verdict": "silent"
+    }
+   }
+  },
+  {
+   "capture_seconds": 14.0,
+   "control_seconds": 121.9,
+   "frame_signature": {
+    "magg": [
+     [
+      "ts_floor",
+      "datetime64[ns]"
+     ],
+     [
+      "bid_adds",
+      "int64"
+     ],
+     [
+      "ask_adds",
+      "int64"
+     ],
+     [
+      "bid_cancels",
+      "int64"
+     ],
+     [
+      "ask_cancels",
+      "int64"
+     ],
+     [
+      "total_events",
+      "int64"
+     ]
+    ],
+    "trades": [
+     [
+      "ts_recv",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "ts_event",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "rtype",
+      "uint8"
+     ],
+     [
+      "publisher_id",
+      "uint16"
+     ],
+     [
+      "instrument_id",
+      "uint32"
+     ],
+     [
+      "action",
+      "str"
+     ],
+     [
+      "side",
+      "str"
+     ],
+     [
+      "price",
+      "float64"
+     ],
+     [
+      "size",
+      "uint32"
+     ],
+     [
+      "channel_id",
+      "uint8"
+     ],
+     [
+      "order_id",
+      "uint64"
+     ],
+     [
+      "flags",
+      "uint8"
+     ],
+     [
+      "ts_in_delta",
+      "int32"
+     ],
+     [
+      "sequence",
+      "uint32"
+     ],
+     [
+      "symbol",
+      "str"
+     ],
+     [
+      "aggressor_side",
+      "str"
+     ],
+     [
+      "is_buy_aggressor",
+      "bool"
+     ]
+    ]
+   },
+   "instrument": "he",
+   "month": "2025-01",
+   "predicted_control_seconds": 200.9,
+   "run_status": "ok",
+   "scoring": {
+    "criterion_4": "satisfied",
+    "ground": "the output did not move under the identity write, on either side",
+    "sentinel_columns_contaminated": {
+     "net_delta": 25201,
+     "net_delta_10s": 50708,
+     "net_delta_1s": 25201,
+     "net_delta_30s": 15578,
+     "net_delta_5s": 54560,
+     "net_delta_60s": 2395
+    },
+    "sentinel_columns_corrected": {
+     "net_delta": 25201,
+     "net_delta_10s": 50708,
+     "net_delta_1s": 25201,
+     "net_delta_30s": 15578,
+     "net_delta_5s": 54560,
+     "net_delta_60s": 2395
+    },
+    "sentinel_false_positives": []
+   },
+   "seconds": 135.9,
+   "sides": {
+    "contaminated": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 354 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 60.0,
+     "sentinel_columns": {
+      "net_delta": 25201,
+      "net_delta_10s": 50708,
+      "net_delta_1s": 25201,
+      "net_delta_30s": 15578,
+      "net_delta_5s": 54560,
+      "net_delta_60s": 2395
+     },
+     "verdict": "silent"
+    },
+    "corrected": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 354 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 61.9,
+     "sentinel_columns": {
+      "net_delta": 25201,
+      "net_delta_10s": 50708,
+      "net_delta_1s": 25201,
+      "net_delta_30s": 15578,
+      "net_delta_5s": 54560,
+      "net_delta_60s": 2395
+     },
+     "verdict": "silent"
+    }
+   }
+  },
+  {
+   "capture_seconds": 13.4,
+   "control_seconds": 108.9,
+   "frame_signature": {
+    "magg": [
+     [
+      "ts_floor",
+      "datetime64[ns]"
+     ],
+     [
+      "bid_adds",
+      "int64"
+     ],
+     [
+      "ask_adds",
+      "int64"
+     ],
+     [
+      "bid_cancels",
+      "int64"
+     ],
+     [
+      "ask_cancels",
+      "int64"
+     ],
+     [
+      "total_events",
+      "int64"
+     ]
+    ],
+    "trades": [
+     [
+      "ts_recv",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "ts_event",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "rtype",
+      "uint8"
+     ],
+     [
+      "publisher_id",
+      "uint16"
+     ],
+     [
+      "instrument_id",
+      "uint32"
+     ],
+     [
+      "action",
+      "str"
+     ],
+     [
+      "side",
+      "str"
+     ],
+     [
+      "price",
+      "float64"
+     ],
+     [
+      "size",
+      "uint32"
+     ],
+     [
+      "channel_id",
+      "uint8"
+     ],
+     [
+      "order_id",
+      "uint64"
+     ],
+     [
+      "flags",
+      "uint8"
+     ],
+     [
+      "ts_in_delta",
+      "int32"
+     ],
+     [
+      "sequence",
+      "uint32"
+     ],
+     [
+      "symbol",
+      "str"
+     ],
+     [
+      "aggressor_side",
+      "str"
+     ],
+     [
+      "is_buy_aggressor",
+      "bool"
+     ]
+    ]
+   },
+   "instrument": "he",
+   "month": "2025-08",
+   "predicted_control_seconds": 181.2,
+   "run_status": "ok",
+   "scoring": {
+    "criterion_4": "satisfied",
+    "ground": "the output did not move under the identity write, on either side",
+    "sentinel_columns_contaminated": {
+     "net_delta": 20394,
+     "net_delta_10s": 52339,
+     "net_delta_1s": 20394,
+     "net_delta_30s": 20089,
+     "net_delta_5s": 50496,
+     "net_delta_60s": 4298
+    },
+    "sentinel_columns_corrected": {
+     "net_delta": 20393,
+     "net_delta_10s": 52339,
+     "net_delta_1s": 20393,
+     "net_delta_30s": 20089,
+     "net_delta_5s": 50496,
+     "net_delta_60s": 4298
+    },
+    "sentinel_false_positives": []
+   },
+   "seconds": 122.3,
+   "sides": {
+    "contaminated": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 247 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 54.1,
+     "sentinel_columns": {
+      "net_delta": 20394,
+      "net_delta_10s": 52339,
+      "net_delta_1s": 20394,
+      "net_delta_30s": 20089,
+      "net_delta_5s": 50496,
+      "net_delta_60s": 4298
+     },
+     "verdict": "silent"
+    },
+    "corrected": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 247 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 54.7,
+     "sentinel_columns": {
+      "net_delta": 20393,
+      "net_delta_10s": 52339,
+      "net_delta_1s": 20393,
+      "net_delta_30s": 20089,
+      "net_delta_5s": 50496,
+      "net_delta_60s": 4298
+     },
+     "verdict": "silent"
+    }
+   }
+  },
+  {
+   "capture_seconds": 13.1,
+   "control_seconds": 109.7,
+   "frame_signature": {
+    "magg": [
+     [
+      "ts_floor",
+      "datetime64[ns]"
+     ],
+     [
+      "bid_adds",
+      "int64"
+     ],
+     [
+      "ask_adds",
+      "int64"
+     ],
+     [
+      "bid_cancels",
+      "int64"
+     ],
+     [
+      "ask_cancels",
+      "int64"
+     ],
+     [
+      "total_events",
+      "int64"
+     ]
+    ],
+    "trades": [
+     [
+      "ts_recv",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "ts_event",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "rtype",
+      "uint8"
+     ],
+     [
+      "publisher_id",
+      "uint16"
+     ],
+     [
+      "instrument_id",
+      "uint32"
+     ],
+     [
+      "action",
+      "str"
+     ],
+     [
+      "side",
+      "str"
+     ],
+     [
+      "price",
+      "float64"
+     ],
+     [
+      "size",
+      "uint32"
+     ],
+     [
+      "channel_id",
+      "uint8"
+     ],
+     [
+      "order_id",
+      "uint64"
+     ],
+     [
+      "flags",
+      "uint8"
+     ],
+     [
+      "ts_in_delta",
+      "int32"
+     ],
+     [
+      "sequence",
+      "uint32"
+     ],
+     [
+      "symbol",
+      "str"
+     ],
+     [
+      "aggressor_side",
+      "str"
+     ],
+     [
+      "is_buy_aggressor",
+      "bool"
+     ]
+    ]
+   },
+   "instrument": "he",
+   "month": "2025-09",
+   "predicted_control_seconds": 183.4,
+   "run_status": "ok",
+   "scoring": {
+    "criterion_4": "satisfied",
+    "ground": "the output did not move under the identity write, on either side",
+    "sentinel_columns_contaminated": {
+     "net_delta": 21267,
+     "net_delta_10s": 52810,
+     "net_delta_1s": 21267,
+     "net_delta_30s": 19617,
+     "net_delta_5s": 53494,
+     "net_delta_60s": 4207
+    },
+    "sentinel_columns_corrected": {
+     "net_delta": 21266,
+     "net_delta_10s": 52810,
+     "net_delta_1s": 21266,
+     "net_delta_30s": 19617,
+     "net_delta_5s": 53494,
+     "net_delta_60s": 4207
+    },
+    "sentinel_false_positives": []
+   },
+   "seconds": 122.9,
+   "sides": {
+    "contaminated": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 210 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 54.5,
+     "sentinel_columns": {
+      "net_delta": 21267,
+      "net_delta_10s": 52810,
+      "net_delta_1s": 21267,
+      "net_delta_30s": 19617,
+      "net_delta_5s": 53494,
+      "net_delta_60s": 4207
+     },
+     "verdict": "silent"
+    },
+    "corrected": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 210 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 55.2,
+     "sentinel_columns": {
+      "net_delta": 21266,
+      "net_delta_10s": 52810,
+      "net_delta_1s": 21266,
+      "net_delta_30s": 19617,
+      "net_delta_5s": 53494,
+      "net_delta_60s": 4207
+     },
+     "verdict": "silent"
+    }
+   }
+  },
+  {
+   "capture_seconds": 13.1,
+   "control_seconds": 113.2,
+   "frame_signature": {
+    "magg": [
+     [
+      "ts_floor",
+      "datetime64[ns]"
+     ],
+     [
+      "bid_adds",
+      "int64"
+     ],
+     [
+      "ask_adds",
+      "int64"
+     ],
+     [
+      "bid_cancels",
+      "int64"
+     ],
+     [
+      "ask_cancels",
+      "int64"
+     ],
+     [
+      "total_events",
+      "int64"
+     ]
+    ],
+    "trades": [
+     [
+      "ts_recv",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "ts_event",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "rtype",
+      "uint8"
+     ],
+     [
+      "publisher_id",
+      "uint16"
+     ],
+     [
+      "instrument_id",
+      "uint32"
+     ],
+     [
+      "action",
+      "str"
+     ],
+     [
+      "side",
+      "str"
+     ],
+     [
+      "price",
+      "float64"
+     ],
+     [
+      "size",
+      "uint32"
+     ],
+     [
+      "channel_id",
+      "uint8"
+     ],
+     [
+      "order_id",
+      "uint64"
+     ],
+     [
+      "flags",
+      "uint8"
+     ],
+     [
+      "ts_in_delta",
+      "int32"
+     ],
+     [
+      "sequence",
+      "uint32"
+     ],
+     [
+      "symbol",
+      "str"
+     ],
+     [
+      "aggressor_side",
+      "str"
+     ],
+     [
+      "is_buy_aggressor",
+      "bool"
+     ]
+    ]
+   },
+   "instrument": "he",
+   "month": "2025-10",
+   "predicted_control_seconds": 193.8,
+   "run_status": "ok",
+   "scoring": {
+    "criterion_4": "satisfied",
+    "ground": "the output did not move under the identity write, on either side",
+    "sentinel_columns_contaminated": {
+     "net_delta": 20649,
+     "net_delta_10s": 57788,
+     "net_delta_1s": 20649,
+     "net_delta_30s": 26433,
+     "net_delta_5s": 53885,
+     "net_delta_60s": 5434
+    },
+    "sentinel_columns_corrected": {
+     "net_delta": 20648,
+     "net_delta_10s": 57788,
+     "net_delta_1s": 20648,
+     "net_delta_30s": 26433,
+     "net_delta_5s": 53885,
+     "net_delta_60s": 5434
+    },
+    "sentinel_false_positives": []
+   },
+   "seconds": 126.3,
+   "sides": {
+    "contaminated": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 220 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 55.6,
+     "sentinel_columns": {
+      "net_delta": 20649,
+      "net_delta_10s": 57788,
+      "net_delta_1s": 20649,
+      "net_delta_30s": 26433,
+      "net_delta_5s": 53885,
+      "net_delta_60s": 5434
+     },
+     "verdict": "silent"
+    },
+    "corrected": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 220 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 57.6,
+     "sentinel_columns": {
+      "net_delta": 20648,
+      "net_delta_10s": 57788,
+      "net_delta_1s": 20648,
+      "net_delta_30s": 26433,
+      "net_delta_5s": 53885,
+      "net_delta_60s": 5434
+     },
+     "verdict": "silent"
+    }
+   }
+  },
+  {
+   "capture_seconds": 13.4,
+   "control_seconds": 113.8,
+   "frame_signature": {
+    "magg": [
+     [
+      "ts_floor",
+      "datetime64[ns]"
+     ],
+     [
+      "bid_adds",
+      "int64"
+     ],
+     [
+      "ask_adds",
+      "int64"
+     ],
+     [
+      "bid_cancels",
+      "int64"
+     ],
+     [
+      "ask_cancels",
+      "int64"
+     ],
+     [
+      "total_events",
+      "int64"
+     ]
+    ],
+    "trades": [
+     [
+      "ts_recv",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "ts_event",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "rtype",
+      "uint8"
+     ],
+     [
+      "publisher_id",
+      "uint16"
+     ],
+     [
+      "instrument_id",
+      "uint32"
+     ],
+     [
+      "action",
+      "str"
+     ],
+     [
+      "side",
+      "str"
+     ],
+     [
+      "price",
+      "float64"
+     ],
+     [
+      "size",
+      "uint32"
+     ],
+     [
+      "channel_id",
+      "uint8"
+     ],
+     [
+      "order_id",
+      "uint64"
+     ],
+     [
+      "flags",
+      "uint8"
+     ],
+     [
+      "ts_in_delta",
+      "int32"
+     ],
+     [
+      "sequence",
+      "uint32"
+     ],
+     [
+      "symbol",
+      "str"
+     ],
+     [
+      "aggressor_side",
+      "str"
+     ],
+     [
+      "is_buy_aggressor",
+      "bool"
+     ]
+    ]
+   },
+   "instrument": "he",
+   "month": "2025-11",
+   "predicted_control_seconds": 181.8,
+   "run_status": "ok",
+   "scoring": {
+    "criterion_4": "satisfied",
+    "ground": "the output did not move under the identity write, on either side",
+    "sentinel_columns_contaminated": {
+     "net_delta": 23688,
+     "net_delta_10s": 47148,
+     "net_delta_1s": 23688,
+     "net_delta_30s": 14014,
+     "net_delta_5s": 51210,
+     "net_delta_60s": 2111
+    },
+    "sentinel_columns_corrected": {
+     "net_delta": 23688,
+     "net_delta_10s": 47148,
+     "net_delta_1s": 23688,
+     "net_delta_30s": 14014,
+     "net_delta_5s": 51210,
+     "net_delta_60s": 2111
+    },
+    "sentinel_false_positives": []
+   },
+   "seconds": 127.2,
+   "sides": {
+    "contaminated": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 264 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 57.2,
+     "sentinel_columns": {
+      "net_delta": 23688,
+      "net_delta_10s": 47148,
+      "net_delta_1s": 23688,
+      "net_delta_30s": 14014,
+      "net_delta_5s": 51210,
+      "net_delta_60s": 2111
+     },
+     "verdict": "silent"
+    },
+    "corrected": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 264 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 56.6,
+     "sentinel_columns": {
+      "net_delta": 23688,
+      "net_delta_10s": 47148,
+      "net_delta_1s": 23688,
+      "net_delta_30s": 14014,
+      "net_delta_5s": 51210,
+      "net_delta_60s": 2111
+     },
+     "verdict": "silent"
+    }
+   }
+  },
+  {
+   "capture_seconds": 12.0,
+   "control_seconds": 111.4,
+   "frame_signature": {
+    "magg": [
+     [
+      "ts_floor",
+      "datetime64[ns]"
+     ],
+     [
+      "bid_adds",
+      "int64"
+     ],
+     [
+      "ask_adds",
+      "int64"
+     ],
+     [
+      "bid_cancels",
+      "int64"
+     ],
+     [
+      "ask_cancels",
+      "int64"
+     ],
+     [
+      "total_events",
+      "int64"
+     ]
+    ],
+    "trades": [
+     [
+      "ts_recv",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "ts_event",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "rtype",
+      "uint8"
+     ],
+     [
+      "publisher_id",
+      "uint16"
+     ],
+     [
+      "instrument_id",
+      "uint32"
+     ],
+     [
+      "action",
+      "str"
+     ],
+     [
+      "side",
+      "str"
+     ],
+     [
+      "price",
+      "float64"
+     ],
+     [
+      "size",
+      "uint32"
+     ],
+     [
+      "channel_id",
+      "uint8"
+     ],
+     [
+      "order_id",
+      "uint64"
+     ],
+     [
+      "flags",
+      "uint8"
+     ],
+     [
+      "ts_in_delta",
+      "int32"
+     ],
+     [
+      "sequence",
+      "uint32"
+     ],
+     [
+      "symbol",
+      "str"
+     ],
+     [
+      "aggressor_side",
+      "str"
+     ],
+     [
+      "is_buy_aggressor",
+      "bool"
+     ]
+    ]
+   },
+   "instrument": "he",
+   "month": "2025-12",
+   "predicted_control_seconds": 200.6,
+   "run_status": "ok",
+   "scoring": {
+    "criterion_4": "satisfied",
+    "ground": "the output did not move under the identity write, on either side",
+    "sentinel_columns_contaminated": {
+     "net_delta": 21566,
+     "net_delta_10s": 59394,
+     "net_delta_1s": 21566,
+     "net_delta_30s": 30821,
+     "net_delta_5s": 54233,
+     "net_delta_60s": 8107
+    },
+    "sentinel_columns_corrected": {
+     "net_delta": 21566,
+     "net_delta_10s": 59394,
+     "net_delta_1s": 21566,
+     "net_delta_30s": 30821,
+     "net_delta_5s": 54233,
+     "net_delta_60s": 8107
+    },
+    "sentinel_false_positives": []
+   },
+   "seconds": 123.4,
+   "sides": {
+    "contaminated": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 250 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 55.7,
+     "sentinel_columns": {
+      "net_delta": 21566,
+      "net_delta_10s": 59394,
+      "net_delta_1s": 21566,
+      "net_delta_30s": 30821,
+      "net_delta_5s": 54233,
+      "net_delta_60s": 8107
+     },
+     "verdict": "silent"
+    },
+    "corrected": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 250 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 55.6,
+     "sentinel_columns": {
+      "net_delta": 21566,
+      "net_delta_10s": 59394,
+      "net_delta_1s": 21566,
+      "net_delta_30s": 30821,
+      "net_delta_5s": 54233,
+      "net_delta_60s": 8107
+     },
+     "verdict": "silent"
+    }
+   }
+  },
+  {
+   "capture_seconds": 19.2,
+   "control_seconds": 146.6,
+   "frame_signature": {
+    "magg": [
+     [
+      "ts_floor",
+      "datetime64[ns]"
+     ],
+     [
+      "bid_adds",
+      "int64"
+     ],
+     [
+      "ask_adds",
+      "int64"
+     ],
+     [
+      "bid_cancels",
+      "int64"
+     ],
+     [
+      "ask_cancels",
+      "int64"
+     ],
+     [
+      "total_events",
+      "int64"
+     ]
+    ],
+    "trades": [
+     [
+      "ts_recv",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "ts_event",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "rtype",
+      "uint8"
+     ],
+     [
+      "publisher_id",
+      "uint16"
+     ],
+     [
+      "instrument_id",
+      "uint32"
+     ],
+     [
+      "action",
+      "str"
+     ],
+     [
+      "side",
+      "str"
+     ],
+     [
+      "price",
+      "float64"
+     ],
+     [
+      "size",
+      "uint32"
+     ],
+     [
+      "channel_id",
+      "uint8"
+     ],
+     [
+      "order_id",
+      "uint64"
+     ],
+     [
+      "flags",
+      "uint8"
+     ],
+     [
+      "ts_in_delta",
+      "int32"
+     ],
+     [
+      "sequence",
+      "uint32"
+     ],
+     [
+      "symbol",
+      "str"
+     ],
+     [
+      "aggressor_side",
+      "str"
+     ],
+     [
+      "is_buy_aggressor",
+      "bool"
+     ]
+    ]
+   },
+   "instrument": "le",
+   "month": "2025-01",
+   "predicted_control_seconds": 237.8,
+   "run_status": "ok",
+   "scoring": {
+    "criterion_4": "satisfied",
+    "ground": "the output did not move under the identity write, on either side",
+    "sentinel_columns_contaminated": {
+     "net_delta": 34770,
+     "net_delta_10s": 48270,
+     "net_delta_1s": 34770,
+     "net_delta_30s": 9304,
+     "net_delta_5s": 62719,
+     "net_delta_60s": 720
+    },
+    "sentinel_columns_corrected": {
+     "net_delta": 34770,
+     "net_delta_10s": 48270,
+     "net_delta_1s": 34770,
+     "net_delta_30s": 9304,
+     "net_delta_5s": 62719,
+     "net_delta_60s": 720
+    },
+    "sentinel_false_positives": []
+   },
+   "seconds": 165.8,
+   "sides": {
+    "contaminated": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 401 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 73.1,
+     "sentinel_columns": {
+      "net_delta": 34770,
+      "net_delta_10s": 48270,
+      "net_delta_1s": 34770,
+      "net_delta_30s": 9304,
+      "net_delta_5s": 62719,
+      "net_delta_60s": 720
+     },
+     "verdict": "silent"
+    },
+    "corrected": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 401 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 73.5,
+     "sentinel_columns": {
+      "net_delta": 34770,
+      "net_delta_10s": 48270,
+      "net_delta_1s": 34770,
+      "net_delta_30s": 9304,
+      "net_delta_5s": 62719,
+      "net_delta_60s": 720
+     },
+     "verdict": "silent"
+    }
+   }
+  },
+  {
+   "capture_seconds": 21.8,
+   "control_seconds": 137.4,
+   "frame_signature": {
+    "magg": [
+     [
+      "ts_floor",
+      "datetime64[ns]"
+     ],
+     [
+      "bid_adds",
+      "int64"
+     ],
+     [
+      "ask_adds",
+      "int64"
+     ],
+     [
+      "bid_cancels",
+      "int64"
+     ],
+     [
+      "ask_cancels",
+      "int64"
+     ],
+     [
+      "total_events",
+      "int64"
+     ]
+    ],
+    "trades": [
+     [
+      "ts_recv",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "ts_event",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "rtype",
+      "uint8"
+     ],
+     [
+      "publisher_id",
+      "uint16"
+     ],
+     [
+      "instrument_id",
+      "uint32"
+     ],
+     [
+      "action",
+      "str"
+     ],
+     [
+      "side",
+      "str"
+     ],
+     [
+      "price",
+      "float64"
+     ],
+     [
+      "size",
+      "uint32"
+     ],
+     [
+      "channel_id",
+      "uint8"
+     ],
+     [
+      "order_id",
+      "uint64"
+     ],
+     [
+      "flags",
+      "uint8"
+     ],
+     [
+      "ts_in_delta",
+      "int32"
+     ],
+     [
+      "sequence",
+      "uint32"
+     ],
+     [
+      "symbol",
+      "str"
+     ],
+     [
+      "aggressor_side",
+      "str"
+     ],
+     [
+      "is_buy_aggressor",
+      "bool"
+     ]
+    ]
+   },
+   "instrument": "le",
+   "month": "2025-08",
+   "predicted_control_seconds": 219.3,
+   "run_status": "ok",
+   "scoring": {
+    "criterion_4": "satisfied",
+    "ground": "the output did not move under the identity write, on either side",
+    "sentinel_columns_contaminated": {
+     "net_delta": 34409,
+     "net_delta_10s": 42713,
+     "net_delta_1s": 34409,
+     "net_delta_30s": 4831,
+     "net_delta_5s": 59783,
+     "net_delta_60s": 193
+    },
+    "sentinel_columns_corrected": {
+     "net_delta": 34409,
+     "net_delta_10s": 42713,
+     "net_delta_1s": 34409,
+     "net_delta_30s": 4831,
+     "net_delta_5s": 59783,
+     "net_delta_60s": 193
+    },
+    "sentinel_false_positives": []
+   },
+   "seconds": 159.2,
+   "sides": {
+    "contaminated": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 307 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 73.2,
+     "sentinel_columns": {
+      "net_delta": 34409,
+      "net_delta_10s": 42713,
+      "net_delta_1s": 34409,
+      "net_delta_30s": 4831,
+      "net_delta_5s": 59783,
+      "net_delta_60s": 193
+     },
+     "verdict": "silent"
+    },
+    "corrected": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 307 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 64.2,
+     "sentinel_columns": {
+      "net_delta": 34409,
+      "net_delta_10s": 42713,
+      "net_delta_1s": 34409,
+      "net_delta_30s": 4831,
+      "net_delta_5s": 59783,
+      "net_delta_60s": 193
+     },
+     "verdict": "silent"
+    }
+   }
+  },
+  {
+   "capture_seconds": 15.1,
+   "control_seconds": 121.3,
+   "frame_signature": {
+    "magg": [
+     [
+      "ts_floor",
+      "datetime64[ns]"
+     ],
+     [
+      "bid_adds",
+      "int64"
+     ],
+     [
+      "ask_adds",
+      "int64"
+     ],
+     [
+      "bid_cancels",
+      "int64"
+     ],
+     [
+      "ask_cancels",
+      "int64"
+     ],
+     [
+      "total_events",
+      "int64"
+     ]
+    ],
+    "trades": [
+     [
+      "ts_recv",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "ts_event",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "rtype",
+      "uint8"
+     ],
+     [
+      "publisher_id",
+      "uint16"
+     ],
+     [
+      "instrument_id",
+      "uint32"
+     ],
+     [
+      "action",
+      "str"
+     ],
+     [
+      "side",
+      "str"
+     ],
+     [
+      "price",
+      "float64"
+     ],
+     [
+      "size",
+      "uint32"
+     ],
+     [
+      "channel_id",
+      "uint8"
+     ],
+     [
+      "order_id",
+      "uint64"
+     ],
+     [
+      "flags",
+      "uint8"
+     ],
+     [
+      "ts_in_delta",
+      "int32"
+     ],
+     [
+      "sequence",
+      "uint32"
+     ],
+     [
+      "symbol",
+      "str"
+     ],
+     [
+      "aggressor_side",
+      "str"
+     ],
+     [
+      "is_buy_aggressor",
+      "bool"
+     ]
+    ]
+   },
+   "instrument": "le",
+   "month": "2025-09",
+   "predicted_control_seconds": 216.8,
+   "run_status": "ok",
+   "scoring": {
+    "criterion_4": "satisfied",
+    "ground": "the output did not move under the identity write, on either side",
+    "sentinel_columns_contaminated": {
+     "net_delta": 31580,
+     "net_delta_10s": 48077,
+     "net_delta_1s": 31580,
+     "net_delta_30s": 7832,
+     "net_delta_5s": 61984,
+     "net_delta_60s": 505
+    },
+    "sentinel_columns_corrected": {
+     "net_delta": 31580,
+     "net_delta_10s": 48076,
+     "net_delta_1s": 31580,
+     "net_delta_30s": 7832,
+     "net_delta_5s": 61983,
+     "net_delta_60s": 505
+    },
+    "sentinel_false_positives": []
+   },
+   "seconds": 136.4,
+   "sides": {
+    "contaminated": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 308 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 60.5,
+     "sentinel_columns": {
+      "net_delta": 31580,
+      "net_delta_10s": 48077,
+      "net_delta_1s": 31580,
+      "net_delta_30s": 7832,
+      "net_delta_5s": 61984,
+      "net_delta_60s": 505
+     },
+     "verdict": "silent"
+    },
+    "corrected": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 308 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 60.9,
+     "sentinel_columns": {
+      "net_delta": 31580,
+      "net_delta_10s": 48076,
+      "net_delta_1s": 31580,
+      "net_delta_30s": 7832,
+      "net_delta_5s": 61983,
+      "net_delta_60s": 505
+     },
+     "verdict": "silent"
+    }
+   }
+  },
+  {
+   "capture_seconds": 21.6,
+   "control_seconds": 152.6,
+   "frame_signature": {
+    "magg": [
+     [
+      "ts_floor",
+      "datetime64[ns]"
+     ],
+     [
+      "bid_adds",
+      "int64"
+     ],
+     [
+      "ask_adds",
+      "int64"
+     ],
+     [
+      "bid_cancels",
+      "int64"
+     ],
+     [
+      "ask_cancels",
+      "int64"
+     ],
+     [
+      "total_events",
+      "int64"
+     ]
+    ],
+    "trades": [
+     [
+      "ts_recv",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "ts_event",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "rtype",
+      "uint8"
+     ],
+     [
+      "publisher_id",
+      "uint16"
+     ],
+     [
+      "instrument_id",
+      "uint32"
+     ],
+     [
+      "action",
+      "str"
+     ],
+     [
+      "side",
+      "str"
+     ],
+     [
+      "price",
+      "float64"
+     ],
+     [
+      "size",
+      "uint32"
+     ],
+     [
+      "channel_id",
+      "uint8"
+     ],
+     [
+      "order_id",
+      "uint64"
+     ],
+     [
+      "flags",
+      "uint8"
+     ],
+     [
+      "ts_in_delta",
+      "int32"
+     ],
+     [
+      "sequence",
+      "uint32"
+     ],
+     [
+      "symbol",
+      "str"
+     ],
+     [
+      "aggressor_side",
+      "str"
+     ],
+     [
+      "is_buy_aggressor",
+      "bool"
+     ]
+    ]
+   },
+   "instrument": "le",
+   "month": "2025-10",
+   "predicted_control_seconds": 252.7,
+   "run_status": "ok",
+   "scoring": {
+    "criterion_4": "satisfied",
+    "ground": "the output did not move under the identity write, on either side",
+    "sentinel_columns_contaminated": {
+     "net_delta": 37363,
+     "net_delta_10s": 41066,
+     "net_delta_1s": 37363,
+     "net_delta_30s": 6966,
+     "net_delta_5s": 60096,
+     "net_delta_60s": 989
+    },
+    "sentinel_columns_corrected": {
+     "net_delta": 37362,
+     "net_delta_10s": 41066,
+     "net_delta_1s": 37362,
+     "net_delta_30s": 6966,
+     "net_delta_5s": 60096,
+     "net_delta_60s": 989
+    },
+    "sentinel_false_positives": []
+   },
+   "seconds": 174.2,
+   "sides": {
+    "contaminated": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 342 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 75.5,
+     "sentinel_columns": {
+      "net_delta": 37363,
+      "net_delta_10s": 41066,
+      "net_delta_1s": 37363,
+      "net_delta_30s": 6966,
+      "net_delta_5s": 60096,
+      "net_delta_60s": 989
+     },
+     "verdict": "silent"
+    },
+    "corrected": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 342 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 77.1,
+     "sentinel_columns": {
+      "net_delta": 37362,
+      "net_delta_10s": 41066,
+      "net_delta_1s": 37362,
+      "net_delta_30s": 6966,
+      "net_delta_5s": 60096,
+      "net_delta_60s": 989
+     },
+     "verdict": "silent"
+    }
+   }
+  },
+  {
+   "capture_seconds": 15.7,
+   "control_seconds": 112.5,
+   "frame_signature": {
+    "magg": [
+     [
+      "ts_floor",
+      "datetime64[ns]"
+     ],
+     [
+      "bid_adds",
+      "int64"
+     ],
+     [
+      "ask_adds",
+      "int64"
+     ],
+     [
+      "bid_cancels",
+      "int64"
+     ],
+     [
+      "ask_cancels",
+      "int64"
+     ],
+     [
+      "total_events",
+      "int64"
+     ]
+    ],
+    "trades": [
+     [
+      "ts_recv",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "ts_event",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "rtype",
+      "uint8"
+     ],
+     [
+      "publisher_id",
+      "uint16"
+     ],
+     [
+      "instrument_id",
+      "uint32"
+     ],
+     [
+      "action",
+      "str"
+     ],
+     [
+      "side",
+      "str"
+     ],
+     [
+      "price",
+      "float64"
+     ],
+     [
+      "size",
+      "uint32"
+     ],
+     [
+      "channel_id",
+      "uint8"
+     ],
+     [
+      "order_id",
+      "uint64"
+     ],
+     [
+      "flags",
+      "uint8"
+     ],
+     [
+      "ts_in_delta",
+      "int32"
+     ],
+     [
+      "sequence",
+      "uint32"
+     ],
+     [
+      "symbol",
+      "str"
+     ],
+     [
+      "aggressor_side",
+      "str"
+     ],
+     [
+      "is_buy_aggressor",
+      "bool"
+     ]
+    ]
+   },
+   "instrument": "le",
+   "month": "2025-11",
+   "predicted_control_seconds": 222.6,
+   "run_status": "ok",
+   "scoring": {
+    "criterion_4": "satisfied",
+    "ground": "the output did not move under the identity write, on either side",
+    "sentinel_columns_contaminated": {
+     "net_delta": 31936,
+     "net_delta_10s": 37904,
+     "net_delta_1s": 31936,
+     "net_delta_30s": 12282,
+     "net_delta_5s": 50344,
+     "net_delta_60s": 5895
+    },
+    "sentinel_columns_corrected": {
+     "net_delta": 31936,
+     "net_delta_10s": 37904,
+     "net_delta_1s": 31936,
+     "net_delta_30s": 12282,
+     "net_delta_5s": 50344,
+     "net_delta_60s": 5895
+    },
+    "sentinel_false_positives": []
+   },
+   "seconds": 128.2,
+   "sides": {
+    "contaminated": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 459 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 55.6,
+     "sentinel_columns": {
+      "net_delta": 31936,
+      "net_delta_10s": 37904,
+      "net_delta_1s": 31936,
+      "net_delta_30s": 12282,
+      "net_delta_5s": 50344,
+      "net_delta_60s": 5895
+     },
+     "verdict": "silent"
+    },
+    "corrected": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 459 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 56.9,
+     "sentinel_columns": {
+      "net_delta": 31936,
+      "net_delta_10s": 37904,
+      "net_delta_1s": 31936,
+      "net_delta_30s": 12282,
+      "net_delta_5s": 50344,
+      "net_delta_60s": 5895
+     },
+     "verdict": "silent"
+    }
+   }
+  },
+  {
+   "capture_seconds": 14.4,
+   "control_seconds": 118.4,
+   "frame_signature": {
+    "magg": [
+     [
+      "ts_floor",
+      "datetime64[ns]"
+     ],
+     [
+      "bid_adds",
+      "int64"
+     ],
+     [
+      "ask_adds",
+      "int64"
+     ],
+     [
+      "bid_cancels",
+      "int64"
+     ],
+     [
+      "ask_cancels",
+      "int64"
+     ],
+     [
+      "total_events",
+      "int64"
+     ]
+    ],
+    "trades": [
+     [
+      "ts_recv",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "ts_event",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "rtype",
+      "uint8"
+     ],
+     [
+      "publisher_id",
+      "uint16"
+     ],
+     [
+      "instrument_id",
+      "uint32"
+     ],
+     [
+      "action",
+      "str"
+     ],
+     [
+      "side",
+      "str"
+     ],
+     [
+      "price",
+      "float64"
+     ],
+     [
+      "size",
+      "uint32"
+     ],
+     [
+      "channel_id",
+      "uint8"
+     ],
+     [
+      "order_id",
+      "uint64"
+     ],
+     [
+      "flags",
+      "uint8"
+     ],
+     [
+      "ts_in_delta",
+      "int32"
+     ],
+     [
+      "sequence",
+      "uint32"
+     ],
+     [
+      "symbol",
+      "str"
+     ],
+     [
+      "aggressor_side",
+      "str"
+     ],
+     [
+      "is_buy_aggressor",
+      "bool"
+     ]
+    ]
+   },
+   "instrument": "le",
+   "month": "2025-12",
+   "predicted_control_seconds": 232.5,
+   "run_status": "ok",
+   "scoring": {
+    "criterion_4": "satisfied",
+    "ground": "the output did not move under the identity write, on either side",
+    "sentinel_columns_contaminated": {
+     "net_delta": 30365,
+     "net_delta_10s": 58645,
+     "net_delta_1s": 30365,
+     "net_delta_30s": 15415,
+     "net_delta_5s": 64344,
+     "net_delta_60s": 1251
+    },
+    "sentinel_columns_corrected": {
+     "net_delta": 30365,
+     "net_delta_10s": 58645,
+     "net_delta_1s": 30365,
+     "net_delta_30s": 15415,
+     "net_delta_5s": 64344,
+     "net_delta_60s": 1251
+    },
+    "sentinel_false_positives": []
+   },
+   "seconds": 132.8,
+   "sides": {
+    "contaminated": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 300 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 59.0,
+     "sentinel_columns": {
+      "net_delta": 30365,
+      "net_delta_10s": 58645,
+      "net_delta_1s": 30365,
+      "net_delta_30s": 15415,
+      "net_delta_5s": 64344,
+      "net_delta_60s": 1251
+     },
+     "verdict": "silent"
+    },
+    "corrected": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 300 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 59.4,
+     "sentinel_columns": {
+      "net_delta": 30365,
+      "net_delta_10s": 58645,
+      "net_delta_1s": 30365,
+      "net_delta_30s": 15415,
+      "net_delta_5s": 64344,
+      "net_delta_60s": 1251
+     },
+     "verdict": "silent"
+    }
+   }
+  },
+  {
+   "capture_seconds": 221.3,
+   "control_seconds": 1380.1,
+   "frame_signature": {
+    "magg": null,
+    "trades": [
+     [
+      "ts_recv",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "ts_event",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "rtype",
+      "uint8"
+     ],
+     [
+      "publisher_id",
+      "uint16"
+     ],
+     [
+      "instrument_id",
+      "uint32"
+     ],
+     [
+      "action",
+      "str"
+     ],
+     [
+      "side",
+      "str"
+     ],
+     [
+      "price",
+      "float64"
+     ],
+     [
+      "size",
+      "uint32"
+     ],
+     [
+      "channel_id",
+      "uint8"
+     ],
+     [
+      "order_id",
+      "uint64"
+     ],
+     [
+      "flags",
+      "uint8"
+     ],
+     [
+      "ts_in_delta",
+      "int32"
+     ],
+     [
+      "sequence",
+      "uint32"
+     ],
+     [
+      "symbol",
+      "str"
+     ],
+     [
+      "aggressor_side",
+      "str"
+     ],
+     [
+      "is_buy_aggressor",
+      "bool"
+     ]
+    ]
+   },
+   "instrument": "nq",
+   "month": "2025-01",
+   "predicted_control_seconds": 1445.3,
+   "run_status": "ok",
+   "scoring": {
+    "criterion_4": "satisfied",
+    "ground": "the output did not move under the identity write, on either side",
+    "sentinel_columns_contaminated": {
+     "net_delta": 42160,
+     "net_delta_10s": 1639,
+     "net_delta_1s": 42160,
+     "net_delta_30s": 21,
+     "net_delta_5s": 6639
+    },
+    "sentinel_columns_corrected": {
+     "net_delta": 42160,
+     "net_delta_10s": 1639,
+     "net_delta_1s": 42160,
+     "net_delta_30s": 21,
+     "net_delta_5s": 6639
+    },
+    "sentinel_false_positives": []
+   },
+   "seconds": 1601.4,
+   "sides": {
+    "contaminated": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 11,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 81,
+     "n_cohorts": 300,
+     "notes": [
+      "aggregate frame 'magg' absent from raw; not written",
+      "wrote 2974 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 689.2,
+     "sentinel_columns": {
+      "net_delta": 42160,
+      "net_delta_10s": 1639,
+      "net_delta_1s": 42160,
+      "net_delta_30s": 21,
+      "net_delta_5s": 6639
+     },
+     "verdict": "silent"
+    },
+    "corrected": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 11,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 81,
+     "n_cohorts": 300,
+     "notes": [
+      "aggregate frame 'magg' absent from raw; not written",
+      "wrote 2974 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 691.0,
+     "sentinel_columns": {
+      "net_delta": 42160,
+      "net_delta_10s": 1639,
+      "net_delta_1s": 42160,
+      "net_delta_30s": 21,
+      "net_delta_5s": 6639
+     },
+     "verdict": "silent"
+    }
+   }
+  },
+  {
+   "capture_seconds": 192.8,
+   "control_seconds": 1461.1,
+   "frame_signature": {
+    "magg": null,
+    "trades": [
+     [
+      "ts_recv",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "ts_event",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "rtype",
+      "uint8"
+     ],
+     [
+      "publisher_id",
+      "uint16"
+     ],
+     [
+      "instrument_id",
+      "uint32"
+     ],
+     [
+      "action",
+      "str"
+     ],
+     [
+      "side",
+      "str"
+     ],
+     [
+      "price",
+      "float64"
+     ],
+     [
+      "size",
+      "uint32"
+     ],
+     [
+      "channel_id",
+      "uint8"
+     ],
+     [
+      "order_id",
+      "uint64"
+     ],
+     [
+      "flags",
+      "uint8"
+     ],
+     [
+      "ts_in_delta",
+      "int32"
+     ],
+     [
+      "sequence",
+      "uint32"
+     ],
+     [
+      "symbol",
+      "str"
+     ],
+     [
+      "aggressor_side",
+      "str"
+     ],
+     [
+      "is_buy_aggressor",
+      "bool"
+     ]
+    ]
+   },
+   "instrument": "nq",
+   "month": "2025-08",
+   "predicted_control_seconds": 1289.4,
+   "run_status": "ok",
+   "scoring": {
+    "criterion_4": "satisfied",
+    "ground": "the output did not move under the identity write, on either side",
+    "sentinel_columns_contaminated": {
+     "net_delta": 49454,
+     "net_delta_10s": 1757,
+     "net_delta_1s": 49454,
+     "net_delta_30s": 20,
+     "net_delta_5s": 6853,
+     "net_delta_60s": 14
+    },
+    "sentinel_columns_corrected": {
+     "net_delta": 49454,
+     "net_delta_10s": 1757,
+     "net_delta_1s": 49454,
+     "net_delta_30s": 20,
+     "net_delta_5s": 6853,
+     "net_delta_60s": 14
+    },
+    "sentinel_false_positives": []
+   },
+   "seconds": 1653.9,
+   "sides": {
+    "contaminated": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 11,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 81,
+     "n_cohorts": 300,
+     "notes": [
+      "aggregate frame 'magg' absent from raw; not written",
+      "wrote 2341 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 707.8,
+     "sentinel_columns": {
+      "net_delta": 49454,
+      "net_delta_10s": 1757,
+      "net_delta_1s": 49454,
+      "net_delta_30s": 20,
+      "net_delta_5s": 6853,
+      "net_delta_60s": 14
+     },
+     "verdict": "silent"
+    },
+    "corrected": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 11,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 81,
+     "n_cohorts": 300,
+     "notes": [
+      "aggregate frame 'magg' absent from raw; not written",
+      "wrote 2341 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 753.2,
+     "sentinel_columns": {
+      "net_delta": 49454,
+      "net_delta_10s": 1757,
+      "net_delta_1s": 49454,
+      "net_delta_30s": 20,
+      "net_delta_5s": 6853,
+      "net_delta_60s": 14
+     },
+     "verdict": "silent"
+    }
+   }
+  },
+  {
+   "capture_seconds": 226.2,
+   "control_seconds": 1432.0,
+   "frame_signature": {
+    "magg": null,
+    "trades": [
+     [
+      "ts_recv",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "ts_event",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "rtype",
+      "uint8"
+     ],
+     [
+      "publisher_id",
+      "uint16"
+     ],
+     [
+      "instrument_id",
+      "uint32"
+     ],
+     [
+      "action",
+      "str"
+     ],
+     [
+      "side",
+      "str"
+     ],
+     [
+      "price",
+      "float64"
+     ],
+     [
+      "size",
+      "uint32"
+     ],
+     [
+      "channel_id",
+      "uint8"
+     ],
+     [
+      "order_id",
+      "uint64"
+     ],
+     [
+      "flags",
+      "uint8"
+     ],
+     [
+      "ts_in_delta",
+      "int32"
+     ],
+     [
+      "sequence",
+      "uint32"
+     ],
+     [
+      "symbol",
+      "str"
+     ],
+     [
+      "aggressor_side",
+      "str"
+     ],
+     [
+      "is_buy_aggressor",
+      "bool"
+     ]
+    ]
+   },
+   "instrument": "nq",
+   "month": "2025-09",
+   "predicted_control_seconds": 1239.3,
+   "run_status": "ok",
+   "scoring": {
+    "criterion_4": "satisfied",
+    "ground": "the output did not move under the identity write, on either side",
+    "sentinel_columns_contaminated": {
+     "net_delta": 56225,
+     "net_delta_10s": 4937,
+     "net_delta_1s": 56225,
+     "net_delta_30s": 429,
+     "net_delta_5s": 14006,
+     "net_delta_60s": 128
+    },
+    "sentinel_columns_corrected": {
+     "net_delta": 56224,
+     "net_delta_10s": 4937,
+     "net_delta_1s": 56224,
+     "net_delta_30s": 429,
+     "net_delta_5s": 14006,
+     "net_delta_60s": 128
+    },
+    "sentinel_false_positives": []
+   },
+   "seconds": 1658.3,
+   "sides": {
+    "contaminated": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 11,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 81,
+     "n_cohorts": 300,
+     "notes": [
+      "aggregate frame 'magg' absent from raw; not written",
+      "wrote 1855 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 713.1,
+     "sentinel_columns": {
+      "net_delta": 56225,
+      "net_delta_10s": 4937,
+      "net_delta_1s": 56225,
+      "net_delta_30s": 429,
+      "net_delta_5s": 14006,
+      "net_delta_60s": 128
+     },
+     "verdict": "silent"
+    },
+    "corrected": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 11,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 81,
+     "n_cohorts": 300,
+     "notes": [
+      "aggregate frame 'magg' absent from raw; not written",
+      "wrote 1855 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 718.9,
+     "sentinel_columns": {
+      "net_delta": 56224,
+      "net_delta_10s": 4937,
+      "net_delta_1s": 56224,
+      "net_delta_30s": 429,
+      "net_delta_5s": 14006,
+      "net_delta_60s": 128
+     },
+     "verdict": "silent"
+    }
+   }
+  },
+  {
+   "capture_seconds": 285.5,
+   "control_seconds": 1622.9,
+   "frame_signature": {
+    "magg": null,
+    "trades": [
+     [
+      "ts_recv",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "ts_event",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "rtype",
+      "uint8"
+     ],
+     [
+      "publisher_id",
+      "uint16"
+     ],
+     [
+      "instrument_id",
+      "uint32"
+     ],
+     [
+      "action",
+      "str"
+     ],
+     [
+      "side",
+      "str"
+     ],
+     [
+      "price",
+      "float64"
+     ],
+     [
+      "size",
+      "uint32"
+     ],
+     [
+      "channel_id",
+      "uint8"
+     ],
+     [
+      "order_id",
+      "uint64"
+     ],
+     [
+      "flags",
+      "uint8"
+     ],
+     [
+      "ts_in_delta",
+      "int32"
+     ],
+     [
+      "sequence",
+      "uint32"
+     ],
+     [
+      "symbol",
+      "str"
+     ],
+     [
+      "aggressor_side",
+      "str"
+     ],
+     [
+      "is_buy_aggressor",
+      "bool"
+     ]
+    ]
+   },
+   "instrument": "nq",
+   "month": "2025-10",
+   "predicted_control_seconds": 1478.1,
+   "run_status": "ok",
+   "scoring": {
+    "criterion_4": "satisfied",
+    "ground": "the output did not move under the identity write, on either side",
+    "sentinel_columns_contaminated": {
+     "net_delta": 49858,
+     "net_delta_10s": 1797,
+     "net_delta_1s": 49858,
+     "net_delta_30s": 8,
+     "net_delta_5s": 6708,
+     "net_delta_60s": 5
+    },
+    "sentinel_columns_corrected": {
+     "net_delta": 49858,
+     "net_delta_10s": 1797,
+     "net_delta_1s": 49858,
+     "net_delta_30s": 8,
+     "net_delta_5s": 6708,
+     "net_delta_60s": 5
+    },
+    "sentinel_false_positives": []
+   },
+   "seconds": 1908.4,
+   "sides": {
+    "contaminated": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 11,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 81,
+     "n_cohorts": 300,
+     "notes": [
+      "aggregate frame 'magg' absent from raw; not written",
+      "wrote 2749 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 829.0,
+     "sentinel_columns": {
+      "net_delta": 49858,
+      "net_delta_10s": 1797,
+      "net_delta_1s": 49858,
+      "net_delta_30s": 8,
+      "net_delta_5s": 6708,
+      "net_delta_60s": 5
+     },
+     "verdict": "silent"
+    },
+    "corrected": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 11,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 81,
+     "n_cohorts": 300,
+     "notes": [
+      "aggregate frame 'magg' absent from raw; not written",
+      "wrote 2749 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 793.9,
+     "sentinel_columns": {
+      "net_delta": 49858,
+      "net_delta_10s": 1797,
+      "net_delta_1s": 49858,
+      "net_delta_30s": 8,
+      "net_delta_5s": 6708,
+      "net_delta_60s": 5
+     },
+     "verdict": "silent"
+    }
+   }
+  },
+  {
+   "capture_seconds": 233.6,
+   "control_seconds": 1498.8,
+   "frame_signature": {
+    "magg": null,
+    "trades": [
+     [
+      "ts_recv",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "ts_event",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "rtype",
+      "uint8"
+     ],
+     [
+      "publisher_id",
+      "uint16"
+     ],
+     [
+      "instrument_id",
+      "uint32"
+     ],
+     [
+      "action",
+      "str"
+     ],
+     [
+      "side",
+      "str"
+     ],
+     [
+      "price",
+      "float64"
+     ],
+     [
+      "size",
+      "uint32"
+     ],
+     [
+      "channel_id",
+      "uint8"
+     ],
+     [
+      "order_id",
+      "uint64"
+     ],
+     [
+      "flags",
+      "uint8"
+     ],
+     [
+      "ts_in_delta",
+      "int32"
+     ],
+     [
+      "sequence",
+      "uint32"
+     ],
+     [
+      "symbol",
+      "str"
+     ],
+     [
+      "aggressor_side",
+      "str"
+     ],
+     [
+      "is_buy_aggressor",
+      "bool"
+     ]
+    ]
+   },
+   "instrument": "nq",
+   "month": "2025-11",
+   "predicted_control_seconds": 1367.8,
+   "run_status": "ok",
+   "scoring": {
+    "criterion_4": "satisfied",
+    "ground": "the output did not move under the identity write, on either side",
+    "sentinel_columns_contaminated": {
+     "net_delta": 36294,
+     "net_delta_10s": 2443,
+     "net_delta_1s": 36294,
+     "net_delta_30s": 143,
+     "net_delta_5s": 7007,
+     "net_delta_60s": 3
+    },
+    "sentinel_columns_corrected": {
+     "net_delta": 36294,
+     "net_delta_10s": 2443,
+     "net_delta_1s": 36294,
+     "net_delta_30s": 143,
+     "net_delta_5s": 7007,
+     "net_delta_60s": 3
+    },
+    "sentinel_false_positives": []
+   },
+   "seconds": 1732.4,
+   "sides": {
+    "contaminated": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 11,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 81,
+     "n_cohorts": 300,
+     "notes": [
+      "aggregate frame 'magg' absent from raw; not written",
+      "wrote 3497 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 734.4,
+     "sentinel_columns": {
+      "net_delta": 36294,
+      "net_delta_10s": 2443,
+      "net_delta_1s": 36294,
+      "net_delta_30s": 143,
+      "net_delta_5s": 7007,
+      "net_delta_60s": 3
+     },
+     "verdict": "silent"
+    },
+    "corrected": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 11,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 81,
+     "n_cohorts": 300,
+     "notes": [
+      "aggregate frame 'magg' absent from raw; not written",
+      "wrote 3497 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 764.4,
+     "sentinel_columns": {
+      "net_delta": 36294,
+      "net_delta_10s": 2443,
+      "net_delta_1s": 36294,
+      "net_delta_30s": 143,
+      "net_delta_5s": 7007,
+      "net_delta_60s": 3
+     },
+     "verdict": "silent"
+    }
+   }
+  },
+  {
+   "capture_seconds": 224.9,
+   "control_seconds": 1376.0,
+   "frame_signature": {
+    "magg": null,
+    "trades": [
+     [
+      "ts_recv",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "ts_event",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "rtype",
+      "uint8"
+     ],
+     [
+      "publisher_id",
+      "uint16"
+     ],
+     [
+      "instrument_id",
+      "uint32"
+     ],
+     [
+      "action",
+      "str"
+     ],
+     [
+      "side",
+      "str"
+     ],
+     [
+      "price",
+      "float64"
+     ],
+     [
+      "size",
+      "uint32"
+     ],
+     [
+      "channel_id",
+      "uint8"
+     ],
+     [
+      "order_id",
+      "uint64"
+     ],
+     [
+      "flags",
+      "uint8"
+     ],
+     [
+      "ts_in_delta",
+      "int32"
+     ],
+     [
+      "sequence",
+      "uint32"
+     ],
+     [
+      "symbol",
+      "str"
+     ],
+     [
+      "aggressor_side",
+      "str"
+     ],
+     [
+      "is_buy_aggressor",
+      "bool"
+     ]
+    ]
+   },
+   "instrument": "nq",
+   "month": "2025-12",
+   "predicted_control_seconds": 1268.3,
+   "run_status": "ok",
+   "scoring": {
+    "criterion_4": "satisfied",
+    "ground": "the output did not move under the identity write, on either side",
+    "sentinel_columns_contaminated": {
+     "net_delta": 71729,
+     "net_delta_10s": 4690,
+     "net_delta_1s": 71729,
+     "net_delta_30s": 271,
+     "net_delta_5s": 12995,
+     "net_delta_60s": 36
+    },
+    "sentinel_columns_corrected": {
+     "net_delta": 71728,
+     "net_delta_10s": 4690,
+     "net_delta_1s": 71728,
+     "net_delta_30s": 271,
+     "net_delta_5s": 12995,
+     "net_delta_60s": 36
+    },
+    "sentinel_false_positives": []
+   },
+   "seconds": 1600.9,
+   "sides": {
+    "contaminated": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 11,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 81,
+     "n_cohorts": 300,
+     "notes": [
+      "aggregate frame 'magg' absent from raw; not written",
+      "wrote 2570 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 694.5,
+     "sentinel_columns": {
+      "net_delta": 71729,
+      "net_delta_10s": 4690,
+      "net_delta_1s": 71729,
+      "net_delta_30s": 271,
+      "net_delta_5s": 12995,
+      "net_delta_60s": 36
+     },
+     "verdict": "silent"
+    },
+    "corrected": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 11,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 81,
+     "n_cohorts": 300,
+     "notes": [
+      "aggregate frame 'magg' absent from raw; not written",
+      "wrote 2570 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 681.5,
+     "sentinel_columns": {
+      "net_delta": 71728,
+      "net_delta_10s": 4690,
+      "net_delta_1s": 71728,
+      "net_delta_30s": 271,
+      "net_delta_5s": 12995,
+      "net_delta_60s": 36
+     },
+     "verdict": "silent"
+    }
+   }
+  },
+  {
+   "capture_seconds": 32.0,
+   "control_seconds": 225.9,
+   "frame_signature": {
+    "magg": [
+     [
+      "ts_floor",
+      "datetime64[ns]"
+     ],
+     [
+      "bid_adds",
+      "int64"
+     ],
+     [
+      "ask_adds",
+      "int64"
+     ],
+     [
+      "bid_cancels",
+      "int64"
+     ],
+     [
+      "ask_cancels",
+      "int64"
+     ],
+     [
+      "total_events",
+      "int64"
+     ]
+    ],
+    "trades": [
+     [
+      "ts_recv",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "ts_event",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "rtype",
+      "uint8"
+     ],
+     [
+      "publisher_id",
+      "uint16"
+     ],
+     [
+      "instrument_id",
+      "uint32"
+     ],
+     [
+      "action",
+      "str"
+     ],
+     [
+      "side",
+      "str"
+     ],
+     [
+      "price",
+      "float64"
+     ],
+     [
+      "size",
+      "uint32"
+     ],
+     [
+      "channel_id",
+      "uint8"
+     ],
+     [
+      "order_id",
+      "uint64"
+     ],
+     [
+      "flags",
+      "uint8"
+     ],
+     [
+      "ts_in_delta",
+      "int32"
+     ],
+     [
+      "sequence",
+      "uint32"
+     ],
+     [
+      "symbol",
+      "str"
+     ],
+     [
+      "aggressor_side",
+      "str"
+     ],
+     [
+      "is_buy_aggressor",
+      "bool"
+     ]
+    ]
+   },
+   "instrument": "zc",
+   "month": "2025-01",
+   "predicted_control_seconds": 285.8,
+   "run_status": "ok",
+   "scoring": {
+    "criterion_4": "satisfied",
+    "ground": "the output did not move under the identity write, on either side",
+    "sentinel_columns_contaminated": {
+     "net_delta": 60224,
+     "net_delta_10s": 45749,
+     "net_delta_1s": 60224,
+     "net_delta_30s": 2914,
+     "net_delta_5s": 83657,
+     "net_delta_60s": 96
+    },
+    "sentinel_columns_corrected": {
+     "net_delta": 60224,
+     "net_delta_10s": 45749,
+     "net_delta_1s": 60224,
+     "net_delta_30s": 2914,
+     "net_delta_5s": 83657,
+     "net_delta_60s": 96
+    },
+    "sentinel_false_positives": []
+   },
+   "seconds": 257.8,
+   "sides": {
+    "contaminated": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 608 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 109.8,
+     "sentinel_columns": {
+      "net_delta": 60224,
+      "net_delta_10s": 45749,
+      "net_delta_1s": 60224,
+      "net_delta_30s": 2914,
+      "net_delta_5s": 83657,
+      "net_delta_60s": 96
+     },
+     "verdict": "silent"
+    },
+    "corrected": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 608 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 116.1,
+     "sentinel_columns": {
+      "net_delta": 60224,
+      "net_delta_10s": 45749,
+      "net_delta_1s": 60224,
+      "net_delta_30s": 2914,
+      "net_delta_5s": 83657,
+      "net_delta_60s": 96
+     },
+     "verdict": "silent"
+    }
+   }
+  },
+  {
+   "capture_seconds": 29.1,
+   "control_seconds": 224.3,
+   "frame_signature": {
+    "magg": [
+     [
+      "ts_floor",
+      "datetime64[ns]"
+     ],
+     [
+      "bid_adds",
+      "int64"
+     ],
+     [
+      "ask_adds",
+      "int64"
+     ],
+     [
+      "bid_cancels",
+      "int64"
+     ],
+     [
+      "ask_cancels",
+      "int64"
+     ],
+     [
+      "total_events",
+      "int64"
+     ]
+    ],
+    "trades": [
+     [
+      "ts_recv",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "ts_event",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "rtype",
+      "uint8"
+     ],
+     [
+      "publisher_id",
+      "uint16"
+     ],
+     [
+      "instrument_id",
+      "uint32"
+     ],
+     [
+      "action",
+      "str"
+     ],
+     [
+      "side",
+      "str"
+     ],
+     [
+      "price",
+      "float64"
+     ],
+     [
+      "size",
+      "uint32"
+     ],
+     [
+      "channel_id",
+      "uint8"
+     ],
+     [
+      "order_id",
+      "uint64"
+     ],
+     [
+      "flags",
+      "uint8"
+     ],
+     [
+      "ts_in_delta",
+      "int32"
+     ],
+     [
+      "sequence",
+      "uint32"
+     ],
+     [
+      "symbol",
+      "str"
+     ],
+     [
+      "aggressor_side",
+      "str"
+     ],
+     [
+      "is_buy_aggressor",
+      "bool"
+     ]
+    ]
+   },
+   "instrument": "zc",
+   "month": "2025-08",
+   "predicted_control_seconds": 346.8,
+   "run_status": "ok",
+   "scoring": {
+    "criterion_4": "satisfied",
+    "ground": "the output did not move under the identity write, on either side",
+    "sentinel_columns_contaminated": {
+     "net_delta": 80695,
+     "net_delta_10s": 55437,
+     "net_delta_1s": 80695,
+     "net_delta_30s": 11772,
+     "net_delta_5s": 77507,
+     "net_delta_60s": 1552
+    },
+    "sentinel_columns_corrected": {
+     "net_delta": 80695,
+     "net_delta_10s": 55437,
+     "net_delta_1s": 80695,
+     "net_delta_30s": 11772,
+     "net_delta_5s": 77507,
+     "net_delta_60s": 1552
+    },
+    "sentinel_false_positives": []
+   },
+   "seconds": 253.4,
+   "sides": {
+    "contaminated": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 316 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 111.6,
+     "sentinel_columns": {
+      "net_delta": 80695,
+      "net_delta_10s": 55437,
+      "net_delta_1s": 80695,
+      "net_delta_30s": 11772,
+      "net_delta_5s": 77507,
+      "net_delta_60s": 1552
+     },
+     "verdict": "silent"
+    },
+    "corrected": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 316 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 112.7,
+     "sentinel_columns": {
+      "net_delta": 80695,
+      "net_delta_10s": 55437,
+      "net_delta_1s": 80695,
+      "net_delta_30s": 11772,
+      "net_delta_5s": 77507,
+      "net_delta_60s": 1552
+     },
+     "verdict": "silent"
+    }
+   }
+  },
+  {
+   "capture_seconds": 34.7,
+   "control_seconds": 250.4,
+   "frame_signature": {
+    "magg": [
+     [
+      "ts_floor",
+      "datetime64[ns]"
+     ],
+     [
+      "bid_adds",
+      "int64"
+     ],
+     [
+      "ask_adds",
+      "int64"
+     ],
+     [
+      "bid_cancels",
+      "int64"
+     ],
+     [
+      "ask_cancels",
+      "int64"
+     ],
+     [
+      "total_events",
+      "int64"
+     ]
+    ],
+    "trades": [
+     [
+      "ts_recv",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "ts_event",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "rtype",
+      "uint8"
+     ],
+     [
+      "publisher_id",
+      "uint16"
+     ],
+     [
+      "instrument_id",
+      "uint32"
+     ],
+     [
+      "action",
+      "str"
+     ],
+     [
+      "side",
+      "str"
+     ],
+     [
+      "price",
+      "float64"
+     ],
+     [
+      "size",
+      "uint32"
+     ],
+     [
+      "channel_id",
+      "uint8"
+     ],
+     [
+      "order_id",
+      "uint64"
+     ],
+     [
+      "flags",
+      "uint8"
+     ],
+     [
+      "ts_in_delta",
+      "int32"
+     ],
+     [
+      "sequence",
+      "uint32"
+     ],
+     [
+      "symbol",
+      "str"
+     ],
+     [
+      "aggressor_side",
+      "str"
+     ],
+     [
+      "is_buy_aggressor",
+      "bool"
+     ]
+    ]
+   },
+   "instrument": "zc",
+   "month": "2025-09",
+   "predicted_control_seconds": 388.6,
+   "run_status": "ok",
+   "scoring": {
+    "criterion_4": "satisfied",
+    "ground": "the output did not move under the identity write, on either side",
+    "sentinel_columns_contaminated": {
+     "net_delta": 99208,
+     "net_delta_10s": 46309,
+     "net_delta_1s": 99208,
+     "net_delta_30s": 6582,
+     "net_delta_5s": 77052,
+     "net_delta_60s": 736
+    },
+    "sentinel_columns_corrected": {
+     "net_delta": 99208,
+     "net_delta_10s": 46309,
+     "net_delta_1s": 99208,
+     "net_delta_30s": 6582,
+     "net_delta_5s": 77052,
+     "net_delta_60s": 736
+    },
+    "sentinel_false_positives": []
+   },
+   "seconds": 285.1,
+   "sides": {
+    "contaminated": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 375 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 126.4,
+     "sentinel_columns": {
+      "net_delta": 99208,
+      "net_delta_10s": 46309,
+      "net_delta_1s": 99208,
+      "net_delta_30s": 6582,
+      "net_delta_5s": 77052,
+      "net_delta_60s": 736
+     },
+     "verdict": "silent"
+    },
+    "corrected": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 375 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 124.0,
+     "sentinel_columns": {
+      "net_delta": 99208,
+      "net_delta_10s": 46309,
+      "net_delta_1s": 99208,
+      "net_delta_30s": 6582,
+      "net_delta_5s": 77052,
+      "net_delta_60s": 736
+     },
+     "verdict": "silent"
+    }
+   }
+  },
+  {
+   "capture_seconds": 39.7,
+   "control_seconds": 297.6,
+   "frame_signature": {
+    "magg": [
+     [
+      "ts_floor",
+      "datetime64[ns]"
+     ],
+     [
+      "bid_adds",
+      "int64"
+     ],
+     [
+      "ask_adds",
+      "int64"
+     ],
+     [
+      "bid_cancels",
+      "int64"
+     ],
+     [
+      "ask_cancels",
+      "int64"
+     ],
+     [
+      "total_events",
+      "int64"
+     ]
+    ],
+    "trades": [
+     [
+      "ts_recv",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "ts_event",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "rtype",
+      "uint8"
+     ],
+     [
+      "publisher_id",
+      "uint16"
+     ],
+     [
+      "instrument_id",
+      "uint32"
+     ],
+     [
+      "action",
+      "str"
+     ],
+     [
+      "side",
+      "str"
+     ],
+     [
+      "price",
+      "float64"
+     ],
+     [
+      "size",
+      "uint32"
+     ],
+     [
+      "channel_id",
+      "uint8"
+     ],
+     [
+      "order_id",
+      "uint64"
+     ],
+     [
+      "flags",
+      "uint8"
+     ],
+     [
+      "ts_in_delta",
+      "int32"
+     ],
+     [
+      "sequence",
+      "uint32"
+     ],
+     [
+      "symbol",
+      "str"
+     ],
+     [
+      "aggressor_side",
+      "str"
+     ],
+     [
+      "is_buy_aggressor",
+      "bool"
+     ]
+    ]
+   },
+   "instrument": "zc",
+   "month": "2025-10",
+   "predicted_control_seconds": 440.7,
+   "run_status": "ok",
+   "scoring": {
+    "criterion_4": "satisfied",
+    "ground": "the output did not move under the identity write, on either side",
+    "sentinel_columns_contaminated": {
+     "net_delta": 118009,
+     "net_delta_10s": 48623,
+     "net_delta_1s": 118009,
+     "net_delta_30s": 4415,
+     "net_delta_5s": 86987,
+     "net_delta_60s": 445
+    },
+    "sentinel_columns_corrected": {
+     "net_delta": 118009,
+     "net_delta_10s": 48623,
+     "net_delta_1s": 118009,
+     "net_delta_30s": 4415,
+     "net_delta_5s": 86987,
+     "net_delta_60s": 445
+    },
+    "sentinel_false_positives": []
+   },
+   "seconds": 337.3,
+   "sides": {
+    "contaminated": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 388 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 146.0,
+     "sentinel_columns": {
+      "net_delta": 118009,
+      "net_delta_10s": 48623,
+      "net_delta_1s": 118009,
+      "net_delta_30s": 4415,
+      "net_delta_5s": 86987,
+      "net_delta_60s": 445
+     },
+     "verdict": "silent"
+    },
+    "corrected": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 388 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 151.5,
+     "sentinel_columns": {
+      "net_delta": 118009,
+      "net_delta_10s": 48623,
+      "net_delta_1s": 118009,
+      "net_delta_30s": 4415,
+      "net_delta_5s": 86987,
+      "net_delta_60s": 445
+     },
+     "verdict": "silent"
+    }
+   }
+  },
+  {
+   "capture_seconds": 28.4,
+   "control_seconds": 196.6,
+   "frame_signature": {
+    "magg": [
+     [
+      "ts_floor",
+      "datetime64[ns]"
+     ],
+     [
+      "bid_adds",
+      "int64"
+     ],
+     [
+      "ask_adds",
+      "int64"
+     ],
+     [
+      "bid_cancels",
+      "int64"
+     ],
+     [
+      "ask_cancels",
+      "int64"
+     ],
+     [
+      "total_events",
+      "int64"
+     ]
+    ],
+    "trades": [
+     [
+      "ts_recv",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "ts_event",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "rtype",
+      "uint8"
+     ],
+     [
+      "publisher_id",
+      "uint16"
+     ],
+     [
+      "instrument_id",
+      "uint32"
+     ],
+     [
+      "action",
+      "str"
+     ],
+     [
+      "side",
+      "str"
+     ],
+     [
+      "price",
+      "float64"
+     ],
+     [
+      "size",
+      "uint32"
+     ],
+     [
+      "channel_id",
+      "uint8"
+     ],
+     [
+      "order_id",
+      "uint64"
+     ],
+     [
+      "flags",
+      "uint8"
+     ],
+     [
+      "ts_in_delta",
+      "int32"
+     ],
+     [
+      "sequence",
+      "uint32"
+     ],
+     [
+      "symbol",
+      "str"
+     ],
+     [
+      "aggressor_side",
+      "str"
+     ],
+     [
+      "is_buy_aggressor",
+      "bool"
+     ]
+    ]
+   },
+   "instrument": "zc",
+   "month": "2025-11",
+   "predicted_control_seconds": 243.6,
+   "run_status": "ok",
+   "scoring": {
+    "criterion_4": "satisfied",
+    "ground": "the output did not move under the identity write, on either side",
+    "sentinel_columns_contaminated": {
+     "net_delta": 51478,
+     "net_delta_10s": 46956,
+     "net_delta_1s": 51478,
+     "net_delta_30s": 3471,
+     "net_delta_5s": 77649,
+     "net_delta_60s": 97
+    },
+    "sentinel_columns_corrected": {
+     "net_delta": 51478,
+     "net_delta_10s": 46956,
+     "net_delta_1s": 51478,
+     "net_delta_30s": 3471,
+     "net_delta_5s": 77649,
+     "net_delta_60s": 97
+    },
+    "sentinel_false_positives": []
+   },
+   "seconds": 225.0,
+   "sides": {
+    "contaminated": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 434 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 98.5,
+     "sentinel_columns": {
+      "net_delta": 51478,
+      "net_delta_10s": 46956,
+      "net_delta_1s": 51478,
+      "net_delta_30s": 3471,
+      "net_delta_5s": 77649,
+      "net_delta_60s": 97
+     },
+     "verdict": "silent"
+    },
+    "corrected": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 434 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 98.2,
+     "sentinel_columns": {
+      "net_delta": 51478,
+      "net_delta_10s": 46956,
+      "net_delta_1s": 51478,
+      "net_delta_30s": 3471,
+      "net_delta_5s": 77649,
+      "net_delta_60s": 97
+     },
+     "verdict": "silent"
+    }
+   }
+  },
+  {
+   "capture_seconds": 30.3,
+   "control_seconds": 209.8,
+   "frame_signature": {
+    "magg": [
+     [
+      "ts_floor",
+      "datetime64[ns]"
+     ],
+     [
+      "bid_adds",
+      "int64"
+     ],
+     [
+      "ask_adds",
+      "int64"
+     ],
+     [
+      "bid_cancels",
+      "int64"
+     ],
+     [
+      "ask_cancels",
+      "int64"
+     ],
+     [
+      "total_events",
+      "int64"
+     ]
+    ],
+    "trades": [
+     [
+      "ts_recv",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "ts_event",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "rtype",
+      "uint8"
+     ],
+     [
+      "publisher_id",
+      "uint16"
+     ],
+     [
+      "instrument_id",
+      "uint32"
+     ],
+     [
+      "action",
+      "str"
+     ],
+     [
+      "side",
+      "str"
+     ],
+     [
+      "price",
+      "float64"
+     ],
+     [
+      "size",
+      "uint32"
+     ],
+     [
+      "channel_id",
+      "uint8"
+     ],
+     [
+      "order_id",
+      "uint64"
+     ],
+     [
+      "flags",
+      "uint8"
+     ],
+     [
+      "ts_in_delta",
+      "int32"
+     ],
+     [
+      "sequence",
+      "uint32"
+     ],
+     [
+      "symbol",
+      "str"
+     ],
+     [
+      "aggressor_side",
+      "str"
+     ],
+     [
+      "is_buy_aggressor",
+      "bool"
+     ]
+    ]
+   },
+   "instrument": "zc",
+   "month": "2025-12",
+   "predicted_control_seconds": 266.7,
+   "run_status": "ok",
+   "scoring": {
+    "criterion_4": "satisfied",
+    "ground": "the output did not move under the identity write, on either side",
+    "sentinel_columns_contaminated": {
+     "net_delta": 59273,
+     "net_delta_10s": 59571,
+     "net_delta_1s": 59273,
+     "net_delta_30s": 4349,
+     "net_delta_5s": 96156,
+     "net_delta_60s": 123
+    },
+    "sentinel_columns_corrected": {
+     "net_delta": 59273,
+     "net_delta_10s": 59571,
+     "net_delta_1s": 59273,
+     "net_delta_30s": 4349,
+     "net_delta_5s": 96156,
+     "net_delta_60s": 123
+    },
+    "sentinel_false_positives": []
+   },
+   "seconds": 240.1,
+   "sides": {
+    "contaminated": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 347 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 104.7,
+     "sentinel_columns": {
+      "net_delta": 59273,
+      "net_delta_10s": 59571,
+      "net_delta_1s": 59273,
+      "net_delta_30s": 4349,
+      "net_delta_5s": 96156,
+      "net_delta_60s": 123
+     },
+     "verdict": "silent"
+    },
+    "corrected": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 347 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 105.1,
+     "sentinel_columns": {
+      "net_delta": 59273,
+      "net_delta_10s": 59571,
+      "net_delta_1s": 59273,
+      "net_delta_30s": 4349,
+      "net_delta_5s": 96156,
+      "net_delta_60s": 123
+     },
+     "verdict": "silent"
+    }
+   }
+  },
+  {
+   "capture_seconds": 42.0,
+   "control_seconds": 285.0,
+   "frame_signature": {
+    "magg": [
+     [
+      "ts_floor",
+      "datetime64[ns]"
+     ],
+     [
+      "bid_adds",
+      "int64"
+     ],
+     [
+      "ask_adds",
+      "int64"
+     ],
+     [
+      "bid_cancels",
+      "int64"
+     ],
+     [
+      "ask_cancels",
+      "int64"
+     ],
+     [
+      "total_events",
+      "int64"
+     ]
+    ],
+    "trades": [
+     [
+      "ts_recv",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "ts_event",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "rtype",
+      "uint8"
+     ],
+     [
+      "publisher_id",
+      "uint16"
+     ],
+     [
+      "instrument_id",
+      "uint32"
+     ],
+     [
+      "action",
+      "str"
+     ],
+     [
+      "side",
+      "str"
+     ],
+     [
+      "price",
+      "float64"
+     ],
+     [
+      "size",
+      "uint32"
+     ],
+     [
+      "channel_id",
+      "uint8"
+     ],
+     [
+      "order_id",
+      "uint64"
+     ],
+     [
+      "flags",
+      "uint8"
+     ],
+     [
+      "ts_in_delta",
+      "int32"
+     ],
+     [
+      "sequence",
+      "uint32"
+     ],
+     [
+      "symbol",
+      "str"
+     ],
+     [
+      "aggressor_side",
+      "str"
+     ],
+     [
+      "is_buy_aggressor",
+      "bool"
+     ]
+    ]
+   },
+   "instrument": "zs",
+   "month": "2025-01",
+   "predicted_control_seconds": 328.4,
+   "run_status": "ok",
+   "scoring": {
+    "criterion_4": "satisfied",
+    "ground": "the output did not move under the identity write, on either side",
+    "sentinel_columns_contaminated": {
+     "net_delta": 48478,
+     "net_delta_10s": 28577,
+     "net_delta_1s": 48478,
+     "net_delta_30s": 1705,
+     "net_delta_5s": 55890,
+     "net_delta_60s": 8
+    },
+    "sentinel_columns_corrected": {
+     "net_delta": 48477,
+     "net_delta_10s": 28577,
+     "net_delta_1s": 48477,
+     "net_delta_30s": 1705,
+     "net_delta_5s": 55890,
+     "net_delta_60s": 8
+    },
+    "sentinel_false_positives": []
+   },
+   "seconds": 327.0,
+   "sides": {
+    "contaminated": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 603 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 143.5,
+     "sentinel_columns": {
+      "net_delta": 48478,
+      "net_delta_10s": 28577,
+      "net_delta_1s": 48478,
+      "net_delta_30s": 1705,
+      "net_delta_5s": 55890,
+      "net_delta_60s": 8
+     },
+     "verdict": "silent"
+    },
+    "corrected": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 603 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 141.5,
+     "sentinel_columns": {
+      "net_delta": 48477,
+      "net_delta_10s": 28577,
+      "net_delta_1s": 48477,
+      "net_delta_30s": 1705,
+      "net_delta_5s": 55890,
+      "net_delta_60s": 8
+     },
+     "verdict": "silent"
+    }
+   }
+  },
+  {
+   "capture_seconds": 40.5,
+   "control_seconds": 270.4,
+   "frame_signature": {
+    "magg": [
+     [
+      "ts_floor",
+      "datetime64[ns]"
+     ],
+     [
+      "bid_adds",
+      "int64"
+     ],
+     [
+      "ask_adds",
+      "int64"
+     ],
+     [
+      "bid_cancels",
+      "int64"
+     ],
+     [
+      "ask_cancels",
+      "int64"
+     ],
+     [
+      "total_events",
+      "int64"
+     ]
+    ],
+    "trades": [
+     [
+      "ts_recv",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "ts_event",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "rtype",
+      "uint8"
+     ],
+     [
+      "publisher_id",
+      "uint16"
+     ],
+     [
+      "instrument_id",
+      "uint32"
+     ],
+     [
+      "action",
+      "str"
+     ],
+     [
+      "side",
+      "str"
+     ],
+     [
+      "price",
+      "float64"
+     ],
+     [
+      "size",
+      "uint32"
+     ],
+     [
+      "channel_id",
+      "uint8"
+     ],
+     [
+      "order_id",
+      "uint64"
+     ],
+     [
+      "flags",
+      "uint8"
+     ],
+     [
+      "ts_in_delta",
+      "int32"
+     ],
+     [
+      "sequence",
+      "uint32"
+     ],
+     [
+      "symbol",
+      "str"
+     ],
+     [
+      "aggressor_side",
+      "str"
+     ],
+     [
+      "is_buy_aggressor",
+      "bool"
+     ]
+    ]
+   },
+   "instrument": "zs",
+   "month": "2025-08",
+   "predicted_control_seconds": 365.9,
+   "run_status": "ok",
+   "scoring": {
+    "criterion_4": "satisfied",
+    "ground": "the output did not move under the identity write, on either side",
+    "sentinel_columns_contaminated": {
+     "net_delta": 64101,
+     "net_delta_10s": 41127,
+     "net_delta_1s": 64101,
+     "net_delta_30s": 5393,
+     "net_delta_5s": 62551,
+     "net_delta_60s": 431
+    },
+    "sentinel_columns_corrected": {
+     "net_delta": 64101,
+     "net_delta_10s": 41127,
+     "net_delta_1s": 64101,
+     "net_delta_30s": 5393,
+     "net_delta_5s": 62551,
+     "net_delta_60s": 431
+    },
+    "sentinel_false_positives": []
+   },
+   "seconds": 310.9,
+   "sides": {
+    "contaminated": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 544 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 133.0,
+     "sentinel_columns": {
+      "net_delta": 64101,
+      "net_delta_10s": 41127,
+      "net_delta_1s": 64101,
+      "net_delta_30s": 5393,
+      "net_delta_5s": 62551,
+      "net_delta_60s": 431
+     },
+     "verdict": "silent"
+    },
+    "corrected": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 544 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 137.4,
+     "sentinel_columns": {
+      "net_delta": 64101,
+      "net_delta_10s": 41127,
+      "net_delta_1s": 64101,
+      "net_delta_30s": 5393,
+      "net_delta_5s": 62551,
+      "net_delta_60s": 431
+     },
+     "verdict": "silent"
+    }
+   }
+  },
+  {
+   "capture_seconds": 36.2,
+   "control_seconds": 244.0,
+   "frame_signature": {
+    "magg": [
+     [
+      "ts_floor",
+      "datetime64[ns]"
+     ],
+     [
+      "bid_adds",
+      "int64"
+     ],
+     [
+      "ask_adds",
+      "int64"
+     ],
+     [
+      "bid_cancels",
+      "int64"
+     ],
+     [
+      "ask_cancels",
+      "int64"
+     ],
+     [
+      "total_events",
+      "int64"
+     ]
+    ],
+    "trades": [
+     [
+      "ts_recv",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "ts_event",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "rtype",
+      "uint8"
+     ],
+     [
+      "publisher_id",
+      "uint16"
+     ],
+     [
+      "instrument_id",
+      "uint32"
+     ],
+     [
+      "action",
+      "str"
+     ],
+     [
+      "side",
+      "str"
+     ],
+     [
+      "price",
+      "float64"
+     ],
+     [
+      "size",
+      "uint32"
+     ],
+     [
+      "channel_id",
+      "uint8"
+     ],
+     [
+      "order_id",
+      "uint64"
+     ],
+     [
+      "flags",
+      "uint8"
+     ],
+     [
+      "ts_in_delta",
+      "int32"
+     ],
+     [
+      "sequence",
+      "uint32"
+     ],
+     [
+      "symbol",
+      "str"
+     ],
+     [
+      "aggressor_side",
+      "str"
+     ],
+     [
+      "is_buy_aggressor",
+      "bool"
+     ]
+    ]
+   },
+   "instrument": "zs",
+   "month": "2025-09",
+   "predicted_control_seconds": 324.4,
+   "run_status": "ok",
+   "scoring": {
+    "criterion_4": "satisfied",
+    "ground": "the output did not move under the identity write, on either side",
+    "sentinel_columns_contaminated": {
+     "net_delta": 52624,
+     "net_delta_10s": 45130,
+     "net_delta_1s": 52624,
+     "net_delta_30s": 6961,
+     "net_delta_5s": 63841,
+     "net_delta_60s": 466
+    },
+    "sentinel_columns_corrected": {
+     "net_delta": 52623,
+     "net_delta_10s": 45130,
+     "net_delta_1s": 52623,
+     "net_delta_30s": 6961,
+     "net_delta_5s": 63841,
+     "net_delta_60s": 466
+    },
+    "sentinel_false_positives": []
+   },
+   "seconds": 280.2,
+   "sides": {
+    "contaminated": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 380 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 121.4,
+     "sentinel_columns": {
+      "net_delta": 52624,
+      "net_delta_10s": 45130,
+      "net_delta_1s": 52624,
+      "net_delta_30s": 6961,
+      "net_delta_5s": 63841,
+      "net_delta_60s": 466
+     },
+     "verdict": "silent"
+    },
+    "corrected": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 380 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 122.6,
+     "sentinel_columns": {
+      "net_delta": 52623,
+      "net_delta_10s": 45130,
+      "net_delta_1s": 52623,
+      "net_delta_30s": 6961,
+      "net_delta_5s": 63841,
+      "net_delta_60s": 466
+     },
+     "verdict": "silent"
+    }
+   }
+  },
+  {
+   "capture_seconds": 44.5,
+   "control_seconds": 304.8,
+   "frame_signature": {
+    "magg": [
+     [
+      "ts_floor",
+      "datetime64[ns]"
+     ],
+     [
+      "bid_adds",
+      "int64"
+     ],
+     [
+      "ask_adds",
+      "int64"
+     ],
+     [
+      "bid_cancels",
+      "int64"
+     ],
+     [
+      "ask_cancels",
+      "int64"
+     ],
+     [
+      "total_events",
+      "int64"
+     ]
+    ],
+    "trades": [
+     [
+      "ts_recv",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "ts_event",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "rtype",
+      "uint8"
+     ],
+     [
+      "publisher_id",
+      "uint16"
+     ],
+     [
+      "instrument_id",
+      "uint32"
+     ],
+     [
+      "action",
+      "str"
+     ],
+     [
+      "side",
+      "str"
+     ],
+     [
+      "price",
+      "float64"
+     ],
+     [
+      "size",
+      "uint32"
+     ],
+     [
+      "channel_id",
+      "uint8"
+     ],
+     [
+      "order_id",
+      "uint64"
+     ],
+     [
+      "flags",
+      "uint8"
+     ],
+     [
+      "ts_in_delta",
+      "int32"
+     ],
+     [
+      "sequence",
+      "uint32"
+     ],
+     [
+      "symbol",
+      "str"
+     ],
+     [
+      "aggressor_side",
+      "str"
+     ],
+     [
+      "is_buy_aggressor",
+      "bool"
+     ]
+    ]
+   },
+   "instrument": "zs",
+   "month": "2025-10",
+   "predicted_control_seconds": 397.5,
+   "run_status": "ok",
+   "scoring": {
+    "criterion_4": "satisfied",
+    "ground": "the output did not move under the identity write, on either side",
+    "sentinel_columns_contaminated": {
+     "net_delta": 76786,
+     "net_delta_10s": 43666,
+     "net_delta_1s": 76786,
+     "net_delta_30s": 4157,
+     "net_delta_5s": 73856,
+     "net_delta_60s": 220
+    },
+    "sentinel_columns_corrected": {
+     "net_delta": 76786,
+     "net_delta_10s": 43666,
+     "net_delta_1s": 76786,
+     "net_delta_30s": 4157,
+     "net_delta_5s": 73856,
+     "net_delta_60s": 220
+    },
+    "sentinel_false_positives": []
+   },
+   "seconds": 349.4,
+   "sides": {
+    "contaminated": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 453 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 154.4,
+     "sentinel_columns": {
+      "net_delta": 76786,
+      "net_delta_10s": 43666,
+      "net_delta_1s": 76786,
+      "net_delta_30s": 4157,
+      "net_delta_5s": 73856,
+      "net_delta_60s": 220
+     },
+     "verdict": "silent"
+    },
+    "corrected": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 453 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 150.4,
+     "sentinel_columns": {
+      "net_delta": 76786,
+      "net_delta_10s": 43666,
+      "net_delta_1s": 76786,
+      "net_delta_30s": 4157,
+      "net_delta_5s": 73856,
+      "net_delta_60s": 220
+     },
+     "verdict": "silent"
+    }
+   }
+  },
+  {
+   "capture_seconds": 42.6,
+   "control_seconds": 256.7,
+   "frame_signature": {
+    "magg": [
+     [
+      "ts_floor",
+      "datetime64[ns]"
+     ],
+     [
+      "bid_adds",
+      "int64"
+     ],
+     [
+      "ask_adds",
+      "int64"
+     ],
+     [
+      "bid_cancels",
+      "int64"
+     ],
+     [
+      "ask_cancels",
+      "int64"
+     ],
+     [
+      "total_events",
+      "int64"
+     ]
+    ],
+    "trades": [
+     [
+      "ts_recv",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "ts_event",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "rtype",
+      "uint8"
+     ],
+     [
+      "publisher_id",
+      "uint16"
+     ],
+     [
+      "instrument_id",
+      "uint32"
+     ],
+     [
+      "action",
+      "str"
+     ],
+     [
+      "side",
+      "str"
+     ],
+     [
+      "price",
+      "float64"
+     ],
+     [
+      "size",
+      "uint32"
+     ],
+     [
+      "channel_id",
+      "uint8"
+     ],
+     [
+      "order_id",
+      "uint64"
+     ],
+     [
+      "flags",
+      "uint8"
+     ],
+     [
+      "ts_in_delta",
+      "int32"
+     ],
+     [
+      "sequence",
+      "uint32"
+     ],
+     [
+      "symbol",
+      "str"
+     ],
+     [
+      "aggressor_side",
+      "str"
+     ],
+     [
+      "is_buy_aggressor",
+      "bool"
+     ]
+    ]
+   },
+   "instrument": "zs",
+   "month": "2025-11",
+   "predicted_control_seconds": 291.0,
+   "run_status": "ok",
+   "scoring": {
+    "criterion_4": "satisfied",
+    "ground": "the output did not move under the identity write, on either side",
+    "sentinel_columns_contaminated": {
+     "net_delta": 43341,
+     "net_delta_10s": 32874,
+     "net_delta_1s": 43341,
+     "net_delta_30s": 2567,
+     "net_delta_5s": 55797,
+     "net_delta_60s": 66
+    },
+    "sentinel_columns_corrected": {
+     "net_delta": 43341,
+     "net_delta_10s": 32874,
+     "net_delta_1s": 43341,
+     "net_delta_30s": 2567,
+     "net_delta_5s": 55797,
+     "net_delta_60s": 66
+    },
+    "sentinel_false_positives": []
+   },
+   "seconds": 299.3,
+   "sides": {
+    "contaminated": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 647 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 129.1,
+     "sentinel_columns": {
+      "net_delta": 43341,
+      "net_delta_10s": 32874,
+      "net_delta_1s": 43341,
+      "net_delta_30s": 2567,
+      "net_delta_5s": 55797,
+      "net_delta_60s": 66
+     },
+     "verdict": "silent"
+    },
+    "corrected": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 647 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 127.6,
+     "sentinel_columns": {
+      "net_delta": 43341,
+      "net_delta_10s": 32874,
+      "net_delta_1s": 43341,
+      "net_delta_30s": 2567,
+      "net_delta_5s": 55797,
+      "net_delta_60s": 66
+     },
+     "verdict": "silent"
+    }
+   }
+  },
+  {
+   "capture_seconds": 29.0,
+   "control_seconds": 201.3,
+   "frame_signature": {
+    "magg": [
+     [
+      "ts_floor",
+      "datetime64[ns]"
+     ],
+     [
+      "bid_adds",
+      "int64"
+     ],
+     [
+      "ask_adds",
+      "int64"
+     ],
+     [
+      "bid_cancels",
+      "int64"
+     ],
+     [
+      "ask_cancels",
+      "int64"
+     ],
+     [
+      "total_events",
+      "int64"
+     ]
+    ],
+    "trades": [
+     [
+      "ts_recv",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "ts_event",
+      "datetime64[ns, UTC]"
+     ],
+     [
+      "rtype",
+      "uint8"
+     ],
+     [
+      "publisher_id",
+      "uint16"
+     ],
+     [
+      "instrument_id",
+      "uint32"
+     ],
+     [
+      "action",
+      "str"
+     ],
+     [
+      "side",
+      "str"
+     ],
+     [
+      "price",
+      "float64"
+     ],
+     [
+      "size",
+      "uint32"
+     ],
+     [
+      "channel_id",
+      "uint8"
+     ],
+     [
+      "order_id",
+      "uint64"
+     ],
+     [
+      "flags",
+      "uint8"
+     ],
+     [
+      "ts_in_delta",
+      "int32"
+     ],
+     [
+      "sequence",
+      "uint32"
+     ],
+     [
+      "symbol",
+      "str"
+     ],
+     [
+      "aggressor_side",
+      "str"
+     ],
+     [
+      "is_buy_aggressor",
+      "bool"
+     ]
+    ]
+   },
+   "instrument": "zs",
+   "month": "2025-12",
+   "predicted_control_seconds": 270.3,
+   "run_status": "ok",
+   "scoring": {
+    "criterion_4": "satisfied",
+    "ground": "the output did not move under the identity write, on either side",
+    "sentinel_columns_contaminated": {
+     "net_delta": 36575,
+     "net_delta_10s": 57741,
+     "net_delta_1s": 36575,
+     "net_delta_30s": 12738,
+     "net_delta_5s": 69298,
+     "net_delta_60s": 956
+    },
+    "sentinel_columns_corrected": {
+     "net_delta": 36575,
+     "net_delta_10s": 57741,
+     "net_delta_1s": 36575,
+     "net_delta_30s": 12738,
+     "net_delta_5s": 69298,
+     "net_delta_60s": 956
+    },
+    "sentinel_false_positives": []
+   },
+   "seconds": 230.4,
+   "sides": {
+    "contaminated": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 424 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 99.4,
+     "sentinel_columns": {
+      "net_delta": 36575,
+      "net_delta_10s": 57741,
+      "net_delta_1s": 36575,
+      "net_delta_30s": 12738,
+      "net_delta_5s": 69298,
+      "net_delta_60s": 956
+     },
+     "verdict": "silent"
+    },
+    "corrected": {
+     "compatibility_ok": true,
+     "determinism_ok": true,
+     "limb_b_columns_checked": 16,
+     "limb_b_failures": [],
+     "limb_b_input_invariant": true,
+     "moved_columns": [],
+     "n_base_columns": 87,
+     "n_cohorts": 300,
+     "notes": [
+      "wrote 424 aggregate cell selection(s) back across 300 second(s)"
+     ],
+     "output_identical": true,
+     "scoreable": true,
+     "seconds": 101.9,
+     "sentinel_columns": {
+      "net_delta": 36575,
+      "net_delta_10s": 57741,
+      "net_delta_1s": 36575,
+      "net_delta_30s": 12738,
+      "net_delta_5s": 69298,
+      "net_delta_60s": 956
+     },
+     "verdict": "silent"
+    }
+   }
+  }
+ ],
+ "limb_b_note": "input invariance is BEYOND the registered text, reported apart, and never quoted as satisfying criterion 4"
+}
