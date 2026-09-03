@@ -175,3 +175,75 @@ def test_the_schema_doc_says_it_is_not_the_registered_declaration():
 def test_the_schema_doc_explains_the_unnamed_frame_case():
     """The silence rule reaches the user-facing documentation, not only the code."""
     assert "`none`, not `observed_silence`" in SCHEMA_DOC
+
+
+# ---------------------------------------------------------------------------
+# Version 3 — the column modes. R204 P5.
+# ---------------------------------------------------------------------------
+
+V3 = {"version": 3, "timestamp_column": "ts",
+      "column_modes": {"price": "at_timestamp",
+                       "cpi": {"mode": "at_source_timestamp",
+                               "column": "released"}}}
+
+
+def test_column_modes_load_in_both_forms(tmp_path):
+    c = load_model(_write(tmp_path, V3))
+    assert c.timestamp_column == "ts"
+    assert c.column_modes["price"].mode == "at_timestamp"
+    assert c.column_modes["cpi"].column == "released"
+
+
+def test_a_version_2_file_naming_a_version_3_key_is_refused(tmp_path):
+    """KEYS ARRIVE WITH THEIR CONSUMER, and the refusal says where they live."""
+    bad = {"version": 2, "column_modes": {"a": "at_timestamp"}}
+    with pytest.raises(ModelFileError) as e:
+        load_model(_write(tmp_path, bad))
+    assert "column_modes" in str(e.value)
+    assert "known at version" in str(e.value)
+
+
+def test_the_escape_hatch_cannot_be_declared_in_a_file(tmp_path):
+    """A file cannot carry a function, so the mode that is one is refused with
+    the reason rather than accepted and then found empty."""
+    bad = dict(V3, column_modes={"a": "availability_fn"})
+    with pytest.raises(ModelFileError) as e:
+        load_model(_write(tmp_path, bad))
+    assert "cannot carry a function" in str(e.value)
+
+
+def test_a_mode_that_reads_a_column_is_refused_without_one(tmp_path):
+    bad = dict(V3, column_modes={"a": "at_source_timestamp"})
+    with pytest.raises(ModelFileError, match="names no column"):
+        load_model(_write(tmp_path, bad))
+
+
+def test_a_mode_given_a_column_it_does_not_read_is_refused(tmp_path):
+    bad = dict(V3, column_modes={"a": {"mode": "always", "column": "x"}})
+    with pytest.raises(ModelFileError, match="does not read one"):
+        load_model(_write(tmp_path, bad))
+
+
+def test_an_unknown_mode_name_is_refused_listing_the_ones_a_file_may_use(tmp_path):
+    bad = dict(V3, column_modes={"a": "at_bar_open"})
+    with pytest.raises(ModelFileError) as e:
+        load_model(_write(tmp_path, bad))
+    assert "at_bar_close" in str(e.value)
+
+
+def test_an_unknown_key_inside_a_mode_object_is_refused(tmp_path):
+    bad = dict(V3, column_modes={"a": {"mode": "at_timestamp", "colunm": "x"}})
+    with pytest.raises(ModelFileError, match="unknown key"):
+        load_model(_write(tmp_path, bad))
+
+
+def test_empty_column_modes_is_refused_but_absent_is_fine(tmp_path):
+    with pytest.raises(ModelFileError, match="present and not a non-empty"):
+        load_model(_write(tmp_path, dict(V3, column_modes={})))
+    assert load_model(_write(tmp_path, {"version": 3})).column_modes is None
+
+
+def test_the_schema_doc_points_at_the_arithmetic_document():
+    assert "AVAILABILITY_MODES.md" in SCHEMA_DOC
+    assert "written before the parser" in SCHEMA_DOC
+    assert "undeclared rather than defaulted" in SCHEMA_DOC

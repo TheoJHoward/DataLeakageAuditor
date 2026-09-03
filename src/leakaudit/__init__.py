@@ -46,6 +46,9 @@ from .availability import (
     align_key, eligible_cohorts, run_probe_a)
 from .availability_trace import traces_for
 from .identity_control import IdentityControlResult, run_identity_control
+from .modes import (
+    ALL_MODES, FILE_MODES, ColumnMode, ModeError, availability,
+    availability_matrix, bar_duration, undeclared_columns)
 from . import fixture_adapter
 
 __all__ = [
@@ -65,5 +68,9 @@ __all__ = [
     "AvailabilityModel", "run_probe_a", "ProbeAResult", "ProbeError",
     "eligible_cohorts", "EligibleCohorts", "align_key", "traces_for",
     "run_identity_control", "IdentityControlResult",
+    # P5 -- the per-column availability modes. AVAILABILITY_MODES.md is the
+    # arithmetic, written before the parser that reads it.
+    "ColumnMode", "ModeError", "availability", "availability_matrix",
+    "bar_duration", "undeclared_columns", "FILE_MODES", "ALL_MODES",
     "fixture_adapter",
 ]

@@ -35,9 +35,10 @@ from pathlib import Path
 import pandas as pd
 
 from .availability import AvailabilityModel
+from .modes import AVAILABILITY_FN, FILE_MODES, ColumnMode, ModeError
 
-SCHEMA_VERSION = 2
-SUPPORTED_VERSIONS = (1, 2)
+SCHEMA_VERSION = 3
+SUPPORTED_VERSIONS = (1, 2, 3)
 
 # THE FILE VERSIONS WITH THE TOOL, NEVER WITH A REGISTRATION. R203 §1.
 #
@@ -56,13 +57,17 @@ SUPPORTED_VERSIONS = (1, 2)
 _V1_KEYS = {"version", "aggregate_frames", "decision_column", "window_seconds",
             "ties_available", "note"}
 _V2_KEYS = _V1_KEYS | {"label_column", "split"}
-_KEYS_BY_VERSION = {1: _V1_KEYS, 2: _V2_KEYS}
+# Version 3 adds per-column availability modes. `AVAILABILITY_MODES.md`
+# states what each computes and was committed before this parser existed.
+_V3_KEYS = _V2_KEYS | {"column_modes", "timestamp_column"}
+_KEYS_BY_VERSION = {1: _V1_KEYS, 2: _V2_KEYS, 3: _V3_KEYS}
 
 # `aggregate_frames` is required only where an availability model is the point.
 # A version-2 file may declare a label and a split and no aggregate frame at all
 # -- that is a user running the checks of `leakaudit.checks` and nothing else,
 # which is a whole and legitimate use.
-_REQUIRED_BY_VERSION = {1: {"version", "aggregate_frames"}, 2: {"version"}}
+_REQUIRED_BY_VERSION = {1: {"version", "aggregate_frames"}, 2: {"version"},
+                        3: {"version"}}
 
 
 class ModelFileError(Exception):
@@ -88,6 +93,8 @@ class LoadedConfig:
     label_column: str | None = None
     train_idx: list | None = None
     test_idx: list | None = None
+    column_modes: dict | None = None
+    timestamp_column: str = "timestamp"
     version: int = SCHEMA_VERSION
 
     @property
@@ -96,16 +103,23 @@ class LoadedConfig:
 
 
 SCHEMA_DOC = """\
-leakaudit config, schema version 2.
+leakaudit config, schema version 3.
 
     {
-      "version": 2,
+      "version": 3,
       "aggregate_frames": {"trades": "ts_event", "book": "ts_floor"},
       "decision_column": "timestamp",
       "window_seconds": 1.0,
       "ties_available": true,
       "label_column": "target",
       "split": {"train": [0, 1, 2], "test": [3, 4]},
+      "timestamp_column": "timestamp",
+      "column_modes": {
+        "price":     "at_timestamp",
+        "bar_volume": "at_bar_close",
+        "cpi":       {"mode": "at_source_timestamp", "column": "cpi_released"},
+        "tick_size": "always"
+      },
       "note": "free text, for whoever reads this next"
     }
 
@@ -128,13 +142,31 @@ reporting a clean result it did not earn.
   label_column      version 2. The built output's label column.
   split             version 2. {"train": [...], "test": [...]}, row POSITIONS
                     into the built output.
+  timestamp_column  version 3. The frame's clock column. Default "timestamp".
+  column_modes      version 3. Column -> the rule for when its values became
+                    knowable. A bare string names a mode; an object names a mode
+                    and the column it reads. THE ARITHMETIC OF EACH MODE IS IN
+                    AVAILABILITY_MODES.md, which was written before the parser
+                    that reads these. The five a file may declare:
+                      at_timestamp         the row's own stamp
+                      at_bar_close         that stamp plus the bar duration
+                      at_source_timestamp  a named column's value at the row
+                      always               before every decision in the frame
+                      explicit             a named column's value at the row
+                    `availability_fn` is a sixth, reachable from the library
+                    only: a file cannot carry a function.
+                    A column with NO mode is not given one. It is reported as
+                    undeclared rather than defaulted, because an assumed mode is
+                    an availability model you did not write.
   note              ignored by the tool; kept for the reader.
 
 WHICH KEYS CORRESPOND TO REGISTERED VOCABULARY, for a reader who needs to know:
 
-  aggregate_frames, decision_column, window_seconds, ties_available
+  aggregate_frames, decision_column, window_seconds, ties_available,
+  column_modes, timestamp_column
       correspond to vocabulary declared in this project's registration -- the
-      availability model, the decision instant, and the tie comparator.
+      availability model, the decision instant, the tie comparator, and the
+      per-column roles.
   label_column, split, note
       do NOT. They serve checks that are not registered detector rows, or are
       in the neighbourhood of one without being it.
@@ -189,10 +221,11 @@ def load_model(path) -> AvailabilityModel:
     known = _KEYS_BY_VERSION[version]
     unknown = sorted(set(raw) - known)
     if unknown:
-        later = sorted(k for k in unknown if k in _V2_KEYS)
+        later = sorted(k for k in unknown if k in _V3_KEYS)
+        newest = {k: (2 if k in _V2_KEYS else 3) for k in later}
         hint = ("" if not later else
-                " %s %s known at version 2; this file declares version %d."
-                % (later, "are" if len(later) > 1 else "is", version))
+                " %s known at version %s; this file declares version %d."
+                % (later, sorted(set(newest.values())), version))
         _refuse("unknown key(s) %s at version %d. Refused rather than ignored: "
                 "an ignored key is a setting you wrote and the tool did not "
                 "apply. Known keys at this version: %s.%s"
@@ -218,6 +251,45 @@ def load_model(path) -> AvailabilityModel:
     label = raw.get("label_column")
     if label is not None and (not isinstance(label, str) or not label):
         _refuse("`label_column` is %r; a column name was expected" % (label,), path)
+
+    modes = None
+    raw_modes = raw.get("column_modes")
+    if raw_modes is not None:
+        if not isinstance(raw_modes, dict) or not raw_modes:
+            _refuse("`column_modes` is present and not a non-empty object of "
+                    "column -> mode. Omit it, or declare at least one column",
+                    path)
+        modes = {}
+        for col, spec in raw_modes.items():
+            if not isinstance(col, str):
+                _refuse("`column_modes` key %r is not a column name" % (col,), path)
+            if isinstance(spec, str):
+                name, src = spec, None
+            elif isinstance(spec, dict):
+                extra = sorted(set(spec) - {"mode", "column"})
+                if extra:
+                    _refuse("`column_modes[%r]` carries unknown key(s) %s; "
+                            "`mode` and `column` are the two it takes"
+                            % (col, extra), path)
+                name, src = spec.get("mode"), spec.get("column")
+            else:
+                _refuse("`column_modes[%r]` is %s; a mode name or an object with "
+                        "`mode` and `column` was expected"
+                        % (col, type(spec).__name__), path)
+            if name not in FILE_MODES:
+                _refuse("`column_modes[%r]` names mode %r. A file may declare %s. "
+                        "%r exists and is reachable only from the library, "
+                        "because a file cannot carry a function."
+                        % (col, name, list(FILE_MODES), AVAILABILITY_FN), path)
+            try:
+                modes[col] = ColumnMode(name, src)
+            except ModeError as e:
+                _refuse("`column_modes[%r]`: %s" % (col, e), path)
+
+    timestamp_column = raw.get("timestamp_column", "timestamp")
+    if not isinstance(timestamp_column, str) or not timestamp_column:
+        _refuse("`timestamp_column` is %r; a column name was expected"
+                % (timestamp_column,), path)
 
     split = raw.get("split")
     if split is not None:
@@ -267,4 +339,6 @@ def load_model(path) -> AvailabilityModel:
         label_column=label,
         train_idx=None if split is None else list(split["train"]),
         test_idx=None if split is None else list(split["test"]),
+        column_modes=modes,
+        timestamp_column=timestamp_column,
         version=version)
