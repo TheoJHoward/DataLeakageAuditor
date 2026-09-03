@@ -38,6 +38,45 @@ costs a full relay to reconstruct a state that was already on disk.
 
 ---
 
+## THE ROUND'S WORK ROOT AND GATE INVOCATION — R221 §3
+
+**Why here.** `round_reconciliation` (D10) reconciles every working file against
+the repository. Until R219 its work root was a hardcoded path to a session that
+had ended, so its coverage of the live round was zero and it reported green over
+an empty population (D-V30A-48). It now resolves `LEAKAUDIT_WORK_ROOT` **at run
+time**, refuses to guess a directory, and reports COVERAGE IS ZERO rather than
+passing when the variable is unset.
+
+**A per-round transient fact belongs in the file that exists for per-round
+transient facts.** This file's own purpose line is re-orientation, rewritten each
+round; the work root is exactly that, and no wrapper around the gate is needed.
+
+**The shell does not persist between invocations here**, so the variable is
+carried inline on the command rather than exported once. Second branch of R221
+DECISION 3. Recorded here so it is one place rather than remembered:
+
+```
+LEAKAUDIT_WORK_ROOT="<this session's scratchpad>" python tools/check_registration.py --stage prereg
+```
+
+**This round's work root:**
+
+```
+C:/Users/ttbea/AppData/Local/Temp/claude/C--Users-ttbea-OneDrive-Desktop-MBO-2025-4mon--2026-01/33e8c843-30fa-4bfb-aa9f-814c77bdb2e6/scratchpad
+```
+
+**Unset during a gate run therefore means the round was not set up from this
+file**, which is a real signal rather than noise — and it is the state the gate is
+in when invoked without it, reported as zero coverage rather than as a pass.
+
+> **An observation about this file, recorded and not acted on.** Its purpose line
+> says "rewrite it every round." Its body is the ceremony record of R36–R102 and
+> has not been rewritten in many rounds. The stated scope admits the block above;
+> the file's maintenance does not match its own front page, and that is a gap
+> between what a file says it is and what it holds — the same shape this project
+> keeps recording elsewhere. Reported here rather than repaired, because
+> rewriting the ceremony record is not this round's work.
+
 ## §0 — THE LEDGER
 
 | # | item | status | last moved | reported in substance |
