@@ -1809,6 +1809,26 @@ _EPHEMERAL = (
      "earlier draft; the repo holds the AUTHORITATIVE frozen baseline 2e23f1f2"),
     ("/fixture_spike/f5/v30a_ceremony_CHECKLIST.md",
      "the repo copy carries the R68 SUPERSEDED banner; this one does not"),
+    # R220 §3. A DECLARED TOKEN, NOT A SCAN EXCLUSION: an exclusion removes the
+    # population from view, a token keeps it visible and states why it is
+    # expected. Matched on a DEFINITE MARKER -- the site-packages path segment --
+    # rather than on "looks like a virtualenv", so it cannot quietly absorb a
+    # directory that merely resembles one.
+    #
+    # POPULATION WHEN ADDED, 3 September 2026: 10,604 files under two virtualenvs
+    # inside this session's scratchpad (`dod_env`, built for the
+    # definition-of-done walk; `floor_env`, a failed floor-pin attempt), of which
+    # 4,736 were unreconciled and the rest already matched `.pyc` or repository
+    # content. Only 16 files under `dod_env` sit outside site-packages.
+    #
+    # Found by repairing a DIFFERENT instrument: pointing round_reconciliation at
+    # a live working directory exposed that the ephemeral list had been written
+    # against an older one made of repo copies, ceremony drafts and backups, and
+    # had no token for third-party library sources at all.
+    ("/site-packages/",
+     "third-party library sources inside a virtualenv built for a round's work. "
+     "Reproducible by `pip install` from the recorded versions, owned by nobody "
+     "here, and never candidates for the repository"),
     ("/_x5_truncated_original/", "a deliberately truncated original, kept to reproduce a defect"),
 )
 
