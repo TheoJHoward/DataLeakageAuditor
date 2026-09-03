@@ -41,6 +41,34 @@ control whose only positive is a value change has not been shown to test the
 write-back path at all: any comparison catches a value change. `write_back`
 takes the same shape as the real one and the suite supplies variants that
 preserve every value and change something else.
+
+THE WRONG INSTRUMENT THIS CONTROL'S POSITIVES RULE OUT, named because "the
+positives discriminate" is a claim and "the positives reject THIS instrument" is
+a record, and only the second survives being re-read in a year.
+
+    THE VALUE-ONLY COMPARATOR. `PREREG.md` §6.11 control 2 says: replace
+    unavailable cells with an exact copy of themselves, and any delta is
+    measurement artifact. The reasonable misreading of "an exact copy" is THE
+    SAME VALUES -- so the wrong instrument compares values and nothing else, no
+    dtype and no index. It is not a strawman: it is what someone would most
+    likely build when implementing against the registered sentence alone.
+
+CONSTRUCTED AND MEASURED at R216 §4, over four write-backs. The two instruments
+AGREE on the genuine identity write (both silent) and on an actual value change
+(both fire). They DISAGREE on the two that carry the control's purpose:
+
+    value-preserving dtype promotion    real control FIRES, value-only SILENT
+    value-preserving index replacement  real control FIRES, value-only SILENT
+
+The shared negative is what makes that a discrimination rather than one
+instrument merely firing more often. So criterion 4's ninety-six silences rest on
+a positive that separates this control from the instrument it might have been,
+and not on the wire being connected -- which is the distinction R215 §0 drew and
+the thing a known positive is supposed to establish.
+
+WHAT IT DOES NOT ESTABLISH: that no OTHER wrong instrument exists. One was
+constructed and rejected. A second reading of the same sentence, if anyone finds
+one, needs its own case.
 """
 from __future__ import annotations
 

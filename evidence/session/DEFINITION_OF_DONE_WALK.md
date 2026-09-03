@@ -625,6 +625,35 @@ identified frictions are closed and NOT that a newcomer finds none.**
 
 That sentence is the result. Either half quoted alone misrepresents it.
 
+## What the walk did NOT cover — added 3 September 2026, completing the limitation
+
+**This is an addition to the limitation statement, not a reopening of the
+closure.** The result stands; what a limitation statement is for is saying what
+it does not reach, and one item was missing.
+
+**The walk never exercised per-column availability modes.** Its model file
+declared no `column_modes` block and the transcript does not mention them. So the
+path it walked was: `aggregate_frames`, `decision_column`, `window_seconds`,
+`label_column`, `split` — a complete and ordinary configuration, and not the
+whole documented surface.
+
+**That matters because of what was found afterwards.** `column_modes` was
+accepted by the loader, validated with four distinct refusals, documented at
+length in `leakaudit schema`, and **never passed to the probe by the command the
+walk ran** (D-V30A-49). A user declaring modes got the whole-frame path silently,
+with a measurably different answer. The walk could not have found it: it did not
+take that turn.
+
+**And the six-friction count is unaffected**, because the count is over turns the
+walk actually took. This is a statement about the walk's coverage, not a
+correction to its result. A stranger who declares per-column modes is on a path
+this measurement says nothing about — which is now written down rather than
+assumed away.
+
+**Also not covered, for the same reason:** `ties_available`, whose non-default
+branch was unselectable when the walk ran (D-V30A-47), and `timestamp_column`,
+which reaches nothing by design and is documented as inert (D-V30A-50).
+
 ## What was controlled, and what was not
 
 **Uncontrolled: foreknowledge.** The single variable that matters for this
