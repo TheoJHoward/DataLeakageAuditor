@@ -1667,3 +1667,106 @@ of those stay exactly as written.
 binds nothing. It is this register's own working rule for its own scope, and a
 later round may replace it — in which case the replacement states what happens to
 entries admitted under this one.
+
+## D-V30A-47 — `ties_available` is a config key the loader validates and the probe never reads
+
+**True.** `AvailabilityModel.available()` implements the locked comparator —
+`a <= d` when `ties_available`, `a < d` otherwise. **A search of the whole
+repository returns no caller.** The probe selects cells by
+`floor(key).isin(picked_seconds)` and attributes movement by comparing a row's
+floored decision second against the corrupted second; the tie question is
+answered implicitly by that construction and the comparator is never invoked.
+
+**Measured, not inferred, and on the input built to separate the branches.** With
+decision stamps 200 ms inside each second — the shape the B-6 controls use — the
+two settings give identical verdict, finding count, in-second and next-second
+totals. With decision stamps **exactly on the second**, which is the only input on
+which `a <= d` and `a < d` can differ, they are identical again. 25 findings, 25
+in-second, 0 next-second, under both.
+
+**The implicit behaviour matches the locked DEFAULT, and this was checked rather
+than assumed.** A cell of second F becomes knowable at F+1s. A row stamped exactly
+at F+1s floors to F+1 and is counted as next-second — legal, available — which is
+`a <= d`, the branch `PREREG.md` §2.3 locks and §0.3 Claim A argues for. **So no
+published figure was computed under the wrong rule**, and the status of the
+reported Phase 1 results does not change.
+
+**What does change is what a user's file can do.** `ties_available: false` is
+accepted by the loader, type-checked, refused if non-boolean, documented in
+`leakaudit schema` as *"whether a value whose instant equals the decision instant
+counts as available"* — and has no effect. A user who declares the non-default
+branch gets the default branch and no error, which is a silence about a
+declaration, from a tool whose product is the difference between kinds of
+silence.
+
+**Expected:** that a key the loader validates reaches something that consumes it,
+or is refused as unwired. The `_UNWIRED` registry was built for exactly this
+shape and five parameters were routed through it; this key was not among them.
+
+**Why it stands:** it is the class this project has put on its own halt list in
+every recent round — a config key the loader reads and ignores — found in the
+package that defines the class. It was found by asking a different question: an
+audit of whether a known positive discriminates between the instrument built and
+a plausible wrong one. The wrong instrument considered was one using the other
+tie branch, and establishing that the controls could not tell them apart required
+finding out whether the branch was reachable at all. It is not.
+
+**Not repaired this round, and the reason is scope rather than difficulty.**
+Wiring the comparator changes what the probe computes on the equal case, which is
+a change to the availability probe's execution path — `availability.py` — and the
+standing rule then requires the whole-frame fixture guard before the round is
+reported done. The equal case is known to occur in the scored population: the
+harness's own note records two cells, es 2025-10 and es 2025-11 corrected,
+carrying 0 strict and 1 equal. Making the key live is therefore a measured change
+with a guard attached, not a one-line fix, and it is reported rather than
+attempted at the end of a round.
+
+## D-V30A-48 — the round-reconciliation check scans a dead session's scratchpad and is blind to the live one
+
+**True.** `check_round_reconciliation` implements D10 — every working-directory
+file is in the repository or declared ephemeral. Its population is `_WORK_ROOT`,
+a **hardcoded absolute path** to one session's scratchpad directory. That path
+names a session that ended: it holds 679 files and nothing has written to it
+since 26 August 2026. The session doing the work carries 11,985 files in a
+different directory, and 149 such directories exist beside it.
+
+**So the check's coverage of the current round's working files is zero**, and
+every finding it can emit comes from a directory nobody is working in.
+
+**It was found by asking a different question.** The gate emitted two findings
+where one was expected. The second was `round_reconciliation` naming
+`DEFERRED_ITEMS.md`: a stale copy in that dead scratchpad, byte-identical to the
+version committed at HEAD until an append to the repository's copy left it
+matching nothing. Verified against git and removed. Asking whether that scan was
+deliberate is what exposed the path.
+
+**What the check still does, stated so this is not read as "it does nothing".**
+It compares digests against the repository and the manifest correctly, and its
+ephemeral classification works. Pointed at a live working directory it would do
+its job. It is aimed wrongly, not built wrongly.
+
+**Expected:** that a check whose stated population is "the working directory"
+resolves that directory at run time, or names the one it means and refuses when
+that directory is absent or stale.
+
+**Why it stands:** it is the same shape as D-V30A-29 — an instrument that had
+never measured the thing it names — and the same shape as the `F2_DIR` defect
+recorded in `INSTALL.md`, where a hardcoded absolute path into one machine's
+session scratchpad meant four tests could run on exactly one computer. That one
+was repaired; this one is its sibling in a registered instrument, and it survived
+because a check that emits janitorial findings trains its reader to expect
+janitorial findings.
+
+**And that is the second-order cost, which is the part worth keeping.** A check
+earns attention in proportion to the fraction of its findings that require
+thought. This one has been spending that credit on a dead directory, and the gate
+prints its output beside `hash_set_single_source` — disclosed, measured, pinned,
+and substantive — in the same format, as one line of "N findings".
+
+**Not repaired this round, and the reason is that the instrument is registered.**
+`tools/check_registration.py` is one of the paths the `prereg-v30a` tag message
+enumerates. It is revisable, so the repair is permitted — but changing a gate
+instrument alters what the delta-of-findings comparison against the frozen
+checker produces, which is a measured act with its own before-and-after, not an
+edit to make at the end of a round. Reported with its population measured so the
+repair starts from a number rather than from a suspicion.

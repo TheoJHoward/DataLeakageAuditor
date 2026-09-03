@@ -191,3 +191,118 @@ with strong genuine signal and **no** leak. The signal test fires on it — loud
 correctly by its own lights, and wrongly as a leakage report. That case
 separates the two statistics, and any future shuffle check is built against it
 before its positive.
+
+---
+
+# 3. Rulings from these reads — R215
+
+## 3.1 The shuffle check is RETIRED, not replaced
+
+**Status: retired. The slot it occupied is closed, not vacated.**
+
+The analysis is in §2 above and the next person to propose a shuffle check should
+meet it rather than repeat it: **a permutation test of the real-label score
+against a shuffled-label null detects SIGNAL, not leakage.** A clean working model
+rejects that null; rejecting it is what a working model does.
+
+**Why nothing replaces it, and the third reason is the one to keep:**
+
+1. **No missed leak has been demonstrated.** The availability probe is the
+   registered detector and nothing has shown a leak it misses. The case for a
+   second detector class starts from a missed leak, not from a line in a plan.
+2. **The two shapes named below point at different failure classes.** Neither is
+   a variant of the retired check.
+3. **A vacated slot in a plan has gravity.** The plan still says *something goes
+   here*, and what falls in is chosen by the shape of the hole rather than on its
+   merits. That is how a project acquires features nobody argued for. **So the
+   slot is closed with a reason, which is a decision, rather than left open,
+   which is a gravity well.**
+
+### Two shapes, recorded as UNEVALUATED PROPOSALS
+
+**Explicitly not endorsed. Explicitly not inheriting the retired slot.** Each
+would need its own establish step — the same four questions §2 answered for the
+retired check — before any code.
+
+- **Permute the SPLIT, not the labels.** Score the declared split against random
+  splits of the same sizes. Random splitting scoring *better* than a declared
+  temporal split is a recognised leakage signature. It needs no chance level, and
+  it is a claim about the split rather than about the pipeline — narrower than
+  what was wanted.
+- **Shift features forward in time relative to labels.** If predictive power
+  survives a shift that should destroy it, something reads ahead. Closer to the
+  proposition, and confounded by autocorrelation — badly, in this fixture's data.
+
+## 3.2 A standing requirement on any user-supplied scoring callable
+
+**Filed as a requirement on the SHAPE, not on the retired check, so it outlives
+the feature it was found in.**
+
+> **Any surface that accepts a user-supplied scoring callable must have the
+> callable's DIRECTION declared, or refuse.** `evaluate(...) -> score` returns a
+> bare number. Whether higher is better is not knowable from a callable, and a
+> permutation test — or any comparison against a null — with the direction wrong
+> inverts its own conclusion **silently**. This is the `_UNWIRED` shape: a
+> declared direction, or a refusal naming what would consume it.
+
+**Note what is NOT the requirement**, because an earlier reading got this wrong:
+chance level does not need declaring where the null can be sampled — the
+shuffled scores *are* the null, and the metric's scale cancels. Direction does,
+always, and it is the smaller and truer gap.
+
+## 3.3 Inference — the split the killer case forces
+
+**"Propose, never declare" is not good enough**, and the reason is in §1's S2.
+Two datasets can have byte-identical key columns where flooring is right for one
+and a full second wrong for the other. A draft presented as *the tool's proposal,
+please review* gets rubber-stamped, and a rubber-stamped guess about publication
+schedules is the mirror the whole design was avoiding.
+
+**The line lands exactly where the information does:**
+
+> **Infer what is IN the data. Require what is ABOUT the world.**
+
+| | what the tool does |
+|---|---|
+| **Structure** — column identification, key candidates, granularity, join shape, whether a key sits on second boundaries | **Determined, filled in, marked as determined-from-data**, with the evidence named per column |
+| **Availability** — publication lag, availability instant, when a value became knowable | **Left UNFILLED**, with the observable evidence attached beside each column to help the user fill it — never with a value |
+
+- **The audit refuses an unfilled availability field.** It does not default it,
+  and it does not read "the user left it" as agreement.
+- **A column whose STRUCTURE cannot be determined is also unfilled**, with the
+  ambiguity named. §8.2's shape applies: not resolved is reported as not
+  resolved, never as a default.
+
+### The draft's header sentence — the feature depends on this landing
+
+> **The structure below was determined from your data. The availability column is
+> blank because your data does not contain it: when a value became knowable is a
+> fact about how it was published, not a shape in the frames — two datasets with
+> identical timestamps can have availability a full second apart. Fill it in, or
+> the audit will refuse rather than guess on your behalf.**
+
+## 3.4 S6 — the dependency map — omitted in code, and the reason placed where a person looks
+
+**The ruling, to be quoted verbatim wherever this lands:**
+
+> *Which columns are read is not when they became knowable; it can only produce
+> "read, therefore available" — the assumption of no leak restated as a finding.*
+
+**Refusing in code is the wrong instrument here.** `_UNWIRED` refuses on a path a
+user already reasonably takes. There is no signal-selection surface, so a refusal
+would mean building a request path for the sole purpose of declining on it.
+
+**But omission is invisible, and S6 is the most reliable-LOOKING signal in the
+set** — which makes it precisely what a future contributor adds as an obvious
+improvement, having never seen this argument. So the reason goes in three places
+a person actually looks:
+
+1. **The draft's own output** — a line naming which signals were used, and that
+   the dependency map was deliberately not one, with the reason. *(Conditional on
+   the draft existing; no inference code has been written.)*
+2. **A comment at the signal registry**, where someone adding a signal is already
+   reading. *(Same condition.)*
+3. **Here**, which exists now and is where the analysis lives.
+
+**The conditional, recorded now so it is not rediscovered:** *if a
+signal-selection surface is ever built, S6 gets an explicit refusal on it then.*

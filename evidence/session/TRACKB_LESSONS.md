@@ -483,14 +483,28 @@ verified, flattering ones accepted — recurred in the round that recorded it.
   defect — which touches that instrument anyway, so the two changes are ruled and
   disclosed together rather than separately. Raised R175 §6.
 
-- **The install on a second machine.** The author's to run, and the only limb of
-  criterion 5 that nothing incidental can discharge. It settles the dependency
-  floors as a by-product: they are `numpy>=1.26`, `pandas>=2.1`, `pyarrow>=14`,
-  and every result recorded here was measured against numpy 2.4.2, pandas 3.0.1
-  and pyarrow 23.0.1 on one machine. Whether a resolver that picks pandas 2.x
-  yields a working package is unknown. Recorded as unknown; widening or pinning
-  the floors to dispose of it would swap an untested risk for an untested claim.
-  Raised R189 §4.
+- ~~**The install on a second machine.**~~ **CLOSED 3 September 2026, both
+  limbs, and removed from this list rather than left saying something the record
+  contradicts.** The item is struck through and not deleted, because a reader of
+  an earlier revision needs to know it was open and how it closed.
+
+  *The floors limb is discharged by measurement.* It read "whether a resolver
+  that picks pandas 2.x yields a working package is unknown". It is now known:
+  the declared floors were pinned exactly — numpy 1.26.4, pandas 2.1.4, pyarrow
+  14.0.2 — on Python 3.11.9, the lowest point of every declared dimension at
+  once, and the suite and a canonical pipeline digest are identical to every
+  other measured environment. `INSTALL.md` carries the table. Nothing was widened
+  or pinned; the numbers stand as declared and are now measured.
+
+  *The stranger limb is discharged by ruling, not by measurement.* The author
+  ruled on 3 September 2026 that nobody else walks it. The permanent recorded
+  state is in `DEFINITION_OF_DONE_WALK.md` Part IV: met on the measurement
+  available, by a walker who authored the code and knew every answer, which
+  establishes that the six identified frictions are closed and not that a
+  newcomer finds none. The uncontrolled variable is foreknowledge; environment
+  was controlled separately. **That is a written limitation and therefore a
+  limitation — which is why it is not carried here as a task.** Raised R189 §4,
+  closed R215 §6.
 
 - **Whether the acceptance section is scored at column granularity.** Its four
   criteria are worded about columns; the metric family and the kill criterion's
@@ -663,3 +677,46 @@ surfaced — and does not when it is not.
 **Two events and a mechanism is not a trend.** It is a place to look, available
 now. TB-17 records why the trend is not available and will not become available
 by trying harder.
+
+## TB-19 — *(3 September 2026)* A positive that every wrong instrument also fires on is a wiring test, and the discriminating case is often a negative
+
+**A refinement to the known-positive rule, and it belongs beside TB-12 because it
+is the next layer down.** TB-12 says a known positive tests the premise and not
+only the code. This says: a known positive also has to be chosen to discriminate
+between the instrument you built and the instrument you might have built by
+mistake.
+
+**The rule as previously written is satisfied by a positive so extreme that every
+candidate instrument fires on it.** Such a positive establishes that the
+instrument is connected to its input. It says nothing about whether the
+instrument measures the intended quantity.
+
+**The proof came from a check that was never built.** The retired shuffle check's
+intended known positive was a frame where a feature IS the label. It would have
+fired. It fires for a signal test, a leakage test, and anything else anyone would
+propose — so it would have confirmed the check was wired, the check would have
+been believed, and the check computes the wrong statistic. The positive could not
+have caught that, because the positive could not tell the two apart.
+
+**The discriminating case is frequently a NEGATIVE:** an input on which the wrong
+instrument fires and the right one is correctly silent. For the shuffle check
+that case is a pipeline with strong genuine signal and no leak — the signal test
+fires loudly, the leakage test is silent, and one run separates them.
+
+**What this looks like in practice, from the audit it prompted.** The availability
+probe's own controls already do it, and say why in prose written before this
+lesson existed. Its positive — a builder reading its own second's aggregate —
+fires for a plain dependency probe too, so the positive alone is a wiring test.
+The discrimination is carried by the negative's *second* limb: a builder reading
+the previous second must be silent in-second AND must move the following second's
+rows. A dependency probe fails that pair; an instrument that reports movement
+without attributing it to a second fails it too.
+
+**The tell:** ask of every known positive, "what else would fire on this?" If the
+answer is "anything that is plugged in", the positive is a continuity test and
+the validity question is still open.
+
+**And the audit has a bound, recorded so its silence is not read as coverage.**
+This was applied to the two runtime detector rows that carry reported claims. The
+rest of the project's known positives were not examined, deliberately, and their
+status is unexamined rather than confirmed.

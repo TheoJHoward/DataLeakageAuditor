@@ -590,3 +590,69 @@ in Part I as minor and not judged; fixed now to *"Every check had what it needed
 so no result above is a silence standing in for one."* **Reported as outside the
 list of six rather than folded into it**, so the list stays the thing that was
 measured.
+
+---
+
+# PART IV — CLOSED. The permanent recorded state, 3 September 2026
+
+**This is not pending work. It is the final state of this measurement**, ruled by
+the author on 3 September 2026: nobody other than the author will walk this. What
+follows is written so that it cannot be quoted without its limit, because the
+limit is the half that decides what the result means.
+
+## The definition of done, as stated
+
+> A stranger with their own pandas pipeline can install the package, run one
+> command against it, and get a list of findings naming the columns involved —
+> without reading the source, with any configuration they got wrong reported as
+> an error rather than as a silence, and with anything not checked reported as
+> not checked, distinct from checked and clean.
+
+## The measurement
+
+**The re-walk of the fixed path returned ZERO steps requiring source-reading or
+guessing.** Clean environment, install from the repository by the README's own
+command, a pandas pipeline that is not the fixture, a model file written from
+`leakaudit schema` alone, both commands, and every wrong configuration. Every one
+of the six frictions the unfixed path produced is closed, each with the wrong
+turn that found it re-run as its acceptance test.
+
+## MET — and the clause that travels with it, in the same sentence
+
+**The definition of done is met on the measurement available, and the walker
+authored the code and knew every answer, so this establishes that the six
+identified frictions are closed and NOT that a newcomer finds none.**
+
+That sentence is the result. Either half quoted alone misrepresents it.
+
+## What was controlled, and what was not
+
+**Uncontrolled: foreknowledge.** The single variable that matters for this
+question, and the one this measurement cannot touch. The walker wrote the tool.
+Every guess made during Part I was an informed guess, and Part II demonstrated
+the cost concretely — a walk that felt complete was missing a third of its own
+findings until the documented surface around the path was walked deliberately.
+
+**Controlled separately: environment.** Four dependency sets and three Python
+versions, with the suite and a canonical pipeline digest identical across all of
+them (MV-6, MV-7). Environment is therefore not a confound in this result; it was
+measured, and it is not the variable in question.
+
+## Why it closes here
+
+Two substitutes were available in principle and neither is: no second machine,
+and no second person. The author's ruling is that nobody else walks it.
+
+**A written limitation is a limitation. A pending task quietly becomes a claim**
+on the day someone stops reading the task list — which is why this is recorded as
+the permanent state rather than left open, and why the item is removed from every
+open-items list that carried it rather than left in both places saying two
+different things.
+
+## What would change it, if anyone ever does walk it
+
+One person who did not watch this being written, following `README.md` from a
+clean environment, recording every wrong turn at the moment it is hit rather than
+the corrected path. That is the measurement this one approximates. If it is ever
+run, its count replaces this one and this section is superseded rather than
+edited, with both standing.

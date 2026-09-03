@@ -59,23 +59,32 @@ that reading is false here. So the combinations are listed.
 | 3.12.10 | 2.4.2 | 3.0.1 | 23.0.1 | same | `15dc83c7…` |
 | 3.12.10 | 2.5.2 | 3.0.5 | 25.0.1 | same | `15dc83c7…` |
 | 3.13.1 | 2.5.2 | 3.0.5 | 25.0.1 | 601 passed, 5 deferred, 1 known failure | `15dc83c7…` |
+| **3.11.9** | **1.26.4** | **2.1.4** | **14.0.2** | 632 passed, 4 deferred, 1 known failure | `15dc83c7…` |
 
-The bolded row is the declared floor of every dependency dimension at once. The
-digest is of the same non-fixture pipeline's canonical output, run from the same
-source with only the environment varying; identical across all four means the
-tool's answer did not depend on its environment at any measured point. The known
+The bolded rows are the declared floor of every dependency dimension at once —
+the last of them at the declared floor of Python too, which is the corner of the
+whole declared space. The digest is of the same non-fixture pipeline's canonical
+output, run from the same source with only the environment varying; **identical
+across all five** means the tool's answer did not depend on its environment at
+any measured point, from the lowest declared corner to the current
+resolution. The known
 failure is the one disclosed at `DEVIATIONS.md` D-V30A-11 and described under
 **Verify** in `README.md`. The fifth deferred test on 3.13 is a
 string-interning-conditional case that has no subject on that interpreter.
 
 ### Two things this table does NOT say
 
-**`requires-python = ">=3.11"` is declared and UNTESTED.** Every environment
-above ran Python 3.12.10 or 3.13.1. No 3.11 interpreter was available on the
-machine where these were measured, and the number was left alone rather than
-raised to 3.12 to dispose of the question — raising a floor to a *measured* value
-with the measurement recorded is one thing, and changing a number so a question
-goes away is another. This is the second.
+**`requires-python = ">=3.11"` is MEASURED as of 3 September 2026** — the last row
+above, at the declared floor of every dimension at once, which is the corner the
+metadata asserts and which no environment had previously occupied.
+
+> *This paragraph previously read "declared and UNTESTED … every environment above
+> ran Python 3.12.10 or 3.13.1", and recorded that no 3.11 interpreter was
+> available. That was true when written. The number was left alone throughout
+> rather than raised to 3.12 to dispose of the question — and it did not need to
+> move, because when 3.11 was finally measured it passed. Raising a floor to a
+> measured value with the measurement recorded is legitimate; changing one so a
+> question goes away is not, and only the first was ever on the table.*
 
 **The floors and the Python range do not meet at every point.** `numpy==1.26.4`
 publishes no wheel for Python 3.13, so the bolded floor row cannot be built
@@ -138,22 +147,44 @@ stranger who has no fixture, but is not the same thing as the fixture being foun
 
 ## Not yet done
 
-- **An install test on a machine other than this one.** This is the one item nothing incidental can
-  discharge, and it is the only one that bears on whether a *stranger* can install. It would also
-  settle the dependency question below as a by-product.
+- **An install test on a machine other than this one.** Still not done, and narrowed to what it
+  now covers. **It no longer settles the dependency question** — that was measured on 3 September
+  2026 at the corner of the declared space, and the section below carries it. What a second machine
+  would still establish is the *machine* variable: a different host and operating system. And it is
+  **not** the stranger question either: that closed the same day by the author's ruling, recorded
+  permanently at `evidence/session/DEFINITION_OF_DONE_WALK.md` Part IV as met with its limitation —
+  the walker knew every answer, so the six identified frictions are closed and a newcomer's count is
+  unmeasured. The uncontrolled variable there is foreknowledge, which a second machine of the
+  author's own would not control for.
 - A published wheel or index presence. *(Not required by anything: `pip install .` from a public
   clone is an install. It is listed as a convenience that does not exist, never as a gap.)*
 
 **Done since this list was written:** README wiring, which was blocked until the tag landed and is
 no longer blocked.
 
-## The dependency floors are untested downward
+## The dependency floors — MEASURED, at the corner, 3 September 2026
 
-The floors are `numpy>=1.26`, `pandas>=2.1`, `pyarrow>=14`. The environment every result in this
-file was measured in runs **numpy 2.4.2, pandas 3.0.1, pyarrow 23.0.1** — and pandas 3.0 is a major
-version break from pandas 2.x. **Nothing here has been run against a 2.x resolution**, so whether a
-stranger whose resolver picks pandas 2.1 gets a working package is unknown.
+**Superseded, and the superseded text is kept below because a reader of an earlier
+revision needs to know what was unknown and when it stopped being unknown.**
 
-It is recorded as unknown rather than disposed of. Widening or pinning the floors to make the
-question go away would replace an untested risk with an untested claim, which is the same defect
-with better manners. The second-machine install establishes it; then it can be decided.
+> *This section previously read "The dependency floors are untested downward … whether a stranger
+> whose resolver picks pandas 2.1 gets a working package is unknown … The second-machine install
+> establishes it; then it can be decided." That was true when written.*
+
+The floors are `numpy>=1.26`, `pandas>=2.1`, `pyarrow>=14`, and `requires-python = ">=3.11"`. **All
+four have now been measured together, at the lowest point of every declared dimension at once** —
+Python 3.11.9 with `numpy==1.26.4`, `pandas==2.1.4`, `pyarrow==14.0.2` pinned exactly. That corner
+is what the metadata asserts and what no environment had previously occupied: each dimension had
+been exercised alone, and the conjunction had not.
+
+**The suite there is identical on every term to the development environment**, and the canonical
+output digest of the same non-fixture pipeline is `15dc83c7…`, identical to all four other measured
+environments. See the table under **The environments this package was actually measured in** above,
+which now carries this row.
+
+**Nothing was widened, pinned, or raised.** No floor moved, because none failed. Raising a floor to
+a measured value with the measurement recorded would have been legitimate; changing one so the
+question goes away would not, and neither was needed.
+
+**What remains untested is the machine, not the numbers.** Every environment above ran on one host
+under Windows 11. Varying the dependency set is not the same as varying the machine.
