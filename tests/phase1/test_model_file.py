@@ -49,7 +49,7 @@ def _write(tmp_path: Path, obj, name="m.json") -> Path:
 # ---------------------------------------------------------------------------
 
 def test_a_well_formed_model_loads(tmp_path):
-    m = load_model(_write(tmp_path, GOOD))
+    m = load_model(_write(tmp_path, GOOD)).model
     assert m.aggregate_frames == {"trades": "ts_event"}
     assert m.decision_column == "timestamp"
     assert m.window == pd.Timedelta(seconds=1)
@@ -58,7 +58,7 @@ def test_a_well_formed_model_loads(tmp_path):
 
 def test_only_the_required_keys_are_required(tmp_path):
     m = load_model(_write(tmp_path, {"version": SCHEMA_VERSION,
-                                     "aggregate_frames": {"a": "k"}}))
+                                     "aggregate_frames": {"a": "k"}})).model
     assert m.decision_column == "timestamp"
     assert m.window == pd.Timedelta(seconds=1)
     assert m.ties_available is True
@@ -125,7 +125,9 @@ def test_a_non_object_top_level_is_refused(tmp_path):
 
 
 def test_empty_aggregate_frames_is_refused(tmp_path):
-    with pytest.raises(ModelFileError, match="non-empty"):
+    """Present and empty is refused; ABSENT is legitimate at version 2, where a
+    file may declare only a label and a split."""
+    with pytest.raises(ModelFileError, match="present and empty"):
         load_model(_write(tmp_path, dict(GOOD, aggregate_frames={})))
 
 
@@ -141,7 +143,7 @@ def test_a_window_that_describes_no_span_is_refused(tmp_path, bad):
 
 
 def test_a_positive_window_is_accepted_and_carried(tmp_path):
-    m = load_model(_write(tmp_path, dict(GOOD, window_seconds=2.5)))
+    m = load_model(_write(tmp_path, dict(GOOD, window_seconds=2.5))).model
     assert m.window == pd.Timedelta(seconds=2.5)
 
 
@@ -152,7 +154,7 @@ def test_a_non_boolean_tie_rule_is_refused(tmp_path):
 
 def test_the_tie_rule_is_carried_when_it_is_false(tmp_path):
     assert load_model(_write(tmp_path, dict(GOOD, ties_available=False))
-                      ).ties_available is False
+                      ).model.ties_available is False
 
 
 def test_an_empty_decision_column_is_refused(tmp_path):

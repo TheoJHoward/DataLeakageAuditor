@@ -33,6 +33,10 @@ without the check reading it as a live claim; every exempt line is reported.)*
 from .contract import (
     Alignment, ContractError, audit, normalise_raw, resolve_decision_time)
 from .determinism import DeterminismResult, check_frame, frames_equal
+from .checks import (
+    CheckFinding, CheckResult, check_constant_columns,
+    check_duplicate_rows_across_split, check_label_under_another_name,
+    check_split_validity, run_all)
 from .findings import AuditResult, Finding
 from .probe import DETECTOR_ID, ProbeResult, cohort_id_for, probe_columns
 from .detectors import (
@@ -47,6 +51,10 @@ from . import fixture_adapter
 __all__ = [
     # the entry point and what it returns
     "audit", "AuditResult", "Finding",
+    # P4 -- the checks that need no availability model.
+    "run_all", "CheckResult", "CheckFinding", "check_split_validity",
+    "check_duplicate_rows_across_split", "check_constant_columns",
+    "check_label_under_another_name",
     "normalise_raw", "ContractError", "resolve_decision_time", "Alignment",
     "check_frame", "frames_equal", "DeterminismResult",
     # Layer 1 -- the column dependency probe. No availability model needed.

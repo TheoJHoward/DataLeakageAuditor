@@ -78,13 +78,22 @@ class AuditResult:
     than copied here. A copy is the thing that drifts.
     """
 
-    def __init__(self, traces: Iterable[CombinationTrace], source=None) -> None:
+    def __init__(self, traces: Iterable[CombinationTrace], source=None,
+                 checks: Iterable = ()) -> None:
         self._traces = tuple(traces)
         if not self._traces:
             raise ValueError(
                 "an AuditResult over no traces could report only silence, and "
                 "could not say which kind it was")
         self._source = source
+        # Held by reference like `source`: these are results the checks produced,
+        # not a second derivation of them.
+        self._checks = tuple(checks)
+
+    @property
+    def checks(self) -> tuple:
+        """The no-model checks, each carrying whether it looked."""
+        return self._checks
 
     # -- the traces, unmodified -------------------------------------------
     @property
@@ -182,6 +191,13 @@ class AuditResult:
                    "them" if len(self.unprobed_frames) > 1 else "it"))
         if self.domain:
             parts.append("DOMAIN: %s" % self.domain)
+        if self._checks:
+            ran = sum(1 for c in self._checks if c.looked)
+            hit = sum(1 for c in self._checks if c.outcome == "finding")
+            parts.append(
+                "CHECKS: %d of %d ran, %d with findings. The %d that did not run "
+                "are reported as not-looked rather than counted as clean."
+                % (ran, len(self._checks), hit, len(self._checks) - ran))
         return "\n".join(parts)
 
     def __str__(self) -> str:

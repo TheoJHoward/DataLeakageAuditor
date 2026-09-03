@@ -59,8 +59,6 @@ def _build(d):
 @pytest.mark.parametrize("kw", [
     {"availability": {"frame": "key"}},
     {"decision_time": "timestamp"},
-    {"train_idx": [0, 1]},
-    {"test_idx": [2, 3]},
     {"meta": {"anything": 1}},
 ])
 def test_an_unwired_parameter_is_refused_not_discarded(kw):
@@ -69,6 +67,18 @@ def test_an_unwired_parameter_is_refused_not_discarded(kw):
     name = next(iter(kw))
     assert name in str(e.value)
     assert "does not consume" in str(e.value)
+
+
+def test_a_parameter_whose_consumer_arrived_no_longer_refuses():
+    """R203 P4. `train_idx` and `test_idx` left the refusal table when the
+    checks that read them landed. A refusal that is no longer true is the same
+    defect as a discarded parameter, pointing the other way."""
+    from leakaudit.contract import _UNWIRED
+    assert "train_idx" not in _UNWIRED and "test_idx" not in _UNWIRED
+    r = audit(_raw(), _build, train_idx=[0, 1, 2], test_idx=[3, 4])
+    by_name = {c.check: c for c in r.checks}
+    assert by_name["split_validity"].looked, "the split was accepted and ignored"
+    assert by_name["duplicate_rows_across_split"].looked
 
 
 def test_the_refusal_names_what_does_consume_an_availability_model():

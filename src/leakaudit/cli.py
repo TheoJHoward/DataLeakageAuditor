@@ -113,8 +113,42 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--quiet", action="store_true",
                      help="print the findings only, without the explanation")
 
-    sub.add_parser("schema", help="print the availability model file format")
+    chk = sub.add_parser(
+        "check", help="the checks that need no availability model")
+    chk.add_argument("--pipeline", required=True, metavar="module:function",
+                     help="your build function")
+    chk.add_argument("--frame", action="append", metavar="name=path",
+                     help="an input frame; repeat for several")
+    chk.add_argument("--model", metavar="path.json",
+                     help="the config file. Without it, every check that needs "
+                          "a declared label or split reports that it DID NOT "
+                          "LOOK, which is not a clean result")
+
+    sub.add_parser("schema", help="print the config file format")
     return ap
+
+
+def _run_checks(frames, build, model_path):
+    """The checks of `leakaudit.checks`, each saying whether it looked."""
+    from .checks import render, run_all
+    from .model_file import ModelFileError, load_model
+
+    label = train = test = None
+    if model_path:
+        try:
+            config = load_model(model_path)
+        except ModelFileError as e:
+            raise SystemExit(str(e))
+        label, train, test = config.label_column, config.train_idx, config.test_idx
+
+    built = build(dict(frames))
+    results = run_all(built, label=label, train_idx=train, test_idx=test)
+    print(render(results))
+    if any(r.outcome == "finding" for r in results):
+        return EXIT_FINDINGS
+    if all(not r.looked for r in results):
+        return EXIT_NOTHING_PROBED
+    return EXIT_OK_SILENT
 
 
 def _run_availability(frames, build, model_path, stride, max_cohorts):
@@ -125,9 +159,16 @@ def _run_availability(frames, build, model_path, stride, max_cohorts):
     from .model_file import ModelFileError, load_model
 
     try:
-        model = load_model(model_path)
+        config = load_model(model_path)
     except ModelFileError as e:
         raise SystemExit(str(e))
+    model = config.model
+    if not config.has_availability_model:
+        raise SystemExit(
+            "%s declares no `aggregate_frames`, so there is no availability "
+            "model to probe with. Declare one, or drop --model and run the "
+            "column dependency probe, or use `leakaudit check` for the checks "
+            "that need no model." % model_path)
 
     result = run_probe_a(frames, build, model, side="user",
                          cohort_stride=stride, max_cohorts=max_cohorts)
@@ -155,7 +196,7 @@ def main(argv=None) -> int:
         from .model_file import SCHEMA_DOC
         print(SCHEMA_DOC)
         return 0
-    if args.command != "run":
+    if args.command not in ("run", "check"):
         ap.print_help()
         return EXIT_USAGE
 
@@ -164,6 +205,8 @@ def main(argv=None) -> int:
     # never going to happen.
     build = _load_callable(args.pipeline)
     frames = _parse_frames(args.frame)
+    if args.command == "check":
+        return _run_checks(frames, build, args.model)
     if args.model:
         result = _run_availability(frames, build, args.model,
                                    args.stride, args.max_cohorts)

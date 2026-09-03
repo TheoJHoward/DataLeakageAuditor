@@ -171,12 +171,12 @@ _UNWIRED = {
         "`leakaudit.availability.AvailabilityModel.decision_column` is where a "
         "decision time is declared, and `resolve_decision_time` in this module "
         "validates one against a built frame"),
-    "train_idx": (
-        "no split-based detector is built in this package. Nothing consumes a "
-        "training index"),
-    "test_idx": (
-        "no split-based detector is built in this package. Nothing consumes a "
-        "test index"),
+    # `train_idx` and `test_idx` left this table at R203 P4: their consumers
+    # arrived. `leakaudit.checks.check_split_validity` and
+    # `check_duplicate_rows_across_split` read them, so `audit()` passes them
+    # through rather than refusing them. AN ENTRY GOES WHEN ITS CONSUMER LANDS,
+    # never before and never left behind -- a refusal that is no longer true is
+    # the same defect as a discarded parameter, pointing the other way.
     "meta": "nothing in this package reads it",
 }
 
@@ -239,11 +239,12 @@ def audit(
     refusal names them; removing them would turn a wrong answer into a
     TypeError that says nothing about why.
     """
+    from .checks import run_all
     from .findings import AuditResult
     from .probe import probe_columns
 
     _refuse_unwired(availability=availability, decision_time=decision_time,
-                    train_idx=train_idx, test_idx=test_idx, meta=meta)
+                    meta=meta)
     frames = normalise_raw(raw)
     check_build(build)
     # `bare` is carried, not re-derived: a caller who passed one frame gets that
@@ -258,4 +259,9 @@ def audit(
         decision_time=decision_time, availability=availability,
         train_idx=train_idx, test_idx=test_idx, meta=meta,
     )
-    return AuditResult(result.traces, source=result)
+    # R203 P4: the split, if one was given, reaches the checks that read it.
+    # Each of them reports whether it looked, so a caller who gave no split gets
+    # "not checked" rather than a silence they might read as clean.
+    checks = run_all(build(dict(frames)) if not bare else build(frames[
+        next(iter(frames))]), train_idx=train_idx, test_idx=test_idx)
+    return AuditResult(result.traces, source=result, checks=checks)

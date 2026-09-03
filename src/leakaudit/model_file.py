@@ -29,56 +29,129 @@ shape this package refuses everywhere else.
 from __future__ import annotations
 
 import json
+from dataclasses import dataclass
 from pathlib import Path
 
 import pandas as pd
 
 from .availability import AvailabilityModel
 
-SCHEMA_VERSION = 1
-SUPPORTED_VERSIONS = (1,)
+SCHEMA_VERSION = 2
+SUPPORTED_VERSIONS = (1, 2)
 
-# Everything version 1 understands. A key outside this set is refused rather
-# than ignored: a typo in a key name is otherwise a silently unapplied setting.
+# THE FILE VERSIONS WITH THE TOOL, NEVER WITH A REGISTRATION. R203 §1.
+#
+# `PREREG.md` is closed and will never version again, so a config pinned to it
+# is pinned to a fossil; a future registration would be a different document
+# with its own vocabulary, and a user's config cannot chase both. A user who
+# wants their model inside their own pre-registration includes this file and
+# hashes it -- that is inclusion, not version coupling, and it works better as
+# one coherent artifact than two.
+#
+# KEYS ARRIVE WITH THEIR CONSUMER. A key the loader reads and ignores is the
+# discarded-parameter defect in a file, so `label_column` and `split` are known
+# only at version 2 -- the version that shipped with the checks that read them.
+# A version-1 file naming them is refused, which is the correct friction: adding
+# a key is a versioned change.
 _V1_KEYS = {"version", "aggregate_frames", "decision_column", "window_seconds",
             "ties_available", "note"}
-_V1_REQUIRED = {"version", "aggregate_frames"}
+_V2_KEYS = _V1_KEYS | {"label_column", "split"}
+_KEYS_BY_VERSION = {1: _V1_KEYS, 2: _V2_KEYS}
+
+# `aggregate_frames` is required only where an availability model is the point.
+# A version-2 file may declare a label and a split and no aggregate frame at all
+# -- that is a user running the checks of `leakaudit.checks` and nothing else,
+# which is a whole and legitimate use.
+_REQUIRED_BY_VERSION = {1: {"version", "aggregate_frames"}, 2: {"version"}}
 
 
 class ModelFileError(Exception):
     """The model file cannot be read as written."""
 
 
+@dataclass(frozen=True)
+class LoadedConfig:
+    """Everything one config file declares.
+
+    ONE FILE, and R203 §1 is why. To the person writing it this is one thing --
+    what my data means. When values became knowable, which column is the label,
+    how the split works: those are not two kinds of thing to them. The
+    registered/unregistered split is an artifact of this project's history, not
+    a property of a user's world, and building that history into their
+    configuration surface is how tools become strange to use.
+
+    The distinction is kept where a reader who needs it will find it: the schema
+    doc marks, per key, which correspond to vocabulary declared in this
+    project's registration and which do not.
+    """
+    model: AvailabilityModel
+    label_column: str | None = None
+    train_idx: list | None = None
+    test_idx: list | None = None
+    version: int = SCHEMA_VERSION
+
+    @property
+    def has_availability_model(self) -> bool:
+        return bool(self.model.aggregate_frames)
+
+
 SCHEMA_DOC = """\
-leakaudit availability model, schema version 1.
+leakaudit config, schema version 2.
 
     {
-      "version": 1,
+      "version": 2,
       "aggregate_frames": {"trades": "ts_event", "book": "ts_floor"},
       "decision_column": "timestamp",
       "window_seconds": 1.0,
       "ties_available": true,
+      "label_column": "target",
+      "split": {"train": [0, 1, 2], "test": [3, 4]},
       "note": "free text, for whoever reads this next"
     }
 
+ONE FILE. To you this is one thing: what your data means. Declare what you have
+and the tool runs what that supports; declare nothing and it says so rather than
+reporting a clean result it did not earn.
+
   version           required. Refused if not one this build understands.
-  aggregate_frames  required. Frame name -> the column holding the key of the
-                    window that frame aggregates. The frame's declared
-                    availability instant is that key plus the window: an
-                    aggregate over [k, k+window) is knowable at k+window, and a
-                    row deciding inside that span could not have used it.
+  aggregate_frames  frame name -> the column holding the key of the window that
+                    frame aggregates. The declared availability instant is that
+                    key plus the window: an aggregate over [k, k+window) is
+                    knowable at k+window, and a row deciding inside that span
+                    could not have used it. Required at version 1; optional at
+                    version 2, where a file may declare only a label and a split.
   decision_column   the built output's column holding each row's decision
                     instant. Default "timestamp".
   window_seconds    the aggregation window. Default 1.0.
   ties_available    whether a value whose instant equals the decision instant
                     counts as available. Default true.
+  label_column      version 2. The built output's label column.
+  split             version 2. {"train": [...], "test": [...]}, row POSITIONS
+                    into the built output.
   note              ignored by the tool; kept for the reader.
 
-A frame NOT named in aggregate_frames is not perturbed, and the probe says so:
-its silence is `none`, not `observed_silence`.
+WHICH KEYS CORRESPOND TO REGISTERED VOCABULARY, for a reader who needs to know:
 
-THIS IS A TOOL CONFIG AND NOT A REGISTERED DECLARATION. It has no standing, it
-supersedes nothing, and a result produced with it is not a gate result.
+  aggregate_frames, decision_column, window_seconds, ties_available
+      correspond to vocabulary declared in this project's registration -- the
+      availability model, the decision instant, and the tie comparator.
+  label_column, split, note
+      do NOT. They serve checks that are not registered detector rows, or are
+      in the neighbourhood of one without being it.
+
+A reader who does not need that distinction is not made to navigate it: the
+file is one object and the tool reads it as one.
+
+A frame NOT named in aggregate_frames is not perturbed, and the probe says so:
+its silence is `none`, not `observed_silence`. The same holds for every check:
+one with nothing declared to run against reports that it did not look, which is
+a different sentence from finding nothing.
+
+THIS IS A TOOL CONFIG AND NOT A REGISTERED DECLARATION. It versions with the
+TOOL, never with a registration. It has no standing, it supersedes nothing, and
+a result produced with it is not a gate result. If you want your model inside
+your own pre-registration, include this file and hash it -- that is inclusion,
+not version coupling.
 """
 
 
@@ -113,25 +186,58 @@ def load_model(path) -> AvailabilityModel:
                 "version it knows."
                 % (version, list(SUPPORTED_VERSIONS)), path)
 
-    unknown = sorted(set(raw) - _V1_KEYS)
+    known = _KEYS_BY_VERSION[version]
+    unknown = sorted(set(raw) - known)
     if unknown:
+        later = sorted(k for k in unknown if k in _V2_KEYS)
+        hint = ("" if not later else
+                " %s %s known at version 2; this file declares version %d."
+                % (later, "are" if len(later) > 1 else "is", version))
         _refuse("unknown key(s) %s at version %d. Refused rather than ignored: "
                 "an ignored key is a setting you wrote and the tool did not "
-                "apply. Known keys: %s."
-                % (unknown, version, sorted(_V1_KEYS)), path)
-    missing = sorted(_V1_REQUIRED - set(raw))
+                "apply. Known keys at this version: %s.%s"
+                % (unknown, version, sorted(known), hint), path)
+    missing = sorted(_REQUIRED_BY_VERSION[version] - set(raw))
     if missing:
         _refuse("missing required key(s) %s at version %d" % (missing, version), path)
 
-    frames = raw["aggregate_frames"]
-    if not isinstance(frames, dict) or not frames:
-        _refuse("`aggregate_frames` must be a non-empty object of "
-                "frame name -> key column; a model naming no aggregate frame "
-                "would perturb nothing and report a silence about itself", path)
+    frames = raw.get("aggregate_frames")
+    if frames is None:
+        # Legitimate at version 2: a file declaring only a label and a split is
+        # a user running the checks that need no availability model.
+        frames = {}
+    elif not isinstance(frames, dict) or not frames:
+        _refuse("`aggregate_frames` is present and empty. Omit it, or name at "
+                "least one frame: a model naming none would perturb nothing and "
+                "report a silence about itself", path)
     for k, v in frames.items():
         if not isinstance(k, str) or not isinstance(v, str):
             _refuse("`aggregate_frames` entry %r -> %r is not string -> string"
                     % (k, v), path)
+
+    label = raw.get("label_column")
+    if label is not None and (not isinstance(label, str) or not label):
+        _refuse("`label_column` is %r; a column name was expected" % (label,), path)
+
+    split = raw.get("split")
+    if split is not None:
+        if not isinstance(split, dict):
+            _refuse("`split` is %s; an object with `train` and `test` row "
+                    "positions was expected" % type(split).__name__, path)
+        split_unknown = sorted(set(split) - {"train", "test"})
+        if split_unknown:
+            _refuse("`split` carries unknown key(s) %s; `train` and `test` are "
+                    "the two it takes" % split_unknown, path)
+        for side in ("train", "test"):
+            if side not in split:
+                _refuse("`split` has no `%s`. A one-sided split is not a split, "
+                        "and the checks that read it would have nothing to "
+                        "compare across" % side, path)
+            if not isinstance(split[side], list) or not all(
+                    isinstance(i, int) and not isinstance(i, bool)
+                    for i in split[side]):
+                _refuse("`split.%s` must be a list of integer row positions"
+                        % side, path)
 
     window = raw.get("window_seconds", 1.0)
     try:
@@ -152,8 +258,13 @@ def load_model(path) -> AvailabilityModel:
         _refuse("`decision_column` is %r; a column name was expected"
                 % (decision,), path)
 
-    return AvailabilityModel(
-        aggregate_frames=dict(frames),
-        decision_column=decision,
-        window=window_td,
-        ties_available=ties)
+    return LoadedConfig(
+        model=AvailabilityModel(
+            aggregate_frames=dict(frames),
+            decision_column=decision,
+            window=window_td,
+            ties_available=ties),
+        label_column=label,
+        train_idx=None if split is None else list(split["train"]),
+        test_idx=None if split is None else list(split["test"]),
+        version=version)
