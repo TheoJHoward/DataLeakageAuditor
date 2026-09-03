@@ -320,3 +320,81 @@ something other than the mapping it was written as.
 **Not measured, and therefore not claimed.** Whether any OTHER sentence in the
 modes document over-claims about some other registered key — only
 `timestamp_semantics` was audited, because only it was asked about.
+
+---
+
+## MV-5 — what a tool-level zone key would have to distinguish, and how many cases that is
+
+**Asked (DELTA R208 §1):** before building such a key, report what it would have
+to distinguish — *convert then drop*, *drop the zone*, *require naive throughout*
+— and whether those are three cases or two. A value nobody can produce data for
+is the `at_source_timestamp` / `explicit` situation again, where the honest
+answer was to say so.
+
+**Population: the full cross-product of representations, both directions.** The
+probe compares a frame KEY against a DECISION column and either side can carry a
+zone, so a key that handled only the fixture's direction would have a hole in it.
+Four representations — naive, UTC, US/Central, Asia/Tokyo — on each side, **16
+combinations**, one instant carried through both rules.
+
+### Result: `convert` and `drop` disagree on 8 of the 16.
+
+**Every one of the eight carries a non-UTC zone on at least one side.** With
+zones drawn only from {naive, UTC}, the two rules are the same rule.
+
+| key tz | decision tz | convert | drop |
+|---|---|---|---|
+| UTC | US/Central | 0 | +6h |
+| UTC | Asia/Tokyo | 0 | −9h |
+| US/Central | naive | 0 | −6h |
+| US/Central | UTC | 0 | −6h |
+| US/Central | Asia/Tokyo | 0 | −15h |
+| Asia/Tokyo | naive | 0 | +9h |
+| Asia/Tokyo | UTC | 0 | +9h |
+| Asia/Tokyo | US/Central | 0 | +15h |
+
+**The fixture's own shape is in the AGREE set.** `key = UTC, decision = naive` —
+what all 48 instrument-months carry (MV-2) — is a row where the two rules give
+the same answer. That is MV-1's dtype measurement recovered from the general
+table instead of from one file, and it settles something that has been open
+since D-V30A-42.
+
+### So: two answers and one refusal, on a different axis than the one named
+
+**It is NOT the `at_source_timestamp` / `explicit` situation.** There, two modes
+computed the same number on every possible input and no data could separate
+them. Here data separates them on half the table. But the separating data is not
+the fixture's, and not any user's whose aware columns are all UTC — which is what
+parquet with `isAdjustedToUTC=true` yields, the ordinary case.
+
+**And the three names are the wrong axis.** `convert` and `drop` are not two
+policies about aware columns. They are two answers to one question about **naive**
+ones:
+
+- **convert** — a naive column is UTC wall-clock.
+- **drop** — a naive column is local wall-clock, in whatever zone its aware
+  neighbour carries.
+
+Once that is the question, *require naive throughout* is not a third value of the
+same key. It is a **refusal to answer it** — the right default, because both
+other answers silently produce a defensible-looking number from data that
+licenses neither.
+
+### The consequence for `align_key`, stated because it is now measurable
+
+`align_key` refuses exactly the `aware key / naive decision` case. That is the
+row where **no rule is needed** — the two candidate rules agree there. So it
+refuses the one configuration it did not have to, and would pass every
+combination that actually separates them, since it only inspects whether exactly
+one side carries a zone rather than which zone.
+
+That is why it is right in principle and wrong here, and the sentence can now be
+made precise: **the trigger should be the presence of a non-UTC zone, not the
+asymmetry of zone-carrying.** Under that trigger the fixture passes without a
+declaration, and a user with local-time data is asked one question.
+
+**Not measured, and therefore not claimed.** Whether the key is worth building,
+what it would be called, or whether the refusal belongs at load or at the probe
+path. Whether any zone pair outside these four behaves differently — the four
+were chosen to span naive, UTC, a negative offset and a positive one, and DST
+transitions were not exercised at all.
