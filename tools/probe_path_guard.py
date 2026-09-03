@@ -163,23 +163,26 @@ def watch(report=print):
     Yields the growing set, so a caller can inspect it. On exit it names any
     module that executed and is not in the recorded set -- the cheap staleness
     trigger R212 §2(d) asks for.
+
+    THE RECORDER IS `record_modules`, AND IT WAS NOT ALWAYS. This function
+    carried its own `sys.setprofile` hook, and the whole-frame fixture guard was
+    wired to run inside it. `record_modules` was rewritten onto `sys.monitoring`
+    when setprofile's cost was measured -- no answer in fifteen minutes against
+    an unprofiled 288 seconds -- and THIS COPY WAS NOT. The next guard run took
+    over thirty-four minutes against a usual eight and a half, and was killed
+    rather than waited out.
+
+    Two things that made it survive: no guard ran between the wiring and that
+    run, so nothing exercised the combination; and the duplication was invisible
+    because both functions were correct in isolation. It is TB-14's shape -- an
+    extraction that replaced nothing -- with the copy left inside the caller.
+    There is now ONE recorder and this function calls it.
     """
     recorded = path_set()
-    seen: set[str] = set()
-
-    def hook(frame, event, arg):
-        if event == "call":
-            rel = _rel(frame.f_code.co_filename)
-            if rel is not None:
-                seen.add(rel)
-        return None
-
-    old = sys.getprofile()
-    sys.setprofile(hook)
     try:
-        yield seen
+        with record_modules() as seen:
+            yield seen
     finally:
-        sys.setprofile(old)
         unrecorded = sorted(seen - recorded)
         if unrecorded:
             report(

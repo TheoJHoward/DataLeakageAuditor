@@ -1,29 +1,36 @@
 {
   "what_this_is": "The set of modules the availability probe's execution actually reaches. It is DATA, not prose, because the standing guard rule reads it to decide what it covers. A rule whose population is a paragraph is a docstring, and this project has a register full of what happens to those.",
   "the_rule_it_serves": "Any round that changes a module in `path_set` re-runs the whole-frame fixture guard before the round is reported done: eight terms, same instrument-month, stride, seed and model, against the committed population run. Unchanged, or it halts and the change is examined before anything is built on it.",
-  "measured_at_commit": "47f462f",
+  "measured_at_commit": "a023011",
   "measured_on": "2026-09-03",
-  "method": "sys.setprofile over three real probe runs, recording the file of every frame entered. NOT an import graph: availability.py imports things it never calls on this path, so an import list would over-report the population and make the rule cheaper to satisfy and weaker.",
+  "method": "sys.monitoring PY_START with per-code-object DISABLE, over four runs, recording the file of every frame entered. NOT an import graph: availability.py imports things it never calls on this path, so an import list would over-report the population and make the rule cheaper to satisfy and weaker. The instrument was sys.setprofile until 2026-09-03, when its cost was measured as prohibitive on a real fixture run -- over 34 minutes against a usual 8.5 -- and it was replaced.",
   "runs": [
     "A -- run_probe_a, whole-frame path (the path that produced Phase 1's evidence)",
     "B -- run_probe_a, per-column path (what the modes wiring added)",
-    "C -- the whole reported-figures path: probe -> eligible_cohorts -> traces_for -> resolve_all -> derive_evidence_events"
+    "C -- the whole reported-figures path: probe -> eligible_cohorts -> traces_for -> resolve_all -> derive_evidence_events",
+    "D -- the whole-frame fixture guard itself, on the real acceptance fixture, recorded by the staleness trigger during the R216 run. This is the only run in which the frames are PRODUCED rather than supplied, and it is the reason the adapter and the fixture's builder appear at all."
   ],
   "why_run_C_exists": "run_probe_a is not where the recorded numbers stop. The guard compares a verdict, an eligible count, a finding-record count and a feature count, and those pass through the trace builder, the resolver and the frozen reducer after the probe returns. A module that can move any of the four belongs in the set.",
   "path_set": [
+    "evidence/fixture_spike/f2/fixture.py",
+    "evidence/fixture_spike/f2/phase5_ml_fixture.py",
+    "protocol/runtime_reference.py",
     "src/leakaudit/availability.py",
-    "src/leakaudit/modes.py",
     "src/leakaudit/availability_trace.py",
-    "protocol/runtime_reference.py"
+    "src/leakaudit/fixture_adapter.py",
+    "src/leakaudit/modes.py"
   ],
   "path_set_reasons": {
     "src/leakaudit/availability.py": "both probe paths, and the reported-figures path",
     "src/leakaudit/modes.py": "the per-column path only",
     "src/leakaudit/availability_trace.py": "the reported-figures path",
-    "protocol/runtime_reference.py": "the frozen reducer, on the reported-figures path"
+    "protocol/runtime_reference.py": "the frozen reducer, on the reported-figures path",
+    "src/leakaudit/fixture_adapter.py": "MEASURED at guard time on the real fixture, where it PROVIDES the frames. The synthetic runs that first measured this set supplied frames directly, so the trace could not see it; it was listed by judgment and is now listed by measurement.",
+    "evidence/fixture_spike/f2/fixture.py": "MEASURED at guard time. The fixture's side selector, reached through the adapter.",
+    "evidence/fixture_spike/f2/phase5_ml_fixture.py": "MEASURED at guard time. The fixture's own builder -- what the probe perturbs the inputs of. An edit here changes what the guard compares."
   },
   "added_by_judgment_not_by_the_trace": {
-    "src/leakaudit/fixture_adapter.py": "The trace showed it OFF the path only because the measuring runs supplied frames directly. In the real guard it PROVIDES the frames, so an edit to it changes what the probe is fed and can move the result -- as an input, not as part of the computation. The instrument was never going to say so, and it is listed here rather than silently in `path_set` so the distinction between measured and reasoned stays visible."
+    "RESOLVED 2026-09-03": "This block listed `src/leakaudit/fixture_adapter.py` as belonging to the rule by reasoning, with the stated reason that the measuring runs supplied frames directly so the instrument was never going to see it. The staleness trigger's FIRST FIRING, on the R216 guard run against the real fixture, executed it and the fixture's two producing modules and named all three. The judgment was right and is now a measurement. Kept rather than deleted because it records that the trigger CONFIRMED a prediction rather than finding something nobody had considered -- which is the difference between a check that works and a check that got lucky."
   },
   "not_on_the_path": [
     "src/leakaudit/__init__.py",
@@ -41,5 +48,6 @@
   "what_not_on_the_path_does_NOT_mean": "It means an edit cannot move a probe result THROUGH run_probe_a. Several of these are on other entry points -- probe.py and corruption.py carry the column dependency probe, checks.py the four checks, findings.py the rendering -- and an edit there can move those results.",
   "staleness_condition": "This set was measured against one commit. A NEW module under src/leakaudit/, or a structural change to the probe's call graph, requires re-measuring it. The recorded `measured_at_commit` is what makes that checkable rather than remembered.",
   "staleness_trigger_built": "The guard harness records every leakaudit/protocol frame it enters during its own run and compares that against `path_set`. A module reached at guard time and absent from this file is reported by the guard itself, so the set cannot drift silently while the thing that reads it keeps passing. This is the cheap version and it exists; it does not detect a module that becomes reachable only on data the guard does not run.",
-  "not_measured_and_therefore_not_claimed": "Whether a module unreached by the measuring runs' synthetic frames is reached by the fixture's. A branch taken only on real data -- a mixed timezone, an absent frame, a dtype those frames do not carry -- would not appear here. The set is a floor on what the rule covers, not a proof of its ceiling."
+  "not_measured_and_therefore_not_claimed": "Whether a module unreached by the measuring runs' synthetic frames is reached by the fixture's. A branch taken only on real data -- a mixed timezone, an absent frame, a dtype those frames do not carry -- would not appear here. The set is a floor on what the rule covers, not a proof of its ceiling.",
+  "first_trigger_firing": "2026-09-03, R216. The trigger reported three modules executing that the set did not record. It had never fired before, so this is its first true positive, and it fired on the exact gap its author had already written down as a known limitation of the measuring runs."
 }

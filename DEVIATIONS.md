@@ -1770,3 +1770,75 @@ instrument alters what the delta-of-findings comparison against the frozen
 checker produces, which is a measured act with its own before-and-after, not an
 edit to make at the end of a round. Reported with its population measured so the
 repair starts from a number rather than from a suspicion.
+
+## D-V30A-49 — `column_modes` never reached the probe from the command line
+
+**True.** The version 3 key `column_modes` is parsed, validated with four
+distinct refusals, stored on the loaded config, and documented at length by
+`leakaudit schema` — the five modes a file may declare, the sixth reachable only
+from the library, and the statement that a column with no mode is reported
+undeclared rather than defaulted. **The CLI's call to `run_probe_a` omitted it.**
+
+**So a user who declared per-column modes silently got the whole-frame path**,
+with no error and nothing in the output to say so.
+
+**That is not a missing capability, it is a wrong answer.** The two paths give
+DIFFERENT results on the same data: measured at R205 as 25 cohorts with a finding
+under the whole-frame rule against 0 under the per-column rule, on a frame whose
+column was published half an hour before the row carrying it. The per-column path
+was built specifically to suppress a false positive the coarse path produces — so
+a user declaring modes **to correct a false positive kept the false positive**.
+
+**Measured, not inferred.** The same pipeline was run through the installed
+command with and without a `column_modes` block: identical findings, and the
+per-column fallback note — which `run_probe_a` emits whenever `column_modes` is
+non-empty — absent in both. Its absence was the symptom.
+
+**Repaired in the round it was found, and the exception is stated.** The standing
+rule is that a sweep finding is disclosed and not repaired in the same round
+where it touches a registered instrument. `cli.py` is not registered and not on
+the availability probe's execution path, the fix is one argument, and its
+observable is a test asserting the fallback note now appears through the CLI.
+
+**Expected:** that a key with four refusals behind it reaches the thing the
+refusals exist to protect.
+
+**Why it stands:** it is the same class as D-V30A-47, found in the same sweep,
+and it is the more consequential of the two — the tie branch changes one row's
+classification, this one silently selects a different probe path. Both were
+invisible to the whole suite, for the reason recorded as TB-20: a defect that
+makes a thing do nothing is invisible to tests of that thing.
+
+## D-V30A-50 — `timestamp_column` is stored and reaches nothing
+
+**True.** The version 3 key `timestamp_column` is accepted by the loader,
+carried on `LoadedConfig`, and documented by `leakaudit schema` as *"the frame's
+clock column. Default 'timestamp'."* The only reader anywhere is a test asserting
+the loader stored it. The CLI never mentions it, and the probe uses each
+aggregate frame's own declared KEY as the clock for the modes that need one.
+
+**NOT wired, and that is a decision rather than a deferral.** The probe already
+has a clock for each frame — the key the user declared in `aggregate_frames` —
+and introducing a second one would create two answers to "which column is this
+frame's clock" with nothing to arbitrate between them. Wiring it would be adding
+a capability, not completing one, and there is no user asking for it.
+
+**So the schema surface now says it is inert**, which is the other honest option
+and the one this round took. Removing the key was rejected: a file that sets it
+would then be refused for an unknown key, which turns a harmless declaration into
+a breakage.
+
+**Expected:** that a documented key either reaches a consumer or says it does
+not, where the user reads it.
+
+**Why it stands:** it is the third hit of the same sweep and the one where the
+right answer was documentation rather than code. It is recorded because "we
+looked and this one was fine to leave" is only worth anything if the looking is
+written down — and because the standing test added this round will fail if
+anyone adds a key without deciding which of the two it is.
+
+**Carried consequence:** the check that enforces this reads `SCHEMA_DOC` for the
+words that mark inertness. A future author who documents inertness in different
+words gets a failing test rather than a silent gap, which is the intended
+direction, and the word list is in the test rather than in the schema so that
+widening it is a deliberate act.

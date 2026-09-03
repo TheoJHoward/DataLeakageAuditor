@@ -227,8 +227,19 @@ def _run_availability(frames, build, model_path, stride, max_cohorts):
             "column dependency probe, or use `leakaudit check` for the checks "
             "that need no model." % model_path)
 
+    # `column_modes` REACHES THE PROBE. R216 §0's sweep found it did not.
+    #
+    # The key was parsed, validated with four distinct refusals, stored on the
+    # config, and documented at length by `leakaudit schema` -- and this call
+    # omitted it, so a user declaring per-column modes silently got the
+    # whole-frame path. That is not a missing capability: the two paths give
+    # DIFFERENT answers, measured at R205 as 25 findings against 0 on the same
+    # data, and the per-column one was built to suppress a false positive the
+    # coarse path produces. A user declaring modes to correct a false positive
+    # kept the false positive, with no error.
     result = run_probe_a(frames, build, model, side="user",
-                         cohort_stride=stride, max_cohorts=max_cohorts)
+                         cohort_stride=stride, max_cohorts=max_cohorts,
+                         column_modes=config.column_modes or None)
     # Eligibility is derived, not assumed: a second no aggregate frame carries a
     # row in has nothing to corrupt, and scheduling it would report a dead
     # process where the truth is an empty probe surface.

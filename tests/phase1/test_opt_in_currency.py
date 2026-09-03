@@ -65,17 +65,46 @@ def test_the_attested_set_is_NOT_EMPTY_and_names_the_adapter():
 
 
 def test_the_two_module_SETS_ARE_RECORDED_SEPARATELY():
-    """They answer different questions and must not be merged for tidiness."""
+    """They answer different questions and are not merged for tidiness.
+
+    REWRITTEN, NOT DELETED, 2026-09-03. This asserted the two sets were DISJOINT,
+    and it failed the moment the probe path set gained the fixture-provision
+    modules — because the guard's staleness trigger fired on its first real run
+    and measured the adapter that the synthetic runs could not see. The old
+    assertion said, in its own message, that an overlap meant it needed
+    rewriting rather than deleting, and this is that rewrite.
+
+    WHAT THE OVERLAP IS, and it has meaning rather than being an accident: both
+    questions touch the modules that PRODUCE the fixture's frames, because the
+    guard runs against the real fixture and the opt-in tests attest the adapter.
+    What stays exclusive is the part that answers each question — the probe's
+    COMPUTATION on one side, the equality comparator on the other — and that is
+    what this now asserts.
+    """
     import probe_path_guard as ppg
 
     probe = ppg.path_set()
     _key, run = oic.latest_run(oic.load())
     opt_in = set(run[oic.ATTESTS])
     assert opt_in, "no attested set"
-    assert probe & opt_in == set(), (
-        "the two sets overlap, which is fine in principle but means this "
-        "assertion needs rewriting rather than deleting -- it exists to notice "
-        "when the two questions stop being separate: %s" % sorted(probe & opt_in))
+
+    computation = {"src/leakaudit/availability.py",
+                   "src/leakaudit/availability_trace.py",
+                   "src/leakaudit/modes.py",
+                   "protocol/runtime_reference.py"}
+    assert computation <= probe, (
+        "the probe's own computation left its path set: %s"
+        % sorted(computation - probe))
+    assert computation & opt_in == set(), (
+        "the opt-in tests now execute the probe's computation, so they are no "
+        "longer attesting only the adapter and their record means something "
+        "different: %s" % sorted(computation & opt_in))
+    assert "src/leakaudit/determinism.py" in opt_in, (
+        "the equality comparator the opt-in tests exist to exercise is not in "
+        "their attested set")
+    assert "src/leakaudit/determinism.py" not in probe, (
+        "the probe now reaches the equality comparator; the two records answer "
+        "one question and this test needs rewriting again rather than deleting")
 
 
 def test_the_suite_line_states_currency_and_not_just_a_count():

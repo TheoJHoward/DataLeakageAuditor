@@ -147,11 +147,24 @@ reporting a clean result it did not earn.
                     instant. Default "timestamp".
   window_seconds    the aggregation window. Default 1.0.
   ties_available    whether a value whose instant equals the decision instant
-                    counts as available. Default true.
+                    counts as available. Default true, which is the registered
+                    default (PREREG.md section 2.3). Setting it false makes a row
+                    stamped EXACTLY at an aggregate's completion instant a
+                    finding; it changes nothing else, because that is the only
+                    input the two comparators disagree about. A run under the
+                    non-default branch SAYS SO in its own output, on every
+                    finding it produces.
   label_column      version 2. The built output's label column.
   split             version 2. {"train": [...], "test": [...]}, row POSITIONS
                     into the built output.
   timestamp_column  version 3. The frame's clock column. Default "timestamp".
+                    READ AND NOT YET CONSUMED, and said here rather than left to
+                    be discovered: the probe uses each aggregate frame's own
+                    declared KEY as the clock for the modes that need one, so
+                    this key is stored and currently reaches nothing. It is
+                    documented as inert rather than removed, because removing it
+                    would silently break a file that sets it. Declaring it is
+                    harmless and changes no result.
   column_modes      version 3. Column -> the rule for when its values became
                     knowable. A bare string names a mode; an object names a mode
                     and the column it reads. THE ARITHMETIC OF EACH MODE IS IN

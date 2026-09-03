@@ -325,6 +325,26 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
     if res.n_cohorts == 0:
         return res
 
+    # THE COMPARATOR TRAVELS WITH THE RESULT. R216 §2(b).
+    #
+    # Two runs under different tie branches must not be distinguishable only by
+    # a config file nobody kept. The non-default branch is stated loudly because
+    # a result produced under it is not the same object as one produced under the
+    # default; the default is stated quietly because a reader still has to be
+    # able to tell which they are holding.
+    if model.ties_available:
+        res.notes.append(
+            "comparator: `a(j,c) <= d(i)` -- ties AVAILABLE, the registered "
+            "default (PREREG.md section 2.3). A cell whose instant equals the "
+            "decision instant counts as arrived.")
+    else:
+        res.notes.append(
+            "COMPARATOR IS NOT THE DEFAULT: `a(j,c) < d(i)` -- ties "
+            "UNAVAILABLE. A cell whose instant equals the decision instant is "
+            "counted as NOT arrived, so rows stamped exactly at an aggregate's "
+            "completion instant are findings here and are not under the default. "
+            "Every finding below was computed under that branch.")
+
     picked_set = set(picked)
     corrupt = {k: v.copy() for k, v in raw.items()}
     rng = np.random.default_rng(seed)
@@ -540,9 +560,43 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
         if m.any():
             moved_col[c] = m
 
+    # THE TIE BRANCH, WIRED. R216 §2, and it was inert before this.
+    #
+    # A cell of second F becomes knowable at a = F + window. A decision row at
+    # instant d is fed it illegally when the model says it had not arrived:
+    #
+    #   d inside [F, F+window)   a > d   unavailable under BOTH branches
+    #   d == F + window exactly  a == d  THE TIE. `available` admits it;
+    #                                    `unavailable` refuses it.
+    #   d after  F + window      a < d   available under both
+    #
+    # Attribution is by floored second, so the tie rows -- those stamped exactly
+    # at the aggregate's completion instant -- sit in the `nxt` bucket together
+    # with rows merely somewhere in the following second. Under the default they
+    # belong there. Under `ties_available=False` they are findings, and they are
+    # the ONLY rows the two branches disagree about.
+    #
+    # PREREG.md §2.3 registers both branches and states that `unavailable`
+    # "remains selectable"; §4.3 writes the inequalities for both. So this is a
+    # registered capability being completed, not a tool-level extra -- the
+    # structural read is recorded at MV-12. No published figure moves: every
+    # recorded result was produced under the default, whose behaviour is
+    # unchanged, and that was measured rather than assumed.
+    # A row is AT THE TIE when its own stamp sits exactly on a second boundary:
+    # it then belongs to the `nxt` bucket of cohort F = base_floor - window,
+    # whose instant is F + window = base_floor = d. Written `d == base_floor`
+    # rather than `d == f_sec + window` because the first is a property of the
+    # row and the second was got wrong by exactly one window on the first
+    # attempt -- caught by the discriminating positive, which is what it is for.
+    at_tie = (d == base_floor).to_numpy()
+
     for f_sec in picked:
         in_sec = (base_floor == f_sec).to_numpy()
         nxt = (base_floor == f_sec + model.window).to_numpy()
+        if not model.ties_available:
+            tie_here = nxt & at_tie
+            in_sec = in_sec | tie_here
+            nxt = nxt & ~tie_here
         feats = tuple(sorted(c for c, m in moved_col.items() if (m & in_sec).any()))
         res.cohorts.append(CohortResult(
             second=f_sec,

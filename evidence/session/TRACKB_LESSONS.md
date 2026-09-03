@@ -712,6 +712,11 @@ the previous second must be silent in-second AND must move the following second'
 rows. A dependency probe fails that pair; an instrument that reports movement
 without attributing it to a second fails it too.
 
+**PREDECESSOR, linked rather than left as a second name for one idea (TB-21).**
+This was already written, months earlier, in `tests/phase1/b6_probe_a_controls.py`:
+*"A negative that moves nothing anywhere is a probe testing itself."* Same
+lesson, stated well, placed where it governed one control and nothing else.
+
 **The tell:** ask of every known positive, "what else would fire on this?" If the
 answer is "anything that is plugged in", the positive is a continuity test and
 the validity question is still open.
@@ -720,3 +725,81 @@ the validity question is still open.
 This was applied to the two runtime detector rows that carry reported claims. The
 rest of the project's known positives were not examined, deliberately, and their
 status is unexamined rather than confirmed.
+
+## TB-20 — *(3 September 2026)* A defect that makes a thing do nothing is invisible to tests of that thing
+
+Two defects were found in one round, by two different accidents, and neither was
+reachable by any test in a 637-test suite. They share one property, and it is
+the property that puts them outside testing altogether.
+
+**`AvailabilityModel.available()` had no callers.** So no test of the probe
+exercised it — and a test written *for it* would have passed, because the
+function is correct. It was merely unreached. The suite could confirm the
+comparator computes the right answer and could not notice that nobody asked it.
+
+**`round_reconciliation` scanned a directory that had been dead since August.**
+So every run passed, and a test of its logic passes too, because the logic is
+fine and the input is empty. A check over an empty population is green forever.
+
+**Neither was found by looking for it.** One fell out of asking *what wrong
+instrument can I not rule out?* — which forced a reachability check on the
+comparator. The other fell out of asking *is this scan deliberate?* Both were
+side effects of asking what a check COVERS rather than whether it PASSES.
+
+**That is the generalisable move: coverage questions find what pass/fail
+questions structurally cannot.** A pass/fail question takes the population as
+given and asks about the answer. A coverage question asks whether the population
+is the one intended — and an empty or unreached population produces a perfect
+pass rate.
+
+**And a third instance arrived in the same sweep**, which is why this is a lesson
+and not an anecdote: `column_modes` was parsed, validated with four refusals, and
+never passed to the probe by the CLI. Every test of the parsing passed. Every
+test of the probe passed. Nothing joined them, and a user declaring per-column
+modes silently got a different probe path with a measurably different answer.
+
+**The tell:** a component with thorough tests and no caller; a check that has
+never once emitted a finding; a config key with careful validation and no
+consumer. In each case the tests are about the thing and the defect is about
+whether the thing is *connected to anything*, which is a different question that
+the tests are not asked.
+
+**What this justifies.** Running a halt list BACKWARDS over existing code. A halt
+list stops a failure going forward and does nothing about instances already
+resident, and the resident ones are — by this lesson — exactly the ones a suite
+cannot see. *"A config key the loader reads and ignores"* had been on this
+project's halt list for thirteen deltas while three instances sat in the package.
+
+## TB-21 — *(3 September 2026)* Knowledge written where it governs nothing has to be discovered twice
+
+The refinement recorded at TB-19 — that a positive every wrong instrument fires
+on is a wiring test — was **already written down**, months earlier, in the B-6
+control file:
+
+> *"A negative that moves nothing anywhere is a probe testing itself."*
+
+Same idea, stated well, and correct. It sat in one file, as an aside, attached to
+one control. **So it governed that control and nothing else**, and it had to be
+rediscovered from a completely different direction — an audit of the shuffle
+check's positive — and written down again under a new name.
+
+**The insight was not missing. Its placement was.** A sentence in a control's
+docstring is read by whoever edits that control. A lesson in the lessons file is
+read by whoever is looking for lessons. Neither is read by the person writing the
+next control, which is who needed it.
+
+**This is the register problem in a different key.** TB-17 records that an events
+register cannot supply a rate because non-events are unwritable. This is the
+adjacent failure: a project can lose knowledge it *already wrote down*, by
+writing it somewhere that governs nothing. The cost is not that the knowledge was
+absent — it is that the same thinking was paid for twice, and the second payment
+only happened by luck.
+
+**The repair, and it is cheap:** when a lesson is recorded, link the earlier
+statement of it rather than leaving two names for one idea. TB-19 now names the
+B-6 sentence as its predecessor. The two are one lesson with two dates, which is
+what they always were.
+
+**The tell:** discovering that something you just worked out is already written
+in a comment somewhere. That is not a pleasant coincidence — it is evidence that
+the first writing was placed where it could not do its job.
