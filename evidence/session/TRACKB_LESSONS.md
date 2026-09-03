@@ -77,6 +77,34 @@ what the work leaves behind.**
 
 ---
 
+**SIBLINGS — enumerated 3 September 2026, retroactively (R219 §0).** The shape is
+*instruments that read source text and pattern-match it*, which is mechanically
+enumerable. Measured over `tools/check_registration.py` by parsing it: **32
+checks, of which 8 read Python source.** One parses (`check_installability`,
+after R218). Four pattern-match: `check_control_characters`,
+`check_legality_table`, `check_requirement_ids`, `check_unit_grammar`. Three read
+source without doing either.
+
+**Of the four, the shape applies only where the check's subject is CODE rather
+than PROSE.** `check_control_characters` looks for control bytes, and a control
+byte in a docstring is a real finding, so prose is correctly in its scope. The
+other three take documentation consistency as their subject, where prose is the
+thing being checked rather than a source of false positives. **So the sweep
+returns no further instances**, and the one that was vulnerable —
+`check_installability`, reading an English sentence as an import — is the one
+already repaired at D-V30A-51.
+
+*The enumeration is mechanical and complete; the classification of which four are
+vulnerable is a reading of each check's subject, and it is mine.*
+
+**And the lesson cost two applications to learn.** TB-02 was written when the
+citation check moved from text to parsing, in these words: *"a docstring is a
+string constant, so it simply is not a reference, and there is nothing to
+exempt."* Nobody asked at the time what else scanned text. The neighbour was
+found eight months later by being defeated by a docstring explaining an
+instrument — which is why entries now carry this line at the moment they are
+written.
+
 ## TB-03 — *(28 August 2026)* A registration can be internally consistent and still unscoreable
 
 The acceptance gate's third criterion scores findings against a declared
@@ -770,6 +798,16 @@ resident, and the resident ones are — by this lesson — exactly the ones a su
 cannot see. *"A config key the loader reads and ignores"* had been on this
 project's halt list for thirteen deltas while three instances sat in the package.
 
+**SIBLINGS.** The shape is *a component with thorough tests and no caller; a
+check that has never emitted a finding; a config key with careful validation and
+no consumer* — all enumerable by tracing what a real run reaches. Enumerated
+across three populations this round and the last: the config keys (10 accepted,
+measured complement, zero unexplained at HEAD); the availability probe's module
+path (7 modules, `PROBE_PATH_SET.json`); the registration checks that read source
+(8, listed under TB-02). **Not yet enumerated:** defaults taken where a rule says
+refuse — the `.get(key, default)` population — which needs a trace this project
+does not have and is recorded as unchecked rather than assumed clean.
+
 ## TB-21 — *(3 September 2026)* Knowledge written where it governs nothing has to be discovered twice
 
 The refinement recorded at TB-19 — that a positive every wrong instrument fires
@@ -803,3 +841,13 @@ what they always were.
 **The tell:** discovering that something you just worked out is already written
 in a comment somewhere. That is not a pleasant coincidence — it is evidence that
 the first writing was placed where it could not do its job.
+
+**SIBLINGS.** The shape is *a lesson stated in one file's prose that governs only
+that file*. It is NOT mechanically enumerable — finding it requires reading prose
+for insight rather than matching a pattern — so no sweep is claimed and the
+exemption is recorded rather than left as silence. **Two instances are known:**
+the B-6 control's *"a negative that moves nothing anywhere is a probe testing
+itself"*, which preceded TB-19 by months; and TB-02's parsing lesson, which
+preceded D-V30A-51's repair by eight. Both were found by arriving at the same
+conclusion from a different direction and then noticing it was already written.
+**That is the only discovery route observed so far, and it is not a method.**

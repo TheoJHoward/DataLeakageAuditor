@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import argparse
 import ast
+import os
 import hashlib
 import json
 import re
@@ -1718,10 +1719,46 @@ def check_manifest_covers_tree(root: Path) -> list[Finding]:
 # later round might cite do not.
 # ---------------------------------------------------------------------------
 
-_WORK_ROOT = pathlib.Path(
+_WORK_ROOT_ENV = "LEAKAUDIT_WORK_ROOT"
+
+# The superseded value, kept as the record of the defect rather than deleted. It
+# was a HARDCODED absolute path to one session's scratchpad, and that session
+# ended on 26 August 2026: 679 files, nothing written since. The session doing
+# the work carried 12,002 files in a different directory, and 149 such
+# directories existed beside it. D10's coverage of the current round's working
+# files was therefore ZERO, and every finding the check could emit came from a
+# directory nobody was working in. D-V30A-48.
+_WORK_ROOT_SUPERSEDED = pathlib.Path(
     "C:/Users/ttbea/AppData/Local/Temp/claude/"
     "C--Users-ttbea-OneDrive-Desktop-MBO-2025-4mon--2026-01/"
     "8b1d67a4-ce4f-4c55-b09d-1c72e7b6b5e1/scratchpad")
+
+
+def _work_root() -> pathlib.Path | None:
+    """The working directory to reconcile, resolved AT RUN TIME. R219 §1.
+
+    RUN TIME AND NOT IMPORT TIME, and that is the plausible wrong repair rather
+    than a stylistic preference. This module is imported by the registration
+    suite in processes with no relationship to any session; binding the value at
+    import would fix whatever the environment looked like when the module first
+    loaded, which is the original defect wearing a different hat. A caller that
+    sets the variable and then invokes the check in the same process would see it
+    work, and it would be wrong everywhere else.
+
+    NO DISCOVERY HEURISTIC. Guessing "the most recently modified session
+    directory" would silently pick a wrong one and report confidently about it,
+    which is worse than reporting nothing: the failure being repaired here is
+    precisely a check that was confident about the wrong directory.
+
+    UNSET IS NOT A PASS. When the variable is absent the check says its coverage
+    is zero and names the variable. The defect this replaces was silent zero
+    coverage; a loud zero is a different thing, and the whole repair is the
+    difference between them.
+    """
+    raw = os.environ.get(_WORK_ROOT_ENV)
+    if not raw:
+        return None
+    return pathlib.Path(raw)
 
 # Explicit EPHEMERAL list: path suffix -> reason. Each entry is a claim that the
 # file is reproducible or throwaway, and is auditable as such.
@@ -1779,10 +1816,24 @@ _EPHEMERAL = (
 def check_round_reconciliation(root: Path) -> list[Finding]:
     """D10 - every working-directory file is in the repo or declared ephemeral."""
     findings: list[Finding] = []
-    if not _WORK_ROOT.exists():
-        return [Finding("round_reconciliation", "(work root)", None,
-                        "the working directory is absent - nothing to reconcile",
-                        is_note=True)]
+    work_root = _work_root()
+    if work_root is None:
+        return [Finding(
+            "round_reconciliation", "(work root)", None,
+            "COVERAGE IS ZERO: %s is unset, so no working directory was "
+            "reconciled. This is not a pass. Set it to the directory this "
+            "round's scratch work lives in. It was a hardcoded path until "
+            "R219, aimed at a session that had ended, which is how this check "
+            "reported green over an empty population for weeks (D-V30A-48)."
+            % _WORK_ROOT_ENV,
+            is_note=True)]
+    if not work_root.exists():
+        return [Finding(
+            "round_reconciliation", "(work root)", None,
+            "%s names %s, which does not exist, so nothing was reconciled. "
+            "Reported rather than treated as an empty directory: a path that is "
+            "not there is a configuration error, and an empty directory is a "
+            "clean round." % (_WORK_ROOT_ENV, work_root))]
 
     repo_hashes = set()
     for p in root.rglob("*"):
@@ -1799,10 +1850,10 @@ def check_round_reconciliation(root: Path) -> list[Finding]:
                                   man.read_text(encoding="utf-8", errors="replace"), re.M))
 
     unreconciled, ephemeral, large = [], 0, 0
-    for p in _WORK_ROOT.rglob("*"):
+    for p in work_root.rglob("*"):
         if not p.is_file():
             continue
-        posix = "/" + p.relative_to(_WORK_ROOT).as_posix()
+        posix = "/" + p.relative_to(work_root).as_posix()
         if any(tok in posix or posix.endswith(tok) for tok, _ in _EPHEMERAL):
             ephemeral += 1
             continue
