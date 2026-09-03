@@ -37,8 +37,24 @@
   "last_run": {
     "date": "2026-08-26",
     "fixture": "zc 2025-01, corrected side",
-    "adapter_output_shape": [338159, 87],
-    "raw_frames": {"snap": [1262191, 24], "trades": [397457, 17], "magg": [464199, 6]},
+    "adapter_output_shape": [
+      338159,
+      87
+    ],
+    "raw_frames": {
+      "snap": [
+        1262191,
+        24
+      ],
+      "trades": [
+        397457,
+        17
+      ],
+      "magg": [
+        464199,
+        6
+      ]
+    },
     "results": [
       {
         "test": "test_adapter_output_equals_the_fixture_exactly",
@@ -63,5 +79,28 @@
     ],
     "negative_control": "An unperturbed adapted build compared IDENTICAL to the reference, so the two known-positives above are detections and not a check that always fires."
   },
-  "why_a_record_and_not_an_assertion": "A stranger cloning this repository sees '39 passed, 4 skipped' and cannot tell whether those four have ever passed or how to run them. A skip marker keeps a test runnable; it does not stand in for having run it. This file is the checkable part."
+  "why_a_record_and_not_an_assertion": "A stranger cloning this repository sees '39 passed, 4 skipped' and cannot tell whether those four have ever passed or how to run them. A skip marker keeps a test runnable; it does not stand in for having run it. This file is the checkable part.",
+  "run_2026_09_03": {
+    "date": "2026-09-03",
+    "supersedes": "run_2026_09_02, dated 2026-09-02, at commit 8320a20",
+    "commit": "47f462f",
+    "fixture": "zc 2025-01, corrected side — the same instrument-month and side as the superseded run",
+    "command": "LEAKAUDIT_FIXTURE=1 python -m pytest tests/phase1/test_fixture_adapter.py -q",
+    "result": "10 passed in 288.49s. Every opt-in test, including both known positives and the mutation-isolation case.",
+    "environment": "Python 3.12.10, numpy 2.4.2, pandas 3.0.1, pyarrow 23.0.1",
+    "why_this_run_happened": "DELTA R212 section 5 asked what the four skips in every reported suite line actually are. They are these, gated on LEAKAUDIT_FIXTURE=1 for cost. Running them was the answer, and it turned up that this record had gone stale AGAIN by the same mechanism its own banner describes: the 2026-09-02 entry attests commit 8320a20, and src/leakaudit/availability.py has been changed by four commits since. The banner warned about twelve such commits last time; nothing detected the recurrence.",
+    "the_gap_this_run_exposed": "`test_every_opt_in_test_has_a_recorded_result` runs in the DEFAULT suite and passed throughout the stale period. It checks that every opt-in test HAS a recorded result. It does not check that the result is CURRENT. So the always-run guard cannot see the failure mode this file was written to warn about, and the warning is carried by a prose banner that no test reads.",
+    "tests": [
+      "test_raw_excludes_the_captured_but_unread_frame",
+      "test_the_exclusion_is_visible_not_silent",
+      "test_a_none_frame_is_not_offered_to_the_probe",
+      "test_side_must_be_one_of_the_two",
+      "test_adapter_output_equals_the_fixture_exactly",
+      "test_known_positive_perturbing_the_served_snapshots_FIRES",
+      "test_known_positive_perturbing_trades_reaches_the_output",
+      "test_serving_does_not_let_one_run_alter_the_next",
+      "test_every_opt_in_test_has_a_recorded_result",
+      "test_the_skip_reason_names_what_is_missing"
+    ]
+  }
 }

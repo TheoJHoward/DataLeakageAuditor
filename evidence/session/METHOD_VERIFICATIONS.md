@@ -560,6 +560,56 @@ unpacking numpy — caused by the depth of the scratchpad directory it was being
 created in, not by anything about the floors. Rebuilt at a shorter path and it
 installed cleanly.
 
+### `requires-python = ">=3.11"` — DECLARED AND UNTESTED, and it stays that way
+
+DELTA R212 §1 is right that the untested cell is not "Python 3.11 on current
+dependencies" but **3.11 with the declared floors — the lowest point of every
+declared dimension at once.** Each dimension has been tested alone; the metadata
+asserts the conjunction.
+
+**That corner was not built.** No 3.11 interpreter is present on this machine —
+`py -0` lists 3.12 and 3.13 only — and installing one is not something to do
+unasked. Per R212 §1's third branch, the number is neither raised nor left
+looking verified:
+
+> **`requires-python = ">=3.11"` is declared and untested. Every environment
+> measured in MV-6 and MV-7 ran Python 3.12.10.**
+
+Nothing was changed to dispose of it. R210 §4's distinction governs: raising a
+floor to a measured value with the measurement recorded is the floor becoming
+true; changing a number so the question goes away is forbidden, and an untested
+number that says so is honest.
+
+### What WAS measured instead, at the other end of the Python range
+
+**Python 3.13.1 with resolved dependencies** — numpy 2.5.2, pandas 3.0.5,
+pyarrow 25.0.1:
+
+- suite **601 passed, 5 skipped, 1 failed** — the same known failure; the fifth
+  skip is the interning-conditional one described in MV-10, and it is why the
+  count differs from 3.12's four.
+- the same pipeline, same source: **sha256 `15dc83c78950d42b…`** — identical to
+  the floor, development and latest-on-3.12 runs.
+
+**And one fact about the declared space's shape.** The declared floors **do not
+install on 3.13**: numpy 1.26.4 publishes no 3.13 wheel and the source build
+fails for want of a compiler. That is **not a metadata defect** — `numpy>=1.26`
+is a per-dimension minimum, and a 3.13 user resolves a newer numpy, which works.
+It is a fact worth recording for what it implies about the corner: **the floors
+and the Python range are not jointly satisfiable at every point of the declared
+space**, so "the floors work" and "the Python range works" are two claims, and
+the conjunction is a third that has been tested at exactly one point (3.12.10)
+and is untestable here at the lowest.
+
+| Python | dependencies | measured |
+|---|---|---|
+| 3.12.10 | declared floors | yes — MV-7 |
+| 3.12.10 | development set | yes — MV-6 |
+| 3.12.10 | latest resolution | yes — MV-6 |
+| 3.13.1 | latest resolution | **yes — here** |
+| 3.13.1 | declared floors | **not installable** (no numpy 1.26 wheel) |
+| **3.11** | **anything** | **no interpreter available** |
+
 ---
 
 ## MV-8 — the availability probe's execution path, enumerated so the guard rule has a population
@@ -623,3 +673,143 @@ synthetic frames is reached by the fixture's — a branch taken only on real dat
 (a mixed timezone, an absent frame, a dtype these frames do not carry) would not
 appear here. The population is a floor on what the rule covers, not a proof of
 its ceiling.
+
+> **The set is now DATA, at `evidence/session/PROBE_PATH_SET.json`**, read by
+> `tools/probe_path_guard.py`, which refuses rather than returning an empty set
+> when the file is missing or unparseable, and which reports any module that
+> executes and is not recorded. MV-8 is the measurement; that file is the thing
+> the rule reads.
+
+---
+
+## MV-9 — is "the acceptance test keeps finding defects in its own fix" a real rate, or self-congratulation? THE POPULATION IS NOT RECOVERABLE.
+
+**Asked (DELTA R212 §0):** two rounds running, a pre-written acceptance test has
+found a defect inside the fix it was written for — the double-wrap in fix 6, and
+the generic marker in the idempotency fix. The comfortable reading is that the
+discipline works. The competing reading is that **the fixes are lower-quality
+code than the original modules and the tests are merely finding what is there.**
+The delta asked for a count from artifacts, explicitly forbidding reconstruction
+from memory, and named the third branch: *an uncountable comparison is not a weak
+result, it is no result.*
+
+### Answer: no count is available. Neither reading is supported.
+
+**Numerator A** — Phase 2 fixes whose own acceptance test found a defect before
+commit — is **partially recorded, and not uniformly.** The double-wrap has an
+entry (D-V30A-45). The generic marker, caught the same way one round later and
+equally before commit, has **no entry**: it is recorded only in a commit message
+and in the walk document. Two instances of one category, one disclosed and one
+not, on no stated criterion. A numerator whose inclusion rule is "it seemed
+notable at the time" is not a numerator.
+
+**Numerator B** — original `src/leakaudit` modules whose first test found a
+defect before commit — is **systematically absent, by the register's own design.**
+`DEVIATIONS.md`'s header states its scope in its second paragraph: *"These entries
+are disclosures of fact about the tagged state."* A defect caught by a test and
+fixed in the same commit is not a fact about the tagged state, so it has no
+reason to appear, and does not.
+
+**`TRACKB_LESSONS.md` does not carry it either.** All sixteen entries were read.
+None records a pre-commit catch on an original module.
+
+**And the git history cannot supply it, for a structural reason rather than a
+practical one.** Twenty-five commits touch `src/leakaudit`. Three subjects name a
+catch — *"the citation check found two more nobody knew about"*, *"a seed that was
+not reproducible"*, *"a frame that was never corrupted"*. But **a module whose
+first test found nothing leaves no trace at all.** The record is one-sided:
+mentions appear when notable, silence means nothing. A rate needs its
+complement, and the complement here is structurally invisible. No amount of
+reading commit bodies recovers it — it was never written down, because there was
+nothing to write.
+
+### What follows, and what does not
+
+**Not supported: "the acceptance-test-before-fix discipline is catching defects
+at a higher rate in fixes than in original code."** No.
+
+**Also not supported: "the discipline is working."** That was the delta's own
+comfortable reading and it has the same evidentiary basis as its opposite —
+none. Two observations, no denominator, no baseline.
+
+**What IS supported, and it is much smaller:** on two occasions, a test written
+before its fix found a defect in that fix that the suite did not catch, and in
+both cases the defect was in a case the fix was *holding constant* rather than
+one it was changing. That is a statement about two events and a mechanism. It is
+not a rate, and it must not be written as one.
+
+**TB-11's shape, recurring.** The claim that could only flatter the record is the
+one nobody examines. This one was examined, and it dissolved — not into a
+contrary finding, but into the absence of any finding. That is the honest
+outcome and it is recorded rather than left as an impression.
+
+**What would make it countable in future** — noted, not built, because it changes
+what gets recorded and that is not mine to decide: a per-fix note of whether its
+acceptance test fired before commit, recorded whether it fired or not, so the
+complement exists. Without the "did not fire" cases there is no denominator, and
+that is the whole of why this could not be counted.
+
+---
+
+## MV-10 — the four skips in every reported suite line, named and classified
+
+**Asked (DELTA R212 §5):** a skip is displayed as not-a-failure, one shade from
+displayed-as-a-pass. §8.2 exists because *"none may be displayed in a way
+mistakable for a pass."* What are the four?
+
+**All four are in one file**, `tests/phase1/test_fixture_adapter.py`, gated on
+`LEAKAUDIT_FIXTURE=1`:
+
+| test | what it covers |
+|---|---|
+| `test_adapter_output_equals_the_fixture_exactly` | the adapter reproduces the fixture's own output |
+| `test_known_positive_perturbing_the_served_snapshots_FIRES` | **a known positive** |
+| `test_known_positive_perturbing_trades_reaches_the_output` | **a known positive** |
+| `test_serving_does_not_let_one_run_alter_the_next` | mutation isolation between runs |
+
+**They were run.** `LEAKAUDIT_FIXTURE=1 python -m pytest
+tests/phase1/test_fixture_adapter.py` → **10 passed in 288.49 s** at commit
+`47f462f`. Recorded in `tests/phase1/fixture_run_record.json` as
+`run_2026_09_03`, beside the earlier runs rather than in place of them, per that
+file's own rule.
+
+### Classification under §8.2: none of the three words fits
+
+- **Not `not_applicable`** — the fixture's code is present here, and the skip
+  message says so. They apply.
+- **Not `unsupported`** — they are supported and they pass.
+- **Not `could_not_run`** — they can run. They just did.
+
+They are **deferred by cost**, and §8.2's vocabulary has no term for that. The
+gap is the report: displaying a cost-deferred test that would pass alongside a
+genuinely inapplicable one, both as "skipped", is the display problem §8.2 guards
+against, one level up from where §8.2 was written.
+
+### Two findings the exercise turned up
+
+**(1) Two of the four are known positives, and they had never fired in any
+reported suite line.** This project's own rule is that a check whose positive has
+not fired is not a check. Two such positives sat behind an opt-in through every
+"4 skipped" in every report this phase.
+
+**(2) `fixture_run_record.json` had gone stale again, by the exact mechanism its
+own banner describes.** The banner warns that twelve commits had touched the
+probe's modules since the 2026-08-26 run. The superseding 2026-09-02 entry
+attests commit `8320a20` — and `src/leakaudit/availability.py` has since been
+changed by four commits. **Nothing detected the recurrence**, because
+`test_every_opt_in_test_has_a_recorded_result`, which does run in the default
+suite and passed throughout, checks that every opt-in test **has** a recorded
+result and not that the result is **current**. The staleness warning is prose in
+a JSON field, and no test reads it.
+
+### A fifth skip exists, and only on Python 3.13
+
+Not visible from any 3.12 run. `tests/phase1/test_digest_stability.py:82` skips
+with *"the two strings were interned to one object, so the pointer digest happens
+to agree here; it does not across processes."* That one **is** `not_applicable`:
+the interpreter interned the two strings, so there are not two objects for the
+check to distinguish and it has no subject. Correctly conditioned and correctly
+explained by its own message.
+
+**Not measured, and therefore not claimed.** Whether other interpreters or
+platforms condition further tests — two Pythons were run, on one OS.

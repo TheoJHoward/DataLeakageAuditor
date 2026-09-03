@@ -1,0 +1,45 @@
+{
+  "what_this_is": "The set of modules the availability probe's execution actually reaches. It is DATA, not prose, because the standing guard rule reads it to decide what it covers. A rule whose population is a paragraph is a docstring, and this project has a register full of what happens to those.",
+  "the_rule_it_serves": "Any round that changes a module in `path_set` re-runs the whole-frame fixture guard before the round is reported done: eight terms, same instrument-month, stride, seed and model, against the committed population run. Unchanged, or it halts and the change is examined before anything is built on it.",
+  "measured_at_commit": "47f462f",
+  "measured_on": "2026-09-03",
+  "method": "sys.setprofile over three real probe runs, recording the file of every frame entered. NOT an import graph: availability.py imports things it never calls on this path, so an import list would over-report the population and make the rule cheaper to satisfy and weaker.",
+  "runs": [
+    "A -- run_probe_a, whole-frame path (the path that produced Phase 1's evidence)",
+    "B -- run_probe_a, per-column path (what the modes wiring added)",
+    "C -- the whole reported-figures path: probe -> eligible_cohorts -> traces_for -> resolve_all -> derive_evidence_events"
+  ],
+  "why_run_C_exists": "run_probe_a is not where the recorded numbers stop. The guard compares a verdict, an eligible count, a finding-record count and a feature count, and those pass through the trace builder, the resolver and the frozen reducer after the probe returns. A module that can move any of the four belongs in the set.",
+  "path_set": [
+    "src/leakaudit/availability.py",
+    "src/leakaudit/modes.py",
+    "src/leakaudit/availability_trace.py",
+    "protocol/runtime_reference.py"
+  ],
+  "path_set_reasons": {
+    "src/leakaudit/availability.py": "both probe paths, and the reported-figures path",
+    "src/leakaudit/modes.py": "the per-column path only",
+    "src/leakaudit/availability_trace.py": "the reported-figures path",
+    "protocol/runtime_reference.py": "the frozen reducer, on the reported-figures path"
+  },
+  "added_by_judgment_not_by_the_trace": {
+    "src/leakaudit/fixture_adapter.py": "The trace showed it OFF the path only because the measuring runs supplied frames directly. In the real guard it PROVIDES the frames, so an edit to it changes what the probe is fed and can move the result -- as an input, not as part of the computation. The instrument was never going to say so, and it is listed here rather than silently in `path_set` so the distinction between measured and reasoned stays visible."
+  },
+  "not_on_the_path": [
+    "src/leakaudit/__init__.py",
+    "src/leakaudit/checks.py",
+    "src/leakaudit/cli.py",
+    "src/leakaudit/contract.py",
+    "src/leakaudit/corruption.py",
+    "src/leakaudit/detectors.py",
+    "src/leakaudit/determinism.py",
+    "src/leakaudit/findings.py",
+    "src/leakaudit/identity_control.py",
+    "src/leakaudit/model_file.py",
+    "src/leakaudit/probe.py"
+  ],
+  "what_not_on_the_path_does_NOT_mean": "It means an edit cannot move a probe result THROUGH run_probe_a. Several of these are on other entry points -- probe.py and corruption.py carry the column dependency probe, checks.py the four checks, findings.py the rendering -- and an edit there can move those results.",
+  "staleness_condition": "This set was measured against one commit. A NEW module under src/leakaudit/, or a structural change to the probe's call graph, requires re-measuring it. The recorded `measured_at_commit` is what makes that checkable rather than remembered.",
+  "staleness_trigger_built": "The guard harness records every leakaudit/protocol frame it enters during its own run and compares that against `path_set`. A module reached at guard time and absent from this file is reported by the guard itself, so the set cannot drift silently while the thing that reads it keeps passing. This is the cheap version and it exists; it does not detect a module that becomes reachable only on data the guard does not run.",
+  "not_measured_and_therefore_not_claimed": "Whether a module unreached by the measuring runs' synthetic frames is reached by the fixture's. A branch taken only on real data -- a mixed timezone, an absent frame, a dtype those frames do not carry -- would not appear here. The set is a floor on what the rule covers, not a proof of its ceiling."
+}
