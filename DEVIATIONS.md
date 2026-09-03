@@ -1517,3 +1517,56 @@ between them is a question about the probe's contract, not about prose: floor
 such a key, which is what the code does; refuse it as not a wall-clock-second
 key, which is what the word "aggregate" implies; or honour the documented
 `key + window`, which is what the docstring says.
+
+## D-V30A-44 — the probe's notes reached nobody, and two commit messages said otherwise
+
+**True.** `AuditResult.explain()` rendered the unprobed frames, the probe's
+domain paragraph and the check tally. It never rendered `source.notes`. Every
+note the availability probe wrote about a run was therefore invisible to every
+person running the command, and visible only to a caller inspecting the result
+object in a library session.
+
+**What was in those notes.** The flooring report added the round before — that a
+declared aggregate key is not on second boundaries, with the measured fraction,
+and that the run floored it. The per-column-modes fallback conflict — which
+columns of a selected frame took the frame rule because no per-column mode was
+declared for them. That a declared aggregate frame was absent from the supplied
+frames and so nothing in it was corrupted. That a column's declared instants fall
+in no selected second, so its silence is `none` and not `observed_silence`. Each
+of those exists because a reader has to know it.
+
+**Two favourable claims about the work are falsified by this.** The R205 commit
+message said the conflict is named "in the run's own output, so the choice is
+where a reader meets it rather than in a document they will not open." It was in
+no output a reader meets. The R207 commit message said flooring is now reported
+"in its own output"; the round's own delta had made shipping that flooring
+silently a halt, and it shipped silently by a different route than the one being
+guarded. Both claims were checkable by running the command once.
+
+**It was found by walking the stranger path, not by a test.** The suite covered
+that the notes are PRODUCED and asserted on `res.notes` directly. Nothing
+asserted that any of them is rendered. A test written against the same mental
+model as the code shares its blind spot, and the walk did not share it because
+the walk only sees what is printed.
+
+**Fixed, and the fix is covered.** `AuditResult.notes` reads through to the
+source by reference, keeping the view-not-cache property, and `explain()` renders
+them under `ABOUT THIS RUN:`. The unprobed-frames fact is dropped from that
+section because it is already rendered from the structured field, and a first
+attempt at that de-duplication compared strings that differ between the two
+wordings and silently kept both. `tests/phase1/test_notes_reach_the_user.py`
+asserts the flooring report is in the RENDERED text for a key that needs it,
+absent for one that does not, that the unprobed fact appears exactly once, and
+that the notes are not cached.
+
+**Expected:** that a report added to satisfy a requirement be checked in the
+place the requirement names, which was the tool's output and not a field on an
+object.
+
+**Why it stands:** it is the fourth instance of a detection that exists and does
+not arrive, and the first that arrived nowhere at all. The earlier three surfaced
+as library exceptions nobody reads as detections. This one was written, tested,
+committed and described in two commit messages as reaching the reader, while
+reaching no reader. The asymmetry recorded in this register — that unfavourable
+claims get verified and favourable ones get asserted — recurs here for the third
+consecutive round, in the round whose own delta had made the omission a halt.

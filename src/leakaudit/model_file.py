@@ -129,11 +129,20 @@ reporting a clean result it did not earn.
 
   version           required. Refused if not one this build understands.
   aggregate_frames  frame name -> the column holding the key of the window that
-                    frame aggregates. The declared availability instant is that
-                    key plus the window: an aggregate over [k, k+window) is
-                    knowable at k+window, and a row deciding inside that span
-                    could not have used it. Required at version 1; optional at
-                    version 2, where a file may declare only a label and a split.
+                    frame aggregates. The declared availability instant is
+                    floor(key) + window -- the END OF THE WALL-CLOCK SECOND the
+                    key falls in: an aggregate over [floor(k), floor(k)+window)
+                    is knowable at floor(k)+window, and a row deciding inside
+                    that span could not have used it.
+                    THE FLOOR MATTERS AND THIS TEXT USED TO OMIT IT. If your key
+                    is already a whole second the two are the same number. If it
+                    is a raw event stamp -- "trades": "ts_event" in the example
+                    above is one -- they differ by however far into its second
+                    each stamp sits, up to a full window. The run TELLS YOU when
+                    it floors a key, with the measured fraction, so this is
+                    visible where you meet it and not only here.
+                    Required at version 1; optional at version 2, where a file
+                    may declare only a label and a split.
   decision_column   the built output's column holding each row's decision
                     instant. Default "timestamp".
   window_seconds    the aggregation window. Default 1.0.

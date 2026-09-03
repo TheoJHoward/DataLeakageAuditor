@@ -161,6 +161,24 @@ class AuditResult:
         return tuple(getattr(self._source, "unmodelled_frames", ()) or ())
 
     @property
+    def notes(self) -> tuple[str, ...]:
+        """What the probe said about the run, read from the source by reference.
+
+        THESE WERE INVISIBLE TO EVERY CLI USER UNTIL R208 §3, and the omission
+        was found by walking the stranger path rather than by any test. The
+        probe appends notes for things a reader has to know -- that a
+        non-boundary key was floored, that a declared frame was absent and so
+        nothing in it was corrupted, that a column with no declared mode took
+        the frame's rule -- and `explain()` rendered `unprobed_frames`,
+        `domain` and the check results while never rendering these. So the
+        reports existed in the library and reached nobody running the command.
+
+        A report nothing prints is not a report. It is the shape this tool
+        exists to detect, in the tool.
+        """
+        return tuple(getattr(self._source, "notes", ()) or ())
+
+    @property
     def domain(self) -> str:
         """What the probe did and did not look at, in its own words."""
         return str(getattr(self._source, "domain", "") or "")
@@ -191,6 +209,16 @@ class AuditResult:
                    "them" if len(self.unprobed_frames) > 1 else "it"))
         if self.domain:
             parts.append("DOMAIN: %s" % self.domain)
+        # The unprobed-frames fact is rendered above from the structured field,
+        # and the probe ALSO states it as a note in its own words. Printing both
+        # says the same thing twice in one screen, which teaches the reader that
+        # this section repeats itself and can be skimmed -- the opposite of what
+        # it is for. Dropped by subject, not by string equality: the two
+        # wordings differ, so a substring test silently kept both.
+        notes = [n for n in self.notes if not n.startswith("NOT PROBED:")]
+        if notes:
+            parts.append("ABOUT THIS RUN:\n%s"
+                         % "\n".join("  - %s" % n for n in notes))
         if self._checks:
             ran = sum(1 for c in self._checks if c.looked)
             hit = sum(1 for c in self._checks if c.outcome == "finding")

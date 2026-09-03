@@ -268,3 +268,55 @@ element covers zone handling was searched for by vocabulary and not by reading
 every element's definition in full — the vocabulary sweep returning zero across
 the whole file is the evidence, and it is a strong absence rather than a proof.
 Whether a new key is warranted, and what it would be called, is not decided here.
+
+---
+
+## MV-4 — does `AVAILABILITY_MODES.md` over-claim what `timestamp_semantics` does?
+
+**Asked (DELTA R208 §2):** MV-3 established that `timestamp_semantics` carries no
+zone meaning. The modes document, written days earlier, is remembered as saying
+"`ts[j]` is read under the declared `timestamp_semantics`, which every mode
+inherits." If so it attributes to that key something the key does not do, and
+would be a fourth instance of the description-versus-fact class.
+
+**Population: the whole document.** `AVAILABILITY_MODES.md`, 140 lines. Every
+occurrence of the key, and a vocabulary sweep for anything that would carry the
+zone concept.
+
+**Occurrences of `timestamp_semantics`: exactly one, at line 27.** Quoted in
+full, with the clause the remembered version omits:
+
+> `ts[j]` below means row *j*'s value in the frame's timestamp column, read under
+> the declared `timestamp_semantics` — **whether that column holds observation,
+> event, or availability time is itself declared** (`PREREG.md` §2.3), and every
+> mode below inherits whatever that declaration says.
+
+### Answer: NOT a fourth instance. The sentence is accurate, and it is accurate because it restricts itself in its own clause.
+
+The em-dash clause spells out what `timestamp_semantics` means — *"whether that
+column holds observation, event, or availability time"* — which is the
+registration's definition in substance, and the same three-way distinction MV-3
+read at `PREREG.md` line 251. It claims the modes inherit **that** declaration,
+which they do. It does not claim the key covers anything else.
+
+**The citation is also correct.** `PREREG.md` §2.3 spans lines 233–264 and
+contains both the comparator and the `AvailabilityModel` element table in which
+`timestamp_semantics` is defined. §2.4 begins at 265.
+
+**Zone vocabulary in the modes document: zero.** `timezone`, `time zone`, `tz_`,
+`naive`, `aware`, `UTC`, `zone`, `offset` — no hits, in 140 lines.
+
+**What is true instead, and it is a silence rather than an error.** The document
+fixes `a(j, c)` per mode and explicitly leaves the comparator to `PREREG.md` §2.3.
+It therefore never addresses what happens when the frame's timestamp column and
+the decision column are in different representations — which is the case the
+acceptance fixture carries in all 48 instrument-months (MV-2). That is an
+unstated precondition, not a false statement, and it is exactly the gap R208 §1's
+tool-level key would fill. **It is reported and not resolved by editing the
+document**, because the document was written before the parser deliberately and
+amending it to cover a question the registration does not carry would make it
+something other than the mapping it was written as.
+
+**Not measured, and therefore not claimed.** Whether any OTHER sentence in the
+modes document over-claims about some other registered key — only
+`timestamp_semantics` was audited, because only it was asked about.

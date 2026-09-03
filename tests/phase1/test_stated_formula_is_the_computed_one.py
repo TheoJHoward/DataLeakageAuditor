@@ -118,6 +118,27 @@ def test_the_STATED_formula_is_the_one_the_probe_RUNS():
            "floor(key) + window" if runs_floored else "key + window"))
 
 
+def test_the_SCHEMA_DOC_states_the_same_formula_as_the_docstring():
+    """The second place the formula is written, and the one users actually read.
+
+    R208 §3 walked the stranger path and found `leakaudit schema` still saying
+    the instant is "that key plus the window" -- the exact sentence corrected in
+    `AvailabilityModel` the round before. Correcting one statement of a fact and
+    leaving its duplicate is the failure this project keeps finding in itself,
+    so the check is widened to the population rather than to the one instance.
+    """
+    from leakaudit.model_file import SCHEMA_DOC
+
+    body = " ".join(SCHEMA_DOC.split())
+    assert "floor(key) + window" in body, (
+        "`leakaudit schema` does not state the floored instant. It is what a "
+        "stranger reads before writing their model file, and it is the only "
+        "place most of them will read it: %r"
+        % body[body.find("aggregate_frames"):][:260])
+    assert "is that key plus the window" not in body, (
+        "the superseded unfloored wording is still in the schema doc")
+
+
 def test_the_discriminator_actually_discriminates():
     """The negative control: on a floored key both formulas agree.
 
