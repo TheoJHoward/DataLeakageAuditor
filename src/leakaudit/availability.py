@@ -456,8 +456,29 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
             cell_mask = mask
             spec = None if not column_modes else column_modes.get(c)
             if spec is not None:
+                from .modes import ROUTE_TAKEN as _routes
                 from .modes import availability as _availability
+                _before = len(_routes)
                 a = _availability(f, c, spec, timestamp_column=keycol)
+                # THE ROUTE IS NAMED WHERE THE USER MEETS IT. R223 §2(b).
+                # `PREREG.md` line 255 offers two routes for `bar_duration` --
+                # a fixed value or inference -- and names no default between
+                # them, while the config file carries no key for the first. So
+                # a user declaring `at_bar_close` gets one of two registered
+                # options chosen for them, and the least this run can do is say
+                # which. Selecting between two registered routes without the
+                # output naming which is the tie comparator's defect again.
+                for _r in _routes[_before:]:
+                    if _r == "inferred":
+                        res.notes.append(
+                            "column %r of frame %r declares `at_bar_close`, and "
+                            "its bar duration was INFERRED from successive "
+                            "timestamps because none was declared. PREREG.md "
+                            "line 255 names two routes -- a fixed value or "
+                            "inference -- and no default between them, and this "
+                            "config file carries no key for the fixed one. The "
+                            "route was chosen for you and is named here rather "
+                            "than left to be deduced." % (c, fname))
                 a = align_key(pd.to_datetime(a), d, frame=fname, column=c)
                 cell_mask = (a - model.window).dt.floor("s").isin(picked_set).to_numpy()
                 if not cell_mask.any():

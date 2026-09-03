@@ -84,6 +84,13 @@ class ColumnMode:
                 "the tool did not apply." % (self.mode, self.column))
 
 
+# Which `bar_duration` route each `at_bar_close` computation took, in order.
+# Read by the probe so the run can say so; a list rather than a flag because a
+# frame may carry several such columns and "some were inferred" is not the same
+# statement as "all were".
+ROUTE_TAKEN: list[str] = []
+
+
 def bar_duration(ts: pd.Series, declared: pd.Timedelta | None = None) -> pd.Series:
     """The bar length at each row.
 
@@ -180,6 +187,22 @@ def availability(frame: pd.DataFrame, column: str, spec: ColumnMode, *,
     if spec.mode == AT_TIMESTAMP:
         return ts
     if spec.mode == AT_BAR_CLOSE:
+        # THE ROUTE TAKEN IS RECORDED, because the registration names TWO and no
+        # default between them. R223 §2.
+        #
+        # `PREREG.md` line 255 is `bar_duration`'s only appearance in the whole
+        # registration: "fixed value, OR inferred from successive timestamps".
+        # Two routes joined by "or", with no default named -- and the same
+        # registration DOES name defaults when it means to, marking `available`
+        # "(default)" in §2.3's tie table and saying so again in prose.
+        #
+        # So the tool is selecting where the registration does not. Until that is
+        # ruled, the selection is at least VISIBLE: which route ran is recorded
+        # on the call rather than left for a reader to deduce from whether a
+        # duration was passed. A result whose method is invisible is the tie
+        # comparator problem again, and that half needed no structural read.
+        ROUTE_TAKEN.append(
+            "declared" if declared_bar_duration is not None else "inferred")
         return ts + bar_duration(ts, declared_bar_duration)
 
     raise ModeError("unreachable: mode %r has no branch" % spec.mode)

@@ -3052,7 +3052,50 @@ _FROZEN_STAGE = "prereg"
 #   has ever cited HISTORY.md by line for H-34. The pin was re-keyed to the
 #   anchor, which is what the table's own convention assigns to heading-cited
 #   entries. The tag's checker still carries the line number, so it fails here.
-_FROZEN_PERMITTED = frozenset({"line_citations"})
+#   round_reconciliation - R219 §1 / R223 §1. The frozen checker resolves its
+#   work root from a HARDCODED absolute path to a session that ended on 26 August
+#   2026; the current one resolves LEAKAUDIT_WORK_ROOT at run time and reports
+#   COVERAGE IS ZERO rather than passing when it is unset (D-V30A-48).
+#
+#   THE DIFFERENCE IS PERMANENT AND BY DESIGN, and it is checkable rather than
+#   asserted: the frozen instrument scans a dead directory, so it fails whenever
+#   a file there stops matching the repository -- which happens on any edit to a
+#   file with a stale twin in that directory. It did, on ROUND_STATE.md, whose
+#   copy there carries the digest of the version committed one commit earlier.
+#   The repaired instrument does not scan there at all, so it cannot fail that
+#   way and cannot be made to.
+#
+#   WHY AN ENTRY RATHER THAN A DELETED SCRATCH FILE. Removing the stale twin
+#   quiets this once and lets it recur on the next edit with a twin, which is
+#   suppressing a true difference rather than ruling it. The entry records that
+#   a person looked and decided; the deletion would record nothing.
+#
+#   THE TEST THIS PASSES is not R163 §1's exemption test -- the ruled-difference
+#   table exists for exactly this, and using a mechanism for its designed purpose
+#   is not an exemption. The test is whether the entry records a TRUE FACT or
+#   suppresses a TRUE FINDING. D17's finding is "these differ and nobody has
+#   ruled on it"; this makes it ruled, with a reason a reader can check against
+#   the two instruments' source.
+_FROZEN_PERMITTED = frozenset({"line_citations", "round_reconciliation"})
+
+# THE COUNT, PRE-COMMITTED BEFORE THERE IS PRESSURE ON IT. R223 §1.
+#
+# Ruled differences accumulate, and at some number the frozen-instrument
+# comparison stops being a comparison: every difference ruled is no comparison at
+# all. Choosing the threshold later, with the entries visible and one more
+# wanted, is the move this project does not make.
+#
+# N = 4. The reason is structural rather than aesthetic: this checker carries
+# twenty-four checks, so four ruled differences is one sixth of the instrument
+# declared to disagree with its own frozen form -- past which "the current
+# checker is the tagged checker plus disclosed exceptions" stops being a fair
+# description of what is running. It is not a budget to spend. Reaching it means
+# the comparison is RE-EXAMINED AS A WHOLE -- whether the frozen baseline should
+# be re-cut, whether the differences share a cause, whether the check still
+# earns its runtime -- rather than extended a fifth time.
+#
+# RUNNING COUNT: 2 of 4. line_citations (R163 §3), round_reconciliation (R219 §1).
+_FROZEN_PERMITTED_LIMIT = 4
 
 _FROZEN_VERDICT = re.compile(r"^\[(PASS|FAIL)\] (\S+)", re.M)
 
