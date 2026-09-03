@@ -1,3 +1,11 @@
 __pycache__/
 *.pyc
 .pytest_cache/
+
+# What `python -m pip install .` -- the command README.md gives -- leaves behind
+# in the tree it was run from. Observed during the R208 definition-of-done walk:
+# the documented install produced two untracked directories, in a repository
+# whose gate reports unattested files. Ordinary Python behaviour, not a tool
+# defect, and ignored here so the documented command leaves a clean tree.
+build/
+*.egg-info/

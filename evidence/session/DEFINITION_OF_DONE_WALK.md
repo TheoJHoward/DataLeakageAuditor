@@ -228,3 +228,12 @@ once rather than twice.
 
 None of the four is in the tool's arithmetic. All four are on the path between a
 stranger and the arithmetic, which is what this test was for.
+
+### One more, recorded and not counted
+
+`python -m pip install .` — the command `README.md` gives — leaves `build/` and
+`leakaudit.egg-info/` untracked in the tree it was run from, and `.gitignore`
+covered neither. **Not counted among the four**, because that is how pip behaves
+in every Python project and is not a fact about this tool. Recorded because this
+repository's gate reports unattested files, so its own documented install command
+dirtied the tree it attests. Both are now ignored.
