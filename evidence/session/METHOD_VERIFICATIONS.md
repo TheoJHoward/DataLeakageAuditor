@@ -473,3 +473,89 @@ step.**
   4 skipped tests are gated behind.
 - **Not all of pandas 3.** Two patch releases apart within the same major, and
   one numpy minor. This is a narrow interval, not a range.
+
+> **The first and last of these are answered by MV-7**, which tests the declared
+> floors downward. The middle two — not a second machine, one OS — are not, and
+> stand.
+
+---
+
+## MV-7 — the DECLARED FLOORS, tested downward
+
+**Asked (DELTA R210 §4):** an untested declared floor is a claim in
+`pyproject.toml` that nobody has checked, and `pandas>=2.1` against a pandas 3.0
+development environment is a **major version gap**. This was expected to find
+something.
+
+**The distinction the delta drew, and which governs what follows.** Widening or
+pinning a floor to dispose of an untested risk is forbidden — that is changing
+the number so the question goes away. Raising a floor to a value that was
+*measured* to work, with the measurement recorded, is required if it fails —
+that is the floor becoming true. **Neither was needed: nothing failed.**
+
+**The environment.** A fresh venv at a short filesystem path, installed with the
+declared floors pinned exactly, then the package on top.
+
+```
+python -m pip install "numpy==1.26.*" "pandas==2.1.*" "pyarrow==14.*"
+  -> numpy 1.26.4, pandas 2.1.4, pyarrow 14.0.2
+python -m pip install . pytest
+  -> leakaudit 0.1.0.dev0; NOTHING was upgraded
+```
+
+That last clause is itself a result: pip resolved the package's own metadata
+against the floors without needing to move any of them, so **the declared floors
+are satisfiable and the metadata is consistent with them.**
+
+### (1) The suite at the floors
+
+```
+596 collected — 591 passed, 4 skipped, 1 failed
+```
+
+**Identical on every term to the development machine**, and the single failure is
+the same known `hash_set_single_source`. 591 tests passed against numpy 1.26,
+pandas 2.1 and pyarrow 14 — across a pandas **major** version boundary from the
+environment they were written in.
+
+### (2) The same pipeline, now across the whole declared range
+
+Same method as MV-6: source held constant, both interpreters importing
+`leakaudit` from `src`, output rendered canonically so nothing turns on
+iteration order.
+
+| environment | numpy | pandas | pyarrow | sha256 of the comparable body |
+|---|---|---|---|---|
+| **floors** | 1.26.4 | 2.1.4 | 14.0.2 | `15dc83c78950d42b…` |
+| development | 2.4.2 | 3.0.1 | 23.0.1 | `15dc83c78950d42b…` |
+| latest resolved | 2.5.2 | 3.0.5 | 25.0.1 | `15dc83c78950d42b…` |
+
+**All three byte-identical.** 26 findings, 7 cohorts, 4 features, the same notes
+including the flooring report's 0.0567% — at both ends of the declared range and
+in the middle.
+
+### The floors are TRUE, not merely declared. No floor moved.
+
+`numpy>=1.26`, `pandas>=2.1`, `pyarrow>=14` are now measured claims rather than
+unchecked ones, and they are unchanged: nothing was widened, nothing pinned,
+nothing raised.
+
+**Not measured, and therefore not claimed.**
+
+- **Not a second machine.** One machine, one OS, one Python (3.12.10). The
+  dependency set was varied; the machine was not. **This does not substitute for
+  the author's second-machine install**, which remains the only test run
+  somewhere the code was not written.
+- **Not every version in the range.** Three points — the floor, the development
+  set, the current resolution. The interval between them is untested, and a
+  regression at, say, pandas 2.3 would not have been seen.
+- **Not Python.** `requires-python = ">=3.11"` was **not** tested at 3.11; all
+  three environments ran 3.12.10. That floor remains unchecked.
+- **Not the fixture path.** The comparison ran the synthetic warehouse pipeline;
+  the 4 skipped tests are the fixture-gated ones in every environment.
+
+**One environment artifact, recorded so it is not mistaken for a finding.** The
+first attempt to build this venv failed with a Windows long-path `OSError` while
+unpacking numpy — caused by the depth of the scratchpad directory it was being
+created in, not by anything about the floors. Rebuilt at a shorter path and it
+installed cleanly.

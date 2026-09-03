@@ -108,6 +108,55 @@ def check_build(build: Callable) -> None:
         raise ContractError("build must be callable, got %s" % type(build).__name__)
 
 
+def guarded_build(build: Callable) -> Callable:
+    """Wrap `build` so a wrong RETURN TYPE is caught where it happens.
+
+    AN ANNOTATION IS NOT A CHECK, and R210 §5 is explicit that these are two
+    items and doing one does not close the other. The signature has always said
+    the callable returns a DataFrame; Python enforces nothing, so a `build`
+    returning a dict crashed in `determinism.frames_equal` at `a.columns`, and
+    one returning None crashed in `check_constant_columns` at `frame.columns`.
+    Both are the user's contract violation reported as an AttributeError inside
+    a module they have never opened.
+
+    The wrapper is applied at the boundary rather than each consumer defending
+    itself, so there is one implementation and no consumer can be forgotten.
+    The message follows the standard this package already sets in its config
+    refusals: what is wrong, what arrived, and the route out.
+    """
+    # IDEMPOTENT, and it was not on the first attempt. The CLI wraps the loaded
+    # callable and `audit` wraps again, so a user's own exception came back with
+    # `contract.py, in checked` in the stack TWICE -- two frames of this tool's
+    # plumbing added to a traceback whose whole value is that it points at the
+    # user's file. Caught by re-running the wrong turn, which is the only reason
+    # it was seen.
+    if getattr(build, "__leakaudit_guarded__", False):
+        return build
+
+    def checked(*a, **kw):
+        out = build(*a, **kw)
+        if isinstance(out, pd.DataFrame):
+            return out
+        if out is None:
+            raise ContractError(
+                "your build function returned None. It must RETURN the built "
+                "frame -- a function that assigns it and falls off the end "
+                "returns None, which is the usual cause. Nothing downstream "
+                "can be probed without it.")
+        raise ContractError(
+            "your build function returned %s; it must return a pandas "
+            "DataFrame. The probe compares the built output row by row and "
+            "column by column, which %s does not support. If you are building "
+            "a dict of columns, return `pd.DataFrame(that_dict)`."
+            % (type(out).__name__, type(out).__name__))
+
+    checked.__name__ = getattr(build, "__name__", "build")
+    checked.__doc__ = getattr(build, "__doc__", None)
+    checked.__wrapped__ = build
+    checked.__leakaudit_guarded__ = True
+    return checked
+
+
 def resolve_decision_time(built: pd.DataFrame, decision_time) -> tuple[pd.Series | None, Alignment]:
     """Resolve `decision_time` to one value per OUTPUT row.
 
@@ -203,7 +252,13 @@ def _refuse_unwired(**supplied) -> None:
 
 def audit(
     raw,
-    build: Callable[[Any], pd.DataFrame],
+    # THE ARGUMENT SIDE USED TO BE `Any`, and the annotation is where a reader
+    # looks for the contract. It stated the return type -- the half nobody had
+    # to guess -- and left the half they did as `Any`. Named separately from the
+    # RUNTIME CHECK in `guarded_build`, because R210 §5 is right that an
+    # annotation documents and does not enforce, and reporting one as closing
+    # the other is the documentation-versus-behaviour gap again.
+    build: Callable[[Mapping[str, pd.DataFrame] | pd.DataFrame], pd.DataFrame],
     availability=None,
     decision_time=None,
     train_idx=None,
@@ -247,6 +302,7 @@ def audit(
                     meta=meta)
     frames = normalise_raw(raw)
     check_build(build)
+    build = guarded_build(build)
     # `bare` is carried, not re-derived: a caller who passed one frame gets that
     # frame back in `build`, exactly as k6's `build=lambda d: d` expects. Losing
     # this hands the pipeline a dict it never asked for, and the failure then

@@ -23,6 +23,12 @@ run by someone the code was not written in front of.
 
 ---
 
+> **STATE AS OF PART III: all six are fixed and the fixed path re-walks at zero.**
+> The result below is Part I and Part II's measurement and is left standing — it
+> is what the unfixed path measured, and Part III's zero is only meaningful
+> against it. **A zero walked by the person who wrote the fixes is not evidence
+> that a stranger finds none**; see Part III's closing section.
+
 ## Result: NOT MET. **Six** steps required guessing or would require reading source.
 
 Part I of this file recorded four. **Part II resumed the walk over the documented
@@ -385,4 +391,144 @@ probe internals and the CLI. **2 is its own.**
 
 None is in the tool's arithmetic. All six are on the path between a stranger and
 the arithmetic, which is what this test was for. **Nothing on this list has been
-fixed.**
+fixed.** *(Superseded by Part III, which fixes all six. The sentence stands
+because a reader of Part II needs to know what was true when it was written.)*
+
+---
+
+# PART III — the six fixed, and the fixed path re-walked
+
+**The diagnosis was the design.** R210 §1: six defects were one architectural gap
+plus documentation. Every traceback came from an exception escaping out of
+`run_probe_a`, `determinism` or `checks` with nothing between it and the
+terminal, while the CLI's own surface was already six-for-six on one clean line.
+So the work was *apply the standard this package already sets, at the boundary
+where it is missing* — not invent a message convention.
+
+**Each fix's test is the wrong turn that found it.** The transcript is the
+acceptance suite: `tests/phase1/test_the_walks_wrong_turns.py`, 12 tests, one per
+step a stranger actually took.
+
+## The six, with the wrong turn re-run
+
+### Item 2 — the working directory is not importable
+
+*Wrong turn re-run:* `leakaudit run --pipeline mypipe:build …` from the
+directory holding `mypipe.py`, no `PYTHONPATH`.
+
+```
+could not import 'mypipe': no module of that name is on the import path.
+A file 'mypipe.py' exists in the working directory, which is almost certainly the one you meant.
+A console script does not add the working directory to `sys.path`, so a module beside you
+is not importable by default. Any one of these fixes it:
+  set PYTHONPATH to its directory   PYTHONPATH=<cwd> leakaudit ...
+  install your project              python -m pip install -e .
+  name it by its package path       --pipeline mypkg.features:build
+The module is imported rather than exec'd on purpose: your pipeline is code this command
+runs, and running a path would hide which copy it ran.
+```
+
+It detects the file sitting there and says so. **Route 1 was then followed
+verbatim and worked.** Routes 2 and 3 were not each exercised, and both assume
+the user has a project or package — which is why the route that works for a lone
+script is listed first.
+
+A module that is *found* and raises is no longer offered a path fix: it gets
+*"The module was found and raised while importing, so this is an error inside
+your own code rather than a path problem."*
+
+### Item 3 — `ProbeError` as a traceback
+
+*Wrong turn re-run:* key column `scan_time` where the column is `scanned_at`.
+
+```
+leakaudit: frame 'scans' has no key column 'scan_time'
+```
+
+**One line, was twelve.** The boundary catches `ProbeError`, `ContractError`,
+`ModelFileError` and `ModeError` — the errors this package raises *on purpose* —
+listed explicitly. A bare `except Exception` would print a bug in this tool as
+though the user had made a mistake, which is the mirror image of the defect the
+boundary was added to fix, and a test asserts the catch list is not `Exception`.
+
+### Item 4 — a symptom instead of a cause
+
+*Wrong turn re-run:* frame declared `scan`; frames supplied `scans`, `stations`.
+
+```
+leakaudit: declared aggregate frame(s) 'scan' were not supplied, so nothing was corrupted
+and the probe would report silence about itself. Declared: 'scan'. Supplied: 'scans',
+'stations'. Correct the name in the model file, or supply the frame, or drop it from
+`aggregate_frames` -- in which case anything downstream of it is `none`, not
+`observed_silence`.
+```
+
+The remaining case — every declared frame supplied, but no key overlapping any
+selected second — now says the mismatch is in the **keys rather than the names**,
+so the two are no longer one message.
+
+### Item 6 — the contract checked
+
+*Wrong turns re-run:* a `build` returning a `dict`, and one returning `None`.
+
+```
+leakaudit: your build function returned dict; it must return a pandas DataFrame. The probe
+compares the built output row by row and column by column, which dict does not support. If
+you are building a dict of columns, return `pd.DataFrame(that_dict)`.
+
+leakaudit: your build function returned None. It must RETURN the built frame -- a function
+that assigns it and falls off the end returns None, which is the usual cause. Nothing
+downstream can be probed without it.
+```
+
+Was 20 and 17 lines, inside `determinism.py:65` and `checks.py:205`. The guard
+wraps the callable once at the boundary, so no consumer can be forgotten.
+
+**And re-running the wrong turn found a defect the fix had introduced.** The CLI
+wrapped and `audit()` wrapped again, so a user's own exception came back with
+`contract.py, in checked` in the stack **twice** — two frames of this tool's
+plumbing added to a traceback whose entire value is that it points at the user's
+file. The guard is now idempotent, with a test. Nothing but re-running the wrong
+turn would have shown it.
+
+### Items 1 and 5 — documentation, asserted separately from the check
+
+`run --help` and `check --help` now state the contract: *"called with ONE
+argument — a dict keyed by the --frame names, whose values are DataFrames — and
+must RETURN the built output as a DataFrame"*, and *"JSON is read with pandas
+defaults, so a list of row objects (orient=records) is what works"*.
+
+The annotation moved from `Callable[[Any], pd.DataFrame]` to
+`Callable[[Mapping[str, pd.DataFrame] | pd.DataFrame], pd.DataFrame]`.
+
+**These are two items and the annotation closes only one of them.** Python
+enforces no annotation; item 1 is what a reader finds, item 6 is what happens
+when they get it wrong, and they have separate tests for that reason.
+
+## What must NOT regress, and is tested
+
+A user's own pipeline raising still produces a traceback naming **their** file
+and line. That was never friction: it is their bug, and a traceback is the right
+answer. The boundary catches only what this package raises deliberately.
+
+## The re-walk: **0 guess or source-reading steps** — and what that does not mean
+
+Re-walked on the fixed path, in the same clean environment: `--help` → pipeline →
+first run → follow the message's own route → model file → availability run →
+both `check` runs → every wrong configuration. **Nothing required guessing,
+reading source, or opening an undocumented file.**
+
+**A zero from me is not a zero.** I now know every answer, so this walk could not
+have discovered new friction — that is the decay argument at its limit, not
+evidence of its absence. What the zero establishes is that **the six are closed**
+and that the fixed path runs end to end. **The author's second-machine install
+remains the only walk by someone the code was not written in front of, and this
+does not substitute for it.**
+
+## One more, fixed and deliberately not counted among the six
+
+With a complete model the check tally read *"The other 0 did not look"*. Recorded
+in Part I as minor and not judged; fixed now to *"Every check had what it needed,
+so no result above is a silence standing in for one."* **Reported as outside the
+list of six rather than folded into it**, so the list stays the thing that was
+measured.

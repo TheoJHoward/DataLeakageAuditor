@@ -32,6 +32,21 @@ EXIT_NOTHING_PROBED = 3     # `none` -- not evidence of absence
 EXIT_USAGE = 2
 
 
+def _expected_errors() -> tuple:
+    """The exceptions this package raises ON PURPOSE, as a tuple to catch.
+
+    Imported lazily and listed explicitly rather than caught as `Exception`. A
+    bare except at the boundary would swallow genuine bugs in this tool and
+    print them as though they were the user's mistake, which is the failure mode
+    the boundary exists to prevent the mirror image of.
+    """
+    from .availability import ProbeError
+    from .contract import ContractError
+    from .model_file import ModelFileError
+    from .modes import ModeError
+    return (ProbeError, ContractError, ModelFileError, ModeError)
+
+
 def _load_callable(spec: str):
     if ":" not in spec:
         raise SystemExit(
@@ -40,9 +55,43 @@ def _load_callable(spec: str):
     mod_name, func_name = spec.rsplit(":", 1)
     try:
         mod = importlib.import_module(mod_name)
+    except ModuleNotFoundError as e:
+        # THE FIRST HARD STOP ON THE STRANGER PATH, and it was at the first
+        # command. R210 item 2. A console script does not put the working
+        # directory on `sys.path`, so a pipeline module sitting right there is
+        # not importable, and the old message named the failure without naming
+        # the route out. Nothing in README.md, INSTALL.md, --help or schema
+        # mentioned it.
+        missing = getattr(e, "name", None)
+        if missing and missing.split(".")[0] == mod_name.split(".")[0]:
+            here = Path.cwd()
+            local = here / (mod_name.split(".")[0] + ".py")
+            raise SystemExit(
+                "could not import %r: no module of that name is on the import "
+                "path.%s\n"
+                "A console script does not add the working directory to "
+                "`sys.path`, so a module beside you is not importable by "
+                "default. Any one of these fixes it:\n"
+                "  set PYTHONPATH to its directory   PYTHONPATH=%s leakaudit ...\n"
+                "  install your project              python -m pip install -e .\n"
+                "  name it by its package path       --pipeline mypkg.features:%s\n"
+                "The module is imported rather than exec'd on purpose: your "
+                "pipeline is code this command runs, and running a path would "
+                "hide which copy it ran."
+                % (mod_name,
+                   ("\nA file %r exists in the working directory, which is "
+                    "almost certainly the one you meant." % local.name)
+                   if local.is_file() else "",
+                   here, func_name))
+        raise SystemExit(
+            "could not import %r: %s: %s\nThe module was found and failed while "
+            "importing, so this is an error inside your own code rather than a "
+            "path problem." % (mod_name, type(e).__name__, e))
     except Exception as e:                                  # noqa: BLE001
-        raise SystemExit("could not import %r: %s: %s"
-                         % (mod_name, type(e).__name__, e))
+        raise SystemExit(
+            "could not import %r: %s: %s\nThe module was found and raised while "
+            "importing, so this is an error inside your own code rather than a "
+            "path problem." % (mod_name, type(e).__name__, e))
     fn = getattr(mod, func_name, None)
     if fn is None:
         raise SystemExit("%r has no attribute %r" % (mod_name, func_name))
@@ -93,11 +142,15 @@ def build_parser() -> argparse.ArgumentParser:
     run = sub.add_parser(
         "run", help="probe which source columns your pipeline's output reads")
     run.add_argument("--pipeline", required=True, metavar="module:function",
-                     help="your build function, taking the frames and returning "
-                          "the built output")
+                     help="your build function. It is called with ONE argument "
+                          "-- a dict keyed by the --frame names, whose values "
+                          "are DataFrames -- and must RETURN the built output "
+                          "as a DataFrame")
     run.add_argument("--frame", action="append", metavar="name=path",
                      help="an input frame; repeat for several. .parquet, .csv "
-                          "or .json")
+                          "or .json. The name is the key your build function "
+                          "receives. JSON is read with pandas defaults, so a "
+                          "list of row objects (orient=records) is what works")
     run.add_argument("--model", metavar="path.json",
                      help="an availability model FILE. With it, the run is the "
                           "availability probe: which cells the output read "
@@ -116,9 +169,13 @@ def build_parser() -> argparse.ArgumentParser:
     chk = sub.add_parser(
         "check", help="the checks that need no availability model")
     chk.add_argument("--pipeline", required=True, metavar="module:function",
-                     help="your build function")
+                     help="your build function. Called with ONE argument -- a "
+                          "dict keyed by the --frame names -- and must RETURN a "
+                          "DataFrame")
     chk.add_argument("--frame", action="append", metavar="name=path",
-                     help="an input frame; repeat for several")
+                     help="an input frame; repeat for several. .parquet, .csv "
+                          "or .json. The name is the key your build function "
+                          "receives")
     chk.add_argument("--model", metavar="path.json",
                      help="the config file. Without it, every check that needs "
                           "a declared label or split reports that it DID NOT "
@@ -188,7 +245,31 @@ def _run_availability(frames, build, model_path, stride, max_cohorts):
 
 
 def main(argv=None) -> int:
+    """The CLI boundary. THE ONE PLACE A LIBRARY EXCEPTION STOPS.
+
+    R210 §1 is the diagnosis this function was rewritten against: the CLI's own
+    argument and config handling was already uniformly one clean line -- six of
+    six on the walk -- and every traceback a stranger saw came from an exception
+    escaping out of `run_probe_a`, `determinism` or `checks` with nothing
+    between it and the terminal. Six friction points, one missing boundary.
+
+    So the errors this package raises DELIBERATELY -- ProbeError, ContractError,
+    ModelFileError, ModeError -- are caught here and printed as their message.
+    Anything else is left to raise with its traceback intact, because an
+    unexpected exception is a bug in this tool and hiding its stack would make
+    it unreportable.
+    """
     from .contract import audit
+
+    try:
+        return _main(argv)
+    except _expected_errors() as e:
+        print("leakaudit: %s" % e, file=sys.stderr)
+        return EXIT_USAGE
+
+
+def _main(argv=None) -> int:
+    from .contract import audit, guarded_build
 
     ap = build_parser()
     args = ap.parse_args(sys.argv[1:] if argv is None else argv)
@@ -203,7 +284,7 @@ def main(argv=None) -> int:
     # The pipeline spec first: it is a string check needing no I/O, so a
     # malformed one is reported before megabytes are read for a run that was
     # never going to happen.
-    build = _load_callable(args.pipeline)
+    build = guarded_build(_load_callable(args.pipeline))
     frames = _parse_frames(args.frame)
     if args.command == "check":
         return _run_checks(frames, build, args.model)

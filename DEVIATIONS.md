@@ -1570,3 +1570,44 @@ committed and described in two commit messages as reaching the reader, while
 reaching no reader. The asymmetry recorded in this register — that unfavourable
 claims get verified and favourable ones get asserted — recurs here for the third
 consecutive round, in the round whose own delta had made the omission a halt.
+
+## D-V30A-45 — the fix for the traceback item added two frames to a traceback
+
+**True.** Item 6 of the definition-of-done walk was that a build function
+returning the wrong type crashed inside `determinism.py` or `checks.py` with an
+`AttributeError` naming a module the user has never opened. The fix wraps the
+user's callable at the boundary in a guard that checks the return type and
+raises a message naming what arrived and the route out.
+
+**The wrap was applied twice.** The CLI wraps the loaded callable, and
+`contract.audit` wraps again. Both are correct in isolation: the CLI guards the
+availability and check paths, and `audit` guards library callers who never touch
+the CLI. Together they nested.
+
+**And the cost landed on the one case the fix was careful to preserve.** A user's
+own pipeline raising keeps its traceback, because that traceback points at their
+file and is the right answer. Double-wrapping put `contract.py, in checked`
+into that stack twice — two frames of this tool's plumbing inserted into a
+traceback whose entire value is that it points somewhere else. The user's
+traceback went from 13 lines to 22.
+
+**It was found by re-running the wrong turn, which is the only thing that would
+have found it.** The suite was green. The three fixed cases all returned one
+clean line. Nothing about the guard's own behaviour was wrong. The defect was
+visible only in the stack of a case that is *supposed* to fail, and only by
+looking at that stack rather than at its last line.
+
+**Fixed.** The guard is idempotent — it stamps the wrapper and returns an already
+guarded callable unchanged — with a test asserting `guarded_build(guarded_build(f))
+is guarded_build(f)`, and a second asserting the user's own exception still
+passes through.
+
+**Expected:** that a fix be checked against the case it was written to preserve,
+not only against the cases it was written to change.
+
+**Why it stands:** the round's instruction was that every fix has its test
+already written — re-run the exact wrong turn that found the friction. This is
+what that instruction is for, and it earned itself on its first use by catching
+a regression introduced by the fix it was checking. The three items it was
+verifying all passed; the defect was in the fourth thing, the one being held
+constant.

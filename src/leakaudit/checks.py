@@ -329,7 +329,18 @@ def render(results: Iterable[CheckResult]) -> str:
             lines.append("  note: %s" % n)
         lines.append("")
     ran = sum(1 for r in results if r.looked)
-    lines.append("%d of %d check(s) ran. The other %d did not look, and that is "
-                 "reported above rather than counted as clean."
-                 % (ran, len(results), len(results) - ran))
+    missed = len(results) - ran
+    # THE ALL-RAN CASE GETS ITS OWN SENTENCE. The tally read "The other 0 did
+    # not look" whenever a complete model was given -- recorded during the
+    # definition-of-done walk and deliberately not counted among its six, since
+    # it costs a reader nothing. Fixed here rather than left, and reported as
+    # outside that list rather than folded into it.
+    if missed:
+        lines.append("%d of %d check(s) ran. The other %d did not look, and "
+                     "that is reported above rather than counted as clean."
+                     % (ran, len(results), missed))
+    else:
+        lines.append("%d of %d check(s) ran. Every check had what it needed, so "
+                     "no result above is a silence standing in for one."
+                     % (ran, len(results)))
     return "\n".join(lines)

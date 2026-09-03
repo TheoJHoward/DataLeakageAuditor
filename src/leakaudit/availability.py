@@ -488,8 +488,36 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
         touched += int(mask.sum())
         corrupt[fname] = f
     if touched == 0:
-        raise ProbeError("no aggregate cells matched the corrupted seconds; the "
-                         "probe would report silence about itself")
+        # NAME THE CAUSE, NOT THE SYMPTOM. R210 item 4.
+        #
+        # "no aggregate cells matched" is true and is a CONSEQUENCE. The walk
+        # hit this with one declared frame misspelled -- `scan` for `scans` --
+        # and the message sent the reader looking at seconds and keys when the
+        # fact that fixes it is that a declared name matches nothing supplied.
+        # The standard applied here is the one this package already sets in the
+        # v2-model refusal: say what is wrong, then say the routes out.
+        declared = sorted(model.aggregate_frames)
+        supplied = sorted(raw)
+        absent = [f for f in declared if f not in raw]
+        if absent:
+            raise ProbeError(
+                "declared aggregate frame(s) %s were not supplied, so nothing "
+                "was corrupted and the probe would report silence about itself. "
+                "Declared: %s. Supplied: %s. Correct the name in the model file, "
+                "or supply the frame, or drop it from `aggregate_frames` -- in "
+                "which case anything downstream of it is `none`, not "
+                "`observed_silence`."
+                % (", ".join(repr(a) for a in absent),
+                   ", ".join(repr(d) for d in declared),
+                   ", ".join(repr(s) for s in supplied)))
+        raise ProbeError(
+            "no aggregate cells matched the corrupted seconds, so the probe "
+            "would report silence about itself. Every declared frame (%s) was "
+            "supplied, so the mismatch is in the KEYS rather than the names: no "
+            "row of them falls in any selected second. Check that the key "
+            "column holds the window key, and that its seconds overlap the "
+            "decision column's."
+            % ", ".join(repr(d) for d in declared))
     res.notes.append("corrupted %d aggregate row(s) across %d second(s)" % (touched, res.n_cohorts))
 
     after = build(corrupt)
