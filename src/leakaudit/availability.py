@@ -56,13 +56,43 @@ class ProbeError(RuntimeError):
     """The probe cannot answer, and says so rather than returning silence."""
 
 
+def _window_text(w: pd.Timedelta) -> str:
+    """`1s`, not `0 days 00:00:01`.
+
+    The note this feeds is read by someone deciding whether their configuration
+    is right. pandas' Timedelta repr is correct and unreadable, and a message
+    nobody finishes reading is the failure mode this whole round is about.
+    """
+    ns = int(w.value)
+    if ns > 0:
+        for div, unit in ((86_400_000_000_000, "d"), (3_600_000_000_000, "h"),
+                          (60_000_000_000, "min"), (1_000_000_000, "s"),
+                          (1_000_000, "ms"), (1_000, "us"), (1, "ns")):
+            if ns % div == 0:
+                return "%d%s" % (ns // div, unit)
+    return str(w)
+
+
 @dataclass(frozen=True)
 class AvailabilityModel:
     """The declared model. Supplied to the probe; never inferred by it.
 
     `aggregate_frames` are the frames whose rows are wall-clock-second
     aggregates keyed by `key_column`; their declared availability instant is
-    `key + window`. `decision_column` is the output's decision instant.
+    **`floor(key) + window`** -- the end of the wall-clock second the key falls
+    in. `decision_column` is the output's decision instant.
+
+    THE FLOOR IS NOT DECORATION, AND THIS SENTENCE USED TO BE WRONG. It read
+    `key + window` for two rounds, which is the same number only where the key
+    is already a wall-clock second. On the acceptance fixture that holds for
+    `magg.ts_floor` (464,199 of 464,199 rows) and fails for `trades.ts_event`
+    (49 of 397,457, median offset 467.83 ms), so the documented instant was
+    later than the computed one on 99.9877% of that frame's rows. The computed
+    one is correct -- `AVAILABILITY_DECLARATION.md` §3 and §C.1 declare the join
+    family's instant to be `floor(T) + 1s`, and the pipeline reaches every
+    trade-derived feature through `groupby("ts_floor")` -- so the description was
+    the defect, and it is recorded as D-V30A-43 rather than quietly amended. A
+    non-boundary key is floored AND REPORTED; see `run_probe_a`.
     """
     aggregate_frames: Mapping[str, str]          # frame name -> key column
     decision_column: str = "timestamp"
@@ -336,6 +366,29 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
         elif d.dt.tz is not None:
             key = key.dt.tz_localize(d.dt.tz)
         key_floor = key.dt.floor("s")
+        # FLOORING IS APPLIED AND REPORTED, NEVER APPLIED SILENTLY. R207 Q1.
+        #
+        # A key that is already a wall-clock second floors to itself and there is
+        # nothing to say. A key that is a raw event stamp -- `trades.ts_event` is
+        # one -- does not, and the instant this probe uses is then
+        # `floor(key) + window`, NOT `key + window`. Applying the aggregate
+        # contract to a declared aggregate frame is not inference: it is the rule
+        # the declaration states. But it is a rule the caller did not write down,
+        # and the invisible half of exactly this arithmetic is what let a
+        # docstring diverge from the behaviour for weeks (D-V30A-43). So it is
+        # named, with the measured fraction, in the run's own output.
+        n_key = len(key_floor)
+        if n_key:
+            on_boundary = int((key == key_floor).sum())
+            if on_boundary < n_key:
+                res.notes.append(
+                    "key %r of frame %r is not on second boundaries (%.4f%% "
+                    "are); flooring to `floor(%s) + %s` per the aggregate "
+                    "contract. The declared availability instant of every cell "
+                    "of this frame is the end of the wall-clock second its key "
+                    "falls in, not one window after the key itself."
+                    % (keycol, fname, 100.0 * on_boundary / n_key,
+                       keycol, _window_text(model.window)))
         mask = key_floor.isin(picked_set)
         # PER-FRAME, NOT IN TOTAL. The original guard summed `touched` across
         # frames and raised only if EVERY frame matched nothing -- so magg's 250

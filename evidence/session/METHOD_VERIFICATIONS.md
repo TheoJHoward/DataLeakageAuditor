@@ -106,3 +106,165 @@ arbitrary user's frames would.
 about all 48. The population run's eligibility counts are consistent with the
 same structure elsewhere, but consistency is not the measurement and the other
 47 were not read.
+
+> **SUPERSEDED BY MV-2, and left standing rather than edited.** The paragraph
+> above was correct when written and is no longer the state of the evidence. The
+> other 47 have now been read. What it says about scope is retained because the
+> useful part of this file is the record of what was known when, and a scope
+> caveat that is quietly deleted once it becomes inconvenient teaches the reader
+> that caveats here are provisional. MV-2 states the extension.
+
+---
+
+## MV-2 — MV-1 extended to the whole declared population, 48 of 48
+
+**Asked (DELTA R207 §4):** an absence claim over one instrument-month, when 48
+are on disk and the check is a parquet read, is the population problem this
+project exists to notice. MV-1 was honest about its scope; the scope was a
+choice, not a cost.
+
+**Measured** on all 48 declared instrument-months — 8 instruments
+(`cl es gc he le nq zc zs`) × 6 months (`2025-01`, `2025-08` … `2025-12`) —
+by reading ONE COLUMN per file. No probe run, no build, no capture. **8 seconds
+for the whole population**, against roughly 245 s per instrument-month for a
+capture-and-probe, which is the measurement behind calling it cheap.
+
+`magg` is not a file, so it is handled by the three-way branch in
+`load_mbo_aggregated` rather than by a data read, and all three branch
+conditions are measured: the cached-aggregate file's existence, the source
+file's existence, and the source row count. Two of the three code paths derive
+`ts_floor` by flooring (ns integer truncation above 50M rows, `.dt.floor("1s")`
+below) and cannot emit an unfloored key. The third reads a **cached** aggregate
+and takes its `ts_floor` as-is — that is the only path on which the property
+could fail, so its file was checked for all 48.
+
+### The answer: MV-1's properties hold across the whole population
+
+| property | zc 2025-01 | all 48 |
+|---|---|---|
+| `trades.ts_event` zone | UTC | **UTC, 48 of 48** |
+| `snap.timestamp` zone | naive | **naive, 48 of 48** |
+| `trades.ts_event` on a second boundary | 0.0123% | **max 0.0188%** (`he 2025-12`), min 0.0002% |
+| `trades.ts_event` median sub-second offset | 467.83 ms | **440.26 – 486.69 ms** |
+| cached-aggregate file present | no | **0 of 48** |
+| months where `trades.ts_event` is mostly floored | 0 | **0** |
+
+So no instrument-month's declared key is floored where `zc 2025-01`'s is not, or
+the reverse. The frame-key-plus-window verification of MV-1 stands over the
+population, not over one month of it.
+
+**And the mixed-zone case is universal, not a fixture quirk.** An aware
+`trades.ts_event` against naive `snap.timestamp` holds in **all 48**. D-V30A-42's
+open question is therefore not about one file: whichever timezone rule is right
+is right for every number this project has published.
+
+### Two things the sweep turned up that one month could not show
+
+**(1) Six instrument-months have no MBO source at all — every `nq` month.**
+`nq 2025-01`, `-08`, `-09`, `-10`, `-11`, `-12` have snapshots and trades on disk
+and no `nq_mbo_<month>.parquet`, so `load_mbo_aggregated` returns `None`, `magg`
+is absent from `raw`, and five of the sixteen probed columns do not exist to be
+perturbed.
+
+**The recorded evidence already carries this, and correctly.** The committed
+population run holds `frames_absent: ["magg"]` on exactly those six, and 12
+probe notes — one per side — reading *"aggregate frame 'magg' absent from raw;
+not corrupted"*. The effect is visible in the results: `nq 2025-01` contaminated
+attributes findings to **13** features against `zc 2025-01`'s **29**, the
+difference being the MBO-derived family that could not be reached. This is the
+`none`-versus-`observed_silence` distinction doing its job on real data, unasked.
+
+**And criterion 1 is structurally untouched by it.** All eleven required units
+are governed by `trades_all`, `trades_sell` or `trades_large`; **no `mbo_*` class
+appears in the denominator at all**. `nq`'s scored contexts return the same
+8 satisfied / 3 unsupported split as every other instrument-month. Across the
+whole population: **528 satisfied, 198 unsupported, 0 missed** over 726 unit
+contexts. The 198 are the three Phase-7-only columns absent from the Phase 5
+built frame, declared unsupported under §8.2 rather than passed.
+
+**(2) The decision column's second-boundary fraction spans nearly the whole
+range, and the fixture is not near either end.** `snap.timestamp` sits exactly on
+a wall-clock second for between **0.000000** (`es 2025-01`, `es 2025-08`,
+`gc 2025-12`, three `nq` months — zero rows of 1.6–1.9 million) and **0.862450**
+(`he 2025-12`, 310,475 of 359,992). The acceptance fixture, `zc 2025-01`, sits at
+**0.345640**.
+
+That is a five-order-of-magnitude spread in a property of the decision lattice
+across the population whose sides Phase 1 scored. **What it does to any scored
+quantity is NOT measured here and is not claimed.** It is recorded because it is
+the kind of population variation a single-instrument-month verification is
+constitutionally unable to see, and because §C.2's cohort predicate reads the
+same column.
+
+**Not measured, and therefore not claimed.** Whether the boundary-fraction spread
+moves the cohort predicate's coverage, the overhang magnitude, or any scored
+count. Whether the six `nq` months' `magg` absence changes criterion 2 or 3
+(criterion 1 is shown untouched; the others were not examined). And this is the
+declared 48 — the wider set of instrument-months on disk was not read.
+
+---
+
+## MV-3 — does `timestamp_semantics` cover timezone handling? A structural read
+
+**Asked (DELTA R207 §3):** a declare-or-refuse shape for the open timezone
+question needs a declaration key to hang on. `timestamp_semantics` is the
+candidate, on the reading that "ts[j] is read under the declared
+`timestamp_semantics`, which every mode inherits." Before wiring a refusal, does
+that key's registered definition actually cover zone handling?
+
+**Population of the read: the whole registration.** `PREREG.md`, 2,228 lines, at
+the working copy. Not a section, not a table — the file. Both directions are
+enumerated: every occurrence of the key, and every occurrence of any vocabulary
+that would carry the concept if it were registered anywhere else.
+
+**Occurrences of `timestamp_semantics`: exactly one, at line 251**, a row of the
+`AvailabilityModel` element table, reading in full:
+
+> whether the timestamp column is observation, event, or availability time, plus
+> the mapping if not the last
+
+**Occurrences of zone vocabulary in the registration: none.** Case-insensitive,
+whole file:
+
+| term | hits | what they are |
+|---|---|---|
+| `timezone`, `time zone`, `tzinfo`, `tz_convert`, `tz_localize`, `naive`, `wall-clock`, `wall clock` | **0** | — |
+| `UTC` | 38 | **all 38 are inside "outcome"/"outcomes"** — 35 and 3. Zero are the zone. |
+| `aware` | 3 | all "tier-aware" (§7.7 termination). Zero are timezone-aware. |
+| `offset` | 1 | `decision_time`'s "bar open, bar close, offset, or a column" — a time offset from a bar, not a UTC offset. |
+
+### Answer: NO. `timestamp_semantics` does not cover zone handling — R207 §3's second branch.
+
+**What it does cover, exactly, and nothing beyond it.** A *kind* question about
+what a stamp MEANS: is this column recording when a thing was observed, when it
+happened, or when it became knowable — and if it is not the last, how to map to
+the last. That is a question about the semantics of the quantity. A timezone is a
+question about the REPRESENTATION of the quantity: two columns with identical
+`timestamp_semantics` — both availability time, no mapping needed — can still be
+one aware and one naive, which is precisely the case the acceptance fixture
+carries in all 48 of its instrument-months (MV-2). The key cannot distinguish
+them because it was never asked to.
+
+**Consequence, and it is a refusal to act rather than an action.** `align_key` is
+NOT wired into `run_probe_a` this round. The declare-or-refuse shape may well be
+right — the argument for it is sound and is recorded in R207 §3: a probe that
+converts where the pipeline drops is auditing a different pipeline, and it cannot
+learn which from the build callable alone. But that shape needs a declaration key
+to refuse *against*, and the registered vocabulary does not contain one. Wiring a
+refusal whose licence is unestablished would put the tool in the position of
+demanding a declaration the registration never defined.
+
+**Two notes on line numbers, stated because this file is cited.** (i) The
+declaration's §4 cites `column_roles` at "PREREG.md line 205" and this read finds
+it at 252; `AVAILABILITY_DECLARATION.md`'s own opening section on which
+registration version a line reference means is the governing note, and the
+citation is to content, not to a line. (ii) **The read is of the tagged text.**
+`git diff prereg-v30a -- PREREG.md` is empty: the working copy is byte-identical
+to the registration at the tag, so the line numbers and the zero counts above are
+statements about the registered document and not only about a working file.
+
+**Not measured, and therefore not claimed.** Whether some OTHER registered
+element covers zone handling was searched for by vocabulary and not by reading
+every element's definition in full — the vocabulary sweep returning zero across
+the whole file is the evidence, and it is a strong absence rather than a proof.
+Whether a new key is warranted, and what it would be called, is not decided here.

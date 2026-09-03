@@ -498,3 +498,84 @@ verified, flattering ones accepted — recurred in the round that recorded it.
   second and not obviously the first. Reading it either way is a choice about a
   scoring key made after the detectors ran, which is why it is recorded here and
   put to the author rather than settled. Raised R188 §3.2, framed R189 §3.
+
+## TB-15 — *(3 September 2026)* The wrong prediction is the one that pays; a correct one would have told nobody anything
+
+A manifest regeneration was predicted at plus one line for one added file. It
+came back at zero. Re-predicted against the script's own stated population, it
+came back at plus two. Both misses were defects, and neither would have surfaced
+from a run that matched.
+
+**Zero, because the append population is the COMMITTED set.** The regenerator
+enumerates with `git ls-files evidence`, so a file that exists on disk and is not
+staged is invisible to it. The prediction was made against "files present"; the
+script's docstring says "one line per COMMITTED file under evidence/". The
+docstring was right and unread.
+
+**Plus two, because appending after a trailing empty element writes below a blank
+line.** `text.split("\n")` on a file ending in a newline yields a final `""`. It
+lands in the output list, and every appended digest goes after it. One stray
+blank per append, accumulating silently in an attestation file, in a script whose
+whole job is to keep that file honest.
+
+**Neither is visible from a passing run.** The manifest verified clean both
+times: `0 line(s) disagree with the file on disk`. The blank line is not a hash
+line, so the verifier skips it; the missing entry is not a wrong entry, so
+nothing disagrees. A self-check that only asks "is what is written correct?"
+cannot ask "is what should be written here at all?" — which is the same absence
+shape the tool itself exists to report, found in the tooling that attests to the
+tool.
+
+**The prediction is the instrument.** Measuring alone would have produced a
+manifest, a clean verify, and no information. The number had to be committed to
+in advance for the disagreement to exist to be noticed. That is the whole content
+of predict-then-measure and this is the clearest case of it in the register:
+TB-10 caught a cost claim this way, and here the same discipline caught a latent
+defect in an attestation artifact that no test covered.
+
+**The tell to watch for:** a derived-file regenerator whose population is one set
+and whose caller is thinking of another. "Present", "tracked", "staged" and
+"committed" are four different sets, and a script that means one of them while
+its user means another fails silently in exactly one direction — omission, never
+error.
+
+## TB-16 — *(3 September 2026)* A declaration can govern by mechanism, and a search for names will report it absent
+
+The question was whether the availability declaration says anything different
+from what the probe computes, per column. The probe perturbs sixteen raw frame
+columns. The declaration enumerates built feature columns by heading. **It names
+none of eight of the eleven trades columns.**
+
+A per-name search is the obvious way to answer, and it would have been
+well-formed: a stated population, a complete enumeration, an exact answer. The
+answer would have been "the declaration is silent on these columns," and it would
+have been wrong. The declaration is not silent. It declares the JOIN MECHANISM —
+the merge on a floored second, whose absorbed window ends one second after the
+floor — and every one of those columns inherits its rule from that. A mechanism
+is not an enumeration, and grep only sees enumerations.
+
+**This is a new shape of the absence-claim failure, and the worst-behaved one so
+far.** The earlier instances were sloppy populations: a claim of absence made
+over a set narrower than the claim. Here the population is right, the search is
+right, the execution is right, and the answer is still wrong — because the thing
+being searched for was never going to be written down in the form searched for.
+Nothing in the method catches that. The only thing that catches it is asking, of
+a null result, *"could this be governed by something that does not carry these
+names?"*
+
+**What made it come out right was stating the population TWICE.** P1, what the
+probe perturbs. P2, what the declaration enumerates. Writing both down made their
+disjointness visible as a fact needing explanation, rather than as a null result
+needing reporting. Had only one been written, the gap would have read as an
+answer.
+
+**And it was load-bearing.** The same read turned up a docstring stating an
+availability formula the code does not compute (D-V30A-43). Answering by reading
+that docstring — the other obvious cheap route — would have returned the opposite
+answer on eleven columns.
+
+**The tell to watch for:** a null result whose population is disjoint from the
+population of the thing that would have governed it. Two sets that never
+intersect, and a conclusion drawn from their non-intersection. When the answer is
+"the document does not mention X", the next question is always whether the
+document mentions the machinery X is made of.
