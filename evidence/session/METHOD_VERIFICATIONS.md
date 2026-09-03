@@ -398,3 +398,78 @@ what it would be called, or whether the refusal belongs at load or at the probe
 path. Whether any zone pair outside these four behaves differently — the four
 were chosen to span naive, UTC, a negative offset and a positive one, and DST
 transitions were not exercised at all.
+
+---
+
+## MV-6 — portability UPWARD, on a dependency set no test had seen
+
+**Asked (DELTA R209 §2):** the definition-of-done walk's clean virtual
+environment resolved to newer dependencies than the development machine. That is
+an accidental portability test sitting there for free; make it deliberate.
+
+**THE HEADING SAYS UPWARD AND THE HEADING IS THE QUALIFICATION.** This measures
+the tool against dependencies **newer** than the ones it was written on. It says
+**nothing whatever** about the declared floors, and reporting it as though it did
+would be the figure-without-its-frame failure this file exists to prevent.
+
+### The two dependency sets
+
+| | development machine | clean venv |
+|---|---|---|
+| Python | 3.12.10 | 3.12.10 |
+| numpy | 2.4.2 | **2.5.2** |
+| pandas | 3.0.1 | **3.0.5** |
+| pyarrow | 23.0.1 | **25.0.1** |
+| pytest | 9.1.1 | 9.1.1 |
+
+The venv was created empty (`pip` only), installed with `python -m pip install .`
+— the command `README.md` gives — and resolved these on its own.
+
+### (1) The suite, run in the clean environment
+
+```
+582 collected — 577 passed, 4 skipped, 1 failed
+```
+
+**Identical on every term to the development machine**, and the single failure is
+the same known `hash_set_single_source` assertion, disclosed at D-V30A-11. 577
+tests that had never executed against numpy 2.5.2, pandas 3.0.5 or pyarrow 25.0.1
+passed unchanged.
+
+### (2) The same pipeline, the same source, two dependency sets
+
+The stronger test, because a passing suite could still hide an answer that
+depends on its environment. The **source was held constant** — both interpreters
+import `leakaudit` from the repository's `src`, so the dependency set is the only
+variable — and both ran the same non-fixture warehouse pipeline over the same
+CSVs through `run_probe_a` with the same stride, cap and seed.
+
+Output rendered canonically: verdict, cohort count, finding count, features,
+per-combination outcomes, base columns, every finding as
+`feature|cohort|detector|promotion|strategies` sorted, and every note sorted —
+so nothing depends on dict or set iteration order.
+
+**The two outputs are byte-identical outside the version banner.**
+
+```
+sha256 of the comparable body, clean venv        15dc83c78950d42b…
+sha256 of the comparable body, dev machine       15dc83c78950d42b…
+```
+
+26 findings, 7 cohorts, 4 features, same notes including the flooring report's
+0.0567%. **The probe's answer did not depend on its environment across this
+step.**
+
+### What this does NOT establish, stated in the same breath
+
+- **Not the floors.** `numpy>=1.26`, `pandas>=2.1`, `pyarrow>=14` remain
+  **untested downward**. An upward pass is silent about them. They are still the
+  author's second-machine question, and this does not substitute for it.
+- **Not a second machine.** One machine, one OS, one Python patch version, two
+  dependency sets. A genuine portability test varies the machine; this varies
+  only the packages.
+- **Not the fixture path.** The comparison ran the synthetic warehouse pipeline,
+  not the acceptance fixture, whose producing modules are not packaged and which
+  4 skipped tests are gated behind.
+- **Not all of pandas 3.** Two patch releases apart within the same major, and
+  one numpy minor. This is a narrow interval, not a range.

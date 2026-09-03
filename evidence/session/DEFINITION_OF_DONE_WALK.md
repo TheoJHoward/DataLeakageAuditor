@@ -23,10 +23,15 @@ run by someone the code was not written in front of.
 
 ---
 
-## Result: NOT MET. Four steps required guessing or would require reading source.
+## Result: NOT MET. **Six** steps required guessing or would require reading source.
 
-Under R208's DECISION 3, that list is the remaining work, and it is short and
-specific. It is at the bottom of this file.
+Part I of this file recorded four. **Part II resumed the walk over the documented
+surface Part I had not touched and found two more**, plus one place where Part I
+had skipped a file the README explicitly links. The list of six is at the bottom.
+
+That list is the remaining work. **Nothing on it has been fixed.** Two defects
+the walk found *in the tool* — separate from the friction list — were fixed after
+Part I's walk completed, and are recorded at Step 12.
 
 ---
 
@@ -237,3 +242,147 @@ covered neither. **Not counted among the four**, because that is how pip behaves
 in every Python project and is not a fact about this tool. Recorded because this
 repository's gate reports unattested files, so its own documented install command
 dirtied the tree it attests. Both are now ignored.
+
+---
+
+# PART II — the walk resumed, and the count is 6, not 4
+
+**DELTA R209 held that the walk was incomplete and two friction points recorded.
+Four were recorded, and the core path was complete: nothing was fixed
+mid-transcript, and none of the four was fixed at all.** What Part I fixed were
+two defects the walk exposed *in the tool* — notes that reached no reader, and a
+schema doc stating a superseded formula — neither of which is on the friction
+list.
+
+**But the instinct was right in substance and the count was wrong.** Part I
+walked the path a stranger takes to a result. It did not walk the documented
+surface around that path: a file the README explicitly links, the library entry
+point the README advertises, two of the three frame formats the help names, and
+every way a user's own pipeline can misbehave. Finishing it found **two more
+friction points and one omission in the walk itself**. That is the decay argument
+in R209 §0 arriving as a measured fact rather than a caution: the walker who
+knows the answers stops looking.
+
+## Step 13 — `INSTALL.md`, which the README sends you to and I did not open
+
+**This is an omission in Part I's walk, recorded as one.** `README.md` § The tool
+says *"Install instructions, verified by execution rather than by reading, are in
+`INSTALL.md`"*, and Part I went from the README's own `## Install` block straight
+to `pip install .` without opening it.
+
+Checked, because it bears on FRICTION 2's count: **`INSTALL.md` does not mention
+`PYTHONPATH`, `sys.path`, or the user's own pipeline module.** Its import section
+is about the *package's* importability — `protocol/` missing from the first
+distribution, the lazy fixture import — not about the caller's module.
+**FRICTION 2 stands.** Had it answered the question, that friction point would
+have been mine, not the tool's.
+
+## Step 14 — the library entry point
+
+`README.md` advertises `audit()` by name — *"`audit()`'s return type already
+has"* changed. Nothing states its signature.
+
+- **Attempt 1**, `audit(frames, build)`, the order the CLI implies: **works**,
+  returns `AuditResult`, prints the same 15 findings over 9 features as the CLI.
+- **Attempt 2**, `audit(build, frames)`, the other order: `ContractError: raw
+  must be a DataFrame or a mapping of name -> DataFrame, got function`. **A clean
+  message that names both what was expected and what arrived.**
+- `audit.__doc__` is substantial and explains why two arguments is the entry
+  point, why `availability=None` does not mean no result, and that the other five
+  parameters raise so the refusal can name them.
+
+> ### FRICTION 1, CONFIRMED AND SHARPENED
+> `audit.__doc__` documents what **`audit`** receives. Nothing documents what
+> **`build`** receives. `inspect.signature(audit)` renders
+> `build: 'Callable[[Any], pd.DataFrame]'` — the return type is stated and the
+> **argument is `Any`**. So the package annotates the half I did not need and
+> leaves `Any` on the half I had to guess. My guess of a name-keyed dict was
+> right on both the CLI and library paths, and it was still a guess.
+
+Minor, recorded and not counted: `dir(leakaudit)` returns 50 public names with no
+"start here" among them.
+
+## Step 15 — the other two frame formats
+
+`run --help` says `.parquet, .csv or .json`; Part I used only CSV. Both others
+were written from the same data and run with the same model.
+
+**All three produce identical output** — 26 findings over the same four features,
+the same flooring fraction of 0.0567%, the same 20 rows across 7 seconds.
+
+> ### FRICTION 5 — the JSON orientation is not stated
+> `--frame name=x.json` does not say which pandas `orient` is expected. I guessed
+> `records` and it worked. A stranger writing `orient="split"` or `"index"` finds
+> out by failing.
+
+## Step 16 — the CLI's own error surface, exhaustively
+
+| what | what the tool printed | lines |
+|---|---|---|
+| no `--frame` at all | `no --frame given; there is nothing to probe` | 1 |
+| frame file absent | `nope.csv: no such file (for frame 'stations')` | 1 |
+| function name misspelled | `'mypipe' has no attribute 'buld'` | 1 |
+| a v2 model given to `run` | `v2_model.json declares no `aggregate_frames`, so there is no availability model to probe with. Declare one, or drop --model and run the column dependency probe, or use `leakaudit check` for the checks that need no model.` | 1 |
+| malformed JSON | `broken.json: not valid JSON (Expecting property name … char 59). The model is refused rather than guessed at: a partially-read model probes less than you declared and says nothing about the difference.` | 1 |
+| unknown `version` | `REFUSED, not read best-effort. Upgrade the tool, or write a model at a version it knows.` | 1 |
+
+**Six of six are one clean line.** The v2 case names the problem and *three routes
+out*; the malformed-JSON case names the error, its character offset, and why
+refusing beats guessing. **This is the standard the rest of the surface fails to
+meet, and it is set inside this same package.**
+
+`--stride 200 --max-cohorts 2` reduced the probe to 2 seconds and 8 findings, as
+documented.
+
+## Step 17 — a user's own pipeline misbehaving
+
+| what | what the tool printed | lines |
+|---|---|---|
+| `build` raises | 13-line traceback ending `ValueError: my own pipeline is broken, and this is my exception`, naming **the user's own file and line** | 13 |
+| `build` returns a `dict` | 20-line traceback ending `AttributeError: 'dict' object has no attribute 'columns'`, inside **`leakaudit/determinism.py` line 65** | 20 |
+| `build` returns `None` | 17-line traceback ending `AttributeError: 'NoneType' object has no attribute 'columns'`, inside **`leakaudit/checks.py` line 205** | 17 |
+
+The first is acceptable and is **not counted**: it is the user's own bug, their
+own file is named, and a traceback is the right answer.
+
+> ### FRICTION 6 — a build function returning the wrong type crashes inside the tool
+> The other two are the tool's contract being violated and reported as an
+> internal `AttributeError` in a module the user has never heard of. The
+> signature already annotates `Callable[[Any], pd.DataFrame]`, so **the contract
+> is written down and never checked.** This is a configuration the user got
+> wrong, and it is reported neither as a silence nor as a usable error.
+
+## Step 18 — where the tracebacks actually come from
+
+Sharper than Part I's reading. The CLI's own argument and config handling is
+uniformly excellent — six of six one-line messages. Every traceback observed,
+across both parts, comes from an exception escaping **inside** `run_probe_a`,
+`determinism` or `checks` rather than being caught at the CLI boundary:
+`ProbeError` twice in Part I, `AttributeError` twice here.
+
+**It is one missing boundary, not a diffuse quality problem.** That matters for
+the fix, and it is why R209 §1 is right that a fix designed from two examples
+would fit two examples.
+
+---
+
+# The remaining work — the answer, at six
+
+1. **The `build` contract is not stated, and is annotated `Any`.** Both paths.
+2. **The working directory is not importable and nothing says so.** First hard
+   stop, first command; `python -m leakaudit` also fails.
+3. **`ProbeError` reaches the user as a traceback** — bad key column, bad frame
+   name.
+4. **A declared frame matching no supplied frame reports a symptom**, never
+   naming the declared frames against the supplied ones.
+5. **The JSON `orient` for `--frame x.json` is not stated.**
+6. **A `build` returning a non-DataFrame crashes inside `determinism` or
+   `checks`** — a contract the package annotates and does not check.
+
+**1, 4 and 5 are the class R209 §1 names:** the message says what went wrong and
+not what to do next. **3 and 6 are one thing:** no exception boundary between the
+probe internals and the CLI. **2 is its own.**
+
+None is in the tool's arithmetic. All six are on the path between a stranger and
+the arithmetic, which is what this test was for. **Nothing on this list has been
+fixed.**
