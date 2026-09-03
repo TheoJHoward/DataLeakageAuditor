@@ -14,16 +14,21 @@ documented, while nothing read it.
 
 THE TOTALITY SHAPE, which is the point. Exactly as `PROBE_PATH_SET.json`'s
 on-path and off-path lists are disjoint and jointly cover every module on disk:
-every key the loader accepts is either MEASURED AS READ, or listed in
-`DECLARED_UNCONSUMED` with a reason. A key added to the loader without a
-classification fails, so the defect found three times cannot reach a fourth.
+every key the loader accepts is in exactly one of THREE states, each with a
+reason: MEASURED AS READ; `DECLARED_UNCONSUMED` -- it loads and nothing reads it,
+deliberately; or `DECLARED_REFUSED` -- the loader rejects a file that sets it,
+naming what to use instead. A key added to the loader without a classification
+fails, so the defect found three times cannot reach a fourth. Accepted-and-
+ignored is the one state that is not legal, and it is the whole subject here.
 
 THE AS-FOUND POPULATION, recorded so the number is not a recollection. At commit
 a023011, before the R216 fixes: 10 accepted, 5 read, 5 unread -- `column_modes`,
 `ties_available`, `timestamp_column`, plus `note` and `version` which are
-declared. At HEAD: 10 accepted, 7 read, 3 unread, all three declared. **Zero
-unexplained**, so the incremental discovery had reached the end -- which nobody
-could have known without taking the complement.
+declared. At HEAD after R218: 10 accepted, 7 read, 3 unread -- two declared unconsumed
+and one, `timestamp_column`, DECLARED REFUSED: R218 §2 made the loader reject a
+file that sets it rather than accept and ignore it. **Zero unexplained**, so the
+incremental discovery had reached the end -- which nobody could have known
+without taking the complement.
 """
 from __future__ import annotations
 
@@ -53,13 +58,26 @@ KEY_TO_ATTR = {
     "ties_available":   ("model", "ties_available"),
     "label_column":     ("config", "label_column"),
     "split":            ("config", "train_idx"),
-    "timestamp_column": ("config", "timestamp_column"),
     "column_modes":     ("config", "column_modes"),
     "note":             (None, None),
 }
 
-# A key here is accepted and deliberately not read at run time. Each entry is the
-# REASON, and an entry without one is not a classification.
+# THE THIRD STATE. A key kept in the version's key set specifically SO THAT the
+# loader can refuse it with a message naming what to use instead -- rather than
+# dropped from the set, which would give the generic unknown-key refusal and tell
+# the user nothing. Refused is a legal classification; accepted-and-ignored is
+# not, and the difference is the whole subject of this file.
+DECLARED_REFUSED = {
+    "timestamp_column": (
+        "R218 §2. It reached nothing: each aggregate frame's clock is the key "
+        "named for it in `aggregate_frames`, bound from the model and "
+        "independent of this. Wiring it would give the probe two clocks per "
+        "frame with nothing to arbitrate, so it is refused, and the refusal "
+        "names `aggregate_frames` as what to use instead. D-V30A-50."),
+}
+
+# A key here is accepted, LOADS, and is deliberately not read at run time. Each
+# entry is the REASON, and an entry without one is not a classification.
 DECLARED_UNCONSUMED = {
     "version": (
         "consumed INSIDE the loader, which is where it belongs: it gates whether "
@@ -68,12 +86,6 @@ DECLARED_UNCONSUMED = {
     "note": (
         "reader-only by design, and `leakaudit schema` says so. It exists for "
         "whoever opens the file next."),
-    "timestamp_column": (
-        "INERT, and `leakaudit schema` says so. The probe uses each aggregate "
-        "frame's own declared key as its clock, so a second clock would create "
-        "two answers with nothing to arbitrate between them. Kept rather than "
-        "removed because removing it would refuse a file that sets it, turning "
-        "a harmless declaration into a breakage. D-V30A-50."),
 }
 
 
@@ -115,7 +127,7 @@ def _measure_read_keys(tmp_path) -> set[str]:
         "decision_column": "timestamp", "window_seconds": 1.0,
         "ties_available": True, "label_column": "target",
         "split": {"train": [0, 1, 2, 3], "test": [4, 5]},
-        "timestamp_column": "k", "column_modes": {"v": "at_timestamp"},
+        "column_modes": {"v": "at_timestamp"},
         "note": "every key set, so the trace sees every one that is fetched",
     }), encoding="utf-8")
 
@@ -148,7 +160,7 @@ def accepted_keys() -> set[str]:
 def test_every_accepted_key_is_watchable():
     """A key with no attribute mapping cannot be measured, so it cannot be
     classified, so it must not pass silently."""
-    missing = accepted_keys() - set(KEY_TO_ATTR)
+    missing = accepted_keys() - set(KEY_TO_ATTR) - set(DECLARED_REFUSED)
     assert not missing, (
         "these keys are accepted and this file does not know where their value "
         "rests, so it cannot measure whether anything reads them: %s"
@@ -159,7 +171,7 @@ def test_THE_COMPLEMENT_is_empty_of_unexplained_keys(tmp_path):
     """The whole population in one assertion."""
     read = _measure_read_keys(tmp_path)
     unread = accepted_keys() - read
-    unexplained = unread - set(DECLARED_UNCONSUMED)
+    unexplained = unread - set(DECLARED_UNCONSUMED) - set(DECLARED_REFUSED)
     assert not unexplained, (
         "these keys are accepted by the loader, documented to users, and NOTHING "
         "READS THEM when the tool runs. Each is a user declaring something and "
@@ -206,3 +218,29 @@ def test_the_three_that_were_FOUND_are_now_read(tmp_path):
         assert k in read, (
             "%r is accepted and no longer read. It was fixed at R216 and has "
             "regressed; a user declaring it is being silently ignored." % k)
+
+def test_every_REFUSED_key_is_actually_refused(tmp_path):
+    """A key declared refused that quietly loads is the worst of the three
+    states: the classification says the user is protected and they are not."""
+    import json as _json
+
+    from leakaudit.model_file import ModelFileError, load_model
+
+    for key, reason in DECLARED_REFUSED.items():
+        assert len(reason) > 60, "%r is declared refused with no reason" % key
+        p = tmp_path / ("%s.json" % key)
+        p.write_text(_json.dumps({
+            "version": 3, "aggregate_frames": {"a": "k"}, key: "anything"}),
+            encoding="utf-8")
+        with pytest.raises(ModelFileError) as e:
+            load_model(str(p))
+        assert key in str(e.value), (
+            "%r is declared refused and its refusal does not name it: %s"
+            % (key, e.value))
+
+
+def test_a_refused_key_is_NOT_also_declared_unconsumed():
+    """The three states are exclusive. A key in two of them is a classification
+    that has not been made."""
+    both = set(DECLARED_REFUSED) & set(DECLARED_UNCONSUMED)
+    assert not both, sorted(both)

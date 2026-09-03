@@ -113,7 +113,6 @@ leakaudit config, schema version 3.
       "ties_available": true,
       "label_column": "target",
       "split": {"train": [0, 1, 2], "test": [3, 4]},
-      "timestamp_column": "timestamp",
       "column_modes": {
         "price":     "at_timestamp",
         "bar_volume": "at_bar_close",
@@ -157,14 +156,13 @@ reporting a clean result it did not earn.
   label_column      version 2. The built output's label column.
   split             version 2. {"train": [...], "test": [...]}, row POSITIONS
                     into the built output.
-  timestamp_column  version 3. The frame's clock column. Default "timestamp".
-                    READ AND NOT YET CONSUMED, and said here rather than left to
-                    be discovered: the probe uses each aggregate frame's own
-                    declared KEY as the clock for the modes that need one, so
-                    this key is stored and currently reaches nothing. It is
-                    documented as inert rather than removed, because removing it
-                    would silently break a file that sets it. Declaring it is
-                    harmless and changes no result.
+  timestamp_column  REFUSED. It reached nothing, so a file setting it is now
+                    rejected with a message rather than accepted and ignored.
+                    Each aggregate frame's clock is the key you name for it in
+                    `aggregate_frames`; a second clock here would be another
+                    answer to the same question with nothing to choose between
+                    them. Named in this list rather than dropped from it so the
+                    refusal can say what to do instead.
   column_modes      version 3. Column -> the rule for when its values became
                     knowable. A bare string names a mode; an object names a mode
                     and the column it reads. THE ARITHMETIC OF EACH MODE IS IN
@@ -308,10 +306,32 @@ def load_model(path) -> AvailabilityModel:
             except ModeError as e:
                 _refuse("`column_modes[%r]`: %s" % (col, e), path)
 
-    timestamp_column = raw.get("timestamp_column", "timestamp")
-    if not isinstance(timestamp_column, str) or not timestamp_column:
-        _refuse("`timestamp_column` is %r; a column name was expected"
-                % (timestamp_column,), path)
+    # REFUSED RATHER THAN ACCEPTED AND IGNORED. R218 §2.
+    #
+    # This key reached nothing. The probe uses each aggregate frame's OWN
+    # declared key as the clock for the modes that need one -- `keycol`, bound
+    # from `model.aggregate_frames`, independent of anything here -- so a file
+    # setting `timestamp_column` was type-checked, stored, and then had no
+    # effect, with no error. That is a user declaring something and being
+    # silently ignored, which is the defect Phase 2 opened to fix.
+    #
+    # The two honest options were to wire it or to refuse it. Wiring would give
+    # the probe two clocks per frame with nothing to arbitrate between them, so
+    # it is refused, in the shape this package already uses for the five
+    # parameters `contract._UNWIRED` names: the refusal states what WOULD
+    # consume it, so a reader learns where the capability lives rather than that
+    # their key is unwelcome.
+    if "timestamp_column" in raw:
+        _refuse(
+            "`timestamp_column` is accepted by no part of this build. The probe "
+            "reads each aggregate frame's OWN key as that frame's clock -- the "
+            "column you name in `aggregate_frames` -- so a separate clock here "
+            "would be a second answer to the same question with nothing to "
+            "choose between them. Set the frame's key in `aggregate_frames` "
+            "instead. It is refused rather than ignored because a declaration "
+            "that changes nothing, and says nothing, is the failure this tool "
+            "exists to report.", path)
+    timestamp_column = "timestamp"
 
     split = raw.get("split")
     if split is not None:

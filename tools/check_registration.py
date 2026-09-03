@@ -20,6 +20,7 @@ for why it is scope-by-exclusion rather than a fixed file list.
 from __future__ import annotations
 
 import argparse
+import ast
 import hashlib
 import json
 import re
@@ -2170,6 +2171,51 @@ _INSTALL_DOC = "INSTALL.md"
 # install time, which makes them the ones worth catching.
 _INSTALL_IMPORT = re.compile(
     r"^[ \t]*(?:from|import)[ \t]+([A-Za-z_][A-Za-z0-9_]*)", re.M)
+# RETAINED ONLY AS THE SUPERSEDED FORM, and no longer used to find imports. It
+# matched any LINE beginning `from ` or `import `, so it could not tell code from
+# prose: a docstring sentence reading "...someone implementing / from the
+# registered sentence alone would most likely build" was reported as importing a
+# module named `the`. See `_install_imports` below.
+
+
+def _install_imports(text: str, rel: str):
+    """Every top-level module this source imports, by PARSING it. R218 §4.
+
+    A REAL PARSE, NOT A NARROWER REGEX, and the difference is the whole repair.
+    A tightened pattern is a heuristic with a smaller blind spot; `ast` has none
+    here, because a docstring is a string constant and simply is not an import
+    node. There is nothing left to exempt, which is the property that matters:
+    the previous form's failure mode was to be defeated by prose, and the prose
+    most likely to defeat it is the prose written to explain the instrument.
+
+    THIS PROJECT HAD ALREADY LEARNED THIS ONCE. `TRACKB_LESSONS.md` TB-02 records
+    the citation check moving from text matching to parsing for the same reason,
+    in the same words -- *"a docstring is a string constant, so it simply is not
+    a reference, and there is nothing to exempt"*. The lesson was applied to one
+    checker and not to its neighbour, which is TB-21's shape: knowledge placed
+    where it governs one thing.
+
+    Yields (module, lineno). Relative imports are skipped, as the superseded
+    pattern also skipped them -- `from .availability import X` never matched it,
+    because a leading dot is not an identifier -- so this is not a widening.
+    A file that does not parse is reported rather than silently skipped: the
+    previous form read unparseable files happily and found whatever the pattern
+    hit, which is a checker reporting on text it cannot understand.
+    """
+    try:
+        tree = ast.parse(text, filename=rel)
+    except SyntaxError as e:
+        yield ("<unparseable: %s>" % e.msg, e.lineno or 1)
+        return
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            for a in node.names:
+                yield (a.name.split(".")[0], node.lineno)
+        elif isinstance(node, ast.ImportFrom):
+            if node.level:                       # relative; intra-package
+                continue
+            if node.module:
+                yield (node.module.split(".")[0], node.lineno)
 
 # Imports that are deliberately NOT dependencies, each with its ground. An
 # exemption that matches nothing is reported as a note, per the D12 rule: an
@@ -2347,9 +2393,15 @@ def check_installability(root: Path) -> list[Finding]:
             modules += 1
             text = src.read_text(encoding="utf-8", errors="replace")
             rel = src.relative_to(root).as_posix()
-            for m in _INSTALL_IMPORT.finditer(text):
-                mod = m.group(1)
-                line = text.count("\n", 0, m.start()) + 1
+            for mod, line in _install_imports(text, rel):
+                if mod.startswith("<unparseable"):
+                    f.append(Finding(
+                        "installability", rel, line,
+                        "C5: this module does not parse (%s), so its imports "
+                        "cannot be read. A checker that reads text it cannot "
+                        "understand reports on something other than the code."
+                        % mod))
+                    continue
                 if mod in ("__future__",) or mod in stdlib or mod in dirs:
                     continue
                 if mod in first_party:

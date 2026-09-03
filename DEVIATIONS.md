@@ -1842,3 +1842,90 @@ words that mark inertness. A future author who documents inertness in different
 words gets a failing test rather than a silent gap, which is the intended
 direction, and the word list is in the test rather than in the schema so that
 widening it is a deliberate act.
+
+## D-V30A-51 — the installability checker read an English sentence as an import statement
+
+**True.** `check_installability` extracted imports with a line-matching pattern
+over raw source text — any line beginning `from ` or `import `. It could not tell
+code from prose. A docstring sentence explaining the identity control's known
+positive — *"it is what someone implementing / from the registered sentence alone
+would most likely build"* — was reported as importing a module named `the`,
+neither stdlib nor shipped nor declared.
+
+**The instrument was defeated by the text written to explain the instrument.**
+That is not a coincidence: a heuristic that reads English as code gets defeated
+disproportionately often by prose about parsing, imports and dependencies, which
+is exactly the prose a checker's own documentation contains.
+
+**Two rules point opposite ways here and it matters which governs.** *Fix the
+world, not the instrument* is about not weakening an instrument so a TRUE finding
+goes away; this finding was false, so it does not govern. *Never adjust content
+toward an instrument* does govern — and the first repair taken was the wrong one:
+the sentence was reworded so the pattern stopped choking. That left the parser
+wrong and the next such sentence undefended, and it is corrected here. **The prose
+is restored and the parser is replaced.**
+
+**R163 §1's exemption test, stated because this is an instrument change.** *Would
+this change have been made if the triggering content did not exist?* **Yes.** A
+parser that reads an English sentence as an import statement is defective
+whatever text happens to expose it. Defect repair, ruled, disclosed.
+
+**The repair is a real parse, not a narrower pattern.** `ast` has no blind spot
+here: a docstring is a string constant and simply is not an import node, so there
+is nothing left to exempt. A tightened regex would be a heuristic with a smaller
+blind spot, and it would have been labelled as one if it were what shipped.
+
+**THIS PROJECT HAD ALREADY LEARNED THIS, ONCE, AND IN THESE WORDS.**
+`TRACKB_LESSONS.md` TB-02 records the citation check moving from text matching to
+parsing, with the reason: *"a docstring is a string constant, so it simply is not
+a reference, and there is nothing to exempt."* The lesson was applied to one
+checker and not to its neighbour. That is TB-21's shape — knowledge placed where
+it governs one thing — recurring in the same file that records TB-21.
+
+**The delta of findings, measured over the same tree with only the reader
+changed:** one finding removed, zero added. The removed one is the false positive
+above. Relative imports are skipped exactly as the superseded pattern skipped them
+— a leading dot is not an identifier, so it never matched them — so this is not a
+widening.
+
+**And the repair is tested in BOTH directions**, because the plausible wrong
+repair is a parser tightened until it stops seeing. Two assertions: the prose is
+no longer flagged, AND a real import beside it in the same file is still caught —
+including lazy imports inside functions, conditional imports, aliased imports and
+dotted ones. A file that does not parse is now a finding rather than a silence —
+the previous form read unparseable text happily and reported whatever it hit.
+
+**Expected:** that a checker deciding what a module imports reads the module,
+rather than matching lines that resemble imports.
+
+## D-V30A-52 — `timestamp_column` is refused rather than accepted and ignored
+
+**True.** The version-3 key `timestamp_column` was accepted, type-checked, stored
+on the loaded config and documented — and reached nothing. Each aggregate frame's
+clock is the key named for it in `aggregate_frames`, bound from the model, and
+the per-column mode path passes that key. The config value was independent of it
+and had no effect.
+
+**Recorded at D-V30A-50 as inert-and-documented. That was the weaker of the two
+honest options and this supersedes it.** Documenting a key as doing nothing still
+leaves a user who sets it having declared something that changes nothing — the
+declaration is accepted and silently has no consequence, which is P0's shape in a
+quieter register.
+
+**Refused, not wired, and the reason is arbitration.** Wiring it would give the
+probe two clocks per frame — the frame's declared key and this — with nothing to
+choose between them when they disagree. A second answer to a settled question is
+worse than no answer.
+
+**The key stays in the version-3 key set deliberately**, so the refusal can name
+what to use instead. Dropping it would produce the generic unknown-key refusal,
+which tells the user their key is unwelcome and not where the capability lives.
+
+**Expected:** that a key the loader validates either reaches a consumer or is
+refused. "Accepted, stored, documented, and inert" is a third state that reads to
+a user exactly like the first.
+
+**Why it stands:** the guard that holds this now recognises three legal states —
+read, declared-unconsumed, declared-refused — and accepted-and-ignored is the one
+that is not. `timestamp_column` was the case that forced the third state to be
+named, and the guard would have passed it as merely unconsumed without it.

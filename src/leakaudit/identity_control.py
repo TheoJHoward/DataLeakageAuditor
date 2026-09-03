@@ -50,8 +50,8 @@ a record, and only the second survives being re-read in a year.
     unavailable cells with an exact copy of themselves, and any delta is
     measurement artifact. The reasonable misreading of "an exact copy" is THE
     SAME VALUES -- so the wrong instrument compares values and nothing else, no
-    dtype and no index. It is not a strawman: it is what someone would most
-    likely build when implementing against the registered sentence alone.
+    dtype and no index. It is not a strawman: it is what someone implementing
+    from the registered sentence alone would most likely build.
 
 CONSTRUCTED AND MEASURED at R216 §4, over four write-backs. The two instruments
 AGREE on the genuine identity write (both silent) and on an actual value change

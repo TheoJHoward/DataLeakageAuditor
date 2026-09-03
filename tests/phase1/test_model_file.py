@@ -181,7 +181,7 @@ def test_the_schema_doc_explains_the_unnamed_frame_case():
 # Version 3 — the column modes. R204 P5.
 # ---------------------------------------------------------------------------
 
-V3 = {"version": 3, "timestamp_column": "ts",
+V3 = {"version": 3,
       "column_modes": {"price": "at_timestamp",
                        "cpi": {"mode": "at_source_timestamp",
                                "column": "released"}}}
@@ -189,9 +189,28 @@ V3 = {"version": 3, "timestamp_column": "ts",
 
 def test_column_modes_load_in_both_forms(tmp_path):
     c = load_model(_write(tmp_path, V3))
-    assert c.timestamp_column == "ts"
     assert c.column_modes["price"].mode == "at_timestamp"
     assert c.column_modes["cpi"].column == "released"
+
+
+def test_timestamp_column_is_REFUSED_and_the_refusal_says_what_to_do(tmp_path):
+    """R218 §2. It reached nothing, so setting it was a declaration that changed
+    nothing and said nothing -- accepted and ignored, which is the defect Phase 2
+    opened to fix. Refused rather than wired, because each frame's clock is
+    already the key named for it in `aggregate_frames` and a second one would be
+    another answer to the same question."""
+    with pytest.raises(ModelFileError) as e:
+        load_model(_write(tmp_path, dict(V3, timestamp_column="ts")))
+    msg = str(e.value)
+    assert "timestamp_column" in msg
+    assert "aggregate_frames" in msg, (
+        "the refusal must name what to use INSTEAD, not merely decline: %s" % msg)
+
+
+def test_a_file_WITHOUT_it_still_loads(tmp_path):
+    """The negative control: the refusal fires on the key, not on version 3."""
+    c = load_model(_write(tmp_path, V3))
+    assert c.column_modes and c.version == 3
 
 
 def test_a_version_2_file_naming_a_version_3_key_is_refused(tmp_path):
