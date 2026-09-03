@@ -1611,3 +1611,59 @@ what that instruction is for, and it earned itself on its first use by catching
 a regression introduced by the fix it was checking. The three items it was
 verifying all passed; the defect was in the fourth thing, the one being held
 constant.
+
+## D-V30A-46 — a criterion for pre-commit catches, and the entry that was missing under it
+
+**True.** Two defects of one category were found in consecutive rounds: a fix's
+own acceptance test finding a defect inside that fix, before commit. The
+double-wrap received an entry, D-V30A-45. The generic marker received none — a
+commit message and a paragraph in the walk document.
+
+**Two instances of one category, one disclosed and one not, on no stated
+criterion.** That asymmetry is how a register begins to mislead with nobody
+having decided on it: a reader counting entries of a category counts one, and the
+category has two.
+
+**The criterion, stated now so the asymmetry has something to be resolved
+against.** This register's scope is disclosures of fact about the tagged state. A
+defect found and fixed before commit is not such a fact, and the default is
+therefore that it does NOT get an entry. It gets one when either limb holds:
+
+  (i) a claim was made about the work — in a commit message, a report, or a
+      document — that the defect makes false; or
+  (ii) the defect is of a class this register already carries, so that omitting
+      it would understate a count a reader could take from the register.
+
+**D-V30A-45 qualifies under both.** Its round's commit message described the
+guard as fixed while it double-wrapped, and it is an instance of the class
+D-V30A-42, -43 and -44 record.
+
+**The generic marker qualifies under (ii), and it has no entry.** It is the
+discarded-parameter defect — the class this register carries at D-V30A-21 and in
+the five refusals of `contract.py` — appearing inside the fix written to close a
+different defect. Under the criterion above it is a disclosure, and its absence
+was the asymmetry.
+
+**So it is recorded here rather than left in a commit message.** The marker
+`__leakaudit_guarded__` meant "some guard is applied". A second guard, added later
+for a different job, would have found the flag set, declined to apply, and left
+its own check unperformed with nothing said. It was found by constructing the
+two-guard case that R211 §1.2 required rather than by any test then existing, and
+it is now keyed on the job — `GUARD_BUILD_RETURN`, carried in a set — with four
+tests asserting both guards apply in either order, each stays idempotent in the
+other's presence, and both actually fire.
+
+**Expected:** that two members of one category are both disclosed or both not,
+under a criterion stated somewhere, rather than each judged on how notable it
+felt in the round that found it.
+
+**Why it stands:** the criterion did not exist until now, so neither decision was
+wrong when it was made; what was wrong was that no rule existed to make them
+consistent. The register is append-only, so the earlier omission is repaired by
+adding this entry rather than by editing D-V30A-45 or the walk document, and both
+of those stay exactly as written.
+
+**Carried consequence:** the criterion above is not registered vocabulary and
+binds nothing. It is this register's own working rule for its own scope, and a
+later round may replace it — in which case the replacement states what happens to
+entries admitted under this one.

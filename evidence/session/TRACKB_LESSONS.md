@@ -579,3 +579,87 @@ population of the thing that would have governed it. Two sets that never
 intersect, and a conclusion drawn from their non-intersection. When the answer is
 "the document does not mention X", the next question is always whether the
 document mentions the machinery X is made of.
+
+## TB-17 — *(3 September 2026)* An events register can never supply a rate, because non-events do not present themselves for recording
+
+A question was asked of this project's registers: how often does a fix's own
+acceptance test find a defect in that fix, compared with how often an original
+module's first test found one? Both numerators looked available. Neither
+denominator existed, and no amount of care would have produced one.
+
+**`DEVIATIONS.md` scopes itself in its second paragraph:** *"These entries are
+disclosures of fact about the tagged state."* A defect caught by a test and fixed
+in the same commit is not a fact about the tagged state. It has no reason to
+appear, and does not.
+
+**`TRACKB_LESSONS.md` records what was notable.** Sixteen entries, none a
+pre-commit catch on an original module.
+
+**Git records what someone chose to mention.** Twenty-five commits touch the
+package; three name a catch in their subject.
+
+All three are numerators. **The denominator was never something anyone declined
+to write — it was never something that could be written.** A module whose first
+test found nothing produces no artifact. There is no line in any file saying "the
+test ran and was clean," because nothing happened, and nothing happening does not
+present itself for recording.
+
+**The tell:** any "how often" question asked of these registers returns a
+numerator and an argument, and the argument will feel like the answer. It will be
+made of real entries, correctly cited, and it will still be a rate with no
+denominator.
+
+**This is a DIFFERENT failure from the absence-claim discipline, and quieter.**
+That discipline covers populations that exist and were not enumerated — the fix
+is to enumerate them. Here the population cannot exist in the record's own
+design, so there is nothing to go and count. The absence-claim habit ("state your
+population") does not catch it, because the population can be stated and is
+simply empty on one side.
+
+**What to do instead.** Take the mechanism rather than the rate. At n=2 the
+useful finding was not a frequency but a location — see TB-18 — and a location is
+actionable immediately where a rate over eight events never would have been.
+
+**And the fix that looks obvious is worse than the gap.** Requiring "nothing
+happened" to be written after every fix would be complied with unevenly, and
+uneven compliance on non-events produces a wrong rate — which computes,
+publishes, and persuades. An absent denominator reports no result. A sloppy one
+reports a number.
+
+## TB-18 — *(3 September 2026)* The damage from a fix lands on what the fix was holding constant
+
+Two occasions, and the count is stated here so this is never quoted as a rate:
+**n = 2.**
+
+Both times, a fix was verified against the cases it was written to change, all of
+which passed, and the defect was in a case it was written to *preserve*.
+
+**Instance one.** A guard was added so a build function returning the wrong type
+would be told so instead of crashing inside a module the user has never opened.
+The three wrong-type cases all returned one clean line. The damage was to the
+case being preserved — a user's own pipeline raising, which must keep a traceback
+pointing at *their* file. The guard was applied twice, once by the CLI and once
+by the library entry point, and put two frames of this tool's plumbing into that
+traceback. Thirteen lines became twenty-two.
+
+**Instance two.** The idempotency fix for instance one used a marker meaning
+"some guard is applied". What it was holding constant was the ability of a
+*different* guard to apply later. A generic marker would have let a second guard
+find the flag set and decline — its check unperformed, nothing said.
+
+**Why the suite could not see either.** Both suites were green. Both fixes
+behaved correctly in every respect they were written for. Instance one was
+visible only in the *stack* of a case that is supposed to fail, and only by
+reading that stack rather than its last line. Instance two was visible only by
+constructing a second guard that did not yet exist.
+
+**The practice this earns.** Every fix's acceptance test names what the fix HOLDS
+CONSTANT, and tests that directly. Both instances were found because something
+incidentally exercised the held-constant case; making it deliberate costs one
+assertion per fix. The re-run-the-wrong-turn discipline covers this for free when
+the held-constant case is itself a wrong turn — which is how instance one
+surfaced — and does not when it is not.
+
+**Two events and a mechanism is not a trend.** It is a place to look, available
+now. TB-17 records why the trend is not available and will not become available
+by trying harder.

@@ -651,3 +651,49 @@ silent on a documented negative, through the same adapter path the measurement
 used.** Before both limbs held, a tool's result was recorded as uninterpretable
 rather than as a null — because a tool never seen to fire through its adapter has
 not been tested, it has been mishandled.
+
+### 10.6 Before you change the availability probe — the whole-frame guard
+
+**This subsection is a pointer, not the rule.** The rule's authority is the data
+and the tool named below; restating its text here would create a second copy to
+diverge from the first, which is the failure this project has recorded four times.
+
+**Appended rather than inserted**, for the mechanical reason §10 already gives: a
+registered line-pinned citation resolves to line 546 of this file, and inserting
+by topic would move it.
+
+**When it applies.** Phase 1's entire evidence base was produced through the
+availability probe. A change to a module the probe's execution reaches can move
+that evidence, and "very likely harmless" is what the guard converts into
+"measured unchanged" for about seven minutes.
+
+**Where the population lives.** `evidence/session/PROBE_PATH_SET.json` — the
+modules the probe's execution actually reaches, the commit they were measured at,
+and the method. It is data, read by `tools/probe_path_guard.py`, which refuses
+rather than returning an empty set if that file is missing or unreadable. The
+harness that runs the guard reads the same file and carries no copy of the list.
+
+**What to run.** The whole-frame fixture guard: same instrument-month, stride,
+seed and model as the committed population run, comparing eight terms — verdict,
+eligible cohorts, finding records and feature count, on both sides — against
+`evidence/phase1/criteria_12_population.json`. Unchanged, or the change is
+examined before anything is built on it.
+
+**Staleness.** The path set was measured against one commit. `probe_path_guard`'s
+`watch()` records the modules a guard run actually enters and reports any that the
+file does not, so the set cannot drift silently while the guard keeps passing. It
+sees what executes, so it is silent about paths not taken; that limit is stated
+in the file itself.
+
+**A second, separate set exists and is not merged with this one.** The four
+opt-in tests of `tests/phase1/test_fixture_adapter.py` — two of which are known
+positives for the adapter's equality claim — attest their own module set, with
+its own digests, in `tests/phase1/fixture_run_record.json`, checked by
+`tools/opt_in_currency.py`. The probe is handed frames; those tests produce them.
+Two questions, two records, each with its own reason.
+
+**The obligation that travels with the guards.** Their collision and idempotency
+behaviour is held by `tests/phase1/test_guard_idempotency.py`, which is named
+here because the guarantee is carried by that test and not by any data structure:
+a second guard written by copying the first, keeping its key, fails identically
+to the defect the first one had. Extend that test when a second guard is written.

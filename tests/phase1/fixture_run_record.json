@@ -101,6 +101,13 @@
       "test_serving_does_not_let_one_run_alter_the_next",
       "test_every_opt_in_test_has_a_recorded_result",
       "test_the_skip_reason_names_what_is_missing"
-    ]
+    ],
+    "attests_module_digests": {
+      "evidence/fixture_spike/f2/fixture.py": "f1a8bddf3110ec798a2b023978bc355c863bdafc3a36077542ce87b341020614",
+      "evidence/fixture_spike/f2/phase5_ml_fixture.py": "fb9760fe268833e5464f5aa796af229f239291898c4058054c4b25f06c895e99",
+      "src/leakaudit/determinism.py": "2f8bb5e8ef4bdc3db69cffbedcf12b725186cf46a66feeb244e4375df0fc7077",
+      "src/leakaudit/fixture_adapter.py": "71736bc35432a17d3a86ca678673d639b74e8bf1782db8706ef6e566c71f93bd"
+    },
+    "attests_method": "sha256 per module, over the modules these tests EXECUTED, measured in-process with probe_path_guard.record_modules(). Currency is a digest comparison, not commit ancestry: it fires when something that could change the answer changed, and stays quiet otherwise."
   }
 }

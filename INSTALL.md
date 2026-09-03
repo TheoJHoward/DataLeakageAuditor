@@ -44,6 +44,51 @@ Requires **Python ≥ 3.11**.
 is one of the twenty registered paths whose hashes the `prereg-v30a` tag message carries, and
 relocating it would alter a registered path while the tree is frozen.
 
+## The environments this package was actually measured in
+
+**Read the dependency bounds below as a list of measured points, not as a
+cross-product.** `pyproject.toml` declares `requires-python = ">=3.11"` with
+`numpy>=1.26`, `pandas>=2.1`, `pyarrow>=14`. That syntax states a minimum per
+dimension and has no way to say which combinations were run — but almost every
+reader of a bounds declaration reads it as "every combination in here works," and
+that reading is false here. So the combinations are listed.
+
+| Python | numpy | pandas | pyarrow | suite | the pipeline's output |
+|---|---|---|---|---|---|
+| 3.12.10 | **1.26.4** | **2.1.4** | **14.0.2** | 591 passed, 4 deferred, 1 known failure | `15dc83c7…` |
+| 3.12.10 | 2.4.2 | 3.0.1 | 23.0.1 | same | `15dc83c7…` |
+| 3.12.10 | 2.5.2 | 3.0.5 | 25.0.1 | same | `15dc83c7…` |
+| 3.13.1 | 2.5.2 | 3.0.5 | 25.0.1 | 601 passed, 5 deferred, 1 known failure | `15dc83c7…` |
+
+The bolded row is the declared floor of every dependency dimension at once. The
+digest is of the same non-fixture pipeline's canonical output, run from the same
+source with only the environment varying; identical across all four means the
+tool's answer did not depend on its environment at any measured point. The known
+failure is the one disclosed at `DEVIATIONS.md` D-V30A-11 and described under
+**Verify** in `README.md`. The fifth deferred test on 3.13 is a
+string-interning-conditional case that has no subject on that interpreter.
+
+### Two things this table does NOT say
+
+**`requires-python = ">=3.11"` is declared and UNTESTED.** Every environment
+above ran Python 3.12.10 or 3.13.1. No 3.11 interpreter was available on the
+machine where these were measured, and the number was left alone rather than
+raised to 3.12 to dispose of the question — raising a floor to a *measured* value
+with the measurement recorded is one thing, and changing a number so a question
+goes away is another. This is the second.
+
+**The floors and the Python range do not meet at every point.** `numpy==1.26.4`
+publishes no wheel for Python 3.13, so the bolded floor row cannot be built
+there. That is not a defect in the metadata — a floor is a per-dimension minimum,
+and a 3.13 user resolves a newer numpy, which is the fourth row and works. It is
+the reason the cross-product reading fails: *the floors work* and *the Python
+range works* are two claims, and their conjunction is a third that has been
+measured at exactly one point.
+
+**One machine, one operating system.** Windows 11, one host. Varying the
+dependency set is not the same as varying the machine, and no second machine has
+run any of this.
+
 ## Runtime dependencies and their licences
 
 Derived from the installed distributions, not asserted (§D.5(ii)):

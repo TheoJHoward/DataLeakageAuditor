@@ -110,6 +110,51 @@ either way.
 
 ---
 
+## 6. A display state for "not run, and would have passed" — §8.2's vocabulary has a case it cannot express
+
+**What §8.2 requires.** Every non-finding outcome carries a state, and *none may
+be displayed in a way mistakable for a pass*. The registered vocabulary is
+`not_applicable`, `unsupported`, and `could_not_run(reason)`.
+
+**The case it cannot express.** A check that is applicable, supported, and
+deliberately **not run in the default configuration because running it is
+expensive**. Four such tests exist in this project's own suite: the fixture
+adapter's opt-in set, gated behind an environment variable for about five
+minutes of rebuild. They are not `not_applicable` — the fixture's code is
+present and they apply. They are not `unsupported` — they are supported and they
+pass. They are not `could_not_run` — they can run, and do, on request.
+
+**Why this is a registration finding and not a registration edit.** §8.2 is
+registered vocabulary in a closed registration, and it is not amended for the
+convenience of an artifact that discovered a gap in it. The gap is recorded here,
+which is what this file is for, and the difference between recording it and
+amending it is the difference between a closed registration and a convenient one.
+
+**Why it matters beyond a test summary.** The rule that no outcome may be
+displayed as a pass was written about detector outcomes, and there is no
+principled reason it stops at the package boundary — the same argument applies to
+the suite that certifies the package. A cost-deferred passing test and a
+genuinely inapplicable one displayed in the same word is exactly the confusion
+§8.2 exists to prevent, one level above where §8.2 was written.
+
+**What a next registration would have to decide, and it is not obvious.** A
+fourth state is one answer; another is that the third state's `reason` is
+sufficient and the requirement is that the reason be *displayed* rather than
+merely recorded. A third is that deferral is a property of a RUN rather than of
+an outcome, and belongs in the run's description rather than in the outcome
+vocabulary. This item registers the gap; it does not pick.
+
+**What was done here instead, since the registration is closed.** The suite is a
+tool artifact and not a registered detector, so it uses tool-level wording
+without claiming registered vocabulary — the same route R203 settled for config
+keys. Its summary now reads *"N deferred (opt-in), passing as of `<commit>`"*
+with a content-keyed currency check behind the claim, rather than *"N skipped"*.
+The wording is deliberately not one of §8.2's three words, so it cannot be
+mistaken for one.
+
+*Found by asking what four green-adjacent numbers in a suite line actually were.
+The count had been reported unexamined in every round of Phase 2.*
+
 ## Two habits, not requirements, that paid for themselves
 
 **Predict before measuring, including the boring things.** Every regeneration of

@@ -90,9 +90,70 @@ def _rel(filename: str) -> str | None:
     except ValueError:
         return None
     s = str(rel).replace("\\", "/")
-    if s.startswith("src/leakaudit/") or s.startswith("protocol/"):
+    # The fixture's own producing code is included because the opt-in tests
+    # attest the ADAPTER AGAINST IT: if `phase5_ml_fixture.py` changes, "the
+    # adapter reproduces the fixture exactly" is a claim about a different
+    # fixture. It is not part of the probe's path set and `watch()` never sees
+    # it there, because the probe is handed frames rather than producing them.
+    if (s.startswith("src/leakaudit/") or s.startswith("protocol/")
+            or s.startswith("evidence/fixture_spike/f2/")):
         return s
     return None
+
+
+TOOL_ID = 4                      # sys.monitoring "profiler" slot
+
+
+@contextlib.contextmanager
+def record_modules():
+    """Record which of THIS REPOSITORY's modules a run executes. No comparison.
+
+    Split out from `watch` because two different questions use the same
+    instrument and only one of them compares against the probe path set. The
+    opt-in fixture tests have their own execution set -- `fixture_adapter.py` is
+    in it and not in the probe's -- and merging the two for tidiness would make
+    one file answer two questions badly. See R213 §3.
+
+    USES `sys.monitoring`, NOT `sys.setprofile`, AND THE REASON IS MEASURED. The
+    setprofile version fires on every Python call for the life of the run. Over
+    the opt-in fixture tests -- a real multi-million-row rebuild -- it had
+    produced no answer after fifteen minutes against an unprofiled runtime of
+    288 seconds, and was abandoned rather than waited out. `sys.monitoring` can
+    DISABLE itself per code object, so each function is seen once and costs
+    nothing thereafter: the answer wanted here is which files executed, not how
+    often, and a first sighting is the whole of it.
+
+    IMPORT TIME COUNTS AS EXECUTION, and a caller who does not want it must warm
+    its imports before entering. A module's top level runs on first import, so a
+    recorder started before the imports reports every module the package pulls in
+    -- fifteen of them for a bare `import leakaudit` -- rather than the ones the
+    work reaches. MV-8's measurement imported first and is unaffected; this note
+    exists because the same instrument used carelessly gives a set four times too
+    large, and a population that is too large makes the rule that reads it weaker
+    while looking more thorough.
+    """
+    seen: set[str] = set()
+    mon = sys.monitoring
+    if not hasattr(mon, "use_tool_id"):                     # pragma: no cover
+        raise RuntimeError("sys.monitoring is unavailable; this needs 3.12+")
+
+    def on_start(code, offset):
+        rel = _rel(code.co_filename)
+        if rel is not None:
+            seen.add(rel)
+        return mon.DISABLE          # never ask about this code object again
+
+    mon.use_tool_id(TOOL_ID, "leakaudit-path-recorder")
+    try:
+        mon.register_callback(TOOL_ID, mon.events.PY_START, on_start)
+        mon.set_events(TOOL_ID, mon.events.PY_START)
+        try:
+            yield seen
+        finally:
+            mon.set_events(TOOL_ID, 0)
+            mon.register_callback(TOOL_ID, mon.events.PY_START, None)
+    finally:
+        mon.free_tool_id(TOOL_ID)
 
 
 @contextlib.contextmanager
