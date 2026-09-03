@@ -108,6 +108,20 @@ def check_build(build: Callable) -> None:
         raise ContractError("build must be callable, got %s" % type(build).__name__)
 
 
+GUARD_BUILD_RETURN = "build_return_type"
+
+
+def guards_applied(fn) -> frozenset:
+    """Which of this package's guards are already wrapped around `fn`.
+
+    Guards are identified by the JOB THEY DO. A guard that skips itself because
+    some other guard is present would leave its own check unperformed and say
+    nothing -- the discarded-parameter defect in decorator form -- so the set is
+    carried rather than a boolean, and each guard tests for its own name.
+    """
+    return frozenset(getattr(fn, "__leakaudit_guards__", ()) or ())
+
+
 def guarded_build(build: Callable) -> Callable:
     """Wrap `build` so a wrong RETURN TYPE is caught where it happens.
 
@@ -130,7 +144,16 @@ def guarded_build(build: Callable) -> Callable:
     # plumbing added to a traceback whose whole value is that it points at the
     # user's file. Caught by re-running the wrong turn, which is the only reason
     # it was seen.
-    if getattr(build, "__leakaudit_guarded__", False):
+    # THE MARKER NAMES THIS GUARD'S JOB, NOT "GUARDED". R211 §1.2.
+    #
+    # A generic marker is the discarded-parameter defect wearing a decorator: a
+    # second guard, added later for a different purpose, would find the flag
+    # already set and decline to apply, and the thing it was written to check
+    # would go unchecked with nothing said. The first version of this line read
+    # `__leakaudit_guarded__`, which is exactly that shape. Keyed on the JOB, two
+    # guards cannot collide, and `guards_applied` below makes the set inspectable
+    # so a third one is written the same way.
+    if GUARD_BUILD_RETURN in guards_applied(build):
         return build
 
     def checked(*a, **kw):
@@ -153,7 +176,7 @@ def guarded_build(build: Callable) -> Callable:
     checked.__name__ = getattr(build, "__name__", "build")
     checked.__doc__ = getattr(build, "__doc__", None)
     checked.__wrapped__ = build
-    checked.__leakaudit_guarded__ = True
+    checked.__leakaudit_guards__ = guards_applied(build) | {GUARD_BUILD_RETURN}
     return checked
 
 

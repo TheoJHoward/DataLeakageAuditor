@@ -491,6 +491,64 @@ plumbing added to a traceback whose entire value is that it points at the user's
 file. The guard is now idempotent, with a test. Nothing but re-running the wrong
 turn would have shown it.
 
+> ### THE ACCEPTANCE TEST CAUGHT A BUG IN THE FIX IT WAS ACCEPTING
+>
+> **Written down at the moment it happened, because this reads as luck later
+> unless it is.** R210 §2's claim was that every fix already has its test: re-run
+> the exact wrong turn that found the friction. That was proposed as a way to
+> confirm fixes. On its **first execution**, before anything was committed, it
+> caught a defect in the implementation of the very fix it was checking.
+>
+> The three cases the fix was written to change all returned one clean line. The
+> suite was green. The guard's own behaviour was correct in every respect. The
+> defect was visible **only in the stack of a case that is supposed to fail** —
+> the user's own pipeline raising — and only by reading that stack rather than
+> its last line. No test then existing looked there, and no test that asserts on
+> a message would ever have looked there.
+>
+> The general form: **a fix is checked against the cases it changes, and the
+> damage lands on a case it was holding constant.** The wrong-turn re-run covers
+> the held-constant cases for free, because they are wrong turns too.
+
+### The idempotency fix has its own two positives
+
+Making a guard idempotent means detecting that it is already applied. Both halves
+of that were shown rather than assumed, in
+`tests/phase1/test_guard_idempotency.py` — and **both were fired against the real
+defect** by temporarily reverting the fix.
+
+**Positive 1 — the doubling is actually prevented.** The test counts `checked`
+frames in a real traceback rather than asserting object identity, because
+identity would pass even if the frames were still there for another reason. With
+the idempotency check disabled, it fires with exactly what was observed:
+
+```
+AssertionError: 2 `checked` frames in the user's traceback, not 1.
+Stack: ['_frames_in_traceback', 'checked', 'checked', '_raising_build']
+```
+
+A triple wrap gives three. A control asserts an unwrapped callable shows **zero**
+`checked` frames, so counting them measures something. And a fourth test asserts
+idempotent does not mean inert: a double-wrapped build returning a dict still
+raises.
+
+**Positive 2 — the marker does not suppress a different guard.** The first
+marker was `__leakaudit_guarded__` — generic, meaning "some guard is applied".
+That is the discarded-parameter defect wearing a decorator: a second guard added
+later for a different job would find the flag set, decline to apply, and leave
+its own check unperformed with nothing said.
+
+The marker is now keyed on **the job**: `GUARD_BUILD_RETURN = "build_return_type"`,
+carried in a set through `guards_applied()`. The two-guard case is **constructed**
+rather than argued — a second guard with its own job name is written in the test
+file, and four tests assert both apply, in either order, that each stays
+idempotent in the other's presence, and that both actually fire. Reverting the
+marker to the generic boolean fires all four.
+
+**Which of the two answers R211 §1.2 asked for:** the marker is now *specific
+enough that two guards cannot collide*, and the collision case is constructed to
+prove it rather than left as a property of the naming.
+
 ### Items 1 and 5 — documentation, asserted separately from the check
 
 `run --help` and `check --help` now state the contract: *"called with ONE

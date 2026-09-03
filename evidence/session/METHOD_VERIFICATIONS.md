@@ -559,3 +559,67 @@ first attempt to build this venv failed with a Windows long-path `OSError` while
 unpacking numpy — caused by the depth of the scratchpad directory it was being
 created in, not by anything about the floors. Rebuilt at a shorter path and it
 installed cleanly.
+
+---
+
+## MV-8 — the availability probe's execution path, enumerated so the guard rule has a population
+
+**Asked (DELTA R211 §2):** the whole-frame fixture guard is now a standing rule —
+any round that changes a module on the availability probe's execution path
+re-runs it before the round is reported done. A rule needs a definite population
+rather than a list someone guessed at. **Which modules does the probe's execution
+actually reach?**
+
+**Measured, not read off imports.** An import list is not the answer:
+`availability.py` imports things it never calls on this path and reaches things
+it does not import at module level. A `sys.setprofile` hook recorded the file of
+every frame entered during real probe runs, and the answer is the set of files
+that were actually on the stack. Synthetic frames, on purpose — the question is
+*which modules run*, not what they compute.
+
+**Three runs, because "the path" is not one path.**
+
+| run | what it covers | `leakaudit` modules reached |
+|---|---|---|
+| A | `run_probe_a`, whole-frame — the path that produced Phase 1's evidence | `availability.py` |
+| B | `run_probe_a`, per-column — what the modes wiring added | `availability.py`, `modes.py` |
+| C | the whole **reported-figures** path: probe → `eligible_cohorts` → `traces_for` → `resolve_all` → `derive_evidence_events` | `availability.py`, `availability_trace.py`, plus `protocol/runtime_reference.py` |
+
+Run C exists because `run_probe_a` is not where the recorded numbers stop. The
+guard compares a **verdict**, an **eligible** count, a **finding-record** count
+and a **feature** count, and those pass through the trace builder, the resolver
+and the frozen reducer after the probe returns. A module that can move any of the
+four belongs in the population.
+
+### The rule's population: four modules
+
+```
+src/leakaudit/availability.py          both probe paths, and the reported path
+src/leakaudit/modes.py                 per-column path only
+src/leakaudit/availability_trace.py    the reported-figures path
+protocol/runtime_reference.py          the frozen reducer, on the reported path
+```
+
+### Not on it: twelve of the package's sixteen modules
+
+`__init__.py`, `checks.py`, `cli.py`, `contract.py`, `corruption.py`,
+`detectors.py`, `determinism.py`, `findings.py`, `fixture_adapter.py`,
+`identity_control.py`, `model_file.py`, `probe.py`.
+
+An edit to one of these cannot move a probe result **through `run_probe_a`**.
+That is not the same as "cannot move any result": several are on other entry
+points — `probe.py` and `corruption.py` carry the column dependency probe,
+`checks.py` the four checks, `findings.py` the rendering.
+
+**One qualification the trace cannot make for itself, stated rather than left
+implicit.** `fixture_adapter.py` shows as *not on the path* only because these
+runs supplied frames directly. In the real guard it **provides** the frames, so
+an edit to it changes what the probe is fed and can move the result — as an
+input, not as part of the computation. It belongs to the rule for that reason,
+and the trace was never going to say so.
+
+**Not measured, and therefore not claimed.** Whether a module unreached by these
+synthetic frames is reached by the fixture's — a branch taken only on real data
+(a mixed timezone, an absent frame, a dtype these frames do not carry) would not
+appear here. The population is a floor on what the rule covers, not a proof of
+its ceiling.
