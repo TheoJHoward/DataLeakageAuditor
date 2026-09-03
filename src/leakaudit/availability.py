@@ -157,6 +157,16 @@ def align_key(key: pd.Series, decision: pd.Series, *, frame: str,
       * exactly one side carries one -> the two are not comparable and no
         conversion is derivable from the data. RAISE. Returning an empty match
         here is the failure this function exists to prevent.
+
+    UNRESOLVED, AND RECORDED RATHER THAN QUIETLY RECONCILED (D-V30A-42). This
+    function REFUSES the mixed case. `run_probe_a` below, and the population
+    harness, both CONVERT it -- assuming the aware column is universal time --
+    and that converting rule produced every number in this project's Phase 1
+    evidence. The two contradict, and the acceptance fixture contains the case:
+    its trade frame carries an aware key against naive decision stamps. Which
+    rule is right is a question about the probe, so it is not settled here in
+    passing. NOTHING CALLS THIS FUNCTION IN THE PATH THAT PRODUCED ANY RECORDED
+    RESULT, which is exactly how the two were able to diverge unnoticed.
     """
     k_tz = getattr(key.dt, "tz", None)
     d_tz = getattr(decision.dt, "tz", None)
@@ -251,7 +261,8 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
                 side: str,
                 cohort_stride: int = 97,
                 max_cohorts: int = 400,
-                seed: int = 20260828) -> ProbeAResult:
+                seed: int = 20260828,
+                column_modes: Mapping[str, object] | None = None) -> ProbeAResult:
     """Corrupt a sparse set of seconds, rebuild once, and read WHICH rows moved.
 
     `cohort_stride` keeps corrupted seconds far apart so a moved row can be
@@ -337,7 +348,51 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
                 "harness, not about the pipeline." % (fname, keycol))
         num = [c for c in f.columns
                if c != keycol and pd.api.types.is_numeric_dtype(f[c])]
+        if column_modes:
+            # THE CONFLICT IS SURFACED, NOT RESOLVED SILENTLY. R205 §3.3.
+            #
+            # `aggregate_frames` selects frames and supplies a key; `column_modes`
+            # refines which cells of a column are perturbed. A column of a
+            # selected frame with NO declared mode falls back to the frame's rule
+            # -- and whether that is a declaration the user made at frame level or
+            # a default the tool applied is a question neither the registration
+            # nor AVAILABILITY_MODES.md settles, because `aggregate_frames` is
+            # this tool's own coarse mechanism and not registered vocabulary.
+            #
+            # So the code does one thing and SAYS it did, naming the columns. A
+            # reader who thinks the other reading is right can see exactly which
+            # columns the answer depends on.
+            fell_back = sorted(c for c in num if c not in column_modes)
+            if fell_back:
+                res.notes.append(
+                    "frame %r: %s took the FRAME rule (key + window) because no "
+                    "per-column mode was declared for %s. Whether a frame-level "
+                    "declaration covers its columns, or a column without its own "
+                    "mode is undeclared, is not settled by the registration or by "
+                    "the modes document -- this run took the first reading, and "
+                    "names the columns so the choice is visible."
+                    % (fname, ", ".join(fell_back),
+                       "them" if len(fell_back) > 1 else "it"))
         for c in num:
+            # PER-COLUMN SELECTION, AND THE WHOLE-FRAME PATH IS THE SPECIAL CASE.
+            # R205 §3. Without modes the mask is the frame's, unchanged. With a
+            # mode for this column, the cell's own availability instant decides:
+            # a cell is corrupted when the instant it BECOMES knowable falls in a
+            # selected second, which for the frame rule is key + window and
+            # reduces to exactly the mask above.
+            cell_mask = mask
+            spec = None if not column_modes else column_modes.get(c)
+            if spec is not None:
+                from .modes import availability as _availability
+                a = _availability(f, c, spec, timestamp_column=keycol)
+                a = align_key(pd.to_datetime(a), d, frame=fname, column=c)
+                cell_mask = (a - model.window).dt.floor("s").isin(picked_set).to_numpy()
+                if not cell_mask.any():
+                    res.notes.append(
+                        "column %r of frame %r declares mode %r and no cell of it "
+                        "becomes knowable in any selected second, so it was not "
+                        "perturbed. Its silence is `none`, not `observed_silence`."
+                        % (c, fname, getattr(spec, "mode", spec)))
             # A LARGE, DETERMINISTIC PERTURBATION. Not noise: the question is
             # whether the value is READ, and a perturbation that could coincide
             # with the original would produce a false silence.
@@ -348,7 +403,7 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
             # a dtype change is itself a perturbation, and the builder's
             # behaviour on a promoted column is a different question from whether
             # it reads the value. Integers get an integer offset.
-            n = int(mask.sum())
+            n = int(cell_mask.sum())
             if pd.api.types.is_integer_dtype(f[c]):
                 # THE PERTURBATION WRAPS INSIDE THE DTYPE'S RANGE.
                 #
@@ -371,12 +426,12 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
                 # and still guarantees new != old because the offset is >= 1.
                 up = vals <= (hi - headroom)
                 new = np.where(up, vals + off, vals - off)
-                f.loc[mask, c] = new.astype(f[c].dtype)
+                f.loc[cell_mask, c] = new.astype(f[c].dtype)
             elif pd.api.types.is_bool_dtype(f[c]):
-                f.loc[mask, c] = ~f.loc[mask, c].to_numpy()
+                f.loc[cell_mask, c] = ~f.loc[cell_mask, c].to_numpy()
             else:
-                vals = f.loc[mask, c].to_numpy(dtype=float, copy=True)
-                f.loc[mask, c] = vals + 1.0e6 + rng.standard_normal(n)
+                vals = f.loc[cell_mask, c].to_numpy(dtype=float, copy=True)
+                f.loc[cell_mask, c] = vals + 1.0e6 + rng.standard_normal(n)
         touched += int(mask.sum())
         corrupt[fname] = f
     if touched == 0:

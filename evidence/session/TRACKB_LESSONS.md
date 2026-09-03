@@ -383,6 +383,96 @@ wrong.** That ratio is the argument for the rule.
 
 ---
 
+## TB-12 — *(2 September 2026)* A known positive tests the premise, not only the code
+
+A check was written to detect leakage that survives permuting the label. Its
+known positive did not fire, and the implementation was not the reason.
+
+The premise was false. Permuting a label destroys the pairing between a feature's
+rows and the label's rows **regardless of why the pairing existed**, so a
+positional relationship collapses exactly as a genuine one does. Measured on the
+most positional relationship constructible — pure row order against a sorted
+label — the shuffled absolute correlation came out 0.076, 0.050, 0.031, 0.046,
+0.018. There is no statistic there to threshold.
+
+Worse, the one case where a shuffled correlation persists is a heavily imbalanced
+label, where a permutation often nearly reproduces the original vector. The check
+would have reported class imbalance as positional leakage — a false positive
+dressed as a subtle finding, which is the most damaging kind a leakage tool can
+emit, because it is the kind users believe.
+
+**The rule has a second use, and it is the stronger one.** Catching bugs is what
+a known positive is usually for. What it did here was establish that the check
+did not exist: a check that cannot be made to fire has not failed its test, it
+has been shown to have no subject. The premise, not the code, was what the
+positive tested.
+
+The corollary is worth stating because it is counterintuitive: **a check that
+passes every test you can write for it, and that you cannot construct a positive
+for, is not a working check.** It is an untested claim wearing a green tick.
+
+---
+
+## TB-13 — *(2 September 2026)* A detection that arrives as a library's exception is a detection nobody reads as one
+
+Three times now, in three different pieces of code.
+
+1. The identity control's mask was index-aligned. A write-back that replaced a
+   frame's index — one of the faults the control exists to catch — left the mask
+   pointing at labels that no longer existed, so the *next* column's write raised
+   a pandas `IndexError`.
+2. The same control, again: a write-back that changed a frame's row count broke
+   the positional mask the same way.
+3. `availability_fn` returning too few values. The `Series` constructor raised a
+   pandas error about index lengths before the module's own length check ran.
+
+In every case the tool had **detected exactly what it was built to detect**, and
+what reached the operator was a stack trace from somebody else's library, naming
+an index. A crash reads as "the tool is broken"; the truth was "the tool found
+the thing". Nobody triages a `ValueError` as a finding.
+
+**The shape to watch for:** a validation that runs *after* the operation it is
+validating. If the operation can itself fail on the invalid input, the library
+raises first and the check never speaks. The fix is always the same and always
+cheap — check before the operation, and raise the tool's own error with the
+tool's own explanation.
+
+This is the counterpart to the silence rules. Those exist so a non-answer is not
+read as a clean one; this exists so a real answer is not read as a malfunction.
+Both are about what the operator takes away, which is never the same as what the
+code computed.
+
+---
+
+## TB-14 — *(2 September 2026)* An extraction that replaces nothing is a third implementation wearing the word "extracted"
+
+One timezone rule lived inline in two places. It was pulled into a named function
+so that one rule would live in one place — and neither original was removed. The
+probe still runs its copy. The harness still runs its copy. The extracted
+function has never executed against the real fixture.
+
+**And the three do not agree.** On the case the fixture actually contains, the
+two inline copies convert and the extracted one refuses. So the refactor did not
+reduce three chances to get the rule wrong; it made three implementations where
+there had been two, and put the newest one where nothing calls it.
+
+**Two things would have caught it, both cheap.** Deleting the originals in the
+same commit, which is what "extract" means. Or one search for the new function's
+name, which returns zero from the harness and would have said so in a second.
+
+**The tell to watch for:** a function whose only callers are its own tests. That
+is not an extraction, it is a proposal. And synthetic tests will never notice,
+because the divergent case is one nobody constructs by accident — a frame with a
+mixed timezone arrives from real data, not from a fixture someone wrote.
+
+**The second half is the worse one and it belongs beside TB-11.** The commit
+message asserted the extraction had reduced the duplication. That was a
+favourable claim about the work, made in the same act that failed to do it, and
+checking it was one grep. The asymmetry TB-11 records — unfavourable claims
+verified, flattering ones accepted — recurred in the round that recorded it.
+
+---
+
 ## Open items — recorded, not acted on
 
 - **Whether SC-7(c) belongs in the registration gate.** A pytest-only check is

@@ -1412,3 +1412,53 @@ why it is the one most worth checking before it is repeated. The claim as
 proposed was flattering, and the artifact behind it carries a prohibition on the
 looser form of it. Recording the narrower form is what lets the claim be made at
 all.
+
+## D-V30A-42 — an extraction that replaced nothing, and the favourable claim made about it
+
+**True.** A timezone-alignment rule lived inline in the availability probe and,
+in a second copy, inline in the population harness. It was extracted into a named
+function so that one rule would live in one place, and the round's commit message
+said so: three chances to get one timezone rule wrong, in code strangers never
+read, now reduced to one.
+
+**That claim was false when it was written, and it stayed false for two rounds.**
+The extraction added a third implementation and replaced neither original. The
+probe still runs its inline copy. The harness still runs its inline copy. The
+extracted function has never executed against the acceptance fixture — a search
+of the harness for its name returns zero.
+
+**And the three do not agree.** On an aggregate key that carries a timezone
+against decision stamps that do not — which the acceptance fixture contains, in
+its trade frame — the two inline copies CONVERT, assuming the aware column is
+universal time and the naive stamps are wall-clock in the same zone. The
+extracted function REFUSES, on the argument that the conversion is a choice the
+data does not license.
+
+**It was found by a guard written for a different purpose.** A check that the
+per-column wiring had not moved the whole-frame result called the extracted
+function, and the run stopped on its refusal after thirty-five seconds. Nothing
+else would have found it: the function's own tests are synthetic, and the case
+does not arise in synthetic frames because nobody builds one with a mixed
+timezone by accident.
+
+**Which rule is correct is a live question and is not settled here.** The
+converting rule produced every number in this project's Phase 1 evidence. The
+refusing rule's argument — that no conversion is derivable when exactly one side
+carries a zone — is the argument this project would normally accept. They
+contradict, both are mine, and reconciling them changes the probe, so it is
+reported rather than decided in passing.
+
+**No published number is affected.** The extracted function was never in the path
+that produced any recorded result, which is the same fact that let it diverge
+unnoticed. The whole-frame result was re-measured against the committed
+population run this round and is unchanged on all eight compared terms.
+
+**Expected:** an extraction to replace what it extracted, and a claim that it did
+to be checked before it is written.
+
+**Why it stands:** the failure has two halves and the second is the one the
+register exists for. The first is ordinary — a refactor left its originals in
+place. The second is that a favourable statement about the refactor went into a
+commit message unverified, when checking it was one search for the function's
+name. That is the asymmetry recorded earlier in this register, recurring in the
+round that recorded it.
