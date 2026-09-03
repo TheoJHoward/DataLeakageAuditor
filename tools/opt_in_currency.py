@@ -8,9 +8,33 @@ reports four tests as "skipped" with nothing saying whether what they last
 attested is still true.
 
 `test_every_opt_in_test_has_a_recorded_result` already checks that a result
-EXISTS. It cannot check that the result is CURRENT, and it reported green through
-two periods in which the record's own banner said the code had moved underneath
-it. The staleness warning was prose in a JSON field and no test read it.
+EXISTS. It cannot check that the result is CURRENT, and nothing else did either.
+
+THE TRUE HISTORY, AND THE ZERO. **No content-staleness has yet occurred. Both
+prior "stale" findings were commit-ancestry FALSE POSITIVES.** The record went
+COMMIT-stale twice -- it cited an older commit while every module it attests was
+byte-identical to the code then on disk -- and both times that was reported as a
+defect, in two consecutive deltas, and believed by both people reading them.
+
+So this check has **zero demonstrated true positives**, and the sentence it would
+be easy to write beside it -- "built after the record went stale twice" -- would
+record a history that did not happen. Its justification is two things and not the
+third:
+
+  IT MAKES THE SUITE LINE SAYABLE. "Passing as of <commit>" is a currency claim,
+  and a currency claim with no check behind it is prose nobody verifies, moved
+  somewhere more visible. This stands.
+
+  IT WOULD DETECT CONTENT-STALENESS. A capability, stated as one.
+
+  ~~It fixes a defect that has bitten twice.~~ It has not bitten once.
+
+AND THE EPISODE IS EVIDENCE FOR THE COMPARATOR CHOICE, which is the part worth
+keeping. R213 ruled against keying currency to commit ancestry on the grounds
+that it fires on unrelated changes and gets walked past. Its very first
+application turned a twice-reported finding into a twice-made false positive.
+The failure mode was not hypothetical; it had already happened and been written
+down as fact.
 
 THE COMPARATOR IS CONTENT, NOT COMMIT ANCESTRY, and that choice is the whole
 design. R213 §3: a check keyed to "is the attested commit HEAD" goes red on every

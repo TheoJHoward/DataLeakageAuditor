@@ -2,9 +2,16 @@
 
 WHAT WAS WRONG. `test_every_opt_in_test_has_a_recorded_result` runs always and
 checks that a result EXISTS. It cannot check that the result is still about the
-code now on disk, and it reported green through two periods in which the record's
-own banner said the code had moved underneath it. The warning was prose in a JSON
-field and no test read it -- D-V30A-43's class, inside an attestation artifact.
+code now on disk, and nothing else did.
+
+WHAT WAS NOT WRONG, corrected here because the false version was written into two
+deltas and one committed docstring before the content read caught it: **the
+record has never gone content-stale.** It went COMMIT-stale twice, and both
+"stale" findings were false positives of exactly the commit-ancestry comparator
+this check was then built to avoid. **Zero demonstrated true positives.** The
+justification is that the suite line's "passing as of" is a currency claim
+needing a check behind it, and that this would detect content-staleness if it
+occurred -- not that it has already caught anything.
 
 THE COMPARATOR IS CONTENT, NOT COMMIT ANCESTRY. R213 §3. A check keyed to "is the
 attested commit HEAD" goes red on every unrelated commit, gets overridden within

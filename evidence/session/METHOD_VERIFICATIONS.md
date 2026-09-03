@@ -802,6 +802,31 @@ suite and passed throughout, checks that every opt-in test **has** a recorded
 result and not that the result is **current**. The staleness warning is prose in
 a JSON field, and no test reads it.
 
+> ### CORRECTION, 2026-09-03 — finding (2) above is FALSE, and the paragraph stays
+>
+> **It was written under a commit-ancestry comparator, and it is a false
+> positive of exactly the kind the check built afterwards was designed to avoid.**
+> `availability.py` changing is irrelevant to these tests: `availability.py` is
+> not among the modules they execute. The set they execute — measured, not
+> assumed — is `fixture_adapter.py`, `determinism.py`,
+> `evidence/fixture_spike/f2/fixture.py` and `phase5_ml_fixture.py`, and **every
+> one is byte-identical to the code attested at `8320a20`.**
+>
+> The record went **commit-stale**, never **content-stale**. Its 2026-09-02
+> attestation covered the code then on disk and still does.
+>
+> **The count that matters: zero.** No content-staleness has occurred, so
+> `tools/opt_in_currency.py` has zero demonstrated true positives, and any
+> sentence describing it as built after a defect that "bit twice" describes a
+> history that did not happen.
+>
+> **The paragraph above is left standing rather than edited**, because it is what
+> was believed and written on 2026-09-03 and in two deltas, and deleting it would
+> remove the evidence of how a partial read propagates: a module name was carried
+> forward from one finding into another without checking whether the changed
+> module was the guarded module, and the conclusion was then stated as
+> branch-independent. The correction is the entry, not a rewrite of the claim.
+
 ### A fifth skip exists, and only on Python 3.13
 
 Not visible from any 3.12 run. `tests/phase1/test_digest_stability.py:82` skips

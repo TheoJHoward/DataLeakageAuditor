@@ -185,3 +185,44 @@ tag, and a tool can be corrected in any later version.
 directory that does not exist, and at one that exists but is empty. It must exit
 non-zero for both. A check that has only ever run against a populated directory
 has not been shown to detect an unpopulated one.
+
+## THE `DESIGN.md:546` LINE-PIN — parked since R198, and it now has a measured cost
+
+**Not resolved here.** R214 §3 is explicit that the pin is not resolved this
+round, and this entry does one thing: it moves the item from *a thing we noticed*
+to *a thing with a measured consequence*, so it stops being a hunch. That is the
+same upgrade MV-8 gave the guard rule.
+
+**The pin.** A registered citation resolves to line 546 of `DESIGN.md`. The file
+records this itself, in §10's opening note, which explains that §10's content
+sits at the end of the file *for a mechanical reason rather than an editorial
+one*: inserting it beside §2.11, where it belongs by topic, moved line 546 and
+raised the citation check. **The content moved instead of the pin being re-keyed
+to an anchor**, and that choice was recorded as deliberate — re-keying would have
+been an instrument change caused by the content that triggered it.
+
+**The cost, observed 3 September 2026.** Adding §10.6 — the pointer to the
+availability probe's guard rule — was placed by appending, and the append script
+was written to *verify* that line 546 had not moved rather than to assume it. It
+had not, and the placement is correct on its merits.
+
+But that is the second edit whose location was decided by the pin rather than by
+its subject. The first was §10 itself. **Every future edit below that line
+inherits the constraint**, and the file's organisation is now partly a function
+of a line number in another file's citation. Small once; compounding.
+
+**What this entry does NOT claim.** That the pin should be re-keyed. The
+reason-versus-value test R198 asked for — the one H-34 got — has not been run,
+and the argument recorded in `DESIGN.md` §10 for not re-keying is a real one that
+this observation does not answer. What has changed is only that the cost side of
+that test now has a measurement on it instead of an anticipation.
+
+**What would settle it,** stated so the next round does not have to re-derive it:
+whether the citation can be re-keyed to a named anchor without altering what the
+registered text attests. If it can, the cost is one edit against an unbounded
+future constraint. If it cannot — if the pin is part of what a signed tag
+attests — then the constraint is a property of the registration and the file's
+organisation is subordinate to it, permanently, and that is worth writing on
+`DESIGN.md`'s front page rather than in §10's middle.
+
+*Raised R198. Cost observed R214 §3, at the §10.6 edit.*
