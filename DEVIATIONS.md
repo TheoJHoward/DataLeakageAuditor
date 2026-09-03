@@ -1462,3 +1462,58 @@ place. The second is that a favourable statement about the refactor went into a
 commit message unverified, when checking it was one search for the function's
 name. That is the asymmetry recorded earlier in this register, recurring in the
 round that recorded it.
+
+## D-V30A-43 — the availability model's documented rule is not the rule that runs, and the gap is one whole second wide on the frame it matters for
+
+**True.** `AvailabilityModel`'s docstring states that an aggregate frame's
+"declared availability instant is `key + window`". The probe does not compute
+that. Its cell selection is `floor(key).isin(picked_seconds)`, which is the
+instant `floor(key) + window`. Where a key already sits on a wall-clock second
+the two are the same number and the difference cannot be observed.
+
+**On the acceptance fixture's two declared frames, one is each case, and it was
+measured rather than reasoned.** `magg.ts_floor` is on a second boundary for
+464,199 of 464,199 rows — 100.0000%, no exceptions — so the documented rule and
+the running rule are identical there for all five probed columns.
+`trades.ts_event` is a raw event stamp and sits off the boundary on 397,408 of
+397,457 rows — 99.9877%. For all eleven of its probed columns the documented
+instant is LATER than the running instant, never earlier, by a median of
+467.83 ms and a maximum of 999.999 ms. The direction is one-sided by
+construction and the magnitude spans very nearly the whole window.
+
+**The rule that runs is the correct one, and that is why this is a defect in the
+statement rather than in the numbers.** `AVAILABILITY_DECLARATION.md` §3 and
+§C.1 declare the trade join's availability instant to be `floor(T) + 1s` — the
+instant the wall-clock-second aggregate completes — and the fixture builder
+reaches every trade-derived feature through `groupby("ts_floor")` at
+`phase5_ml_fixture.py` line 240, with no path from a raw trade cell to a feature
+that bypasses it. The declaration, the pipeline and the running code agree on
+`floor(ts_event) + 1s`. The docstring is the only artifact that says otherwise.
+
+**No recorded number moves.** The documented rule was never executed; it is
+prose. Every Phase 1 figure came from the running rule, which is the declared
+one.
+
+**Expected:** a docstring that states the arithmetic the function performs, and
+in particular that a declared rule and an implemented rule not be allowed to
+differ silently on the one frame in the fixture where the difference is
+observable.
+
+**Why it stands:** it was found only because a delta asked whether the
+declaration and the frame path compute anything differently, and the honest way
+to answer was to measure both rather than to read the docstring and agree with
+it. Reading the docstring would have produced the wrong answer — that eleven
+columns differ — and reading only the code would have produced the right answer
+with no record that the tool tells its users something false. The second half is
+the part this register exists for: an unverified favourable statement about
+method, in shipped source, checkable in one measurement. That is the same class
+as D-V30A-42, recorded in the round immediately before it.
+
+**Not resolved here, and named for the author.** A stranger declaring
+`aggregate_frames` with a key that is NOT already floored — which is what
+`trades: ts_event` is — reads the docstring, expects `key + window`, and gets an
+instant up to a full second earlier. Three readings are open and the choice
+between them is a question about the probe's contract, not about prose: floor
+such a key, which is what the code does; refuse it as not a wall-clock-second
+key, which is what the word "aggregate" implies; or honour the documented
+`key + window`, which is what the docstring says.
