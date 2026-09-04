@@ -289,6 +289,7 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
                 build: Callable[[Mapping[str, pd.DataFrame]], pd.DataFrame],
                 model: AvailabilityModel,
                 side: str,
+                bar_duration=None,
                 cohort_stride: int = 97,
                 max_cohorts: int = 400,
                 seed: int = 20260828,
@@ -459,7 +460,8 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
                 from .modes import ROUTE_TAKEN as _routes
                 from .modes import availability as _availability
                 _before = len(_routes)
-                a = _availability(f, c, spec, timestamp_column=keycol)
+                a = _availability(f, c, spec, timestamp_column=keycol,
+                                  declared_bar_duration=bar_duration)
                 # THE ROUTE IS NAMED WHERE THE USER MEETS IT. R223 §2(b).
                 # `PREREG.md` line 255 offers two routes for `bar_duration` --
                 # a fixed value or inference -- and names no default between
@@ -468,17 +470,23 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
                 # options chosen for them, and the least this run can do is say
                 # which. Selecting between two registered routes without the
                 # output naming which is the tie comparator's defect again.
-                for _r in _routes[_before:]:
+                for _r, _v in _routes[_before:]:
                     if _r == "inferred":
                         res.notes.append(
                             "column %r of frame %r declares `at_bar_close`, and "
                             "its bar duration was INFERRED from successive "
                             "timestamps because none was declared. PREREG.md "
                             "line 255 names two routes -- a fixed value or "
-                            "inference -- and no default between them, and this "
-                            "config file carries no key for the fixed one. The "
-                            "route was chosen for you and is named here rather "
-                            "than left to be deduced." % (c, fname))
+                            "inference -- and names no default between them, "
+                            "so the route was chosen for you and is named "
+                            "here rather than left to be deduced. Declare "
+                            "`bar_duration_seconds` to take the fixed-value "
+                            "route instead. INFERRED VALUE: %s -- CHECK IT: "
+                            "a negative or absurd duration means the "
+                            "timestamp column is not sorted, and inference "
+                            "from successive stamps assumes it is."
+                            % (c, fname, _window_text(_v) if _v is not None
+                               else "none -- the frame is empty"))
                 a = align_key(pd.to_datetime(a), d, frame=fname, column=c)
                 cell_mask = (a - model.window).dt.floor("s").isin(picked_set).to_numpy()
                 if not cell_mask.any():
@@ -512,7 +520,18 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
                 lo, hi = int(info.min), int(info.max)
                 headroom = min(1000, max(1, hi - lo))
                 off = 1 + rng.integers(0, headroom, n)
-                vals = f.loc[mask, c].to_numpy()
+                # `cell_mask`, NOT `mask`. R224. When per-column modes are
+                # declared these differ, and this line read the frame-level mask
+                # while `off` was sized from `cell_mask` and the write below
+                # targets `cell_mask` -- so an integer column under a per-column
+                # mode raised a broadcast error. A partial conversion left from
+                # R205, invisible because that round's discriminating positive
+                # used a FLOAT column and never entered this branch.
+                #
+                # No published figure moves, and that was checked: with no
+                # column_modes `cell_mask is mask`, which is every Phase 1 run,
+                # and the whole-frame guard re-measures it.
+                vals = f.loc[cell_mask, c].to_numpy()
                 # ADD, OR SUBTRACT WHERE ADDING WOULD LEAVE THE RANGE. A modular
                 # wrap was tried and overflowed: int64's span is 2**64 and does
                 # not fit in int64. Choosing the DIRECTION per element needs no

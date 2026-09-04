@@ -838,3 +838,85 @@ explained by its own message.
 
 **Not measured, and therefore not claimed.** Whether other interpreters or
 platforms condition further tests — two Pythons were run, on one OS.
+
+---
+
+## MV-11 — "the suite line is stable" was an assumption, and it was false
+
+**Asked (DELTA R224 §1):** two consecutive suite runs reported 729 passed / 5
+skipped and 730 passed / 4 skipped. A one-count discrepancy in a routine number.
+
+**Scope check first**, as this file's own front page invites: it records method
+assumptions that have been MEASURED. *The suite line is a stable figure* is
+exactly such an assumption — held for many rounds, quoted as evidence in every
+report — and it is now measured false. The scope admits it.
+
+### Measured: one test in four to six full-suite runs did not run
+
+`tests/phase1/test_digest_stability.py:82`, identified by capturing the skip
+report across repeated runs rather than inferred from the count. It fired on 1 of
+6 runs in one batch and 1 of 4 in another.
+
+**No false pass.** On runs where it executed it passed. What varied was
+**coverage**, and the suite line said nothing about which runs had it.
+
+**The condition was not a property of the code under test.** The test
+demonstrates why a pointer-based frame digest is wrong, which needs two
+equal-valued strings that are *distinct objects*. The strings were distinct when
+built — measured — and **pandas replaces them with objects of its own and
+sometimes deduplicates equal ones**. So whether the test had a subject at all
+depended on interpreter and allocator state that earlier tests influence, which
+is why the file alone passed 5 of 5 every time while the full suite did not.
+
+### The fix makes the subject exist, not the skip quieter
+
+The frame is now built from a **pre-built object array**, which pandas stores as
+given, so both distinct objects survive into it. The skip is gone and replaced by
+two assertions: that the values are distinct objects before pandas sees them, and
+that they are still distinct inside the frame. If the construction ever stops
+working, that is a failure to fix rather than a subject to skip.
+
+**Measured after: 8 of 8 full-suite runs identical** — 730 passed, 4 deferred, 1
+known failure.
+
+### The record stands after the fix, because it is a fact about the instrument
+
+Every suite line reported for many rounds was quoted as a fixed figure and was
+not one. Fixing the test does not make those reports retrospectively stable, and
+this entry is what a reader of them needs.
+
+---
+
+## MV-12 — which routine numbers have ever been checked for stability
+
+**Asked (DELTA R224 §0):** the suite count was reported round after round with
+nothing establishing it was stable. Which others are in that position?
+
+**The distinction is between ESTABLISHED STABLE — something measured it more than
+once and compared — and NOT VARIED WHERE ANYONE LOOKED, which is not the same
+claim and has been reported as though it were.**
+
+| number | status | basis |
+|---|---|---|
+| suite passed/skipped counts | **was UNSTABLE** | MV-11; now stable, 8 of 8 |
+| manifest line count and sha | established stable | regenerated twice this round, identical (1047, `5f4b131a…`); and the regenerator verifies every line against disk each run |
+| gate findings and check counts | established stable | run twice this round, identical; and D17 re-runs the frozen instrument each time |
+| defaults populations (121 / 30 / 73) | established stable | traced twice this round, identical |
+| config complement (10 / 7 / 3) | established stable | measured every suite run by its own guard, and the guard is deterministic |
+| the pipeline digest `15dc83c7…` | **established stable, strongly** | five environments, three Python versions, four dependency sets — the widest-varied number in the project |
+| the whole-frame guard's eight terms | **established stable, strongly** | re-measured against the committed baseline in R205, R211, R216; SAME every time |
+| CRLF counts reported per edit | not varied where anyone looked | reported per call, never re-measured; each is a one-off observation of one file |
+| `round_reconciliation`'s 633 | not varied where anyone looked | measured once, after the token; it is a function of a working directory that changes every round, so stability is not even the right property |
+| the opt-in deferred count (4) | not varied where anyone looked | it is 4 because four tests carry the marker, which is structural rather than measured |
+
+**Two are genuinely unchecked** — the CRLF counts and the 633 — and neither is
+load-bearing in the way the suite line was: a CRLF count is a one-off observation
+reported beside the edit that produced it, and the 633 is explicitly a function of
+a directory that changes.
+
+**Nothing here was stabilised this round**, per R224 §5. The list is the
+deliverable.
+
+**Not measured, and therefore not claimed.** Whether repeated measurement on a
+*different machine* would agree — every stability figure above is same-host, and
+MV-6/MV-7 varied the environment for the pipeline digest alone.

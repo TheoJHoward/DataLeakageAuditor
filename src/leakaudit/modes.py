@@ -201,9 +201,16 @@ def availability(frame: pd.DataFrame, column: str, spec: ColumnMode, *,
         # on the call rather than left for a reader to deduce from whether a
         # duration was passed. A result whose method is invisible is the tie
         # comparator problem again, and that half needed no structural read.
+        _d = bar_duration(ts, declared_bar_duration)
+        # THE VALUE, NOT ONLY THE ROUTE. R224 §2(b). "Inferred from successive
+        # timestamps" without the number is unfalsifiable by the reader;
+        # "inferred 60s" can be seen to be wrong at a glance, and a wrong
+        # inference is exactly what the naming exists to catch.
+        _val = _d.iloc[0] if len(_d) else None
         ROUTE_TAKEN.append(
-            "declared" if declared_bar_duration is not None else "inferred")
-        return ts + bar_duration(ts, declared_bar_duration)
+            ("declared" if declared_bar_duration is not None else "inferred",
+             _val))
+        return ts + _d
 
     raise ModeError("unreachable: mode %r has no branch" % spec.mode)
 

@@ -239,7 +239,8 @@ def _run_availability(frames, build, model_path, stride, max_cohorts):
     # kept the false positive, with no error.
     result = run_probe_a(frames, build, model, side="user",
                          cohort_stride=stride, max_cohorts=max_cohorts,
-                         column_modes=config.column_modes or None)
+                         column_modes=config.column_modes or None,
+                         bar_duration=config.bar_duration)
     # Eligibility is derived, not assumed: a second no aggregate frame carries a
     # row in has nothing to corrupt, and scheduling it would report a dead
     # process where the truth is an empty probe surface.

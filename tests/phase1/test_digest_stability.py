@@ -74,13 +74,50 @@ def test_the_old_pointer_based_digest_is_the_one_that_breaks():
             h.update(df[c].to_numpy(copy=False).tobytes())
         return h.hexdigest()
 
-    a = pd.DataFrame({"month": ["".join(["2025", "-01"])]})
-    b = pd.DataFrame({"month": ["".join(["2025", "-01"])]})
+    # THE SUBJECT IS MADE TO EXIST RATHER THAN THE SKIP MADE QUIETER. R224 §1.
+    #
+    # This used to hand pandas a list of two equal strings and SKIP when the two
+    # came back as one object -- and that happened on roughly one full-suite run
+    # in five, measured. The strings were distinct when built; pandas replaces
+    # them with objects of its own and sometimes deduplicates equal ones, so
+    # whether this test had a subject at all depended on interpreter and
+    # allocator state that earlier tests influence.
+    #
+    # A test that silently does not run on a fifth of runs makes every suite
+    # count reported as evidence a varying number presented as a fixed one. The
+    # fix is to hand pandas a PRE-BUILT OBJECT ARRAY, which it stores as given,
+    # so the two distinct objects survive into the frame and the pointer digest
+    # always has two pointers to disagree about.
+    # THE SUBJECT IS THE TWO DISTINCT OBJECTS, AND WE OWN THEM. R224 §1.
+    #
+    # First attempt handed pandas a pre-built object array, on the reading that
+    # it would store it as given. It does not always -- pandas copies and can
+    # unify equal strings -- so that version turned an intermittent SKIP into an
+    # intermittent FAILURE. Louder, and still not the subject existing.
+    #
+    # The defect being demonstrated is a property of a POINTER-BASED DIGEST over
+    # two distinct equal-valued objects. That does not need pandas to preserve
+    # identity: the digest is computed over arrays this test constructs and
+    # holds, so the subject exists by construction and cannot be taken away by
+    # something downstream.
+    def _pointer_digest(arr) -> str:
+        h = hashlib.sha256()
+        h.update(b"month")
+        h.update(str(arr.dtype).encode())
+        h.update(arr.tobytes())
+        return h.hexdigest()
+
+    a_val, b_val = "".join(["2025", "-01"]), "".join(["2025", "-01"])
+    assert a_val == b_val and a_val is not b_val, (
+        "the two values are one object, so this demonstration has no subject")
+    arr_a, arr_b = np.empty(1, dtype=object), np.empty(1, dtype=object)
+    arr_a[0], arr_b[0] = a_val, b_val
+
+    a, b = pd.DataFrame({"month": arr_a}), pd.DataFrame({"month": arr_b})
     assert frame_sha(a) == frame_sha(b), "the value-based digest must agree"
-    if old(a) != old(b):
-        return          # the defect reproduced: pointers differed
-    pytest.skip("the two strings were interned to one object, so the pointer "
-                "digest happens to agree here; it does not across processes")
+    assert _pointer_digest(arr_a) != _pointer_digest(arr_b), (
+        "the pointer-based digest agreed on two arrays holding distinct objects "
+        "of equal value -- the defect this file documents did not reproduce")
 
 
 def test_digest_separates_different_values():

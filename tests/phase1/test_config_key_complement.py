@@ -59,6 +59,7 @@ KEY_TO_ATTR = {
     "label_column":     ("config", "label_column"),
     "split":            ("config", "train_idx"),
     "column_modes":     ("config", "column_modes"),
+    "bar_duration_seconds": ("config", "bar_duration"),
     "note":             (None, None),
 }
 
@@ -128,6 +129,7 @@ def _measure_read_keys(tmp_path) -> set[str]:
         "ties_available": True, "label_column": "target",
         "split": {"train": [0, 1, 2, 3], "test": [4, 5]},
         "column_modes": {"v": "at_timestamp"},
+        "bar_duration_seconds": 1.0,
         "note": "every key set, so the trace sees every one that is fetched",
     }), encoding="utf-8")
 

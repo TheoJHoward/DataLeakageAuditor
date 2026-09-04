@@ -59,7 +59,8 @@ _V1_KEYS = {"version", "aggregate_frames", "decision_column", "window_seconds",
 _V2_KEYS = _V1_KEYS | {"label_column", "split"}
 # Version 3 adds per-column availability modes. `AVAILABILITY_MODES.md`
 # states what each computes and was committed before this parser existed.
-_V3_KEYS = _V2_KEYS | {"column_modes", "timestamp_column"}
+_V3_KEYS = _V2_KEYS | {"column_modes", "timestamp_column",
+                       "bar_duration_seconds"}
 _KEYS_BY_VERSION = {1: _V1_KEYS, 2: _V2_KEYS, 3: _V3_KEYS}
 
 # `aggregate_frames` is required only where an availability model is the point.
@@ -94,6 +95,7 @@ class LoadedConfig:
     train_idx: list | None = None
     test_idx: list | None = None
     column_modes: dict | None = None
+    bar_duration: object = None
     timestamp_column: str = "timestamp"
     version: int = SCHEMA_VERSION
 
@@ -156,6 +158,13 @@ reporting a clean result it did not earn.
   label_column      version 2. The built output's label column.
   split             version 2. {"train": [...], "test": [...]}, row POSITIONS
                     into the built output.
+  bar_duration_seconds
+                    version 3. The bar length for `at_bar_close`, in seconds.
+                    PREREG.md line 255 grants TWO routes -- a fixed value, or
+                    inference from successive timestamps -- and names no default
+                    between them. This key is the fixed one. OMIT IT and the run
+                    infers, AND SAYS SO IN ITS OWN OUTPUT, naming the value it
+                    inferred so you can see at a glance whether it is wrong.
   timestamp_column  REFUSED. It reached nothing, so a file setting it is now
                     rejected with a message rather than accepted and ignored.
                     Each aggregate frame's clock is the key you name for it in
@@ -306,6 +315,35 @@ def load_model(path) -> AvailabilityModel:
             except ModeError as e:
                 _refuse("`column_modes[%r]`: %s" % (col, e), path)
 
+    # THE FIXED-VALUE ROUTE BECOMES REACHABLE. R224 §2(a).
+    #
+    # `PREREG.md` line 255 grants TWO routes for a bar duration -- "fixed value,
+    # or inferred from successive timestamps" -- and names no default between
+    # them. Until now the config carried no key for the first, so a user
+    # declaring `at_bar_close` could not select it and silently got the second.
+    #
+    # A REFUSAL WHEN ABSENT WOULD HAVE BEEN THE WRONG FIX, and the reason is
+    # structural rather than about convenience: it would make the INFERENCE route
+    # unreachable, which is `ties_available`'s defect inverted. There the tool
+    # removed a registered option by not implementing it; a refusal here would
+    # remove one by requiring the other. The registration's grant is the thing
+    # being implemented, and a refusal narrows it.
+    #
+    # So: a key, with inference as the declared fallback, and THE OUTPUT NAMES
+    # THE ROUTE AND THE VALUE every time -- see `run_probe_a`. Naming the route
+    # without the number is unfalsifiable by the reader; "inferred 60s" can be
+    # seen to be wrong at a glance, and a wrong inference is what the naming
+    # exists to catch.
+    bar_duration_seconds = raw.get("bar_duration_seconds")
+    if bar_duration_seconds is not None:
+        if not isinstance(bar_duration_seconds, (int, float)) or                 isinstance(bar_duration_seconds, bool) or                 bar_duration_seconds <= 0:
+            _refuse("`bar_duration_seconds` is %r; a positive number of seconds "
+                    "was expected. It is the FIXED-VALUE route of PREREG.md's "
+                    "bar_duration element; omit it to take the inferred route, "
+                    "which the run then names in its own output."
+                    % (bar_duration_seconds,), path)
+        bar_duration_seconds = pd.Timedelta(seconds=float(bar_duration_seconds))
+
     # REFUSED RATHER THAN ACCEPTED AND IGNORED. R218 §2.
     #
     # This key reached nothing. The probe uses each aggregate frame's OWN
@@ -382,5 +420,6 @@ def load_model(path) -> AvailabilityModel:
         train_idx=None if split is None else list(split["train"]),
         test_idx=None if split is None else list(split["test"]),
         column_modes=modes,
+        bar_duration=bar_duration_seconds,
         timestamp_column=timestamp_column,
         version=version)
