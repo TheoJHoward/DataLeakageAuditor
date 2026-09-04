@@ -851,3 +851,190 @@ itself"*, which preceded TB-19 by months; and TB-02's parsing lesson, which
 preceded D-V30A-51's repair by eight. Both were found by arriving at the same
 conclusion from a different direction and then noticing it was already written.
 **That is the only discovery route observed so far, and it is not a method.**
+
+---
+
+# THE CLASSIFICATION — made by hand, with its membership list
+
+*(3 September 2026, R224 §4 item 3.)*
+
+**Why by hand, and what the machine version got wrong.** A crude classifier over
+these entries groups them by the words they share, and the words these entries
+share are the vocabulary the whole project is written in — *population*, *silence*,
+*positive*, *declared*. It put TB-05 with TB-17 because both say "rate", and it
+separated TB-19 from TB-12, which are the same lesson one layer apart. Grouping by
+shared vocabulary in a corpus with one vocabulary is grouping by nothing.
+
+**The rule for membership.** All **21** entries -- every one of the twenty-one -- are in **exactly
+one** family, and the families **jointly cover** all twenty-one — the same totality
+shape the probe path set and the config-key complement use, and for the same
+reason: a classification with an unassigned entry has not classified anything.
+Where an entry genuinely touches a second family it is cross-referenced, and the
+cross-reference is not a second membership.
+
+---
+
+## F1 — Something present that governs nothing
+
+*Declared, cited, documented — and connected to no consumer. The class the config
+complement was built to close, recurring at four different levels.*
+
+**Members: TB-02, TB-14, TB-20, TB-21.** Four of twenty-one.
+
+- **TB-02** — an invariant asserted and cited, enforced by nothing.
+- **TB-14** — an extraction that replaced nothing: a third implementation wearing
+  the word "extracted".
+- **TB-20** — a defect that makes a thing do nothing is invisible to tests *of that
+  thing*, because they exercise the thing and not its wiring.
+- **TB-21** — knowledge written where it governs nothing has to be discovered twice.
+
+*Cross-reference:* TB-16 is the near-miss of this family and is deliberately not
+in it — there the declaration **did** govern, by mechanism, and the search for its
+name reported it absent. That is a claim-side failure, so it sits in F2.
+
+## F2 — A claim without its population or its frame
+
+*The absence claim and the bare number. The two halves of one discipline: say what
+you looked at, and say what the figure rests on.*
+
+**Members: TB-04, TB-05, TB-09, TB-16, TB-17.** Five of twenty-one.
+
+- **TB-04** — an absence claim about a registered document needs a population too.
+- **TB-05** — a ceiling is a property of the frame, not of the tool.
+- **TB-09** — a frame can be interpretive, and TB-05 applies to it unchanged.
+- **TB-16** — a declaration can govern by mechanism, and a search for names will
+  report it absent. *(The population of the search was names; the population that
+  mattered was mechanisms.)*
+- **TB-17** — an events register can never supply a rate, because non-events do not
+  present themselves for recording. *(The denominator is the missing population.)*
+
+## F3 — A control that does not discriminate
+
+*The positive fires, and the firing establishes less than it appears to.*
+
+**Members: TB-12, TB-15, TB-19.** Three of twenty-one.
+
+- **TB-12** — a known positive tests the premise, not only the code.
+- **TB-15** — the wrong prediction is the one that pays; a correct one would have
+  told nobody anything.
+- **TB-19** — a positive every wrong instrument also fires on is a wiring test, and
+  the discriminating case is often a negative.
+
+**These three are one lesson at three depths and the ordering is the content.**
+TB-12 asks whether the positive tests the *premise*. TB-19 asks whether it
+separates the instrument built from the instrument nearly built. TB-15 is the same
+question turned on a prediction rather than a test: a prediction that comes true
+distinguishes nothing, and its value was entirely in being falsifiable.
+
+## F4 — A registration or instrument that cannot be run as written
+
+*It is internally consistent, it is signed, and it does not survive contact with
+execution.*
+
+**Members: TB-03, TB-07, TB-08, TB-10, TB-13.** Five of twenty-one.
+
+- **TB-03** — a registration can be internally consistent and still unscoreable.
+- **TB-07** — signed, consistent, and with an acceptance gate that cannot be run.
+- **TB-08** — when a registration enumerates a closed scope, the first question
+  about any artifact is which row it occupies.
+- **TB-10** — a one-point model cannot see which term it omitted.
+- **TB-13** — a detection that arrives as a library's exception is a detection
+  nobody reads as one.
+
+## F5 — A change that damages what it was not aimed at
+
+*The collateral, and it lands on whatever the change was holding constant.*
+
+**Members: TB-01, TB-06, TB-18.** Three of twenty-one.
+
+- **TB-01** — a merge can resurrect a defect that was deliberately removed.
+- **TB-06** — backticks in a commit message, and a heredoc in a file edit: content
+  passing through a quoting layer becomes something else.
+- **TB-18** — the damage from a fix lands on what the fix was holding constant.
+
+## F6 — The reading is biased by what it would cost
+
+**Member: TB-11.** One of twenty-one — and the family of one is the finding.
+
+- **TB-11** — claims that could be unfavourable were verified; claims that flatter
+  the process were accepted.
+
+**A family of one is normally a sign the classification is too fine. Here it is a
+sign the register is incomplete.** The shape has recurred at least twice since
+TB-11 was written — an audit of my own halt lists that found fourteen dropped
+rules, and a round where the flattering framing was taken over the accurate one
+and had to be corrected from outside. **Neither was written down as a Track B
+entry**, and the reason is visible from inside the family: an entry about one's own
+asymmetric scrutiny is exactly the entry asymmetric scrutiny does not write. It is
+recorded here as a gap in the register rather than as a lesson with one instance.
+
+---
+
+## TB-19, at length — the membership this classification asks for
+
+**SIBLINGS — enumerated by hand, 3 September 2026 (R224 §4 item 3).** The shape is
+*a known positive so strong that every candidate instrument fires on it, so it
+establishes connection and not validity.* Enumerated by reading each control's
+positive and asking "what else would fire on this?", which is not mechanical, so
+no sweep is claimed and the population is the controls examined rather than all of
+them.
+
+**Three instances found, and one clean counter-example:**
+
+1. **The retired shuffle check's intended positive** — a feature that IS the label.
+   It fires for a signal test, a leakage test and anything plugged in. The check
+   computed the wrong statistic and this positive could never have said so. The
+   only case that separates them is a **negative**: strong genuine signal, no leak.
+2. **The identity control**, audited twice on this ground. Its positive was
+   initially an input on which any comparator that runs at all reports a
+   difference; the discrimination now comes from a case where a plausible wrong
+   implementation is *loud* and the right one is *silent*.
+3. **The `ties_available` branch, and this one has a measured cost.** The branch
+   was registered, unimplemented, and then implemented with an off-by-one — a tie
+   compared against `base_floor + window` rather than `base_floor`. The positive
+   that caught it was chosen to fire *only* under the correct comparator; a
+   positive built from an obviously-late cell would have fired either way and the
+   off-by-one would have shipped.
+4. **The counter-example, recorded so the lesson is not read as universal.** The
+   availability probe's own controls already discriminate, and say why in prose
+   written before this lesson existed: the negative's second limb requires movement
+   in the *following* second, which a plain dependency probe cannot produce. A
+   positive can be strong AND discriminating; the two properties are independent,
+   and the failure is only in mistaking the first for the second.
+
+**And the bound stands.** This was applied to the two runtime detector rows that
+carry reported claims, and to the three controls above. Every other known positive
+in the project is **unexamined, not confirmed.**
+
+## TB-21, at length — and the reason its list cannot be completed
+
+**The shape:** *a lesson stated in one file's prose that governs only that file.*
+Not mechanically enumerable — finding it requires reading prose for insight rather
+than matching a pattern — so no sweep is claimed and the exemption is recorded
+rather than left as a silence.
+
+**Four instances now known, up from two:**
+
+1. **The B-6 control's** *"a negative that moves nothing anywhere is a probe
+   testing itself"*, which preceded TB-19 by months and governed one control.
+2. **TB-02's parsing lesson** — *"a docstring is a string constant, so it simply is
+   not a reference, and there is nothing to exempt"* — which preceded D-V30A-51's
+   repair by eight lessons. The citation checker learned it; its neighbour, the
+   installability checker, did not, and was defeated by a docstring eight lessons
+   later.
+3. **The `mask` / `cell_mask` conversion.** The comment beside the integer branch
+   already explained that the frame-level path is the special case of the
+   per-column one. The prose was right and the line below it was not converted, so
+   the knowledge governed the comment and not the code. *(D-V30A-53.)*
+4. **`bar_duration`'s "carried forward at the final row"** — stated in three
+   documents and implemented correctly, while the *ordering* the same sentence
+   implies by the word "successive" was implemented nowhere. Part of a rule can be
+   the part that governs. *(D-V30A-54.)*
+
+**Why the list cannot be completed, stated rather than left implied.** Every
+instance above was found the same way: by arriving at a conclusion from a different
+direction and then noticing it was already written down. That is not a search
+procedure — it requires having the insight first, which means the method can only
+ever confirm instances and never bound them. **The count is a lower bound and
+nothing else**, and it is recorded that way so a later reader does not mistake four
+for four-of-four.

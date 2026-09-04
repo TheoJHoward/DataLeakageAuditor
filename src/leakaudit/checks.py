@@ -249,7 +249,15 @@ def check_label_under_another_name(frame: pd.DataFrame, label: str | None = None
     y = frame[label]
     others = [c for c in frame.columns if c != label]
     r.looked = True
-    r.population = "%d column(s) against the label %r" % (len(others), label)
+    # THE SCREEN IS NAMED IN THE POPULATION, so it is named in the SILENCE too.
+    # R224 §4 item 1, the mandatory half. A `0.999` correlation cutoff the user
+    # cannot see is a figure without its frame (`OPERATING_RULES.md` §2): the
+    # check reported "nothing found over 8 column(s) against the label" and the
+    # number that produced that silence appeared nowhere. Naming it is not the
+    # same as exposing it as a config key, and the key waits on its cases --
+    # `evidence/session/LABEL_SCREEN_CASES.md`.
+    r.population = ("%d column(s) against the label %r, at a Pearson screen of "
+                    "|r| >= %.3f" % (len(others), label, threshold))
     found = []
     for c in others:
         s = frame[c]
@@ -271,6 +279,15 @@ def check_label_under_another_name(frame: pd.DataFrame, label: str | None = None
     r.notes.append(
         "A candidate, not a verdict: a legitimate feature can be near-perfectly "
         "correlated with its label. This screen reports; it does not adjudicate.")
+    r.notes.append(
+        "WHAT THIS SCREEN CANNOT SEE, stated with the result rather than left to "
+        "be discovered. It is PEARSON, so a copy of the label under a non-linear "
+        "transform -- rank order preserved, values changed -- can fall well below "
+        "|r| >= %.3f and pass. It compares single columns, so a label "
+        "reconstructed from two of them is invisible to it. A silence here is a "
+        "silence about linear single-column resemblance and about nothing wider. "
+        "The cases are measured in `evidence/session/LABEL_SCREEN_CASES.md`."
+        % threshold)
     return r
 
 

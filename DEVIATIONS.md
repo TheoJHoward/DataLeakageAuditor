@@ -1929,3 +1929,127 @@ a user exactly like the first.
 read, declared-unconsumed, declared-refused — and accepted-and-ignored is the one
 that is not. `timestamp_column` was the case that forced the third state to be
 named, and the guard would have passed it as merely unconsumed without it.
+
+## D-V30A-53 — the per-column corruption path read the frame's mask and wrote the column's
+
+**True.** In `availability.py`'s integer branch, `vals` was read with the
+FRAME-level mask while the offset array `off` was sized from `cell_mask` and the
+write targeted `cell_mask`. Where the two masks differ the branch raised a numpy
+broadcast error — measured, shapes `(20,)` against `(22,)`. A partial conversion
+left from R205, when the per-column path was added and the frame-level path
+became its special case.
+
+**THE BLAST RADIUS, MEASURED RATHER THAN ARGUED.** R225 §1: *plausibly is not
+measured*, and `ties_available` set the form — the defect is reported together
+with a checked statement about which published figures move.
+
+*Which paths reach the broken branch.* Two conditions, both required. First,
+`cell_mask` differs from `mask`, which happens only when a per-column mode is
+declared for that column: `cell_mask = mask` is the initialisation, and the only
+reassignment is inside `if spec is not None`, where `spec` comes from
+`column_modes`. Second, the column's dtype is integer; the float and bool
+branches never read `mask`.
+
+*Whether any Phase 1 population could have entered one.* **No, and by
+construction rather than by argument: the code did not exist.** `git log -S`
+over `src/leakaudit/availability.py` names commit `1d949f9` as the first
+introducing BOTH `column_modes` and `cell_mask`; there is no earlier commit
+touching either string. `1d949f9` is the 124th commit of 147. The three Phase 1
+acceptance artifacts were committed before it — `void_b065264/acceptance_run.json`
+at the 104th, `criteria_12_run.json` at the 107th, `criteria_12_population.json`
+at the 110th — and `git merge-base --is-ancestor 1d949f9 <each>` reports that the
+per-column commit is NOT an ancestor of any of them. Checked directly at the
+acceptance commit as well: `git show 6b242b3:src/leakaudit/availability.py`
+contains the string `cell_mask` zero times. Every Phase 1 figure was produced by
+a build in which one mask existed.
+
+*And after the branch existed.* Reach still requires an explicit `column_modes=`
+argument. Of the 23 call sites of `run_probe_a` in the repository, three pass one:
+`cli.py` and two cases in `test_modes_wiring.py`. Neither Phase 1 harness —
+`harness_criteria_12.py`, `harness_criteria_12_population.py` — passes it, and
+`column_modes` is not a field of `AvailabilityModel`, so there is no route to it
+that does not go through that keyword.
+
+**THE CRASH IS THE LOUD HALF AND IT IS NOT THE WHOLE DEFECT.** The two masks
+raise only where their SUMS differ. Where they select different cells in equal
+number, `new` would be computed from the frame-mask cells and written to the
+cell-mask cells — no exception, and a perturbation applied to cells whose
+original values it did not read. That is the silent form, it was never observed,
+and it is recorded here because "it crashed" would understate what the line could
+do.
+
+**R163 §1's exemption test, because this was found while doing something else** —
+the `at_bar_close` path became reachable for the first time when
+`bar_duration_seconds` was wired at R224, and the branch raised on the first run
+that entered it. *Would this change have been made if the triggering work did not
+exist?* **Yes.** A line reading one mask and writing another is wrong whatever
+happened to expose it, and the repair is the one-word substitution the surrounding
+comments already described. Defect repair, ruled, disclosed.
+
+**Expected:** that a converted branch is converted throughout, and that the
+positive exercising a branch actually enters it. R215 §0's refinement — a positive
+every plausible wrong instrument fires on tests wiring, not validity — has its
+third instance here, and its first in production code: R205's discriminating
+positive used a FLOAT column, so it never reached the integer branch at all.
+
+## D-V30A-54 — the inferred bar duration was taken in row order, and reported as one number
+
+**Two defects, and only the first is what it looked like.**
+
+**Finding A — the inference ran in row order.** `bar_duration` computed
+`ts.shift(-1) - ts` over the frame as given. On a timestamp column that is not
+sorted the differences run backwards, and the first live run against such a frame
+reported `INFERRED VALUE: -1 days +23:59:59.725` — a negative bar duration, a bar
+closing before it opens. `PREREG.md` line 255 says *inferred from SUCCESSIVE
+timestamps*, and successive is an order on instants rather than on rows, so the
+stamps are put in time order before differencing and the note says when that
+reordering happened.
+
+**Finding B — and a sort does not touch it.** The negative value was caught
+because it was absurd. Had the column been mostly ordered with a few inversions,
+or simply had irregular gaps, the same code would have produced a plausible wrong
+number and nothing would have caught it — no reader, no test, no note. The
+dangerous case is the near-miss that reads fine.
+
+**AN IMPOSSIBLE DURATION IS NO LONGER EMITTED AS A VALUE.** A non-positive
+successive difference raises, naming how many of how many and what to do instead.
+Ordering makes a negative gap unreachable, so what this catches now is ZERO —
+duplicate timestamps — and a zero bar duration is not a small one: it collapses
+`at_bar_close` into `at_timestamp` silently, which is the mode returning the
+answer of the mode it exists to be told apart from. The check is written against
+`<= 0` so it still holds if the ordering is ever removed.
+
+**AND THE VALUE THAT IS REPORTED CARRIES ITS FRAME.** The first form of the note
+printed `_d.iloc[0]` under the label `INFERRED VALUE`. That is a point estimate
+over a per-row series: right on a frame with regular bars, and on a frame without
+one a single number standing for a set with no centre. The record now carries how
+many successive differences there were, how many distinct values they took, and
+their smallest, largest and median — and the note names a duration ONLY where all
+the differences agree.
+
+**WHERE THEY DISAGREE, NOTHING IS NAMED, AND THAT IS THE REFUSAL.** The note says
+there is no single bar duration for the frame, gives the spread, and says what
+disagreement means: either bars are missing — a gap of two bars read as a bar
+twice as long, which puts that cell's availability later than it truly was — or
+the column is not bar-shaped and `at_bar_close` is the wrong mode.
+
+**THE ARITHMETIC IS NOT CHANGED, AND THAT IS DELIBERATE.** Collapsing the per-row
+gaps to one inferred unit would be a better answer on a frame with missing bars,
+and it is not the registered one: three documents say *the gap to the next
+timestamp*, per row — `PREREG.md` line 255, `DESIGN.md` §2.1, and
+`AVAILABILITY_MODES.md`'s `at_bar_close`. Refusing the route outright would narrow
+a grant the registration makes, which is `ties_available`'s defect inverted. So
+the refusal is of the CLAIM rather than of the route: the run declines to state a
+bar duration the frame does not have, and computes what it was registered to
+compute.
+
+**Measured live, through the command line, on five frames**: regular stamps name
+`1s` as well founded over 39 differences; the same stamps shuffled name the same
+`1s` and say the column was not in time order; a frame with bars missing names no
+value and reports 26 differences taking 2 distinct values from `1s` to `2s`;
+duplicate stamps are refused with exit 2; a declared duration produces no
+inference note at all.
+
+**Expected:** that a quantity the tool could not resolve is reported as
+unresolved rather than as a number, and that a number reported as a property of a
+frame is one the frame has.

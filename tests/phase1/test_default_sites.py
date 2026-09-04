@@ -115,12 +115,19 @@ CLASSIFICATION = {
         "inference as the default is a structural read nobody has done."),
     "checks.py::param::check_label_under_another_name(threshold=)": (
         R,
-        "a 0.999 correlation threshold the user cannot see or set, and the "
-        "check's own output does not name it: it reports 'nothing found over 8 "
-        "column(s) against the label' with no mention of the threshold that "
-        "produced the silence. A figure without its frame, by the durable rule "
-        "in OPERATING_RULES.md §2. CANDIDATE: the fix may be naming it in the "
-        "output rather than exposing it, and that is a judgment nobody has made."),
+        "a 0.999 correlation threshold the user could not see: the check "
+        "reported 'nothing found over 8 column(s) against the label' with no "
+        "mention of the number that produced the silence. A figure without its "
+        "frame, by the durable rule in OPERATING_RULES.md §2. THE NAMING HALF IS "
+        "CLOSED -- R224 §4 item 1 -- and the population line now carries the "
+        "screen on every run, silences included. CANDIDATE STILL, for the other "
+        "half: no config key is proposed, and that is now a decision with "
+        "measured cases behind it rather than a deferral. "
+        "evidence/session/LABEL_SCREEN_CASES.md shows a PERFECT monotone copy of "
+        "the label (y**3) screening at |r|=0.739 and passing at every threshold "
+        "tried, so the cutoff is not the dial that separates leaks from strong "
+        "features; a rank statistic would be, and that is a new check rather "
+        "than a parameter on this one."),
 }
 
 

@@ -73,6 +73,49 @@ def _window_text(w: pd.Timedelta) -> str:
     return str(w)
 
 
+def _inference_frame(info) -> str:
+    """WHAT THE INFERRED BAR DURATION RESTS ON, in the note. R225 §2(b), (c).
+
+    THE VALUE IS NAMED ONLY WHERE THERE IS ONE. R224 §2(b) put the number in the
+    note so a wrong inference could be seen at a glance, and it worked on its
+    first live use -- but the number it printed was one row's gap standing for a
+    per-row series, so on a frame whose bars are irregular it was a point
+    estimate of a set with no centre. Where the successive differences disagree
+    this says so and names no value, which is the refusal R225 §2(c) asks for
+    applied to the CLAIM: the registration fixes the computation as per-row gaps
+    (`PREREG.md` line 255, `DESIGN.md` §2.1, `AVAILABILITY_MODES.md`), so
+    refusing the ROUTE would narrow a registered grant -- `ties_available`'s
+    defect -- while refusing to state a bar duration the frame does not have
+    costs the user nothing they were entitled to.
+    """
+    if info is None:
+        return "The frame is empty, so nothing was inferred from it."
+    order = ("The timestamp column was NOT IN TIME ORDER as given, and the "
+             "differences were taken in time order rather than row order. "
+             ) if info.reordered else ""
+    if info.agrees:
+        return (
+            "%sINFERRED BAR DURATION: %s -- and it is well founded: all %d "
+            "successive differences are that same value, so this frame does "
+            "have a single bar length. CHECK IT anyway: it is a fact about "
+            "your data's sampling, not about what the bar summarises."
+            % (order, _window_text(info.smallest), info.n_gaps))
+    return (
+        "%sTHERE IS NO SINGLE BAR DURATION HERE, so none is named. The %d "
+        "successive differences take %d DISTINCT values, from %s to %s "
+        "(median %s). The registered inference gives each row the gap to its "
+        "own next timestamp, so the availability instant varies row by row and "
+        "no one number describes this run -- reporting a representative value "
+        "would be a figure without its frame. Differences that disagree mean "
+        "either that bars are missing (a gap of two bars is read as a bar "
+        "twice as long, which puts that cell's availability later than it "
+        "truly was) or that the column is not bar-shaped at all, in which case "
+        "`at_bar_close` is the wrong mode. Declare `bar_duration_seconds` to "
+        "settle it."
+        % (order, info.n_gaps, info.n_distinct, _window_text(info.smallest),
+           _window_text(info.largest), _window_text(info.median)))
+
+
 @dataclass(frozen=True)
 class AvailabilityModel:
     """The declared model. Supplied to the probe; never inferred by it.
@@ -470,7 +513,7 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
                 # options chosen for them, and the least this run can do is say
                 # which. Selecting between two registered routes without the
                 # output naming which is the tie comparator's defect again.
-                for _r, _v in _routes[_before:]:
+                for _r, _v, _info in _routes[_before:]:
                     if _r == "inferred":
                         res.notes.append(
                             "column %r of frame %r declares `at_bar_close`, and "
@@ -481,12 +524,8 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
                             "so the route was chosen for you and is named "
                             "here rather than left to be deduced. Declare "
                             "`bar_duration_seconds` to take the fixed-value "
-                            "route instead. INFERRED VALUE: %s -- CHECK IT: "
-                            "a negative or absurd duration means the "
-                            "timestamp column is not sorted, and inference "
-                            "from successive stamps assumes it is."
-                            % (c, fname, _window_text(_v) if _v is not None
-                               else "none -- the frame is empty"))
+                            "route instead. %s"
+                            % (c, fname, _inference_frame(_info)))
                 a = align_key(pd.to_datetime(a), d, frame=fname, column=c)
                 cell_mask = (a - model.window).dt.floor("s").isin(picked_set).to_numpy()
                 if not cell_mask.any():

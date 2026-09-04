@@ -1728,6 +1728,24 @@ _WORK_ROOT_ENV = "LEAKAUDIT_WORK_ROOT"
 # directories existed beside it. D10's coverage of the current round's working
 # files was therefore ZERO, and every finding the check could emit came from a
 # directory nobody was working in. D-V30A-48.
+# THE SUPERSEDED WORK ROOT, AND IT NAMES ITS ROUND. R224 §4 item 5.
+#
+# A path with no round on it is a path nobody can date, and dating it is the
+# whole content of D-V30A-48: this value was CORRECT when written and became
+# wrong by the session ending, so "which round wrote it" is the fact that makes
+# the defect legible rather than mysterious.
+#
+#   WRITTEN AT   the v30a pre-registration commit 0acab4e, 25 August 2026 --
+#                the 6th commit of 147, before this package existed.
+#   IN FORCE     from there to R219, hardcoded, resolved at import.
+#   SUPERSEDED   R219, commit eef82e4, 3 September 2026 (#141 of 147), by
+#                LEAKAUDIT_WORK_ROOT resolved at RUN TIME.
+#   KEPT         because D17 rules that the tagged v30a checker must keep it:
+#                a test asserts the frozen copy contains this string and not
+#                the environment variable, which is what makes "the tag is not
+#                retrofitted" checkable rather than asserted. The session it
+#                names also holds the amendment scripts under
+#                evidence/amendment/, which cite it by the same path.
 _WORK_ROOT_SUPERSEDED = pathlib.Path(
     "C:/Users/ttbea/AppData/Local/Temp/claude/"
     "C--Users-ttbea-OneDrive-Desktop-MBO-2025-4mon--2026-01/"
@@ -1830,6 +1848,33 @@ _EPHEMERAL = (
      "Reproducible by `pip install` from the recorded versions, owned by nobody "
      "here, and never candidates for the repository"),
     ("/_x5_truncated_original/", "a deliberately truncated original, kept to reproduce a defect"),
+    # R224 §4 item 4. THE RESIDUE IS DECLARED FOR WHAT IT IS. The four tokens
+    # below were chosen because each names a KIND of file with a definite
+    # marker; none was chosen for how many files it removes, and the classes
+    # that have no definite marker got no token rather than a regex over what
+    # their names happen to look like. The full census -- 651 files, by class,
+    # with the two the check cannot tell apart -- is
+    # `evidence/session/WORK_ROOT_RESIDUE.md`, and the residue that remains
+    # stays a FINDING rather than becoming a silence.
+    ("_msg.txt",
+     "a commit message passed to `git commit -F`. Its content is in the commit "
+     "history rather than in the tree, so it can never match repository "
+     "content, and `tools/safe_edit.py` requires it to be a file on disk"),
+    ("/dod_env/",
+     "the launcher scripts and config of a virtualenv built for the "
+     "definition-of-done walk -- the `.exe` shims, `pyvenv.cfg` and activation "
+     "scripts that sit OUTSIDE site-packages. Produced by `python -m venv`, "
+     "owned by nobody here"),
+    ("/floor_env/",
+     "the same, for a failed attempt at pinning a floor of the dependency "
+     "range. Kept because the failure is cited"),
+    ("/k1_broken/",
+     "a deliberately mutated copy of a tree, kept beside its repaired twin so "
+     "a defect can be reproduced. Its whole value is that it does NOT match "
+     "repository content"),
+    ("/k1_fixed/",
+     "the repaired twin of the above. It differs from the repository copy "
+     "because the repair was made differently there"),
 )
 
 

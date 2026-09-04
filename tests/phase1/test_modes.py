@@ -94,6 +94,12 @@ def test_the_final_rows_duration_is_carried_forward_not_left_missing():
 
 
 def test_an_irregular_gap_is_inferred_per_row():
+    """PER ROW, and it stays per row. Three documents say "the gap to the next
+    timestamp" -- `PREREG.md` line 255, `DESIGN.md` §2.1, `AVAILABILITY_MODES`
+    -- so a single inferred unit would be a better answer than the registered
+    one and is not this file's to substitute. The 4-minute gap below IS read as
+    a 4-minute bar, and R225 §2(c)'s remedy is that the run SAYS SO rather than
+    that the arithmetic changes."""
     ts = pd.to_datetime(["2026-01-01 09:00", "2026-01-01 09:01",
                          "2026-01-01 09:05", "2026-01-01 09:06"])
     f = pd.DataFrame({TS: ts, "value": [1.0, 2.0, 3.0, 4.0]})
@@ -106,6 +112,81 @@ def test_a_single_row_refuses_rather_than_guessing_a_duration():
     f = _frame(n=1)
     with pytest.raises(ModeError, match="guessed from nothing"):
         _a(f, "value", ColumnMode(AT_BAR_CLOSE))
+
+
+# ---------------------------------------------------------------------------
+# R225 §2 — the negative duration was TWO findings, and only one is the sort
+# ---------------------------------------------------------------------------
+
+def test_an_UNSORTED_column_does_not_produce_a_backwards_bar():
+    """FINDING A, and it is the half a sort closes.
+
+    Measured on a real frame at R224: `scanned_at` was not sorted, the
+    differences ran backwards in row order, and the run reported a bar duration
+    of `-1 days +23:59:59.725`. "Successive" is an order on instants, not on
+    rows, so the stamps are ordered before differencing.
+    """
+    ts = pd.to_datetime(["2026-01-01 09:02", "2026-01-01 09:00",
+                         "2026-01-01 09:03", "2026-01-01 09:01"])
+    f = pd.DataFrame({TS: ts, "value": [1.0, 2.0, 3.0, 4.0]})
+    got = _a(f, "value", ColumnMode(AT_BAR_CLOSE)) - ts
+    assert (got > pd.Timedelta(0)).all(), (
+        "a bar that closes before it opens: %s" % list(got))
+    assert list(got) == [pd.Timedelta(minutes=1)] * 4
+
+
+def test_an_IMPOSSIBLE_duration_is_refused_rather_than_reported_as_a_value():
+    """R225 §2(a). Ordering makes a negative gap unreachable, so what is left to
+    catch is ZERO -- duplicate timestamps -- and a zero bar duration silently
+    turns `at_bar_close` into `at_timestamp`, which is this mode reporting the
+    answer of the mode it exists to be told apart from."""
+    ts = pd.to_datetime(["2026-01-01 09:00", "2026-01-01 09:00",
+                         "2026-01-01 09:01"])
+    f = pd.DataFrame({TS: ts, "value": [1.0, 2.0, 3.0]})
+    with pytest.raises(ModeError) as e:
+        _a(f, "value", ColumnMode(AT_BAR_CLOSE))
+    assert "duplicate timestamps" in str(e.value)
+    assert "bar_duration_seconds" in str(e.value), "the refusal names no way out"
+
+
+def test_the_inference_carries_its_FRAME_not_just_a_number():
+    """R225 §2(b). A single number with nothing saying how well-founded it is is
+    a figure without its frame, and this is that rule's third live application
+    this cycle."""
+    from leakaudit.modes import ROUTE_TAKEN, _infer_bar_duration
+
+    regular = pd.Series(pd.date_range("2026-01-01 09:00", periods=6, freq="1min"))
+    _, info = _infer_bar_duration(regular)
+    assert info.agrees and info.n_gaps == 5 and info.n_distinct == 1
+    assert info.smallest == info.largest == pd.Timedelta(minutes=1)
+
+    ragged = pd.Series(pd.to_datetime(
+        ["2026-01-01 09:00", "2026-01-01 09:01", "2026-01-01 09:05"]))
+    _, info = _infer_bar_duration(ragged)
+    assert not info.agrees and info.n_distinct == 2
+    assert (info.smallest, info.largest) == (pd.Timedelta(minutes=1),
+                                             pd.Timedelta(minutes=4))
+
+    # And the route record carries it, so the probe can report it.
+    before = len(ROUTE_TAKEN)
+    f = pd.DataFrame({TS: ragged, "value": [1.0, 2.0, 3.0]})
+    _a(f, "value", ColumnMode(AT_BAR_CLOSE))
+    route, value, carried = ROUTE_TAKEN[before]
+    assert route == "inferred"
+    assert value is None, (
+        "a value was named for a frame whose successive differences disagree, "
+        "which is a point estimate of a set with no centre: %r" % (value,))
+    assert carried is not None and carried.n_distinct == 2
+
+
+def test_a_DECLARED_duration_records_the_value_and_no_inference_frame():
+    from leakaudit.modes import ROUTE_TAKEN
+
+    before = len(ROUTE_TAKEN)
+    _a(_frame(), "value", ColumnMode(AT_BAR_CLOSE),
+       declared_bar_duration=pd.Timedelta(minutes=5))
+    route, value, carried = ROUTE_TAKEN[before]
+    assert (route, value, carried) == ("declared", pd.Timedelta(minutes=5), None)
 
 
 # ---------------------------------------------------------------------------

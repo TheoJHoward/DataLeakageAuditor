@@ -106,6 +106,12 @@ def test_no_runtime_metric_touches_detector_case_state():
     """The trace schema carries no detector-case coverage state (PREREG §7.7
     keeps that layer for assert_audit_complete alone), and the reducer never
     names its vocabulary."""
+    # SCOPE: ONE MODULE. The population is `protocol.runtime_reference` and
+    # nothing else, so a pass here says the REDUCER does not name the coverage
+    # vocabulary -- not that the package does not. `could_not_run` appears in
+    # `DESIGN.md` and in the amendment records by design, and a sibling module
+    # acquiring it would leave this test silent. An absence claim carries its
+    # population; this is that population, written down. R223 §4.
     source = inspect.getsource(rr)
     for token in ("could_not_run", "waived", "detector_case_state"):
         assert token not in source, token

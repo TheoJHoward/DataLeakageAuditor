@@ -88,7 +88,79 @@ class ColumnMode:
 # Read by the probe so the run can say so; a list rather than a flag because a
 # frame may carry several such columns and "some were inferred" is not the same
 # statement as "all were".
-ROUTE_TAKEN: list[str] = []
+ROUTE_TAKEN: list[tuple] = []
+
+
+@dataclass(frozen=True)
+class InferredDuration:
+    """WHAT AN INFERENCE RESTS ON, carried with it. R225 §2(b).
+
+    A single number with nothing saying how well-founded it is is a figure
+    without its frame. `agrees` is the whole question: an inference over
+    successive differences that all match has a bar duration behind it, and one
+    over differences that do not has a per-row series and NO SINGLE VALUE. The
+    second case is not a worse estimate of the first -- it is a different
+    situation, and reporting a representative number for it would be the
+    "median of a set that has no centre" R225 §2(c) names.
+    """
+    n_gaps: int
+    n_distinct: int
+    smallest: pd.Timedelta
+    largest: pd.Timedelta
+    median: pd.Timedelta
+    reordered: bool
+
+    @property
+    def agrees(self) -> bool:
+        return self.n_distinct == 1
+
+
+def _infer_bar_duration(ts: pd.Series) -> tuple[pd.Series, InferredDuration]:
+    """The registered inference -- the gap to the next timestamp -- and its frame.
+
+    THE STAMPS ARE ORDERED FIRST, and that is a reading of the registration
+    rather than a liberty taken with it: `PREREG.md` line 255 says "inferred
+    from SUCCESSIVE timestamps", and successive is an order on instants, not on
+    rows. Taken in row order on an unsorted column the differences run backwards
+    -- measured on a real frame at R224, which produced a bar duration of
+    `-1 days +23:59:59.725`.
+
+    AN IMPOSSIBLE DURATION IS NOT EMITTED AS A VALUE. R225 §2(a). Ordering makes
+    a negative gap unreachable, so what this catches now is ZERO -- duplicate
+    timestamps -- and a zero bar duration is not a small one: it collapses
+    `at_bar_close` into `at_timestamp` silently, which is the mode reporting the
+    answer of the mode it exists to be distinguished from. The check is written
+    against `<= 0` rather than `== 0` so it still holds if the ordering above is
+    ever removed.
+    """
+    order = ts.sort_values()
+    reordered = not order.index.equals(ts.index)
+
+    diffs = order.diff().dropna()               # the n-1 successive differences
+    bad = diffs[diffs <= pd.Timedelta(0)]
+    if len(bad):
+        raise ModeError(
+            "bar duration could not be inferred: %d of %d successive "
+            "differences in the timestamp column are %s. A bar cannot close "
+            "before or at the instant it opens, so this is not a bar duration "
+            "and no value is reported for it -- an unresolved quantity is "
+            "reported as unresolved rather than as a number. %s Declare "
+            "`bar_duration_seconds` to take the fixed-value route, or use a "
+            "column whose stamps are distinct."
+            % (len(bad), len(diffs),
+               "zero (duplicate timestamps)" if (bad == pd.Timedelta(0)).all()
+               else "not positive",
+               "The stamps were put in time order before differencing, so a "
+               "non-positive difference here means repeated instants rather "
+               "than unsorted ones."))
+
+    gaps = order.shift(-1) - order
+    gaps.iloc[-1] = gaps.iloc[-2]               # the carried-forward last bar
+    info = InferredDuration(
+        n_gaps=len(diffs), n_distinct=int(diffs.nunique()),
+        smallest=diffs.min(), largest=diffs.max(), median=diffs.median(),
+        reordered=reordered)
+    return gaps.reindex(ts.index), info
 
 
 def bar_duration(ts: pd.Series, declared: pd.Timedelta | None = None) -> pd.Series:
@@ -99,21 +171,25 @@ def bar_duration(ts: pd.Series, declared: pd.Timedelta | None = None) -> pd.Seri
     KNOWN DURATION IS CARRIED FORWARD, since there is no successor to measure
     against. That last clause is the one an implementation drops, and dropping
     it puts a NaT in the final row's availability and quietly excludes it.
+
+    PER-ROW GAPS, NOT A SINGLE VALUE, and that is not this file's choice: three
+    documents say "the gap to the next timestamp" per row -- `PREREG.md` line
+    255, `DESIGN.md` §2.1, `AVAILABILITY_MODES.md`'s `at_bar_close`. Collapsing
+    them to one inferred unit would be a better answer on a frame with missing
+    bars and it would not be the registered one, so what this does instead is
+    REPORT the disagreement rather than smooth it.
     """
     ts = pd.to_datetime(ts)
     if declared is not None:
         return pd.Series([declared] * len(ts), index=ts.index)
     if len(ts) == 0:
         return pd.Series([], index=ts.index, dtype="timedelta64[ns]")
-    gaps = ts.shift(-1) - ts
-    if len(ts) > 1:
-        gaps.iloc[-1] = gaps.iloc[-2]
-    else:
+    if len(ts) == 1:
         raise ModeError(
             "bar_duration was inferred from a single row, which has no "
             "successor and no predecessor to carry forward from. Declare the "
             "bar length rather than have one guessed from nothing.")
-    return gaps
+    return _infer_bar_duration(ts)[0]
 
 
 def availability(frame: pd.DataFrame, column: str, spec: ColumnMode, *,
@@ -201,15 +277,25 @@ def availability(frame: pd.DataFrame, column: str, spec: ColumnMode, *,
         # on the call rather than left for a reader to deduce from whether a
         # duration was passed. A result whose method is invisible is the tie
         # comparator problem again, and that half needed no structural read.
-        _d = bar_duration(ts, declared_bar_duration)
-        # THE VALUE, NOT ONLY THE ROUTE. R224 §2(b). "Inferred from successive
-        # timestamps" without the number is unfalsifiable by the reader;
-        # "inferred 60s" can be seen to be wrong at a glance, and a wrong
-        # inference is exactly what the naming exists to catch.
-        _val = _d.iloc[0] if len(_d) else None
-        ROUTE_TAKEN.append(
-            ("declared" if declared_bar_duration is not None else "inferred",
-             _val))
+        # THE VALUE, NOT ONLY THE ROUTE (R224 §2(b)) -- AND ITS FRAME (R225
+        # §2(b)). The first form of this took `_d.iloc[0]` and printed it as
+        # "INFERRED VALUE", which is a point estimate over a per-row series: on
+        # a frame with regular bars it is right, and on a frame without one it
+        # is a number standing for a set that has no centre. So the record
+        # carries the inference's frame and the note decides from `agrees`
+        # whether there is a value to name at all.
+        if declared_bar_duration is not None:
+            _d = bar_duration(ts, declared_bar_duration)
+            ROUTE_TAKEN.append(("declared", declared_bar_duration, None))
+        elif len(ts) > 1:
+            _d, _info = _infer_bar_duration(ts)
+            ROUTE_TAKEN.append(
+                ("inferred", _info.smallest if _info.agrees else None, _info))
+        else:
+            # len 0 returns an empty series; len 1 raises. `bar_duration` owns
+            # both, so neither is restated here.
+            _d = bar_duration(ts)
+            ROUTE_TAKEN.append(("inferred", None, None))
         return ts + _d
 
     raise ModeError("unreachable: mode %r has no branch" % spec.mode)

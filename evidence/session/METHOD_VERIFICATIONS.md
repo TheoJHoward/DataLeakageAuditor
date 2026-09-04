@@ -920,3 +920,46 @@ deliverable.
 **Not measured, and therefore not claimed.** Whether repeated measurement on a
 *different machine* would agree — every stability figure above is same-host, and
 MV-6/MV-7 varied the environment for the pipeline digest alone.
+
+---
+
+## MV-13 — the suite line I reported was of a different population from the one I quoted
+
+*(3 September 2026, R225.)*
+
+**The claim tested:** that `730 passed` and `734 passed` are the same measurement
+taken twice.
+
+**They are not, and I produced both in one round without noticing.** The first
+run of this round used `pytest tests/phase1` and reported **598 passed, 4 skipped,
+0 failed**. Every suite line I have quoted for many rounds — `730 passed, 4
+skipped, 1 failed` — is `pytest tests`, which is a strictly larger population: it
+adds `tests/registration`, where the one known failure lives.
+
+**So the pair I nearly reported side by side differed by 132 tests and by the
+presence of the known failure, and nothing in either line says which population it
+is.** The number carries no denominator and no scope. MV-11 established that the
+suite line varied; this establishes that it also names an unstated population,
+which is the same defect the config-key complement and the defaults instrument
+were each built to close, appearing in the figure I quote most often.
+
+**Measured, both at the same commit, minutes apart:**
+
+| invocation | collected | passed | skipped | failed |
+|---|---|---|---|---|
+| `pytest tests/phase1` | 602 | 598 | 4 | 0 |
+| `pytest tests` | 739 | 734 | 4 | 1 |
+
+**The 734 is 730 plus this round's four new tests**, which is the only reason the
+two rounds' numbers differ, and saying so requires knowing that both were the
+`tests` population — which the lines themselves do not record.
+
+**Not fixed, and deliberately.** No harness change is made here. What changes is
+that a suite line reported from now on names its invocation, and the two above are
+recorded so the earlier ones can be read correctly rather than reinterpreted from
+memory.
+
+**This was found by running the narrower command by habit and reading a number
+that looked wrong.** It was not found by any check, and no check would have found
+it: nothing in the project compares a reported figure against the command that
+produced it.
