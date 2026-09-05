@@ -259,8 +259,8 @@ beside the commands that produce it rather than left to be found in the ledger.
 
 **Every count below carries the command that produced it, the interpreter that
 command resolved to, and — for the gate — an environment variable.** That is not
-pedantry, and each of the three has already caught something: `622 passed` and
-`758 passed` are both true of this tree at this commit under two different
+pedantry, and each of the three has already caught something: `646 passed` and
+`782 passed` are both true of this tree at this commit under two different
 `pytest` targets (`tests/phase1` and `tests` — the difference is
 `tests/registration`, where the one known failure lives); the gate prints a different note depending on whether
 `LEAKAUDIT_WORK_ROOT` is set; and **`python` is a name, not a command** — on this
@@ -278,7 +278,7 @@ pandas 3.0.1**:
 | invocation | what it prints |
 |---|---|
 | `py -3.12 -m pytest tests/registration` | 137 collected — **136 passed, 1 failed** |
-| `py -3.12 -m pytest tests` | 763 collected — **758 passed, 1 failed, 4 skipped** |
+| `py -3.12 -m pytest tests` | 787 collected — **782 passed, 1 failed, 4 skipped** |
 | `LEAKAUDIT_WORK_ROOT=<this round's scratch dir> py -3.12 tools/check_registration.py --stage prereg` | **exit 1 — 1 check failed, 1 finding** |
 | `py -3.12 tools/check_registration.py --stage prereg` *(variable unset)* | **exit 1 — 1 check failed, 1 finding**, and `round_reconciliation` reports COVERAGE IS ZERO |
 

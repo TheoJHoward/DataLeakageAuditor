@@ -55,11 +55,11 @@ that reading is false here. So the combinations are listed.
 
 | Python | numpy | pandas | pyarrow | `py -<version> -m pytest tests` | the pipeline's output |
 |---|---|---|---|---|---|
-| 3.12.10 | **1.26.4** | **2.1.4** | **14.0.2** | 591 passed, 4 deferred, 1 known failure | `ddb133ff…` (see below) |
-| 3.12.10 | 2.4.2 | 3.0.1 | 23.0.1 | same | `ddb133ff…` (see below) |
-| 3.12.10 | 2.5.2 | 3.0.5 | 25.0.1 | same | `ddb133ff…` (see below) |
-| 3.13.1 | 2.5.2 | 3.0.5 | 25.0.1 | 601 passed, 5 deferred, 1 known failure | `ddb133ff…` (see below) |
-| **3.11.9** | **1.26.4** | **2.1.4** | **14.0.2** | 632 passed, 4 deferred, 1 known failure — **and this figure no longer reproduces; see below** | `ddb133ff…` (see below) |
+| 3.12.10 | **1.26.4** | **2.1.4** | **14.0.2** | 591 passed, 4 deferred, 1 known failure | `15dc83c7…` **— RETIRED, see below** |
+| 3.12.10 | 2.4.2 | 3.0.1 | 23.0.1 | same | `15dc83c7…` **— RETIRED, see below** |
+| 3.12.10 | 2.5.2 | 3.0.5 | 25.0.1 | same | `15dc83c7…` **— RETIRED, see below** |
+| 3.13.1 | 2.5.2 | 3.0.5 | 25.0.1 | 601 passed, 5 deferred, 1 known failure | `15dc83c7…` **— RETIRED, see below** |
+| **3.11.9** | **1.26.4** | **2.1.4** | **14.0.2** | 632 passed, 4 deferred, 1 known failure — **and this figure no longer reproduces; see below** | `15dc83c7…` **— RETIRED, see below** |
 
 The bolded rows are the declared floor of every dependency dimension at once —
 the last of them at the declared floor of Python too, which is the corner of the
