@@ -168,14 +168,11 @@ dod_work/make_data.py
 dod_work/make_other_formats.py
 dod_work/model.json
 dod_work/modes_model.json
-dod_work/mypipe.py
 dod_work/portability_run.py
 dod_work/py311_out.txt
 dod_work/py313_out.txt
-dod_work/scans.csv
 dod_work/scans.json
 dod_work/scans.parquet
-dod_work/stations.csv
 dod_work/stations.json
 dod_work/stations.parquet
 dod_work/try_library.py
@@ -488,6 +485,11 @@ r228_corner_out.txt
 r228_dev_out.txt
 r228_entry.md
 r228_mv.md
+r229_entry.md
+r229_profile_cost.py
+r229_profile_cost2.py
+r229_setprofile_real.py
+r229_tb.md
 r89.py
 r95_pointer.py
 r95a.py

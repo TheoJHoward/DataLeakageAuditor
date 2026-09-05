@@ -62,6 +62,7 @@ round-specific is a reading, not a measurement**, and it is the author's.
 | Quoting a figure without naming its frame. | R186 | R186–R190 | R190 |
 | Reporting a count produced by a command without the INVOCATION that produced it -- the command, not a description of it. Suite lines, gate lines, manifest counts, guard terms. A count is a figure and its command is its population. | R226 | R226- | -- |
 | Recording `python` as the invocation. It is a NAME, not a command: it resolved to 3.12.10 and later to 3.11.9 in one session with no announcement. The recorded invocation carries the version-selecting launcher (`py -3.12 -m pytest tests`) and the report carries the resolved version. A pin that lives in the operator's habit is the one that failed. | R227 | R227- | -- |
+| Quoting a digest as evidence without the RECIPE that produces it recorded beside it -- what is hashed, in what order, with what line endings, what trailing byte, what encoding, what algorithm -- and its inputs reachable by the reader. A bare hash is the most authoritative-looking unframed figure there is. | R229 | R229- | -- |
 | Repeating any favourable self-assessment before it is checked against the artifact. | R195 | R195–R198 | R198 |
 | A citation of this project's own rule set offered as fact without checking it. | R220 | R220– | — |
 | Any reading of the registration offered as fact without its structural population. | R186 | continuous | — |

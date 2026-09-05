@@ -55,11 +55,11 @@ that reading is false here. So the combinations are listed.
 
 | Python | numpy | pandas | pyarrow | `py -<version> -m pytest tests` | the pipeline's output |
 |---|---|---|---|---|---|
-| 3.12.10 | **1.26.4** | **2.1.4** | **14.0.2** | 591 passed, 4 deferred, 1 known failure | `15dc83c7…` |
-| 3.12.10 | 2.4.2 | 3.0.1 | 23.0.1 | same | `15dc83c7…` |
-| 3.12.10 | 2.5.2 | 3.0.5 | 25.0.1 | same | `15dc83c7…` |
-| 3.13.1 | 2.5.2 | 3.0.5 | 25.0.1 | 601 passed, 5 deferred, 1 known failure | `15dc83c7…` |
-| **3.11.9** | **1.26.4** | **2.1.4** | **14.0.2** | 632 passed, 4 deferred, 1 known failure — **and this figure no longer reproduces; see below** | `15dc83c7…` |
+| 3.12.10 | **1.26.4** | **2.1.4** | **14.0.2** | 591 passed, 4 deferred, 1 known failure | `ddb133ff…` (see below) |
+| 3.12.10 | 2.4.2 | 3.0.1 | 23.0.1 | same | `ddb133ff…` (see below) |
+| 3.12.10 | 2.5.2 | 3.0.5 | 25.0.1 | same | `ddb133ff…` (see below) |
+| 3.13.1 | 2.5.2 | 3.0.5 | 25.0.1 | 601 passed, 5 deferred, 1 known failure | `ddb133ff…` (see below) |
+| **3.11.9** | **1.26.4** | **2.1.4** | **14.0.2** | 632 passed, 4 deferred, 1 known failure — **and this figure no longer reproduces; see below** | `ddb133ff…` (see below) |
 
 The bolded rows are the declared floor of every dependency dimension at once —
 the last of them at the declared floor of Python too, which is the corner of the
@@ -71,6 +71,42 @@ resolution. The known
 failure is the one disclosed at `DEVIATIONS.md` D-V30A-11 and described under
 **Verify** in `README.md`. The fifth deferred test on 3.13 is a
 string-interning-conditional case that has no subject on that interpreter.
+
+
+### The published digest `15dc83c7…` is RETIRED. R229 §0.
+
+**Not because it was wrong — because nobody can regenerate it, including us.**
+Sixteen plausible conventions were computed over the five stored output bodies
+from the original runs — LF and CRLF joins, with and without a trailing
+separator, banner included and excluded, raw bytes, stripped bytes, and from the
+`VERDICT` offset. None produces `15dc83c7`. The five bodies hash **identically to
+one another** under every one of those conventions, so the artifacts agree and the
+portability finding they supported stands; what was lost is the recipe.
+
+**And separately, the code has moved by one line.** The stored 3 September bodies
+and today's differ by exactly one note — the comparator line the tool began
+emitting when the tie branch was wired. That alone would be a softer story than
+the facts support: a digest whose recipe is gone is unusable even at the commit it
+was taken from.
+
+**It is replaced by `ddb133ff2fc959f0efb24124ca4d0f9dfc70f528cd5e1892136436c8dc34d9f1`,
+which spans more than the old one ever did:**
+
+| environment | invocation | digest |
+|---|---|---|
+| CPython 3.11.9, numpy 1.26.4, pandas 2.1.4, pyarrow 14.0.2 — the declared floor corner | `<v311corner>\Scripts\python.exe tools/portability_digest.py` | `ddb133ff2fc959f0…` |
+| CPython 3.12.10, numpy 2.4.2, pandas 3.0.1, pyarrow 23.0.1 — current resolution | `py -3.12 tools/portability_digest.py` | `ddb133ff2fc959f0…` |
+
+That is a Python minor version *and* the full declared dependency range in one
+comparison. The retired number never spanned a Python minor at the floors.
+
+**The recipe travels with it.** `tools/portability_digest.py` prints the body it
+hashes, the rule it hashes it by, and the environment — and its inputs live in
+`tests/phase1/portability_data/` rather than in a session scratch directory, which
+is the specific reason the old one could never have been reproduced by anyone
+else even with the recipe in hand. Each clause of the recipe is asserted in
+`tests/phase1/test_portability_digest.py`, because a prose description of a
+convention decays exactly as the last one did.
 
 ### The corner row was rebuilt on 5 September, and its suite figure did not reproduce
 
@@ -209,7 +245,7 @@ is what the metadata asserts and what no environment had previously occupied: ea
 been exercised alone, and the conjunction had not.
 
 **The suite there is identical on every term to the development environment**, and the canonical
-output digest of the same non-fixture pipeline is `15dc83c7…`, identical to all four other measured
+output digest of the same non-fixture pipeline is `ddb133ff…`, identical to all four other measured
 environments. See the table under **The environments this package was actually measured in** above,
 which now carries this row.
 

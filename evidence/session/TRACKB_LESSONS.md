@@ -918,6 +918,72 @@ different acts:
 **Two established, three named, and the list is a lower bound** — the same
 epistemic position as TB-21's, and for the same reason: the discovery route is
 noticing, not searching.
+
+## TB-23 — *(5 September 2026)* Search for what a thing produced, not only for what it was
+
+**Configuration is transient; output is committed.** A virtualenv's `pyvenv.cfg`
+dies with its directory. The run it hosted printed its versions into a file that
+somebody kept.
+
+**The instance.** Asked whether any environment on this machine had ever been a
+3.11 one, the search read every `pyvenv.cfg` under the session temp root, found
+two and both recording 3.12.10, and concluded *"no venv was ever built on 3.11."*
+Two minutes' worth of evidence to the contrary was sitting in the same tree:
+`dod_work/py311_out.txt`, timestamped two minutes after the 3.11 installer
+finished, carrying `# python 3.11.9 / # numpy 1.26.4 / # pandas 2.1.4 /
+# pyarrow 14.0.2` in its banner. The environment had recorded itself in its own
+output while its configuration was deleted with the directory.
+
+**The population was WRONG, not merely narrow, and the distinction is the
+lesson.** A narrow population under-covers and knows it. This one was chosen so
+that the thing sought could not appear in it: a deleted venv leaves no config by
+construction, so searching configs for evidence of deleted venvs can only ever
+return the answer it returned. **Ask whether the population is one in which the
+thing sought would be visible if it existed** — before running the search, because
+afterwards the empty result reads as an answer.
+
+**And the second evidence type was the durable one.** The scratch directory has
+been pruned repeatedly; the captured outputs survived because they are what runs
+are kept for. That is general: a process's *configuration* is scaffolding and gets
+cleaned up, while its *output* is the reason the work was done and gets retained.
+So a search for evidence that something existed should look at what it emitted
+first, and at how it was set up second.
+
+**A supporting observation from the same round, which is why this is not one
+anecdote.** The retired portability digest `15dc83c78950d42b…` failed in the
+mirror-image way: the outputs survived — five of them, agreeing byte-for-byte
+under every convention tried — and the *procedure* that turned them into the
+published number did not. Output outlived configuration there too. The digest was
+unusable precisely because the transient half was the half nobody committed.
+
+**The tell:** an absence claim whose search space is made of things that get
+deleted. If the answer would be "nothing found" whether or not the thing existed,
+the search has not been run yet.
+
+**SIBLINGS — the question this raises is whether any other "no artifact records
+this" conclusion in the project was reached by searching only for configuration.**
+Not mechanically enumerable: finding one requires reading a past absence claim and
+asking what kind of artifact its population was made of. No sweep is claimed, and
+the exemption is recorded rather than left as silence.
+
+**One instance established** (above). **Two candidates named and not
+adjudicated:**
+
+- **`round_reconciliation`'s residue**, whose population is *files currently in
+  the work root*. A file created and deleted within a round is invisible to it by
+  construction, and the check's claim is about what is left rather than about what
+  happened. Whether that is a gap or the intended scope is unadjudicated.
+- **The probe path set**, whose population is *modules a traced run executed*.
+  `PROBE_PATH_SET.json` already carries this bound in its own terms — the set is a
+  function of which runs measured it — so it may be the case where the discipline
+  was applied correctly rather than a sibling. Named because a candidate ruled out
+  on inspection is worth more than a candidate never raised.
+
+**Related but distinct, kept separate on purpose (R229 §4).** TB-22 is about a
+*safety argument* scoped to the wrong layer. This is about a *search* scoped to
+the wrong artifact type. Both are scope failures and they fail at different
+moments — one before an action, one during an investigation — and merging them
+would give one entry that names neither precisely.
 ---
 
 # THE CLASSIFICATION — made by hand, with its membership list
@@ -931,7 +997,7 @@ share are the vocabulary the whole project is written in — *population*, *sile
 separated TB-19 from TB-12, which are the same lesson one layer apart. Grouping by
 shared vocabulary in a corpus with one vocabulary is grouping by nothing.
 
-**The rule for membership.** All **22** entries are in **exactly
+**The rule for membership.** All **23** entries are in **exactly
 one** family, and the families **jointly cover** all twenty-one — the same totality
 shape the probe path set and the config-key complement use, and for the same
 reason: a classification with an unassigned entry has not classified anything.
@@ -945,7 +1011,7 @@ cross-reference is not a second membership.
 *Declared, cited, documented — and connected to no consumer. The class the config
 complement was built to close, recurring at four different levels.*
 
-**Members: TB-02, TB-14, TB-20, TB-21.** Four of twenty-two.
+**Members: TB-02, TB-14, TB-20, TB-21.** Four of twenty-three.
 
 - **TB-02** — an invariant asserted and cited, enforced by nothing.
 - **TB-14** — an extraction that replaced nothing: a third implementation wearing
@@ -963,7 +1029,7 @@ name reported it absent. That is a claim-side failure, so it sits in F2.
 *The absence claim and the bare number. The two halves of one discipline: say what
 you looked at, and say what the figure rests on.*
 
-**Members: TB-04, TB-05, TB-09, TB-16, TB-17.** Five of twenty-two.
+**Members: TB-04, TB-05, TB-09, TB-16, TB-17, TB-23.** Six of twenty-three.
 
 - **TB-04** — an absence claim about a registered document needs a population too.
 - **TB-05** — a ceiling is a property of the frame, not of the tool.
@@ -973,12 +1039,21 @@ you looked at, and say what the figure rests on.*
   mattered was mechanisms.)*
 - **TB-17** — an events register can never supply a rate, because non-events do not
   present themselves for recording. *(The denominator is the missing population.)*
+- **TB-23** — search for what a thing produced, not only for what it was.
+  *(The population was one in which the thing sought could not appear.)*
+
+**TB-23 is F2's sharpest case and it belongs here rather than with TB-22.** The
+others under-cover a population; this one selects a population in which the
+answer is fixed in advance, so the search returns "nothing found" whether or not
+the thing exists. TB-22 is a *safety argument* scoped to the wrong layer, which
+fails before an action; this is a *search* scoped to the wrong artifact type,
+which fails during an investigation.
 
 ## F3 — A control that does not discriminate
 
 *The positive fires, and the firing establishes less than it appears to.*
 
-**Members: TB-12, TB-15, TB-19.** Three of twenty-two.
+**Members: TB-12, TB-15, TB-19.** Three of twenty-three.
 
 - **TB-12** — a known positive tests the premise, not only the code.
 - **TB-15** — the wrong prediction is the one that pays; a correct one would have
@@ -997,7 +1072,7 @@ distinguishes nothing, and its value was entirely in being falsifiable.
 *It is internally consistent, it is signed, and it does not survive contact with
 execution.*
 
-**Members: TB-03, TB-07, TB-08, TB-10, TB-13.** Five of twenty-two.
+**Members: TB-03, TB-07, TB-08, TB-10, TB-13.** Five of twenty-three.
 
 - **TB-03** — a registration can be internally consistent and still unscoreable.
 - **TB-07** — signed, consistent, and with an acceptance gate that cannot be run.
@@ -1011,7 +1086,7 @@ execution.*
 
 *The collateral, and it lands on whatever the change was holding constant.*
 
-**Members: TB-01, TB-06, TB-18, TB-22.** Four of twenty-two.
+**Members: TB-01, TB-06, TB-18, TB-22.** Four of twenty-three.
 
 - **TB-01** — a merge can resurrect a defect that was deliberately removed.
 - **TB-06** — backticks in a commit message, and a heredoc in a file edit: content
@@ -1028,7 +1103,7 @@ and nobody read it that way until there were two more.
 
 ## F6 — The reading is biased by what it would cost
 
-**Member: TB-11.** One of twenty-two — and the family of one is the finding.
+**Member: TB-11.** One of twenty-three — and the family of one is the finding.
 
 - **TB-11** — claims that could be unfavourable were verified; claims that flatter
   the process were accepted.
