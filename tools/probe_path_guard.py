@@ -101,6 +101,38 @@ def _rel(filename: str) -> str | None:
     return None
 
 
+MONITORING_AVAILABLE = hasattr(sys, "monitoring") and hasattr(
+    getattr(sys, "monitoring", None), "use_tool_id")
+
+
+class Unsupported(RuntimeError):
+    """The instrument cannot run here. NOT a failure, and not a pass either.
+
+    `PREREG.md` §8.2's vocabulary: `unsupported` is accounted separately from
+    findings, everywhere. A guard that cannot run on an interpreter reports that
+    it did not run, which is the same three-state discipline the rest of this
+    project applies to silences -- `none` is not `observed_silence`, and "the
+    recorder is unavailable" is not "no drift".
+    """
+
+
+# WHY THERE IS NO setprofile FALLBACK, MEASURED RATHER THAN ASSERTED. R229 §2(b).
+FALLBACK_MEASURED = (
+    "A `sys.setprofile` fallback was measured on this recorder's actual "
+    "workload -- one whole-frame guard side over the acceptance fixture, "
+    "CPython 3.12.10 -- and REJECTED, but not for its cost, which turned out "
+    "affordable: 379.5 s against a 209.2 s unprofiled baseline (x1.8), where "
+    "`sys.monitoring` cost 185.8 s (x0.9, free within run-to-run noise). It was "
+    "rejected because IT RECORDED HALF THE MODULES: 2 against monitoring's 4 on "
+    "the same run. `PY_START` fires for every code object entered; a `call` hook "
+    "does not, so the fallback's executed set is a SUBSET of the real one -- and "
+    "this guard's whole job is to name modules that ran and are not in the "
+    "recorded set. A recorder that sees less reports 'no drift' more often, "
+    "which is a false negative in the one direction that matters. Closing that "
+    "gap and re-measuring is open work, not a decision already taken."
+)
+
+
 TOOL_ID = 4                      # sys.monitoring "profiler" slot
 
 
@@ -133,9 +165,14 @@ def record_modules():
     while looking more thorough.
     """
     seen: set[str] = set()
+    if not MONITORING_AVAILABLE:                            # pragma: no cover
+        raise Unsupported(
+            "this recorder needs `sys.monitoring`, which is CPython 3.12+, and "
+            "this is %s. The instrument does not run here and says so rather "
+            "than reporting a smaller executed set as if it were the whole one. "
+            "%s" % (".".join(str(v) for v in sys.version_info[:3]),
+                    FALLBACK_MEASURED))
     mon = sys.monitoring
-    if not hasattr(mon, "use_tool_id"):                     # pragma: no cover
-        raise RuntimeError("sys.monitoring is unavailable; this needs 3.12+")
 
     def on_start(code, offset):
         rel = _rel(code.co_filename)

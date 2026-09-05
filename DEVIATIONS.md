@@ -2359,3 +2359,59 @@ job on the file that created it.
 **Expected:** that a claim about which tools work on the declared floor names the
 tools it covers, and that the floor is re-measurable by the same means as
 everything else this project checks.
+
+## D-V30A-62 — the guard is gated on 3.12+, and the fallback was rejected for recording too little rather than for costing too much
+
+**The repair for D-V30A-58**, and the reason it is a gate is measured rather than
+assumed.
+
+**`requires-python` is NOT raised, and that is the substantive half.** Moving it to
+`>=3.12` would narrow a published claim about the **package** to accommodate a
+repository instrument that is not in the package — `pyproject.toml` declares
+`packages = ["leakaudit", "protocol"]`, so `tools/` is not distributed. It would
+make the tool unavailable to 3.11 users for a reason that has nothing to do with
+the tool, which is a number changed to dispose of a problem.
+
+**The guard reports `unsupported`, which is neither a failure nor a pass.**
+`record_modules` raises `probe_path_guard.Unsupported` below 3.12, and the three
+`test_watch_*` tests skip with a reason naming the state, the interpreter and
+where the decision is recorded. `PREREG.md` §8.2 accounts `unsupported` separately
+from findings everywhere, and this is the treatment the cost-deferred fixture
+tests already have. On the floor the suite now reports **779 passed, 7 skipped, 1
+known failure** — three of those skips being this instrument declining to run,
+where two days ago they were three false failures.
+
+**THE FALLBACK WAS MEASURED ON THE RECORDER'S ACTUAL WORKLOAD** — one whole-frame
+guard side over the acceptance fixture, CPython 3.12.10 — after two smaller
+attempts produced backwards answers and are recorded as failures of sizing:
+
+| recorder | wall clock | ratio | modules recorded |
+|---|---|---|---|
+| none | 209.2 s | ×1.0 | 0 |
+| `sys.monitoring` | 185.8 s | ×0.9 | **4** |
+| `sys.setprofile` | 379.5 s | ×1.8 | **2** |
+
+**The cost turned out affordable, which corrects a belief carried since R216.**
+The module's own docstring records setprofile as giving *"no answer in fifteen
+minutes"*, and R216 recorded a guard run *"over thirty-four minutes against a usual
+eight and a half"* — both lower bounds from runs that were killed rather than
+completed. The completed figure is ×1.8.
+
+**It is rejected on correctness instead.** It recorded **half the modules** on the
+same run. `PY_START` fires for every code object entered; a `call` hook does not,
+so the fallback's executed set is a subset of the real one. This guard exists to
+name modules that ran and are absent from the recorded set, so a recorder that
+sees less reports "no drift" more often — a false negative in the one direction the
+instrument was built to prevent. **A cheap guard that under-reports is worse than
+one that says it did not run.**
+
+**Stated as open work rather than closed.** Whether a corrected setprofile hook —
+one that also catches module-level execution and matches monitoring's four — would
+still cost ×1.8 is unknown; it would do strictly more work, so ×1.8 is a floor on
+that variant, not an estimate. `FALLBACK_MEASURED` in `tools/probe_path_guard.py`
+carries the numbers so the next person to propose the fallback meets the
+measurement rather than the intuition.
+
+**Expected:** that an instrument which cannot run on an interpreter says so, and
+that a fallback is accepted or refused on what it records, not only on what it
+costs.

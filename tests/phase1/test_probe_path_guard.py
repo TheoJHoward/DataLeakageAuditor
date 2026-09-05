@@ -20,6 +20,26 @@ for p in (str(ROOT), str(ROOT / "src"), str(ROOT / "tools")):
 
 import probe_path_guard as ppg                                    # noqa: E402
 
+# THE RECORDER IS 3.12+, AND ITS ABSENCE IS `unsupported`, NOT `failed`. R229 §2.
+#
+# `record_modules` uses `sys.monitoring`. On CPython 3.11 -- which this project
+# declares as its floor -- these three tests raised `AttributeError` and were
+# reported as FAILURES, which is a false statement about the tool: nothing is
+# broken there, the instrument simply does not run. `PREREG.md` §8.2 accounts
+# `unsupported` separately from findings everywhere, and this is the same
+# discipline the cost-deferred fixture tests already get.
+#
+# The reason it is a gate and not a fallback is MEASURED and lives in
+# `ppg.FALLBACK_MEASURED`: setprofile was affordable (x1.8) and recorded HALF the
+# modules, which is the wrong direction for a staleness guard.
+needs_monitoring = pytest.mark.skipif(
+    not ppg.MONITORING_AVAILABLE,
+    reason="UNSUPPORTED on CPython %s: this guard's recorder needs "
+           "`sys.monitoring` (3.12+). Not a failure and not a pass -- the "
+           "instrument did not run here. See ppg.FALLBACK_MEASURED for why "
+           "there is no setprofile fallback."
+           % ".".join(str(v) for v in sys.version_info[:3]))
+
 
 def test_the_recorded_set_loads_and_names_the_probe_module():
     s = ppg.path_set()
@@ -94,6 +114,7 @@ def test_the_refusal_is_not_an_empty_set(tmp_path, monkeypatch):
 # THE STALENESS TRIGGER. It reports a module that EXECUTED and is not recorded.
 # ---------------------------------------------------------------------------
 
+@needs_monitoring
 def test_watch_is_quiet_when_nothing_unrecorded_runs():
     said = []
     with ppg.watch(report=said.append):
@@ -101,6 +122,7 @@ def test_watch_is_quiet_when_nothing_unrecorded_runs():
     assert len(said) == 1 and "no drift" in said[0], said
 
 
+@needs_monitoring
 def test_watch_REPORTS_a_module_that_ran_and_is_not_recorded(monkeypatch, tmp_path):
     """The positive: pretend availability.py was never recorded, then run it."""
     p = tmp_path / "PROBE_PATH_SET.json"
@@ -123,6 +145,7 @@ def test_watch_REPORTS_a_module_that_ran_and_is_not_recorded(monkeypatch, tmp_pa
         "a reader whether re-measuring is overdue: %s" % said[0])
 
 
+@needs_monitoring
 def test_watch_does_not_report_third_party_frames(monkeypatch, tmp_path):
     """pandas running is not drift in this package's path set."""
     p = tmp_path / "PROBE_PATH_SET.json"

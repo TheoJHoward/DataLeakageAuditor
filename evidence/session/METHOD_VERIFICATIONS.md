@@ -1186,3 +1186,69 @@ project declares as its floor.
 **Not established:** whether any other repository tool has acquired a 3.12-only
 dependency in the same way. Only `probe_path_guard.py` was implicated by the
 failures, and no sweep was run.
+
+---
+
+## MV-16 — the setprofile fallback is affordable and records half the modules
+
+*(5 September 2026, R229 §2(b). Every figure carries its command and its resolved
+interpreter.)*
+
+**The claim tested:** whether a `sys.setprofile` fallback could give the probe
+path guard coverage on the declared floor, where `sys.monitoring` does not exist.
+
+**Two earlier sizings are recorded as failures of sizing rather than deleted**,
+because both produced a confident answer that was backwards. The forty-row
+warehouse frames and a 2,000-row synthetic frame both leave an unprofiled baseline
+of **0.05 s**, at which fixed setup dominates: setprofile came out ×2 and
+`sys.monitoring` ×7–10, i.e. monitoring looking five times more expensive than the
+thing it replaced. A per-call cost has to be measured where per-call cost
+dominates, and no small workload in this project has that property.
+
+**So it was measured on the recorder's actual workload** — one whole-frame guard
+side, `run_probe_a` over the acceptance fixture at `stride=997, max_cohorts=300`,
+which is exactly what `watch()` wraps in `guard_wholeframe.py`. CPython 3.12.10,
+numpy 2.4.2, pandas 3.0.1; fixture captured in 43 s; imports warmed before each
+timed run because import time counts as execution:
+
+| recorder | wall clock | ratio | modules recorded |
+|---|---|---|---|
+| none | 209.2 s | ×1.0 | 0 |
+| `sys.monitoring` (what ships) | 185.8 s | ×0.9 | **4** |
+| `sys.setprofile` (the fallback) | 379.5 s | ×1.8 | **2** |
+
+**The cost is affordable, and that corrects a belief this project has carried
+since R216.** The docstring in `probe_path_guard.py` records setprofile as having
+produced *"no answer in fifteen minutes against an unprofiled 288 seconds"* on the
+fixture build, and R216 recorded a guard run *"over thirty-four minutes against a
+usual eight and a half"*. Both were lower bounds from runs that were killed. The
+completed measurement is **×1.8** — expensive, not prohibitive. Two guard sides at
+that rate is about 12.6 minutes against 7, which somebody would wait for.
+
+**Monitoring's overhead is nil**, ×0.9 being run-to-run noise, which does confirm
+the reason it was adopted.
+
+**AND THE FALLBACK IS REJECTED ANYWAY, FOR A REASON THAT IS NOT COST.** It
+recorded **2 modules where monitoring recorded 4, on the same workload**.
+`sys.monitoring`'s `PY_START` fires for every code object entered; a `call` hook
+does not. So the fallback's executed set is a **subset** of the real one — and this
+guard exists to name modules that executed and are *not* in the recorded set. A
+recorder that sees less reports "no drift" more often. That is a false negative in
+the one direction the instrument was built to prevent, and a cheap guard that
+under-reports is worse than a guard that says it did not run.
+
+**So: gate, not fallback.** `record_modules` raises `probe_path_guard.Unsupported`
+below 3.12, the three `test_watch_*` tests report **unsupported** rather than
+failing, and `FALLBACK_MEASURED` in that module carries these numbers so the next
+person to propose the fallback meets the measurement rather than the intuition.
+
+**What this does NOT establish, in the same breath.** Whether a *corrected*
+setprofile hook — one that also fires on module-level execution and matches
+monitoring's four — would still cost ×1.8. It would do strictly more work, so ×1.8
+is a floor on that variant's cost, not an estimate of it. Closing that gap and
+re-measuring is open work; it is not a decision already taken, and the gate is
+what ships meanwhile.
+
+**One measurement, one machine, one workload, one commit.** The ratio is not
+claimed to hold for other workloads, and the two mis-sized attempts above are the
+evidence that it does not.

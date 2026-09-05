@@ -490,6 +490,8 @@ r229_profile_cost.py
 r229_profile_cost2.py
 r229_setprofile_real.py
 r229_tb.md
+r229c_entry.md
+r229c_mv.md
 r89.py
 r95_pointer.py
 r95a.py

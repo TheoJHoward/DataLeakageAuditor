@@ -59,7 +59,7 @@ that reading is false here. So the combinations are listed.
 | 3.12.10 | 2.4.2 | 3.0.1 | 23.0.1 | same | `15dc83c7…` **— RETIRED, see below** |
 | 3.12.10 | 2.5.2 | 3.0.5 | 25.0.1 | same | `15dc83c7…` **— RETIRED, see below** |
 | 3.13.1 | 2.5.2 | 3.0.5 | 25.0.1 | 601 passed, 5 deferred, 1 known failure | `15dc83c7…` **— RETIRED, see below** |
-| **3.11.9** | **1.26.4** | **2.1.4** | **14.0.2** | 632 passed, 4 deferred, 1 known failure — **and this figure no longer reproduces; see below** | `15dc83c7…` **— RETIRED, see below** |
+| **3.11.9** | **1.26.4** | **2.1.4** | **14.0.2** | 632 passed, 4 deferred, 1 known failure — **stale; re-measured below** | `15dc83c7…` **— RETIRED, see below** |
 
 The bolded rows are the declared floor of every dependency dimension at once —
 the last of them at the declared floor of Python too, which is the corner of the
@@ -138,6 +138,36 @@ pipeline agrees. What is false is this row's suite figure, and what is broken is
 repository instrument on the interpreter declared as the floor. Disclosed at
 `DEVIATIONS.md` D-V30A-58; the repair is a decision about the floor and is not
 made here.
+
+
+**RE-MEASURED 5 September, and the floor is green but for the known failure.**
+`py -3.12 tools/floor_check.py <corner>\Scripts\python.exe`, whose output is the
+row below rather than a number anybody typed:
+
+| Python | numpy | pandas | pyarrow | `python -m pytest tests` | the pipeline's output |
+|---|---|---|---|---|---|
+| **3.11.9** | **1.26.4** | **2.1.4** | **14.0.2** | **779 passed, 7 skipped, 1 known failure** — 37 s | `ddb133ff2fc9…` |
+
+**The three extra failures are gone and did not become passes.** They are
+`unsupported`: the path guard's recorder needs `sys.monitoring`, which is CPython
+3.12+, so on the floor the instrument does not run and says so. `PREREG.md` §8.2
+accounts `unsupported` separately from findings, which is why 4 skipped became 7
+rather than 4 failures becoming 1.
+
+**`requires-python = ">=3.11"` is unchanged, deliberately.** Raising it to `>=3.12`
+would narrow a published claim about the *package* to accommodate a repository
+instrument that is not in the package — `tools/` is not distributed. That would
+make the tool unavailable to 3.11 users for a reason that has nothing to do with
+the tool.
+
+**And a `setprofile` fallback was measured and rejected, but not for its cost.**
+On the recorder's actual workload — one whole-frame guard side over the acceptance
+fixture, CPython 3.12.10 — setprofile cost 379.5 s against a 209.2 s unprofiled
+baseline (×1.8), where `sys.monitoring` cost 185.8 s (×0.9, free within noise). It
+was rejected because **it recorded half the modules**: 2 against monitoring's 4 on
+the same run. A staleness guard that sees less reports "no drift" more often,
+which is a false negative in the only direction that matters. Closing that gap is
+open work, not a decision already taken.
 
 ### Two things this table does NOT say
 
