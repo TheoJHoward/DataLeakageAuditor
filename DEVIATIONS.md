@@ -2486,3 +2486,124 @@ choice, for the reason now measured rather than the reason then assumed: it cost
 nothing detectable (×0.9, within run-to-run noise) and records strictly more.
 
 **Expected:** that a number offered as a cost came from a run that finished.
+
+## D-V30A-65 — the label screen is renamed to its mechanism and extended with a rank statistic
+
+**Both, because neither alone is honest**, and the sentence that decided it was
+one this project had already written: *extending narrows the gap without closing
+it, since both statistics compare single columns.*
+
+**RENAMED.** `check_label_under_another_name` becomes
+`check_pairwise_label_correlation`. The old name promised **any** relabelling of
+the target and described a goal rather than a test; a user who saw it report
+nothing concluded their features contained no relabelled copy of the label. **A
+name describing the goal will always overstate a pairwise test**, however good
+the test becomes — which is why the rename was not made redundant by the
+extension. **There is no alias.** An alias keeps the misleading name reachable,
+which is the thing being repaired. The public export moves with it; the package
+has no released version and no known external caller, and that cost only grows.
+
+**EXTENDED with Spearman**, and the class it recovers is not marginal. Measured on
+2,000 rows against a continuous label, CPython 3.12.10, numpy 2.4.2, pandas 3.0.1:
+
+| case | Pearson | Spearman |
+|---|---|---|
+| `y**3` | 0.73936 | **1.00000** |
+| `sign(y)·√\|y\|` | 0.96285 | **1.00000** |
+| `rank(y)` | 0.97747 | **1.00000** |
+| `1/(1+e^-5y)` | 0.90091 | **1.00000** |
+
+**Every one is a perfect copy of the label** — invertible, rank order intact, no
+information lost — and Pearson passed all four at any threshold anyone would set.
+Spearman catches them at exactly 1.000, because Spearman is Pearson on the ranks
+and a monotone transform does not move ranks. **The cutoff was never the dial**,
+which is the finding that made this an extension rather than a re-tuning.
+
+**BOTH SCREENS AND BOTH THRESHOLDS ARE NAMED IN THE OUTPUT**, including in the
+silence. A frame naming one of two screens is the same defect one size smaller.
+And a finding names *which* screen fired, because a linear duplicate and a
+monotone one call for different follow-up.
+
+**THE BOUND IS MEASURED AND STATED, NOT INFERRED.** `y**2` is a perfect
+**non-monotone** copy of a label and screens at Pearson 0.011, Spearman 0.022 —
+**neither statistic sees it**. And a label reconstructed from several columns is
+invisible to any pairwise test by construction. Both are in the check's own
+silence line.
+
+**The Spearman threshold is 0.999 and the choice is uninteresting**, which is
+worth saying so nobody re-opens it: every monotone copy scores exactly 1.000, so
+no cutoff below 1 does any work on the class the extension was added for. On a
+binary label the two statistics coincide exactly — a two-valued column's ranks are
+a monotone function of its values — so the extension buys nothing there and costs
+a second correlation. That is the honest price and it is small: at the acceptance
+fixture's shape, 338,159 rows × 29 features, the rank-once form costs 1.409 s
+against Pearson's 0.097 s, roughly doubling a check that already took 1.291 s.
+
+**AND THE REFUSAL-CANDIDATE SET IS NOW EMPTY, WHICH IS NOT THE SAME AS
+NEVER-POPULATED.** R222's defaults instrument raised two candidates; both have
+been adjudicated and neither was dropped. `declared_bar_duration` left at R226 §1
+when the config key it was filed for was wired and the inference route was ruled
+to stay. This one leaves here. The reason each departed is quoted at its new site,
+and the tracer still fails on any new unclassified default, so the set repopulates
+the moment a defaulted parameter appears that nobody has judged.
+
+**Expected:** that a check's name describes what runs, and that a screen with a
+known blind spot says so in the result rather than in a document.
+
+## D-V30A-66 — the whole-frame guard's SAME was a believed silence, and the guard lived in a scratch directory
+
+**Two defects in one instrument, and the second is why the first could not be
+repaired where it was.**
+
+**THE RELATION WAS NEVER CHECKED.** The guard compares eight terms against the
+committed population run and reports SAME. That establishes that eight numbers
+match eight committed numbers; it was read as *"the probe still works"*, which is
+wider. **The guard's SAME was a believed silence** — R215 §0's refinement, which
+says a result every plausible wrong instrument would also produce tests wiring
+rather than validity, pointed at the guard itself. This is the instrument that
+has gated more rounds' evidence than any other.
+
+**The relation between the two sides:** the contaminated side is the fixture with
+a known leak, the corrected side is the same fixture without it, so **the
+contaminated side FINDS and the corrected side does not**. Until now that held
+only because the committed baseline happened to encode it — a property of the
+arrangement rather than a checked fact.
+
+**Why checking it separately is not redundant**, which is the question to ask of
+any second check. The term comparison's authority is a file in this repository. A
+baseline edited by a bad merge, a regenerated artifact or a hand would make the
+comparison pass against the edited values and report SAME. **The relation is a
+property of the RUN, not of the baseline**, so it survives a corrupted baseline
+and fails on one that no longer describes a discriminating probe.
+
+**It is checked FIRST and halts with its own exit code.** Reading a term-by-term
+SAME from a pair of sides that do not discriminate is reading a coincidence of two
+numbers, so the comparison is not printed at all if the relation fails — and exit
+3 is distinct from the MOVED halt's exit 2, so a caller can tell *the numbers
+changed* from *the numbers mean nothing*.
+
+**THE GUARD LIVED IN A SESSION SCRATCH DIRECTORY.** It is now
+`tools/wholeframe_guard.py`, with its repository root derived rather than
+hardcoded to one machine. R229 §1's list had already named this as the next thing
+worth doing and it is not documentation: **an assertion that lives in a file that
+can vanish is an assertion nobody can re-run**, which is the property that made
+`15dc83c7…` unreproducible (D-V30A-60) and the corner environment unrebuildable
+(D-V30A-58). Adding a relation check to a file in a directory that gets cleaned
+would have been adding it nowhere.
+
+**AND THE MOVE IMMEDIATELY PRODUCED A DEFECT OF ITS OWN, recorded because it is
+the more interesting half.** The guard was a script with its body at module level.
+The first test file to import it for its pure functions **ran the entire
+nine-minute guard as an import side effect** — and passed, in 421 seconds. A test
+that takes seven minutes to assert a dictionary comparison is one nobody keeps
+running, and nothing in the test said why. The run is now behind `main()`; the
+same tests take 0.49 s.
+
+**The relation is tested against constructed inputs, not by running the guard.**
+Both sides silent, both sides finding, the sides reversed, a verdict with no
+records behind it, and a missing side — each fails, and the report names which
+limb. **A passing live run would never exhibit any of them**, so a test that only
+ran the guard would assert nothing about the relation's teeth.
+
+**Expected:** that an instrument's clean result establishes the instrument could
+have said something else, and that the instrument lives where it can be re-run.

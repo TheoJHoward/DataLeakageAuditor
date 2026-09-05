@@ -27,7 +27,7 @@ for p in (str(ROOT), str(ROOT / "src")):
 
 from leakaudit.checks import (                                     # noqa: E402
     FINDING, NONE, OBSERVED_SILENCE, check_constant_columns,
-    check_duplicate_rows_across_split, check_label_under_another_name,
+    check_duplicate_rows_across_split, check_pairwise_label_correlation,
     check_split_validity, render, run_all)
 
 
@@ -153,7 +153,7 @@ def test_constant_columns_declares_it_is_not_a_registered_row():
 def test_label_under_another_name_fires_on_an_identical_column():
     df = pd.DataFrame({"y": [1, 0, 1, 0], "copy": [1, 0, 1, 0],
                        "other": [5, 2, 9, 1]})
-    r = check_label_under_another_name(df, label="y")
+    r = check_pairwise_label_correlation(df, label="y")
     assert r.outcome == FINDING
     assert [f.subject for f in r.findings] == ["copy"]
     assert "identical to the label" in str(r.findings[0])
@@ -164,7 +164,7 @@ def test_label_under_another_name_fires_on_a_rescaled_copy():
     y = rng.standard_normal(50)
     df = pd.DataFrame({"y": y, "scaled": y * 3.0 + 1.0,
                        "noise": rng.standard_normal(50)})
-    r = check_label_under_another_name(df, label="y")
+    r = check_pairwise_label_correlation(df, label="y")
     assert [f.subject for f in r.findings] == ["scaled"]
 
 
@@ -175,26 +175,26 @@ def test_label_under_another_name_is_silent_on_ordinary_features():
     y = rng.standard_normal(200)
     df = pd.DataFrame({"y": y, "weak": y * 0.4 + rng.standard_normal(200),
                        "none": rng.standard_normal(200)})
-    r = check_label_under_another_name(df, label="y")
+    r = check_pairwise_label_correlation(df, label="y")
     assert r.outcome == OBSERVED_SILENCE
 
 
 def test_label_under_another_name_says_when_no_label_was_declared():
     df = pd.DataFrame({"a": [1, 2], "b": [1, 2]})
-    r = check_label_under_another_name(df)
+    r = check_pairwise_label_correlation(df)
     assert r.outcome == NONE
     assert "no label column was declared" in r.explain()
 
 
 def test_label_under_another_name_says_when_the_label_is_absent():
-    r = check_label_under_another_name(pd.DataFrame({"a": [1, 2]}), label="y")
+    r = check_pairwise_label_correlation(pd.DataFrame({"a": [1, 2]}), label="y")
     assert r.outcome == NONE
     assert "is not in the built frame" in r.explain()
 
 
 def test_it_reports_a_candidate_rather_than_a_verdict():
     df = pd.DataFrame({"y": [1, 0, 1, 0], "copy": [1, 0, 1, 0]})
-    r = check_label_under_another_name(df, label="y")
+    r = check_pairwise_label_correlation(df, label="y")
     assert any("does not adjudicate" in n for n in r.notes)
 
 

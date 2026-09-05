@@ -1218,8 +1218,13 @@ timed run because import time counts as execution:
 | `sys.setprofile` (the fallback) | 379.5 s | ×1.8 | **2** |
 
 **The cost is affordable, and that corrects a belief this project has carried
-since R216.** The docstring in `probe_path_guard.py` records setprofile as having
-produced *"no answer in fifteen minutes against an unprofiled 288 seconds"* on the
+since R216.** *(Both figures in this paragraph are STOPPED runs that were quoted
+as costs. Swept and dispositioned at R231 §2 —
+`evidence/session/COST_FIGURES_SWEEP.md`, D-V30A-64. The fifteen-minute one has
+been rewritten at its source; the thirty-four-minute one is left as the bound it
+already reads as.)* The docstring in `probe_path_guard.py` recorded setprofile as
+having produced *"no answer in fifteen minutes against an unprofiled 288
+seconds"* on the
 fixture build, and R216 recorded a guard run *"over thirty-four minutes against a
 usual eight and a half"*. Both were lower bounds from runs that were killed. The
 completed measurement is **×1.8** — expensive, not prohibitive. Two guard sides at

@@ -46,6 +46,7 @@ COVERED = {
     "portability_digest": "tests/phase1/test_portability_digest.py",
     "probe_path_guard": "tests/phase1/test_probe_path_guard.py",
     "safe_edit": "tests/phase1/test_safe_edit.py",
+    "wholeframe_guard": "tests/phase1/test_wholeframe_relation.py",
 }
 
 # module -> why nothing reaches it. Not an excuse; a statement of the gap.

@@ -494,6 +494,8 @@ r229c_entry.md
 r229c_mv.md
 r230_entry.md
 r230_tb.md
+r231_entry.md
+r231b_entry.md
 r89.py
 r95_pointer.py
 r95a.py

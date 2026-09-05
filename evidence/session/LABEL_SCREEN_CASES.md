@@ -3,8 +3,14 @@
 Nothing here is a `PREREG.md` §6.2 result and no figure here belongs beside the
 Phase 1 acceptance figures. This is a Phase 2 instrument report.
 
-**What this file is for.** `check_label_under_another_name` screens each feature
-against the declared label at Pearson `|r| >= 0.999`. R222's defaults instrument
+> **SUPERSEDED IN PART AT R231 §5, and left in place.** The check is now
+> `check_pairwise_label_correlation` and screens under Pearson **and Spearman**.
+> The Pearson-only tables below are what produced that decision and are the record
+> of it; the two-statistic measurement is appended at the end of this file. A
+> dated measurement is not rewritten to carry a later result.
+
+**What this file is for.** `check_label_under_another_name` (as it was then)
+screens each feature against the declared label at Pearson `|r| >= 0.999`. R222's defaults instrument
 put that number in the **should_refuse** set as a candidate: a threshold the user
 cannot see, which did not appear in the check's own output, so a silence it
 produced was a figure without its frame. R224 §4 item 1 split the repair in two —
@@ -97,7 +103,59 @@ cutoff. That is a new check with its own known positives and its own registered
 position, not a parameter on this one, and it is named here so that "no key" does
 not read as "nothing more to do."
 
+> **THAT IS WHAT HAPPENED, at R231 §5** — though as an extension of this check
+> rather than a separate one, because the two screens share their population,
+> their label, their per-column loop and their output, and splitting them would
+> have given a user two silences to reconcile instead of one result. The
+> prediction that a rank statistic would catch every monotone copy **held
+> exactly**: all four score 1.000.
+
 **Where the number lives meanwhile.** In the signature, with a default, and in
 the output on every run. It stays in R222's `should_refuse` candidate set with
 its reason updated: the naming half is closed, and the key half is declined with
 these cases as the reason rather than deferred without one.
+
+---
+
+## The cases under BOTH statistics — measured at R231, when the extension shipped
+
+2,000 rows, seeded (`default_rng(19)`), `py -3.12`, CPython 3.12.10, numpy 2.4.2,
+pandas 3.0.1. Both screens at 0.999.
+
+| case, against a continuous label | Pearson | Spearman | caught? |
+|---|---|---|---|
+| exact copy | 1.00000 | 1.00000 | both |
+| affine `3y+7` | 1.00000 | 1.00000 | both |
+| **monotone `y**3`** | 0.73936 | **1.00000** | **Spearman only** |
+| **monotone `sign(y)·√\|y\|`** | 0.96285 | **1.00000** | **Spearman only** |
+| **`rank(y)`** | 0.97747 | **1.00000** | **Spearman only** |
+| **logistic `1/(1+e^-5y)`** | 0.90091 | **1.00000** | **Spearman only** |
+| `y` + noise sd 0.02 | 0.99979 | 0.99975 | neither (both just under) |
+| `y` + noise sd 0.05 | 0.99868 | 0.99856 | neither |
+| `y` + noise sd 0.30 | 0.95409 | 0.94909 | neither |
+| **NON-monotone `y**2`** | **0.01117** | **0.02177** | **NEITHER — a perfect copy both are blind to** |
+| unrelated | 0.00198 | 0.00147 | neither |
+
+| case, against a binary label | Pearson | Spearman |
+|---|---|---|
+| exact copy | 1.00000 | 1.00000 |
+| `1-y`, perfect inverse | 1.00000 | 1.00000 |
+| 1% of labels flipped | 0.97500 | 0.97500 |
+| 5% of labels flipped | 0.91712 | 0.91712 |
+
+**Why 0.999 for the Spearman screen too, and why the choice is uninteresting.**
+Every monotone copy above scores **exactly 1.000**, so no cutoff below 1 is doing
+any work on the class the extension was added for. Matching the Pearson number
+keeps the pair symmetric, and the two statistics diverge only on the noise rows,
+where they agree to three decimal places anyway. **The threshold was never the
+dial** — that was the finding that produced the extension, and it applies to the
+new threshold as much as to the old one.
+
+**On a binary label the two statistics coincide**, which is expected: a
+two-valued column's ranks are a monotone function of its values. The extension
+buys nothing there and costs a second correlation, which is the honest price.
+
+**`y**2` is the bound and it is now in the check's own output.** It reproduces
+the label exactly — every value determined, no information lost — and screens at
+0.011 and 0.022. A silence from this check is a silence about **monotone**
+pairwise resemblance, and about nothing wider.

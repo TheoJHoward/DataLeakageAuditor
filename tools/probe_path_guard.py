@@ -146,14 +146,33 @@ def record_modules():
     in it and not in the probe's -- and merging the two for tidiness would make
     one file answer two questions badly. See R213 §3.
 
-    USES `sys.monitoring`, NOT `sys.setprofile`, AND THE REASON IS MEASURED. The
-    setprofile version fires on every Python call for the life of the run. Over
-    the opt-in fixture tests -- a real multi-million-row rebuild -- it had
-    produced no answer after fifteen minutes against an unprofiled runtime of
-    288 seconds, and was abandoned rather than waited out. `sys.monitoring` can
-    DISABLE itself per code object, so each function is seen once and costs
-    nothing thereafter: the answer wanted here is which files executed, not how
-    often, and a first sighting is the whole of it.
+    USES `sys.monitoring`, NOT `sys.setprofile`, AND THE REASON IS MEASURED --
+    though not by the figure this docstring carried for four rounds. The
+    setprofile version fires on every Python call for the life of the run.
+    `sys.monitoring` can DISABLE itself per code object, so each function is seen
+    once and costs nothing thereafter: the answer wanted here is which files
+    executed, not how often, and a first sighting is the whole of it.
+
+    THE OLD FIGURE WAS A STOPPED RUN QUOTED AS A COST. R231 §2. This paragraph
+    read *"over the opt-in fixture tests it had produced no answer after fifteen
+    minutes against an unprofiled runtime of 288 seconds, and was abandoned
+    rather than waited out."* Every word is true and the number is a LOWER BOUND:
+    somebody stopped the run. Sitting beside a real 288-second baseline it
+    invited a ratio, and any ratio computed from it is wrong.
+
+    MEASURED TO COMPLETION AT R229, on the workload `watch()` actually wraps --
+    one whole-frame guard side over the acceptance fixture, CPython 3.12.10:
+
+        none          209.2 s   x1.0   modules recorded 0
+        monitoring    185.8 s   x0.9   modules recorded 4
+        setprofile    379.5 s   x1.8   modules recorded 2
+
+    **x1.8, not prohibitive** -- so the original decision rested on a
+    non-measurement and was right for a reason nobody had found yet. The reason
+    is the third column: setprofile records HALF the modules, because `PY_START`
+    fires for every code object entered and a `call` hook does not. See
+    `FALLBACK_MEASURED` above, and `evidence/session/COST_FIGURES_SWEEP.md` for
+    the sweep this correction came out of.
 
     IMPORT TIME COUNTS AS EXECUTION, and a caller who does not want it must warm
     its imports before entering. A module's top level runs on first import, so a

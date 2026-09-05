@@ -1,5 +1,27 @@
 # `check_label_under_another_name` — rename or extend, both costs
 
+> **CLOSED AT R231 §5: BOTH.** The decision was neither/or. Extend with Spearman,
+> because it catches a whole class Pearson is blind to and costs ~1.4 s on the
+> largest frame this project has. **And rename anyway**, because after extending,
+> a name promising *the label under another name* still overstates a **pairwise**
+> test — it always would, however good the test got. The check is now
+> `check_pairwise_label_correlation`, named for its mechanism, with **no alias**:
+> an alias keeps the misleading name reachable, which is the thing being repaired.
+>
+> What the extension bought, measured on 2,000 rows against a continuous label:
+> `y**3` 0.739 → **1.000**, `sign(y)·√|y|` 0.963 → **1.000**, `rank(y)` 0.977 →
+> **1.000**, `1/(1+e^-5y)` 0.901 → **1.000**. Four perfect copies that Pearson
+> passed at any threshold, all caught at exactly 1.000.
+>
+> What it did not buy, and the silence now says so: `y**2` is a perfect
+> **non-monotone** copy and screens at Pearson 0.011 / Spearman 0.022 — **neither
+> statistic sees it** — and a label reconstructed from several columns is
+> invisible to any pairwise test by construction.
+>
+> The costs below are left as written. They were the input to the decision and
+> rewriting them would delete the reasoning that produced it.
+
+
 Nothing here is a `PREREG.md` §6.2 result and no figure here belongs beside the
 Phase 1 acceptance figures.
 

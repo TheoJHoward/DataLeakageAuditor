@@ -24,12 +24,18 @@ WHICH OF THESE ARE ROWS OF THE REGISTERED TABLE, STATED ACCURATELY. PREREG.md
                                        non-empty"
     duplicate_rows_across_split
                               L1.4a -- "Exact duplicate rows across split"
-    label_under_another_name  L2b's NEIGHBOURHOOD -- a single-feature screen
-                                       against the label. L2b is a REVIEW row
-                                       with `domain_judgment` basis and its
-                                       adjudication is deferred to a module that
-                                       does not exist, so this is not that row;
-                                       it is a check of the same shape.
+    pairwise_label_correlation
+                              L2b's NEIGHBOURHOOD -- each feature screened
+                                       against the label one column at a time,
+                                       under Pearson AND Spearman. L2b is a
+                                       REVIEW row with `domain_judgment` basis
+                                       and its adjudication is deferred to a
+                                       module that does not exist, so this is
+                                       not that row; it is a check of the same
+                                       shape. Named `label_under_another_name`
+                                       until R231, which named a goal rather
+                                       than a mechanism and so overstated a
+                                       pairwise test however good the test got.
     constant_columns          NOT A ROW OF THE TABLE. An ordinary data-quality
                                        check, useful and unregistered.
 
@@ -73,16 +79,15 @@ class CheckResult:
     did_not_look_because: str = ""
     findings: tuple = ()
     notes: list = field(default_factory=list)
-    # WHAT THE SILENCE IS ABOUT, where the check's NAME is broader than its test.
-    # R226 §2(d). A silence is read in the frame its name supplies: a user who
-    # sees `label_under_another_name` report nothing concludes that no feature is
-    # a relabelled copy of the target, and what was tested is near-exact LINEAR
-    # duplication of single columns. The name is a false statement about the
-    # behaviour, and it is a false statement in the user-facing surface, which is
-    # the only surface a user has. Until the name and the test are made to agree
-    # -- rename, or extend; R226 §2(a) puts that choice to the author -- the
-    # SENTENCE says what was actually established, because an overstated silence
-    # is worse than a narrow one: it stops the user looking.
+    # WHAT THE SILENCE IS ABOUT, where a reader would take it for more than it
+    # is. R226 §2(d), widened at R231. A silence is read in the frame its name
+    # supplies, and the first case was a name that was simply false --
+    # `label_under_another_name` promised any relabelling and tested near-exact
+    # LINEAR duplication of single columns. That name is gone. The field stays
+    # because renaming to the mechanism does not make a scope obvious: a
+    # PAIRWISE correlation screen is still narrower than a reader assumes, and
+    # what it cannot see is measured rather than guessed at. An overstated
+    # silence is worse than a narrow one -- it stops the user looking.
     silence_is_about: str = ""
 
     @property
@@ -102,10 +107,9 @@ class CheckResult:
                 "\n".join("  - %s" % f for f in self.findings))
         if self.silence_is_about:
             return ("%s: nothing found over %s. The check ran.\n"
-                    "  THIS SILENCE IS ABOUT %s -- the check's NAME is broader "
-                    "than what it tested, so read the silence in the narrower "
-                    "frame." % (self.check, self.population,
-                                self.silence_is_about))
+                    "  THIS SILENCE IS ABOUT %s -- narrower than the "
+                    "check's name suggests, so read it in that frame."
+                    % (self.check, self.population, self.silence_is_about))
         return "%s: nothing found over %s. The check ran." % (
             self.check, self.population)
 
@@ -239,27 +243,57 @@ def check_constant_columns(frame: pd.DataFrame) -> CheckResult:
 
 
 # ---------------------------------------------------------------------------
-# L2b's neighbourhood -- the label under another name
+# L2b's neighbourhood -- a PAIRWISE correlation screen against the label
 # ---------------------------------------------------------------------------
 
-def check_label_under_another_name(frame: pd.DataFrame, label: str | None = None,
-                                   threshold: float = 0.999) -> CheckResult:
-    """A feature that reproduces the label is the label wearing a hat.
+def check_pairwise_label_correlation(
+        frame: pd.DataFrame, label: str | None = None,
+        pearson_threshold: float = 0.999,
+        spearman_threshold: float = 0.999) -> CheckResult:
+    """Each feature screened against the declared label, one column at a time.
+
+    NAMED FOR THE MECHANISM, AND IT WAS NOT ALWAYS. This was
+    `check_label_under_another_name` until R231 -- a name that promises ANY
+    relabelling of the target and describes a goal rather than a test. A user
+    who saw it report nothing concluded their features contained no relabelled
+    copy of the label, and what had been tested was near-exact LINEAR
+    duplication of single columns. **A name describing the goal will always
+    overstate a pairwise test**, however the test is improved, so the name now
+    says what runs: a pairwise correlation screen. There is deliberately NO
+    ALIAS -- an alias keeps the misleading name reachable, which is the thing
+    being repaired.
+
+    TWO STATISTICS, BECAUSE ONE OF THEM IS BLIND TO A WHOLE CLASS. Pearson
+    measures linear agreement, and a leak need not be linear. Measured on 2,000
+    rows (`evidence/session/LABEL_SCREEN_CASES.md`), against a continuous label:
+
+        y**3                  Pearson 0.739   Spearman 1.000
+        sign(y)*sqrt(|y|)     Pearson 0.963   Spearman 1.000
+        rank(y)               Pearson 0.977   Spearman 1.000
+        1/(1+exp(-5y))        Pearson 0.901   Spearman 1.000
+
+    Every one is a PERFECT copy of the label -- invertible, rank order intact,
+    no information lost -- and Pearson passes all four at any threshold anyone
+    would set. **Spearman catches them at exactly 1.000**, because Spearman is
+    Pearson on the ranks and a monotone transform does not move ranks. That is
+    why the repair was an extension and not a different cutoff: the threshold
+    was never the dial.
 
     L2b's NEIGHBOURHOOD, not L2b: that row is REVIEW with a `domain_judgment`
     basis whose adjudication is deferred to a module that does not exist. This
-    is a single-feature screen of the same shape, and it reports candidates
-    rather than deciding anything.
+    reports candidates and decides nothing.
     """
     r = CheckResult(
-        check="label_under_another_name",
+        check="pairwise_label_correlation",
         registered_row="L2b's neighbourhood", looked=False,
         silence_is_about=(
-            "NEAR-EXACT LINEAR DUPLICATION OF ONE COLUMN, and nothing wider. "
-            "Measured: `y**3` is a perfect, invertible, rank-preserving copy of "
-            "a label and screens at |r| = 0.762, so this check passes it at "
-            "every threshold. A label reconstructed from two columns is "
-            "invisible to it as well. See evidence/session/LABEL_SCREEN_CASES.md"))
+            "PAIRWISE RESEMBLANCE BETWEEN THE LABEL AND ONE COLUMN AT A TIME, "
+            "under two statistics, and nothing wider. Two things it cannot see, "
+            "both measured. A NON-MONOTONE copy: `y**2` reproduces a label "
+            "exactly and screens at Pearson 0.011, Spearman 0.022 -- neither "
+            "statistic sees it. And a label RECONSTRUCTED FROM SEVERAL COLUMNS "
+            "is invisible to any pairwise test by construction. See "
+            "evidence/session/LABEL_SCREEN_CASES.md"))
     if label is None:
         r.did_not_look_because = (
             "no label column was declared, so no feature was compared against "
@@ -273,15 +307,15 @@ def check_label_under_another_name(frame: pd.DataFrame, label: str | None = None
     y = frame[label]
     others = [c for c in frame.columns if c != label]
     r.looked = True
-    # THE SCREEN IS NAMED IN THE POPULATION, so it is named in the SILENCE too.
-    # R224 §4 item 1, the mandatory half. A `0.999` correlation cutoff the user
-    # cannot see is a figure without its frame (`OPERATING_RULES.md` §2): the
-    # check reported "nothing found over 8 column(s) against the label" and the
-    # number that produced that silence appeared nowhere. Naming it is not the
-    # same as exposing it as a config key, and the key waits on its cases --
-    # `evidence/session/LABEL_SCREEN_CASES.md`.
-    r.population = ("%d column(s) against the label %r, at a Pearson screen of "
-                    "|r| >= %.3f" % (len(others), label, threshold))
+    # BOTH SCREENS ARE NAMED IN THE POPULATION, so both are named in the
+    # SILENCE too. R224 §4 item 1 established the mandatory half for one
+    # statistic; R231 §6 forbids a frame naming one of two. A silence produced
+    # by two cutoffs that mentions one of them is the same defect one size
+    # smaller.
+    r.population = (
+        "%d column(s) against the label %r, at a Pearson screen of |r| >= %.3f "
+        "and a Spearman screen of |rho| >= %.3f"
+        % (len(others), label, pearson_threshold, spearman_threshold))
     found = []
     for c in others:
         s = frame[c]
@@ -294,24 +328,34 @@ def check_label_under_another_name(frame: pd.DataFrame, label: str | None = None
             b = pd.to_numeric(y, errors="coerce")
             if a.nunique(dropna=True) <= 1 or b.nunique(dropna=True) <= 1:
                 continue
-            corr = a.corr(b)
-            if corr is not None and not pd.isna(corr) and abs(corr) >= threshold:
-                found.append(CheckFinding(
-                    str(c), "correlates with the label %r at %.4f, at or above "
-                            "the %.3f screen" % (label, corr, threshold)))
+            # BOTH ARE COMPUTED AND THE FINDING NAMES WHICH FIRED. A screen that
+            # reported only "correlated" would leave the reader unable to tell a
+            # linear duplicate from a monotone one, and those call for different
+            # follow-up.
+            hits = []
+            for name, sym, method, cut in (
+                    ("Pearson", "r", "pearson", pearson_threshold),
+                    ("Spearman", "rho", "spearman", spearman_threshold)):
+                corr = a.corr(b, method=method)
+                if corr is not None and not pd.isna(corr) and abs(corr) >= cut:
+                    hits.append("%s |%s| = %.4f, at or above the %.3f screen"
+                                % (name, sym, abs(corr), cut))
+            if hits:
+                found.append(CheckFinding(str(c), "; ".join(hits)))
     r.findings = tuple(found)
     r.notes.append(
         "A candidate, not a verdict: a legitimate feature can be near-perfectly "
         "correlated with its label. This screen reports; it does not adjudicate.")
     r.notes.append(
-        "WHAT THIS SCREEN CANNOT SEE, stated with the result rather than left to "
-        "be discovered. It is PEARSON, so a copy of the label under a non-linear "
-        "transform -- rank order preserved, values changed -- can fall well below "
-        "|r| >= %.3f and pass. It compares single columns, so a label "
-        "reconstructed from two of them is invisible to it. A silence here is a "
-        "silence about linear single-column resemblance and about nothing wider. "
-        "The cases are measured in `evidence/session/LABEL_SCREEN_CASES.md`."
-        % threshold)
+        "WHAT THESE SCREENS CANNOT SEE, stated with the result rather than left "
+        "to be discovered. Spearman catches any MONOTONE copy at 1.000, which "
+        "Pearson misses -- but a NON-MONOTONE one escapes both: `y**2` is a "
+        "perfect copy of a label and screens at Pearson 0.011, Spearman 0.022. "
+        "And both compare SINGLE COLUMNS, so a label reconstructed from two "
+        "features together is invisible to them by construction. A silence here "
+        "is a silence about pairwise monotone resemblance and about nothing "
+        "wider. The cases are measured in "
+        "`evidence/session/LABEL_SCREEN_CASES.md`.")
     return r
 
 
@@ -356,7 +400,7 @@ def run_all(frame: pd.DataFrame, *, label: str | None = None,
         check_split_validity(train_idx, test_idx),
         check_duplicate_rows_across_split(frame, train_idx, test_idx),
         check_constant_columns(frame),
-        check_label_under_another_name(frame, label),
+        check_pairwise_label_correlation(frame, label),
     ]
 
 

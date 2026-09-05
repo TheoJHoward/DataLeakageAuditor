@@ -59,14 +59,15 @@ CLASSIFICATION = {
     # refused to pass it unclassified, which is the totality guard working.
     "checks.py::param::__init__(silence_is_about=)": (
         L,
-        "the SCOPE of a silence, empty by default and set only where a check's "
-        "NAME is broader than its test. Absent is the correct default because "
-        "most check names are accurate, and a scope line on every check would "
-        "be decoration rather than a statement about a specific known gap -- "
-        "tests/phase1/test_silence_frame.py holds that as its discriminating "
-        "negative, asserting the accurately-named checks carry none. A refusal "
-        "here would require every check to declare it has no overstatement, "
-        "which is a declaration with no content."),
+        "the SCOPE of a silence, empty by default and set only where a reader "
+        "would take a silence for more than it is. Absent is the correct "
+        "default because most checks' scopes are what their names imply, and a "
+        "scope line on every check would be decoration rather than a statement "
+        "about a specific measured gap -- tests/phase1/test_silence_frame.py "
+        "holds that as its discriminating negative, asserting the "
+        "accurately-scoped checks carry none. A refusal here would require "
+        "every check to declare it has no overstatement, which is a "
+        "declaration with no content."),
     "availability.py::param::__init__(cohorts=)": (NA, "result carrier field"),
     "availability.py::param::__init__(determinism_ok=)": (NA, "result carrier field"),
     "availability.py::param::__init__(eligible=)": (NA, "result carrier field"),
@@ -138,22 +139,37 @@ CLASSIFICATION = {
         "differences, how many distinct, and their spread -- and names a value "
         "only where they all agree. A refusal here would remove a registered "
         "option, which is exactly the defect D-V30A-47 recorded."),
-    "checks.py::param::check_label_under_another_name(threshold=)": (
-        R,
-        "FILED AS A THRESHOLD PROBLEM AND MEASURED INTO A NAME PROBLEM, which "
-        "is why it is still here after the thing it was filed for was fixed. "
-        "The naming half closed at R224 section 4: the population line carries "
-        "the screen on every run, silences included. Then the cases were "
-        "measured (evidence/session/LABEL_SCREEN_CASES.md) and settability "
-        "turned out to be the wrong question: y**3 is a PERFECT monotone copy "
-        "of a label, screens at |r| = 0.762, and passes at EVERY threshold "
-        "tried. No cutoff catches it, because Pearson measures linear agreement "
-        "and a leak need not be linear. CANDIDATE, and the open question is now "
-        "R226 section 2's: the check is NAMED more broadly than it tests, so "
-        "either it is renamed to what it does or extended to do what it says. "
-        "Until that is ruled the SILENCE carries its scope "
-        "(CheckResult.silence_is_about), so the output no longer overstates "
-        "even though the name still does."),
+    # CLOSED AT R231, and its history is kept because the entry changed shape
+    # twice under the same key. FILED as a threshold the user could not see;
+    # the naming half closed at R224 section 4 when the population line began
+    # carrying the screen on every run. Then the cases were measured
+    # (evidence/session/LABEL_SCREEN_CASES.md) and settability turned out to be
+    # the wrong question entirely -- y**3 is a PERFECT monotone copy of a label,
+    # screens at Pearson 0.739, and passes at EVERY threshold tried, because
+    # Pearson measures linear agreement and a leak need not be linear. So it was
+    # never a threshold problem: it was a STATISTIC problem wearing a name that
+    # promised more than either statistic delivers. R231 extended the check with
+    # Spearman, which catches every monotone copy at exactly 1.000, and renamed
+    # it to its mechanism with no alias.
+    "checks.py::param::check_pairwise_label_correlation(pearson_threshold=)": (
+        L,
+        "a declared, documented default the user can see: it is named in the "
+        "population line on every run, silences included, alongside the "
+        "Spearman screen. It is no longer a candidate for refusal because the "
+        "defect it was filed for was not the cutoff -- the cutoff is now one of "
+        "two, and what each screen cannot see is stated with the result. Its "
+        "remaining bound, that a NON-monotone copy escapes both statistics and "
+        "a multi-column reconstruction escapes any pairwise test, is a property "
+        "of pairwise correlation and not of this number."),
+    "checks.py::param::check_pairwise_label_correlation(spearman_threshold=)": (
+        L,
+        "the second of the two screens, added at R231, and the same reasoning "
+        "as its Pearson twin applies to it: declared, named in the output, and "
+        "not the dial the original defect turned on. 0.999 rather than a looser "
+        "cutoff because a monotone copy scores exactly 1.000 -- measured on four "
+        "of them -- so no threshold below 1 is doing work here, and matching the "
+        "Pearson cutoff keeps the pair symmetric where the two statistics "
+        "disagree only on noise."),
 }
 
 
@@ -301,29 +317,61 @@ def test_a_LEGITIMATE_default_is_not_reported_as_needing_refusal():
         assert CLASSIFICATION[k][0] != R
 
 
-def test_the_uncomfortable_candidates_ARE_marked_should_refuse():
+def test_the_uncomfortable_set_is_PINNED_and_every_departure_is_recorded():
     """THE SET IS PINNED, so a candidate cannot quietly leave it.
 
-    It was two at R222 and is one now, and each departure is recorded rather
-    than absorbed:
+    **It is EMPTY at R231, and empty is not the same as never-populated.** Two
+    sites were raised as should-refuse and both were adjudicated; neither was
+    dropped. The reason each left is quoted at its new site, so a reader meets
+    the correction rather than a clean list:
 
-      `declared_bar_duration` LEFT, ruled at R226 section 1. It was filed
-      because no config key existed for the fixed-value route; R224 section 2
-      wired one, and R226 section 1 ruled that inference stays as the declared
-      fallback because the registration GRANTS that route and refusing would
-      narrow it. Its old reason had become a false statement about the tool and
-      is quoted at its new site so the correction is visible.
+      `declared_bar_duration` LEFT at R226 section 1. Filed because no config
+      key existed for the fixed-value route; R224 section 2 wired one, and R226
+      ruled that inference stays as the declared fallback because the
+      registration GRANTS that route and refusing would narrow it.
+
+      `check_..._label_correlation(threshold=)` LEFT at R231 section 5. Filed as
+      a threshold the user could not see. The naming half closed at R224; then
+      the cases showed the cutoff was never the dial -- a monotone copy passes
+      Pearson at any threshold -- so it was a STATISTIC problem. R231 extended
+      the check with Spearman and renamed it to its mechanism.
+
+    **What an empty set does NOT mean.** It does not mean the instrument finds
+    nothing: it means both candidates it produced were ruled on. The tracer runs
+    on every suite run and `test_EVERY_runtime_candidate_IS_CLASSIFIED` fails on
+    any new site, so the set repopulates the moment a defaulted parameter appears
+    that nobody has judged.
     """
     should = {k for k, (s, _r) in CLASSIFICATION.items() if s == R}
-    assert should == {
-        "checks.py::param::check_label_under_another_name(threshold=)",
-    }, sorted(should)
+    assert should == set(), (
+        "the should-refuse set is no longer empty. Add the new candidate to "
+        "this test's docstring with the reason it was raised, so the set's "
+        "history stays readable: %s" % sorted(should))
     for k in should:
         assert "CANDIDATE" in CLASSIFICATION[k][1], (
             "%s is marked should_refuse without saying it is a candidate rather "
             "than a settled defect" % k)
-    assert "modes.py::param::availability(declared_bar_duration=)" not in should
-    assert CLASSIFICATION["modes.py::param::availability(declared_bar_duration=)"][0] == L
+
+    # Both departures are assertions, not prose: a later edit that quietly
+    # re-marked either would fail here rather than pass unnoticed.
+    for departed in ("modes.py::param::availability(declared_bar_duration=)",
+                     "checks.py::param::check_pairwise_label_correlation("
+                     "pearson_threshold=)"):
+        assert CLASSIFICATION[departed][0] == L, departed
+
+
+def test_the_label_screen_was_EXTENDED_not_merely_renamed():
+    """R231 section 5 ruled both, and either alone was refused. The rename is
+    visible in the classification key; the extension has to be visible too, or
+    a reader could conclude the name changed and the test did not."""
+    keys = [k for k in CLASSIFICATION if "label_correlation" in k]
+    assert any("pearson_threshold" in k for k in keys), keys
+    assert any("spearman_threshold" in k for k in keys), (
+        "there is no Spearman screen among the classified defaults, so the "
+        "check was renamed without being extended: %s" % keys)
+    assert not any("label_under_another_name" in k for k in CLASSIFICATION), (
+        "the old name is still a classified site, which means an alias for it "
+        "survives somewhere")
 
 
 # ---------------------------------------------------------------------------

@@ -1,6 +1,6 @@
 """A silence is read in the frame its NAME supplies. R226 §2(d).
 
-THE DEFECT THIS HOLDS CLOSED. `check_label_under_another_name` tests near-exact
+THE DEFECT THIS HOLDS CLOSED. `check_pairwise_label_correlation` tests near-exact
 LINEAR duplication of single columns. Its name says something much broader, and a
 user who sees it report nothing concludes their features contain no relabelled
 copy of the target. That conclusion is false and the check's own output used to
@@ -36,7 +36,7 @@ for p in (str(ROOT), str(ROOT / "src")):
         sys.path.insert(0, p)
 
 from leakaudit.checks import (                                   # noqa: E402
-    CheckResult, check_label_under_another_name, render, run_all)
+    CheckResult, check_pairwise_label_correlation, render, run_all)
 
 
 def _frame(n=400):
@@ -47,16 +47,53 @@ def _frame(n=400):
 
 
 def test_the_label_checks_SILENCE_names_what_it_is_a_silence_about():
-    r = check_label_under_another_name(_frame(), label="y")
+    r = check_pairwise_label_correlation(_frame(), label="y")
     assert r.outcome == "observed_silence"
     text = r.explain()
     assert "THIS SILENCE IS ABOUT" in text, (
         "the check reported nothing found and did not say what the nothing is "
-        "about. Its name claims more than it tests:\n%s" % text)
-    assert "LINEAR" in text and "column" in text
-    assert "0.762" in text, (
-        "the qualification does not carry the measured number that makes it "
-        "checkable, so a reader has to take it on trust")
+        "about:\n%s" % text)
+    assert "PAIRWISE" in text and "NON-MONOTONE" in text, text
+    assert "0.011" in text and "0.022" in text, (
+        "the qualification does not carry the measured numbers that make it "
+        "checkable, so a reader has to take it on trust:\n%s" % text)
+
+
+def test_the_SILENCE_names_BOTH_screens_and_BOTH_thresholds():
+    """R231 section 6: a frame naming one of two screens is the same defect one
+    size smaller. The silence is produced by two cutoffs, so it names two."""
+    text = check_pairwise_label_correlation(_frame(), label="y").explain()
+    assert "Pearson" in text and "Spearman" in text, text
+    assert text.count("0.999") >= 2, (
+        "both screens run and the population line states fewer than two "
+        "thresholds:\n%s" % text)
+
+
+def test_a_MONOTONE_copy_is_now_CAUGHT_which_is_the_point_of_the_extension():
+    """The discriminating positive that was already in hand when the decision
+    was made: `y**3` is a perfect copy of the label, Pearson passes it at every
+    threshold, Spearman catches it at 1.000."""
+    f = _frame()
+    f["cube"] = f["y"] ** 3
+    r = check_pairwise_label_correlation(f, label="y")
+    assert r.outcome == "finding", (
+        "a perfect monotone copy of the label was not reported")
+    detail = " ".join(str(x) for x in r.findings)
+    assert "cube" in detail and "Spearman" in detail
+    assert "Pearson" not in detail, (
+        "Pearson is reported as firing on y**3, which it does not -- the "
+        "finding must name the screen that actually fired: %s" % detail)
+
+
+def test_a_NON_MONOTONE_copy_is_still_missed_and_the_silence_SAYS_SO():
+    """The bound, asserted rather than described. `y**2` is a perfect copy and
+    neither statistic sees it, so the silence must not read as coverage."""
+    f = _frame()
+    f["sq"] = f["y"] ** 2
+    r = check_pairwise_label_correlation(f, label="y")
+    assert r.outcome == "observed_silence", (
+        "y**2 is now caught, so the stated bound is out of date")
+    assert "NON-MONOTONE" in r.explain()
 
 
 def test_the_scope_reaches_the_RENDERED_output_a_user_reads():
@@ -74,13 +111,13 @@ def test_a_FINDING_does_not_carry_the_scope_line():
     on a result that is not hedged."""
     f = _frame()
     f["copy"] = f["y"]
-    r = check_label_under_another_name(f, label="y")
+    r = check_pairwise_label_correlation(f, label="y")
     assert r.outcome == "finding"
     assert "THIS SILENCE IS ABOUT" not in r.explain()
 
 
 def test_a_NOT_CHECKED_result_does_not_carry_it_either():
-    r = check_label_under_another_name(_frame())
+    r = check_pairwise_label_correlation(_frame())
     assert r.outcome == "none"
     assert "THIS SILENCE IS ABOUT" not in r.explain()
     assert "NOT CHECKED" in r.explain()
