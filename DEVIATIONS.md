@@ -2128,3 +2128,55 @@ reported and the choice is the author's.
 
 **Expected:** that a check's name is a true statement about its behaviour,
 because the name is the frame in which a user reads its silence.
+
+## D-V30A-57 — `python` was recorded as the invocation, and it resolved to two different interpreters
+
+**True, and it is R226 §0's own rule failing inside the round that adopted it.**
+That rule said a count reported as evidence carries the command that produced it.
+`python -m pytest tests` is not a command in the sense the rule needs: it is a
+**name**, and on this machine it resolved to CPython 3.12.10 and later to 3.11.9,
+in one session, with nothing announcing the change.
+
+**The cause, established from the registry rather than inferred.** The Windows
+uninstall registry records a per-component install date, and the component is
+named: `Python 3.11.9 Add to Path (64-bit)`, `InstallDate = 20260903`. That
+component prepends its directories to the user `PATH`, and the `PATH` read back
+from `HKCU:\Environment` shows exactly that ordering, with `Python311` ahead of
+`Python312`. A shell started before that write keeps the old order; one started
+after does not. Both existed in the same session.
+
+**The exposure is bounded and the suite half of it is empty, by measurement.**
+Base 3.11's `site-packages` holds only the pip/setuptools bootstrap, every entry
+stamped within seven seconds of the installer finishing on 3 September, with no
+later mtime — so no third-party package was ever installed there and none was
+removed. `…\Python311\python.exe -m pytest tests` reports `No module named
+pytest` and produces no number. A shell resolving `python` to 3.11 does not fall
+back to 3.12; it fails. So every suite figure that exists came from a shell whose
+`PATH` predated the change. 3.13.1 is excluded by the ordering, which places it
+after both.
+
+**The gate half is non-empty and was compared rather than argued about.**
+`check_registration.py` imports nothing third-party and runs under 3.11, so a
+gate figure from that window is ambiguous as to its interpreter. The full stage
+output — 112 lines, same work root — is **byte-for-byte identical** under 3.11.9
+and 3.12.10. The manifest regenerator gives the same digest under both. Measured
+for two interpreters at one commit, which is the bound on the claim.
+
+**THE REPAIR IS IN THE INSTRUMENT, NOT IN THE OPERATOR'S HABIT**, because the pin
+that failed was the habitual one. `check_registration.py` now prints its own
+interpreter version, architecture and executable path on the second line of every
+run, so a figure copied out of it carries that version whether or not whoever ran
+it wrote it down. `OPERATING_RULES.md` §2 carries the rule's second half: the
+recorded invocation uses the version-selecting launcher and the report carries
+the resolved version. `README.md` and `INSTALL.md` are restated in that form,
+with a line saying what to substitute if only one Python is installed.
+
+**Expected:** that an invocation recorded as evidence resolves to the same thing
+when a reader runs it, which a bare interpreter name does not guarantee.
+
+**And the layer lesson is recorded separately** at `TRACKB_LESSONS.md` TB-22,
+because this is the second instance of one mechanism: the 3.11 install was ruled
+safe on side-by-side installation and reversibility, which are claims about files
+on disk, while what changed was name resolution — the same shape as R220, where
+`.gitattributes`' guarantee about git storage was read as a guarantee about a
+Python edit performed above it.

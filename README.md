@@ -257,21 +257,34 @@ disclosed reason.** A stranger who cannot tell a disclosed false positive from a
 real failure has not been given a working front door, so it is stated here
 beside the commands that produce it rather than left to be found in the ledger.
 
-**Every count below carries the command that produced it, and the second
-command carries an environment variable.** That is not pedantry: `731 passed` and
-`756 passed` are both true of this tree on the same day under two different
-`pytest` targets, and the gate prints a different number depending on whether
-`LEAKAUDIT_WORK_ROOT` is set. A count produced by a command is a count whose
-population is that command.
+**Every count below carries the command that produced it, the interpreter that
+command resolved to, and — for the gate — an environment variable.** That is not
+pedantry, and each of the three has already caught something: `622 passed` and
+`758 passed` are both true of this tree at this commit under two different
+`pytest` targets (`tests/phase1` and `tests` — the difference is
+`tests/registration`, where the one known failure lives); the gate prints a different note depending on whether
+`LEAKAUDIT_WORK_ROOT` is set; and **`python` is a name, not a command** — on this
+machine it resolved to CPython 3.12.10 and later to 3.11.9 within one session,
+because installing 3.11 with its *Add to Path* component prepends it. The
+commands below therefore use the version-selecting launcher.
 
-Measured 3 September 2026 at `HEAD`, CPython 3.12.10, numpy 2.4.2, pandas 3.0.1:
+**If you have only one Python, `python -m pytest tests` is the same command.** Use
+`py -3.12` where several are installed, or substitute your own; what matters is
+that the version you report is the version you ran.
+
+Measured 5 September 2026 at `HEAD`, **CPython 3.12.10 (AMD64), numpy 2.4.2,
+pandas 3.0.1**:
 
 | invocation | what it prints |
 |---|---|
-| `python -m pytest tests/registration` | 137 collected — **136 passed, 1 failed** |
-| `python -m pytest tests` | 763 collected — **758 passed, 1 failed, 4 skipped** |
-| `LEAKAUDIT_WORK_ROOT=<this round's scratch dir> python tools/check_registration.py --stage prereg` | **exit 1 — 1 check failed, 1 finding** |
-| `python tools/check_registration.py --stage prereg` *(variable unset)* | **exit 1 — 1 check failed, 1 finding**, and `round_reconciliation` reports COVERAGE IS ZERO |
+| `py -3.12 -m pytest tests/registration` | 137 collected — **136 passed, 1 failed** |
+| `py -3.12 -m pytest tests` | 763 collected — **758 passed, 1 failed, 4 skipped** |
+| `LEAKAUDIT_WORK_ROOT=<this round's scratch dir> py -3.12 tools/check_registration.py --stage prereg` | **exit 1 — 1 check failed, 1 finding** |
+| `py -3.12 tools/check_registration.py --stage prereg` *(variable unset)* | **exit 1 — 1 check failed, 1 finding**, and `round_reconciliation` reports COVERAGE IS ZERO |
+
+The gate prints its own interpreter on the second line of its output, so a
+figure copied out of it carries that version whether or not whoever ran it
+remembered to write it down.
 
 **The two gate rows print the same headline for different reasons, which is why
 both are here.** With the variable unset the working-directory check reconciles

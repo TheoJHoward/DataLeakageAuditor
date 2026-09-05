@@ -963,3 +963,96 @@ memory.
 that looked wrong.** It was not found by any check, and no check would have found
 it: nothing in the project compares a reported figure against the command that
 produced it.
+
+---
+
+## MV-14 — when `python` stopped meaning 3.12, and which figures are inside the window
+
+*(5 September 2026, R227 §1. Every command below was run as `py -3.12 …` or with
+an absolute interpreter path; the two interpreter-comparison runs name theirs.)*
+
+**The claim tested:** that the exposure from an unpinned `python` is bounded, and
+bounded by measurement rather than by the argument "a run on 3.11 would have
+crashed."
+
+### When the resolution changed — established, not inferred from behaviour
+
+The Windows uninstall registry carries a component-level install date for every
+part of the 3.11.9 installation, and the component that matters is named:
+
+    Python 3.11.9 Add to Path (64-bit)          InstallDate = 20260903
+
+That component **prepends** its directories to the user `PATH`. The user `PATH`,
+read from `HKCU:\Environment`, confirms the ordering it produced:
+
+    …\Python311\Scripts\   ← first
+    …\Python311\
+    …\Python312\Scripts\
+    …\Python312\
+    …\Launcher\
+    …\Python313
+    …\Python313\Scripts
+
+**So the change is dated to 3 September 2026, and it takes effect in shells
+started after it** — an already-running shell keeps the `PATH` it was born with,
+which is exactly why one session saw both resolutions.
+
+Corroborating, and independent of the registry: the `Python311` directory and
+every entry in its `site-packages` carry mtimes of **2026-09-03 13:13:10 to
+13:13:17** — the installer writing them.
+
+### Could any reported figure have come from 3.11?
+
+**Base 3.11 has never had a third-party package installed into it.** Its
+`site-packages` holds eight entries — `README.txt` (2024-04-02, shipped with the
+interpreter) and the pip/setuptools bootstrap, all stamped 13:13:10–13:13:17 on
+3 September. Nothing is later. `Scripts/` holds `pip.exe`, `pip3.exe`,
+`pip3.11.exe` and nothing else. **No numpy, no pandas, no pytest, and no trace
+that any were ever there and removed** — a `pip install` followed by an uninstall
+would leave the directory mtime later than the installer's.
+
+Measured directly, per instrument:
+
+| instrument | `…\Python311\python.exe` | `py -3.12` |
+|---|---|---|
+| `-m pytest tests` | **`No module named pytest`** — no number produced | 763 collected, 758 passed, 1 failed, 4 skipped |
+| `tools/check_registration.py --stage prereg` | exit 1, 1 check, 1 finding | exit 1, 1 check, 1 finding |
+| the manifest regenerator | 1051 lines, sha `4d16893fa2e8e44e…` | 1051 lines, sha `4d16893fa2e8e44e…` |
+
+**The suite exposure is empty, and here is why that is a measurement.** A shell
+resolving `python` to 3.11 does not fall through to 3.12 — `python` *is* 3.11,
+and it fails. Such a shell therefore produces **no suite number at all**. Every
+suite number reported exists, so every one came from a shell whose `PATH`
+predated 3 September's change, which resolves to 3.12.10. 3.13.1 is excluded
+separately: it sits *after* both 3.11 and 3.12 in the ordering above, so bare
+`python` never selected it.
+
+**The gate exposure is non-empty and does not matter, which is a different
+statement and needs its own evidence.** `check_registration.py` imports no
+third-party package, so it runs under 3.11 — a gate figure from the window is
+genuinely ambiguous as to which interpreter produced it. So the two were compared
+rather than argued about: the full stage output, 112 lines, run under 3.11.9 and
+under 3.12.10 with the same work root, is **byte-for-byte identical**. The
+manifest regenerator likewise produces the same digest under both.
+
+**Conclusion, with its bound.** No reported figure is retroactively wrong. The
+suite figures could not have come from 3.11; the gate and manifest figures could
+have, and are invariant across the pair *as measured today, on this tree*. That
+last clause is the limit: invariance was measured for two interpreters at one
+commit, and is not a general claim about the instruments.
+
+### One thing this did establish that was not being looked for
+
+**`INSTALL.md`'s bolded 3.11.9 floor row is not reproducible from anything on
+this machine, and there is no trace of the environment that produced it.** Every
+`pyvenv.cfg` anywhere under the session temp root — two of them, `dod_env` and
+`floor_env` — records `version = 3.12.10`. No virtualenv was ever built on 3.11,
+and base 3.11 was never installed into. The row records numpy 1.26.4 / pandas
+2.1.4 / pyarrow 14.0.2 under 3.11.9, and nothing on disk corroborates it.
+
+**What that does and does not license.** It does not show the row is wrong: an
+install to a temporary directory with `PYTHONPATH`, or an environment since
+deleted, would leave exactly this absence. It does show that **the row cannot be
+re-measured here as things stand**, which is a different property from the other
+four rows in that table and is not currently marked as such. Reported, not
+resolved — the disposition of a published environment row is the author's.

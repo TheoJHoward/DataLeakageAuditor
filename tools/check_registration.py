@@ -23,6 +23,7 @@ import argparse
 import ast
 import os
 import hashlib
+import platform
 import json
 import re
 import sys
@@ -3366,7 +3367,21 @@ CHECKS: tuple[tuple[str, str, object], ...] = (
 def run_stage(stage: str, root: Path) -> int:
     own = [(name, fn) for st, name, fn in CHECKS if st == stage]
     deferred = [(st, name) for st, name, _fn in CHECKS if st != stage]
+    # THE INSTRUMENT STAMPS ITS OWN INTERPRETER. R227 §0.
+    #
+    # A count carries the command that produced it AND the interpreter that
+    # command resolved to. `python` is a NAME, not a command: inside one session
+    # it resolved to CPython 3.12.10 and later to 3.11.9, because installing
+    # 3.11 with its "Add to Path" component prepends it to the user PATH, and
+    # nothing announced the change. Every figure from that window named neither.
+    #
+    # PRINTED BY THE INSTRUMENT RATHER THAN WRITTEN DOWN BY WHOEVER RAN IT,
+    # because the pin that failed was exactly the one living in the operator's
+    # habit. A figure copied out of this output now carries its interpreter
+    # whether or not anybody remembered to record it.
     print(f"== check_registration --stage {stage} (root: {root}) ==")
+    print(f"   interpreter: CPython {platform.python_version()} "
+          f"({platform.machine()}), executable {sys.executable}")
     total_findings: list[Finding] = []
     for name, fn in own:
         findings = fn(root)

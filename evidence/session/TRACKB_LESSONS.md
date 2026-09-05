@@ -852,6 +852,72 @@ preceded D-V30A-51's repair by eight. Both were found by arriving at the same
 conclusion from a different direction and then noticing it was already written.
 **That is the only discovery route observed so far, and it is not a method.**
 
+## TB-22 — *(5 September 2026)* A safety argument is about a layer, and the thing that changes is often at another one
+
+**Two instances of one mechanism, which is this project's standard for recording a
+lesson rather than a coincidence.**
+
+**First instance, R220.** `.gitattributes` carried `* -text`, which guarantees git
+performs no line-ending conversion. That guarantee was read as "line endings are
+safe here." The conversion that happened was performed by a Python edit —
+`read_text` then `write_text(newline='')` — *above* git, on a file git then stored
+faithfully. **The guarantee was about storage; the change was in the pipeline.**
+
+**Second instance, R227.** Installing CPython 3.11 alongside 3.12 was ruled safe
+and reversible: side-by-side installation, the launcher selects by version,
+existing installations untouched. **Every one of those statements is true, and
+none of them is about the property that changed.** They describe files on disk.
+What changed is what a bare *name* resolves to: the installer's *Add to Path*
+component prepends its directory to the user `PATH`, so in every shell started
+afterwards `python` means 3.11.9 rather than 3.12.10. The safety argument was
+about the filesystem; the breakage was in name resolution.
+
+**The tell, and it is askable in advance:** when an action is ruled safe, name the
+layer the safety argument is about, then name the layer the thing you care about
+lives at. If they differ, the argument has not been made. "Reversible" and
+"side-by-side" are claims about installed files. "Byte-exact" was a claim about
+git. Neither was a claim about the behaviour that changed.
+
+**Why it is hard to catch.** In both cases the guarantee was *load-bearing for
+something* — git really will not convert, the installs really are independent —
+so the argument feels checked. What is missing is not rigour about the claim; it
+is a question about its scope, and the scope is usually left implicit precisely
+because the claim is true.
+
+**And in both cases the failure was silent at the layer that broke.** Git reported
+nothing because git did nothing wrong. The 3.11 install reported nothing because
+the install was correct. A layer that is behaving correctly does not announce that
+something above or beside it now behaves differently.
+
+**SIBLINGS.** The shape is *an action ruled safe on a property of one layer, where
+the property that mattered belonged to another*. It is **not mechanically
+enumerable** — finding an instance requires reading a past safety argument and
+asking what layer it was about, which is judgment rather than pattern-matching —
+so no sweep is claimed and the exemption is recorded rather than left as silence.
+**Two instances are established** (above). **Three candidates are named without
+being adjudicated**, because naming a candidate and calling it an instance are
+different acts:
+
+- **The venv builds.** `dod_env` and `floor_env` are isolated by
+  `include-system-site-packages = false`, which is a claim about *import*
+  resolution. It is not a claim about which interpreter builds the venv, and that
+  is chosen by whatever `python` meant at the moment — the same name resolution
+  this entry is about. Unadjudicated: both existing venvs record
+  `version = 3.12.10`, so nothing has gone wrong, and nothing was checking.
+- **The tag operations.** `prereg-v30a`'s guarantee is that the tag message
+  carries digests of twenty registered paths. That is a claim about *content at
+  the tagged commit*. It is not a claim about the working tree, the manifest, or
+  what a later reader's checkout produces. Unadjudicated.
+- **The `.gitattributes` reading itself**, as a standing artifact rather than as
+  R220's event: it is still in the tree, still guarantees only what it guaranteed,
+  and the working rule that now protects line endings is `tools/safe_edit.py`,
+  which operates at the layer where the damage occurred. Unadjudicated as a
+  *second* failure; recorded because the two mechanisms are still separate and a
+  reader could mistake one for the other.
+
+**Two established, three named, and the list is a lower bound** — the same
+epistemic position as TB-21's, and for the same reason: the discovery route is
+noticing, not searching.
 ---
 
 # THE CLASSIFICATION — made by hand, with its membership list
@@ -865,7 +931,7 @@ share are the vocabulary the whole project is written in — *population*, *sile
 separated TB-19 from TB-12, which are the same lesson one layer apart. Grouping by
 shared vocabulary in a corpus with one vocabulary is grouping by nothing.
 
-**The rule for membership.** All **21** entries -- every one of the twenty-one -- are in **exactly
+**The rule for membership.** All **22** entries are in **exactly
 one** family, and the families **jointly cover** all twenty-one — the same totality
 shape the probe path set and the config-key complement use, and for the same
 reason: a classification with an unassigned entry has not classified anything.
@@ -879,7 +945,7 @@ cross-reference is not a second membership.
 *Declared, cited, documented — and connected to no consumer. The class the config
 complement was built to close, recurring at four different levels.*
 
-**Members: TB-02, TB-14, TB-20, TB-21.** Four of twenty-one.
+**Members: TB-02, TB-14, TB-20, TB-21.** Four of twenty-two.
 
 - **TB-02** — an invariant asserted and cited, enforced by nothing.
 - **TB-14** — an extraction that replaced nothing: a third implementation wearing
@@ -897,7 +963,7 @@ name reported it absent. That is a claim-side failure, so it sits in F2.
 *The absence claim and the bare number. The two halves of one discipline: say what
 you looked at, and say what the figure rests on.*
 
-**Members: TB-04, TB-05, TB-09, TB-16, TB-17.** Five of twenty-one.
+**Members: TB-04, TB-05, TB-09, TB-16, TB-17.** Five of twenty-two.
 
 - **TB-04** — an absence claim about a registered document needs a population too.
 - **TB-05** — a ceiling is a property of the frame, not of the tool.
@@ -912,7 +978,7 @@ you looked at, and say what the figure rests on.*
 
 *The positive fires, and the firing establishes less than it appears to.*
 
-**Members: TB-12, TB-15, TB-19.** Three of twenty-one.
+**Members: TB-12, TB-15, TB-19.** Three of twenty-two.
 
 - **TB-12** — a known positive tests the premise, not only the code.
 - **TB-15** — the wrong prediction is the one that pays; a correct one would have
@@ -931,7 +997,7 @@ distinguishes nothing, and its value was entirely in being falsifiable.
 *It is internally consistent, it is signed, and it does not survive contact with
 execution.*
 
-**Members: TB-03, TB-07, TB-08, TB-10, TB-13.** Five of twenty-one.
+**Members: TB-03, TB-07, TB-08, TB-10, TB-13.** Five of twenty-two.
 
 - **TB-03** — a registration can be internally consistent and still unscoreable.
 - **TB-07** — signed, consistent, and with an acceptance gate that cannot be run.
@@ -945,16 +1011,24 @@ execution.*
 
 *The collateral, and it lands on whatever the change was holding constant.*
 
-**Members: TB-01, TB-06, TB-18.** Three of twenty-one.
+**Members: TB-01, TB-06, TB-18, TB-22.** Four of twenty-two.
 
 - **TB-01** — a merge can resurrect a defect that was deliberately removed.
 - **TB-06** — backticks in a commit message, and a heredoc in a file edit: content
   passing through a quoting layer becomes something else.
 - **TB-18** — the damage from a fix lands on what the fix was holding constant.
+- **TB-22** — a safety argument is about a layer, and the thing that changes
+  is often at another one.
+
+**TB-22 is this family's DIAGNOSIS rather than a fourth instance of it**, and it
+arrived last for a reason: collateral is what you notice, and the scope of the
+safety argument is what you would have had to ask about first. TB-06 was already
+layer-shaped — content passing through a quoting layer becomes something else —
+and nobody read it that way until there were two more.
 
 ## F6 — The reading is biased by what it would cost
 
-**Member: TB-11.** One of twenty-one — and the family of one is the finding.
+**Member: TB-11.** One of twenty-two — and the family of one is the finding.
 
 - **TB-11** — claims that could be unfavourable were verified; claims that flatter
   the process were accepted.
