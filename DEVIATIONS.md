@@ -2053,3 +2053,78 @@ inference note at all.
 **Expected:** that a quantity the tool could not resolve is reported as
 unresolved rather than as a number, and that a number reported as a property of a
 frame is one the frame has.
+
+## D-V30A-55 — the two most-quoted figures in this project named no invocation
+
+**True, and for many rounds.** Two counts are reported every round as evidence.
+Neither carried the command that produced it, and both are ambiguous without one.
+
+- **The suite line.** `python -m pytest tests/phase1` reports 598 passed and no
+  failure. `python -m pytest tests` reports 756 passed and the known one. Both
+  were true of the same tree on the same day. Every suite line handed over named
+  neither target.
+- **The gate line.** `python tools/check_registration.py --stage prereg` prints a
+  different result depending on whether `LEAKAUDIT_WORK_ROOT` is set, because
+  unset the working-directory check reconciles nothing. Every gate figure before
+  R225 was the unset one, and the note saying its coverage was zero was not
+  carried alongside the count.
+
+**Neither number was wrong. Both were figures without their populations** — and
+the rule against exactly that has been in force since R178 and enforced on the
+tool's own output throughout. The project's own evidence was the place it was not
+applied.
+
+**A THIRD INSTANCE, FOUND WHILE FIXING THE FIRST TWO, and it is worse than
+either.** Mid-session the shell's `PATH` reordered and bare `python` resolved to
+CPython 3.11.9, which on this machine has no numpy. Every figure reported earlier
+in the same session was produced by CPython 3.12.10 with numpy 2.4.2 and pandas
+3.0.1 — and named no interpreter, so nothing in the record distinguished them.
+The environment varied WITHIN one session and the reports could not say so.
+
+**The repair is a durable rule, not a habit.** `OPERATING_RULES.md` §2 now
+carries: a count reported as evidence carries the invocation that produced it —
+the command, not a description of it. Suite lines, gate lines, manifest counts,
+guard terms.
+
+**And the user-facing statements are restated.** `README.md`'s verification
+section now lists four invocations rather than two, says why the two gate rows
+print the same headline for different reasons, and names the interpreter and
+dependency versions. `INSTALL.md`'s environment table had a column headed "suite"
+with no command; it names the command now.
+
+**Expected:** that a count offered as evidence can be reproduced by the reader,
+which requires knowing what was run.
+
+## D-V30A-56 — `check_label_under_another_name` is named more broadly than it tests
+
+**True, and it is a false statement in the user-facing surface.** The check
+screens each feature against the declared label at Pearson `|r| >= 0.999`. Its
+name says it finds the label under another name. A user who sees it report
+nothing concludes their features contain no relabelled copy of the target.
+
+**Measured, and the measurement is what makes this a name problem rather than a
+threshold problem.** `y**3` is a *perfect* copy of a label — invertible, rank
+order preserved, no information lost — and it screens at `|r| = 0.762`. It passes
+at 0.999, at 0.99, at 0.95, at 0.90 and at 0.80. **No cutoff catches it**, because
+Pearson measures linear agreement and a leak need not be linear. The full case
+table is `evidence/session/LABEL_SCREEN_CASES.md`.
+
+**So the parameter that was filed as the defect was the wrong dial.** The entry
+was raised as a threshold the user could not see; the naming half of that closed
+at R224, and the cases then showed that settability was not the open question at
+all. That is recorded rather than quietly re-filed, because a candidate whose
+reason changes underneath it is a candidate nobody has re-read.
+
+**The silence stops overstating itself, ahead of the naming decision.**
+`CheckResult` carries a `silence_is_about` scope, set only where a check's name
+is broader than its test, and the found-nothing sentence prints it. The
+accurately-named checks carry none, and a test holds that as the discriminating
+negative — a scope line on every check would be decoration rather than a
+statement about a specific known gap.
+
+**What has NOT been decided, and it is deliberately left open:** whether the
+check is renamed to what it does or extended to do what it says. Both costs are
+reported and the choice is the author's.
+
+**Expected:** that a check's name is a true statement about its behaviour,
+because the name is the frame in which a user reads its silence.

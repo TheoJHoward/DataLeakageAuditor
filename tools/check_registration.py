@@ -1746,6 +1746,11 @@ _WORK_ROOT_ENV = "LEAKAUDIT_WORK_ROOT"
 #                retrofitted" checkable rather than asserted. The session it
 #                names also holds the amendment scripts under
 #                evidence/amendment/, which cite it by the same path.
+# The accepted-and-seen residue, a file of PATHS relative to the work root.
+# Not a permission list: an entry means "this was reported and read", never
+# "this is fine". R226 §3.
+_WORK_ROOT_BASELINE = "evidence/session/WORK_ROOT_BASELINE.txt"
+
 _WORK_ROOT_SUPERSEDED = pathlib.Path(
     "C:/Users/ttbea/AppData/Local/Temp/claude/"
     "C--Users-ttbea-OneDrive-Desktop-MBO-2025-4mon--2026-01/"
@@ -1938,18 +1943,69 @@ def check_round_reconciliation(root: Path) -> list[Finding]:
     findings.append(Finding("round_reconciliation", "(work root)", None,
                             "reconciled: %d ephemeral, %d large (ruled out at \u00a762.1)"
                             % (ephemeral, large), is_note=True))
-    if unreconciled:
+
+    # THE LEVEL IS REPORTED; THE INCREMENT IS THE FINDING. R226 \u00a73.
+    #
+    # The level grows every round by construction -- a session's scratch
+    # directory only ever gets bigger -- and it reached 548, which no reader can
+    # act on. R216 \u00a75's rule then applies: a check earns attention in proportion
+    # to the fraction of its findings that need thought, and a monotonically
+    # growing unactionable number earns none. The question is changed, not the
+    # declarations accepted: "are these declared?" over a growing set becomes
+    # "what appeared since the baseline?", which is reviewable.
+    #
+    # NOTHING IS DECLARED EPHEMERAL TO MAKE THE NUMBER SMALLER, which R226 \u00a73
+    # forbids and which would be the plausible wrong repair. The baseline is not
+    # a permission list: a path in it is one somebody has already SEEN reported,
+    # not one anybody has said is fine, and the level stays in the output on
+    # every run. The shape is the frozen-instrument comparison's -- compare two
+    # states, report the change -- and it fails the same way if the baseline is
+    # missing, which is loudly.
+    baseline_path = root / _WORK_ROOT_BASELINE
+    current = set(unreconciled)
+    findings.append(Finding(
+        "round_reconciliation", "(work root)", None,
+        "LEVEL: %d working file(s) are in neither the repository nor the "
+        "ephemeral list. This number grows every round by construction and is "
+        "reported rather than actioned; what it is made of is enumerated by "
+        "class in evidence/session/WORK_ROOT_RESIDUE.md." % len(current),
+        is_note=True))
+
+    if not baseline_path.exists():
+        findings.append(Finding(
+            "round_reconciliation", str(_WORK_ROOT_BASELINE), None,
+            "NO BASELINE: %s is absent, so the whole level is new as far as this "
+            "check can tell and no increment can be computed. This is not a "
+            "pass. Write it with `python tools/work_root_baseline.py --write`, "
+            "which is a deliberate act at the end of a round rather than "
+            "something this check does for itself -- a baseline that updated "
+            "itself would make the increment empty always and the check would "
+            "report green over a population it had just absorbed."
+            % _WORK_ROOT_BASELINE))
+        return findings
+
+    baseline = {ln.strip() for ln in
+                baseline_path.read_text(encoding="utf-8").splitlines()
+                if ln.strip() and not ln.startswith("#")}
+    appeared = sorted(current - baseline)
+    if appeared:
         findings.append(Finding(
             "round_reconciliation", "(work root)", None,
-            "D10: %d working file(s) are in NEITHER the repository NOR the ephemeral "
-            "list. A file in neither is a HALT - bring it in, or declare it ephemeral "
-            "with a reason: %s"
-            % (len(unreconciled), ", ".join(sorted(unreconciled)[:6])
-               + (" ..." if len(unreconciled) > 6 else ""))))
+            "D10: %d working file(s) APPEARED SINCE THE BASELINE and are in "
+            "neither the repository nor the ephemeral list. Each is a HALT - "
+            "bring it in, or declare it ephemeral with a reason, or accept it "
+            "into the baseline with `tools/work_root_baseline.py --write` after "
+            "reading it: %s"
+            % (len(appeared), ", ".join(appeared[:12])
+               + (" ..." if len(appeared) > 12 else ""))))
     else:
-        findings.append(Finding("round_reconciliation", "(work root)", None,
-                                "D10: every working file is in the repository or "
-                                "declared ephemeral", is_note=True))
+        findings.append(Finding(
+            "round_reconciliation", "(work root)", None,
+            "D10: nothing appeared since the baseline. The %d in the level were "
+            "all reported before; %d baseline entr%s no longer present."
+            % (len(current), len(baseline - current),
+               "y is" if len(baseline - current) == 1 else "ies are"),
+            is_note=True))
     return findings
 
 

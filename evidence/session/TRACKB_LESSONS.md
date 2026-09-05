@@ -959,6 +959,21 @@ execution.*
 - **TB-11** — claims that could be unfavourable were verified; claims that flatter
   the process were accepted.
 
+**THE REASON, SAID OUT LOUD, because leaving it implied is the failure itself
+(R226 §4).** A lesson about not flattering yourself is one you do not write down
+at the moment you are being flattered. F6 is the single family whose membership
+cannot be trusted to be complete, because **the failure it names suppresses its
+own recording** — and no amount of diligence fixes that, since diligence is the
+faculty the failure disables. The counter has to be external or mechanical.
+
+**What was adopted, and it is external rather than mine.** Every round's
+strongest positive result gets its flattering reading named and a falsifier
+stated, as a standing item in the delta that receives the round — not as
+something I remember to do. R212 §0 and R215 §0 did it by hand and both times it
+changed the conclusion, which is the evidence that the item is worth its place.
+Anything I could add here would be a resolution to notice, and a resolution to
+notice is what F6 records failing.
+
 **A family of one is normally a sign the classification is too fine. Here it is a
 sign the register is incomplete.** The shape has recurred at least twice since
 TB-11 was written — an audit of my own halt lists that found fourteen dropped

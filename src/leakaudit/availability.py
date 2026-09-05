@@ -87,6 +87,20 @@ def _inference_frame(info) -> str:
     refusing the ROUTE would narrow a registered grant -- `ties_available`'s
     defect -- while refusing to state a bar duration the frame does not have
     costs the user nothing they were entitled to.
+
+    THE SUMMARY HAS NO CENTRE; THE MECHANISM DOES NOT NEED ONE. R226 §1, recorded
+    here because it is the question the next reader will ask, and because it was
+    asked once already and answered wrongly. Disagreeing gaps are NOT a defect in
+    the computation: each row uses the gap to its own next timestamp and is
+    correct by construction, so there is no averaging anywhere and nothing to
+    make well-conditioned. What has no centre is the one-number SUMMARY somebody
+    wanted to print. Raising on disagreement would treat ordinary irregular data
+    as an error and remove the granted route in the process.
+
+    AND THE FRAME IS WHAT MAKES THE CONSEQUENCE VISIBLE. "26 differences, 2
+    distinct, 1s to 2s" tells a reader that some rows took a 2s gap where the
+    true bar was 1s -- a cell reported knowable later than it truly was -- which
+    is a statement about their data that no single number could carry.
     """
     if info is None:
         return "The frame is empty, so nothing was inferred from it."

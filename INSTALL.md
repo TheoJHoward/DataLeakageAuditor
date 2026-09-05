@@ -53,7 +53,7 @@ dimension and has no way to say which combinations were run — but almost every
 reader of a bounds declaration reads it as "every combination in here works," and
 that reading is false here. So the combinations are listed.
 
-| Python | numpy | pandas | pyarrow | suite | the pipeline's output |
+| Python | numpy | pandas | pyarrow | `python -m pytest tests` | the pipeline's output |
 |---|---|---|---|---|---|
 | 3.12.10 | **1.26.4** | **2.1.4** | **14.0.2** | 591 passed, 4 deferred, 1 known failure | `15dc83c7…` |
 | 3.12.10 | 2.4.2 | 3.0.1 | 23.0.1 | same | `15dc83c7…` |

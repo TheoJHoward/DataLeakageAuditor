@@ -73,6 +73,17 @@ class CheckResult:
     did_not_look_because: str = ""
     findings: tuple = ()
     notes: list = field(default_factory=list)
+    # WHAT THE SILENCE IS ABOUT, where the check's NAME is broader than its test.
+    # R226 §2(d). A silence is read in the frame its name supplies: a user who
+    # sees `label_under_another_name` report nothing concludes that no feature is
+    # a relabelled copy of the target, and what was tested is near-exact LINEAR
+    # duplication of single columns. The name is a false statement about the
+    # behaviour, and it is a false statement in the user-facing surface, which is
+    # the only surface a user has. Until the name and the test are made to agree
+    # -- rename, or extend; R226 §2(a) puts that choice to the author -- the
+    # SENTENCE says what was actually established, because an overstated silence
+    # is worse than a narrow one: it stops the user looking.
+    silence_is_about: str = ""
 
     @property
     def outcome(self) -> str:
@@ -89,6 +100,12 @@ class CheckResult:
             return "%s: %d finding(s) over %s.\n%s" % (
                 self.check, len(self.findings), self.population,
                 "\n".join("  - %s" % f for f in self.findings))
+        if self.silence_is_about:
+            return ("%s: nothing found over %s. The check ran.\n"
+                    "  THIS SILENCE IS ABOUT %s -- the check's NAME is broader "
+                    "than what it tested, so read the silence in the narrower "
+                    "frame." % (self.check, self.population,
+                                self.silence_is_about))
         return "%s: nothing found over %s. The check ran." % (
             self.check, self.population)
 
@@ -234,8 +251,15 @@ def check_label_under_another_name(frame: pd.DataFrame, label: str | None = None
     is a single-feature screen of the same shape, and it reports candidates
     rather than deciding anything.
     """
-    r = CheckResult(check="label_under_another_name",
-                    registered_row="L2b's neighbourhood", looked=False)
+    r = CheckResult(
+        check="label_under_another_name",
+        registered_row="L2b's neighbourhood", looked=False,
+        silence_is_about=(
+            "NEAR-EXACT LINEAR DUPLICATION OF ONE COLUMN, and nothing wider. "
+            "Measured: `y**3` is a perfect, invertible, rank-preserving copy of "
+            "a label and screens at |r| = 0.762, so this check passes it at "
+            "every threshold. A label reconstructed from two columns is "
+            "invisible to it as well. See evidence/session/LABEL_SCREEN_CASES.md"))
     if label is None:
         r.did_not_look_because = (
             "no label column was declared, so no feature was compared against "

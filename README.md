@@ -257,12 +257,27 @@ disclosed reason.** A stranger who cannot tell a disclosed false positive from a
 real failure has not been given a working front door, so it is stated here
 beside the commands that produce it rather than left to be found in the ledger.
 
-Measured 31 August 2026 at `HEAD` on the author's machine, Python 3.12.10:
+**Every count below carries the command that produced it, and the second
+command carries an environment variable.** That is not pedantry: `731 passed` and
+`756 passed` are both true of this tree on the same day under two different
+`pytest` targets, and the gate prints a different number depending on whether
+`LEAKAUDIT_WORK_ROOT` is set. A count produced by a command is a count whose
+population is that command.
 
-| command | what it prints |
+Measured 3 September 2026 at `HEAD`, CPython 3.12.10, numpy 2.4.2, pandas 3.0.1:
+
+| invocation | what it prints |
 |---|---|
 | `python -m pytest tests/registration` | 137 collected — **136 passed, 1 failed** |
-| `python tools/check_registration.py --stage prereg` | **exit 1 — 1 check failed, 1 finding** |
+| `python -m pytest tests` | 763 collected — **758 passed, 1 failed, 4 skipped** |
+| `LEAKAUDIT_WORK_ROOT=<this round's scratch dir> python tools/check_registration.py --stage prereg` | **exit 1 — 1 check failed, 1 finding** |
+| `python tools/check_registration.py --stage prereg` *(variable unset)* | **exit 1 — 1 check failed, 1 finding**, and `round_reconciliation` reports COVERAGE IS ZERO |
+
+**The two gate rows print the same headline for different reasons, which is why
+both are here.** With the variable unset the working-directory check reconciles
+nothing and says so; that note is not a pass, and reading the row without it
+would credit the gate with a check it did not run. Set the variable to the
+directory your round's scratch work lives in.
 
 The single finding is `hash_set_single_source`, and the single failing test is
 `test_prereg_stage_on_real_repo_exits_zero`, which asserts that stage exits zero
@@ -283,10 +298,10 @@ disclosed and understood is worth more than a green one that was arranged.
 
 **Any other finding, and any other failing test, is a real one.**
 
-The full suite, `python -m pytest tests`, additionally runs the Phase 1 tests:
-330 collected on the same machine and date, of which 4 skip. Those 4 are opt-in
-behind `LEAKAUDIT_FIXTURE=1` because they build the acceptance fixture and take
-minutes.
+`python -m pytest tests` additionally runs the Phase 1 tests, which is where
+the difference between the first two rows comes from. Four of them skip: they are
+opt-in behind `LEAKAUDIT_FIXTURE=1` because they build the acceptance fixture and
+take minutes.
 
 The `implementation` and `release` stages are expected to fail until the phases
 that own their artifacts exist; every stage prints the checks it defers and the

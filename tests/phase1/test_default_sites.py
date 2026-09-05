@@ -54,6 +54,19 @@ CLASSIFICATION = {
     # -- dataclass result carriers. Not user declarations at all: these are the
     # tool's own output objects being constructed field by field.
     "availability.py::param::__init__(base_columns=)": (NA, "result carrier field"),
+    # CAUGHT ON ITS FIRST LIVE USE by this instrument, R226. A new field on
+    # CheckResult with a default of "" -- the defaults tracer saw it taken and
+    # refused to pass it unclassified, which is the totality guard working.
+    "checks.py::param::__init__(silence_is_about=)": (
+        L,
+        "the SCOPE of a silence, empty by default and set only where a check's "
+        "NAME is broader than its test. Absent is the correct default because "
+        "most check names are accurate, and a scope line on every check would "
+        "be decoration rather than a statement about a specific known gap -- "
+        "tests/phase1/test_silence_frame.py holds that as its discriminating "
+        "negative, asserting the accurately-named checks carry none. A refusal "
+        "here would require every check to declare it has no overstatement, "
+        "which is a declaration with no content."),
     "availability.py::param::__init__(cohorts=)": (NA, "result carrier field"),
     "availability.py::param::__init__(determinism_ok=)": (NA, "result carrier field"),
     "availability.py::param::__init__(eligible=)": (NA, "result carrier field"),
@@ -100,34 +113,47 @@ CLASSIFICATION = {
             "function; absent means the mode is not availability_fn"),
 
     # ---------------------------------------------------------------------
-    # THE TWO THAT ARE NOT COMFORTABLE. Both are REACHED, not merely reachable.
+    # THE UNCOMFORTABLE SET. Both entries below are REACHED, not merely
+    # reachable. It was TWO at R222 and is ONE now -- not because the set was
+    # tidied, but because one of them was ruled on and the other was measured
+    # and turned out to be a different defect from the one it was filed under.
     # ---------------------------------------------------------------------
+    # CLOSED AS A CANDIDATE, R226 §1, and moved here from the should-refuse set.
+    # The reason it sat there was "the config file carries no key for it at all,
+    # so a user declaring `at_bar_close` cannot state a bar duration and silently
+    # gets inference." R224 §2 wired `bar_duration_seconds`, so that sentence
+    # became FALSE and was a stale claim in a test file until now. What remains
+    # is a ruled question rather than an open one: R226 §1 ruled that inference
+    # as the declared fallback stays, because `PREREG.md` line 255 GRANTS the
+    # inference route and refusing when no duration is declared would narrow a
+    # registered grant -- `ties_available`'s defect inverted. The default is now
+    # declared, documented in `leakaudit schema`, selectable, and NAMED IN THE
+    # OUTPUT with its frame on every run that takes it.
     "modes.py::param::availability(declared_bar_duration=)": (
-        R,
-        "`PREREG.md` §2.3's bar_duration element reads 'fixed value, OR inferred "
-        "from successive timestamps' and names NO default between them. The "
-        "config file carries no key for it at all, so a user declaring "
-        "`at_bar_close` cannot state a bar duration and silently gets inference. "
-        "That is the tool choosing one of two registered options on the user's "
-        "behalf, which is the shape `leakaudit schema` already refuses for "
-        "column modes: 'an assumed mode is an availability model you did not "
-        "write.' CANDIDATE, not a defect -- whether the registration intends "
-        "inference as the default is a structural read nobody has done."),
+        L,
+        "None means the INFERRED route, which `PREREG.md` line 255 registers "
+        "beside the fixed-value route. The key `bar_duration_seconds` exists "
+        "(R224 §2), so the fixed route is selectable; the run says which route "
+        "it took and reports the inference's frame -- how many successive "
+        "differences, how many distinct, and their spread -- and names a value "
+        "only where they all agree. A refusal here would remove a registered "
+        "option, which is exactly the defect D-V30A-47 recorded."),
     "checks.py::param::check_label_under_another_name(threshold=)": (
         R,
-        "a 0.999 correlation threshold the user could not see: the check "
-        "reported 'nothing found over 8 column(s) against the label' with no "
-        "mention of the number that produced the silence. A figure without its "
-        "frame, by the durable rule in OPERATING_RULES.md §2. THE NAMING HALF IS "
-        "CLOSED -- R224 §4 item 1 -- and the population line now carries the "
-        "screen on every run, silences included. CANDIDATE STILL, for the other "
-        "half: no config key is proposed, and that is now a decision with "
-        "measured cases behind it rather than a deferral. "
-        "evidence/session/LABEL_SCREEN_CASES.md shows a PERFECT monotone copy of "
-        "the label (y**3) screening at |r|=0.739 and passing at every threshold "
-        "tried, so the cutoff is not the dial that separates leaks from strong "
-        "features; a rank statistic would be, and that is a new check rather "
-        "than a parameter on this one."),
+        "FILED AS A THRESHOLD PROBLEM AND MEASURED INTO A NAME PROBLEM, which "
+        "is why it is still here after the thing it was filed for was fixed. "
+        "The naming half closed at R224 section 4: the population line carries "
+        "the screen on every run, silences included. Then the cases were "
+        "measured (evidence/session/LABEL_SCREEN_CASES.md) and settability "
+        "turned out to be the wrong question: y**3 is a PERFECT monotone copy "
+        "of a label, screens at |r| = 0.762, and passes at EVERY threshold "
+        "tried. No cutoff catches it, because Pearson measures linear agreement "
+        "and a leak need not be linear. CANDIDATE, and the open question is now "
+        "R226 section 2's: the check is NAMED more broadly than it tests, so "
+        "either it is renamed to what it does or extended to do what it says. "
+        "Until that is ruled the SILENCE carries its scope "
+        "(CheckResult.silence_is_about), so the output no longer overstates "
+        "even though the name still does."),
 }
 
 
@@ -275,16 +301,29 @@ def test_a_LEGITIMATE_default_is_not_reported_as_needing_refusal():
         assert CLASSIFICATION[k][0] != R
 
 
-def test_the_two_uncomfortable_candidates_ARE_marked_should_refuse():
+def test_the_uncomfortable_candidates_ARE_marked_should_refuse():
+    """THE SET IS PINNED, so a candidate cannot quietly leave it.
+
+    It was two at R222 and is one now, and each departure is recorded rather
+    than absorbed:
+
+      `declared_bar_duration` LEFT, ruled at R226 section 1. It was filed
+      because no config key existed for the fixed-value route; R224 section 2
+      wired one, and R226 section 1 ruled that inference stays as the declared
+      fallback because the registration GRANTS that route and refusing would
+      narrow it. Its old reason had become a false statement about the tool and
+      is quoted at its new site so the correction is visible.
+    """
     should = {k for k, (s, _r) in CLASSIFICATION.items() if s == R}
     assert should == {
-        "modes.py::param::availability(declared_bar_duration=)",
         "checks.py::param::check_label_under_another_name(threshold=)",
     }, sorted(should)
     for k in should:
         assert "CANDIDATE" in CLASSIFICATION[k][1], (
             "%s is marked should_refuse without saying it is a candidate rather "
             "than a settled defect" % k)
+    assert "modes.py::param::availability(declared_bar_duration=)" not in should
+    assert CLASSIFICATION["modes.py::param::availability(declared_bar_duration=)"][0] == L
 
 
 # ---------------------------------------------------------------------------
