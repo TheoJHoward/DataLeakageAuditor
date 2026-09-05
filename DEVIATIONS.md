@@ -2415,3 +2415,74 @@ measurement rather than the intuition.
 **Expected:** that an instrument which cannot run on an interpreter says so, and
 that a fallback is accepted or refused on what it records, not only on what it
 costs.
+
+## D-V30A-63 — the fallback's acceptance criterion was written after its measurement was read
+
+**True, and disclosed rather than concealed.** R230 §1 asked for the criterion
+that decides gate-versus-fallback to be written and committed **before** the
+`setprofile` number was read. It was not, and could not have been: the measurement
+completed and the decision was made and committed at `7abd492` before the
+instruction arrived. **A criterion written now and presented as pre-committed
+would be the exact failure the instruction guards against.**
+
+**So it is stated, marked as stated-after, and then applied to see whether it
+would have changed anything.** That is weaker than pre-commitment and it is
+checkable, which pre-commitment claimed after the fact is not.
+
+**The criterion.** A guard recorder is usable on cost if the **full guard** — both
+sides plus the fixture capture — completes in **under 20 minutes** on the
+reference machine. The anchor is behavioural and this project holds both ends of
+it: routine runs of about 7 to 9.5 minutes have been completed repeatedly across
+five rounds, and one run at 34+ minutes was **killed rather than waited out**. A
+guard that gets skipped protects nothing, so the cost that matters is the cost at
+which somebody stops running it.
+
+**Applied: 2 × 379.5 s + 43 s capture = 802 s ≈ 13.4 minutes, against a limit of
+20. THE FALLBACK PASSES ON COST.**
+
+**Which is the useful result, because it isolates the rejection's actual reason.**
+The fallback was rejected for recording **2 modules where `sys.monitoring` records
+4** — a false negative in the one direction a staleness guard exists to prevent —
+and that is a correctness property with no threshold in it. **No cost criterion,
+chosen before or after, could have rescued it.** The ordering failure is real and
+did not reach this decision, and both halves of that are now checkable rather than
+asserted.
+
+**Asserted in both directions**, reusing the shape the frozen instrument's `N = 4`
+uses: `tests/phase1/test_guard_cost_criterion.py` requires the measurement to be
+under the limit **and** the limit to exceed the largest measurement with headroom.
+A limit equal to the number it bounds is what choosing it late looks like from
+outside, and nothing but a test distinguishes the two.
+
+**And a further test asserts the criterion document still says it was written
+after**, because that sentence is the one a later reader would otherwise assume
+the other way round.
+
+**Expected:** that the threshold deciding a measurement's verdict is fixed before
+the measurement is read, and that where it was not, the report says so and shows
+whether it mattered.
+
+## D-V30A-64 — two figures quoted for four rounds came from runs that were killed
+
+**True.** `tools/probe_path_guard.py` recorded `sys.setprofile` as having produced
+*"no answer in fifteen minutes against an unprofiled 288 seconds"*, and R216
+recorded a guard run of *"over thirty-four minutes against a usual eight and a
+half"*. **Both came from runs that were abandoned rather than completed**, so both
+are lower bounds — and both were carried, and quoted, as costs.
+
+**The completed measurement is ×1.8.** One whole-frame guard side over the
+acceptance fixture, CPython 3.12.10, numpy 2.4.2, pandas 3.0.1: 379.5 s under
+`setprofile` against a 209.2 s unprofiled baseline, with `sys.monitoring` at
+185.8 s. Expensive, not prohibitive — and the difference between those two words
+is the difference between a fallback that is out of the question and one that has
+to be rejected on other grounds, which is what happened.
+
+**A killed run is not a measurement.** It licenses "at least N" and nothing more,
+and the two figures above were used to license "prohibitive". The distinction cost
+nothing to observe once somebody let the run finish.
+
+**Not a defect in the decision it supported.** `sys.monitoring` was still the right
+choice, for the reason now measured rather than the reason then assumed: it costs
+nothing detectable (×0.9, within run-to-run noise) and records strictly more.
+
+**Expected:** that a number offered as a cost came from a run that finished.

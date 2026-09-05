@@ -118,6 +118,34 @@ def digest(lines: list[str]) -> str:
     return hashlib.sha256(("\n".join(lines) + "\n").encode("utf-8")).hexdigest()
 
 
+def inputs_are_in_the_repository() -> tuple[bool, list[str]]:
+    """Whether every input this digest reads is TRACKED BY GIT at this commit.
+
+    R230 §2. An emitted digest whose inputs live in a scratch directory is
+    reproducible exactly until that directory is cleaned -- which is precisely
+    how `15dc83c7…` became unverifiable. So the property that makes this number
+    evidence rather than a record of something that once ran here is checked and
+    PRINTED, not assumed because the files happen to be there today.
+
+    Checked against `git ls-files` rather than `Path.is_file()`, because a file
+    sitting untracked in the working tree satisfies the second and not the first,
+    and it is the first that a reader cloning the repository gets.
+    """
+    import subprocess
+    wanted = ["tests/phase1/portability_data/stations.csv",
+              "tests/phase1/portability_data/scans.csv",
+              "tests/phase1/portability_data/pipeline.py"]
+    try:
+        out = subprocess.run(["git", "ls-files", "--"] + wanted,
+                             cwd=str(REPO), capture_output=True, text=True,
+                             timeout=30)
+        tracked = set(out.stdout.split())
+    except Exception:                                        # noqa: BLE001
+        return False, wanted            # cannot tell: report it as not shown
+    missing = [w for w in wanted if w not in tracked]
+    return (not missing), missing
+
+
 def environment() -> list[str]:
     import numpy
     import pandas
@@ -143,6 +171,20 @@ def main() -> int:                                           # pragma: no cover
           % len(body))
     print("         LF, one trailing LF, encoded UTF-8. Banner excluded.")
     print("DIGEST   %s" % digest(body))
+    ok, missing = inputs_are_in_the_repository()
+    if ok:
+        print("INPUTS   all three are tracked by git at this commit, so this "
+              "digest is")
+        print("         REPRODUCIBLE FROM THE REPOSITORY ALONE. That is the "
+              "property")
+        print("         its predecessor lost, and it is stated here rather than "
+              "assumed.")
+    else:
+        print("INPUTS   NOT ALL TRACKED BY GIT: %s" % ", ".join(missing))
+        print("         This digest is reproducible only on a machine that "
+              "happens to hold")
+        print("         those files. That is how `15dc83c7...` became "
+              "unverifiable.")
     return 0
 
 

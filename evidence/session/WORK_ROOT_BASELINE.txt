@@ -492,6 +492,8 @@ r229_setprofile_real.py
 r229_tb.md
 r229c_entry.md
 r229c_mv.md
+r230_entry.md
+r230_tb.md
 r89.py
 r95_pointer.py
 r95a.py

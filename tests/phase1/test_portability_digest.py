@@ -45,6 +45,28 @@ def test_the_inputs_are_in_the_REPOSITORY_not_in_a_scratch_directory():
     assert "def build" in (DATA / "pipeline.py").read_text(encoding="utf-8")
 
 
+def test_the_inputs_are_TRACKED_BY_GIT_not_merely_present():
+    """R230 §2. Present-in-the-working-tree and tracked-at-this-commit are
+    different properties, and it is the second a reader cloning the repository
+    gets. An untracked input satisfies the test above and still leaves the
+    digest reproducible only on this machine -- which is exactly the state the
+    retired number was in."""
+    ok, missing = pdg.inputs_are_in_the_repository()
+    assert ok, (
+        "these inputs are not tracked by git, so the digest is reproducible "
+        "only where they happen to sit: %s" % missing)
+
+
+def test_the_instrument_PRINTS_whether_it_is_reproducible_from_the_repository():
+    """The property is the whole point of the exercise, so it is stated in the
+    output rather than left for a reader to verify separately."""
+    src = (ROOT / "tools" / "portability_digest.py").read_text(encoding="utf-8")
+    assert "REPRODUCIBLE FROM THE REPOSITORY ALONE" in src
+    assert "NOT ALL TRACKED BY GIT" in src, (
+        "the instrument states the good case and not the bad one, so a reader "
+        "of a run with missing inputs would see nothing said about it")
+
+
 def test_the_recipe_is_LF_one_trailing_LF_utf8_sha256():
     """Each clause, checked against a known body rather than described."""
     body = ["b", "a", "c"]

@@ -146,7 +146,7 @@ row below rather than a number anybody typed:
 
 | Python | numpy | pandas | pyarrow | `python -m pytest tests` | the pipeline's output |
 |---|---|---|---|---|---|
-| **3.11.9** | **1.26.4** | **2.1.4** | **14.0.2** | **779 passed, 7 skipped, 1 known failure** — 37 s | `ddb133ff2fc9…` |
+| **3.11.9** | **1.26.4** | **2.1.4** | **14.0.2** | **789 passed, 7 skipped, 1 known failure** — 40 s | `ddb133ff2fc9…` |
 
 **The three extra failures are gone and did not become passes.** They are
 `unsupported`: the path guard's recorder needs `sys.monitoring`, which is CPython

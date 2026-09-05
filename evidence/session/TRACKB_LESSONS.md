@@ -984,6 +984,69 @@ adjudicated:**
 the wrong artifact type. Both are scope failures and they fail at different
 moments — one before an action, one during an investigation — and merging them
 would give one entry that names neither precisely.
+
+## TB-24 — *(5 September 2026)* A benchmark whose baseline does not move is measuring nothing, and it will still return a number
+
+**The instance.** Measuring what `sys.setprofile` costs the probe path guard, two
+synthetic workloads were tried first — forty-row warehouse frames, then a
+two-thousand-row synthetic. Both left the **unprofiled baseline at 0.05 s**. Both
+returned a full, plausible table. The table said `setprofile` cost ×2 and
+`sys.monitoring` cost ×7 to ×10 — **the cheap instrument looking five times more
+expensive than the one it replaced**, which is the opposite of the truth.
+
+**The tell is a relation the numbers must satisfy, and it costs nothing to
+check.** If the instrumented and uninstrumented runs cost about the same, the
+instrument's cost is not in the measurement at all — whatever the ratio column
+says, it is reporting fixed setup. **A per-call cost has to be measured where
+per-call cost dominates**, and "the baseline moved" is how you know it does.
+
+**Why the wrong answer looked fine.** Nothing errored. The ratios were internally
+consistent, reproducible across two sizes, and pointed the same way both times.
+Two consistent runs of a benchmark that cannot reach the real scale agree with
+each other and not with the world. Consistency is not the check; **the relation
+is.**
+
+**The resolution, and it generalises.** Stop proxying and measure the real thing —
+here, one whole-frame guard side over the acceptance fixture, the workload the
+recorder actually wraps. That cost roughly seven minutes per variant and gave
+`setprofile` ×1.8 against `monitoring` ×0.9. **A proxy that cannot be shown to
+reproduce the real workload's scale is not cheaper. It is free and wrong.**
+
+**And the same round paid for the same discipline in the other direction.** The
+completed measurement corrected two figures this project had quoted for four
+rounds — *"no answer in fifteen minutes"* and *"over thirty-four minutes against a
+usual eight and a half"* — both from runs that were **killed rather than
+completed**. A killed run is a lower bound, and both had been carried as costs.
+
+**The tell, as a question to ask before believing any benchmark:** what relation
+must these numbers satisfy if the measurement is working at all? Then check it
+before reading the answer. Here it was *the baseline must move*. It is the same
+move as asking whether a population that is "everything reachable" can be smaller
+than one that is "everything reached" — an impossibility that, when it showed up,
+was the finding rather than a puzzle.
+
+**SIBLINGS.** The shape is *a relation the measurements must obey, checkable
+independently of the values, which catches what the values alone cannot*. **Two
+instances established:**
+
+1. **The defaults instrument's two populations.** STATIC was "everything
+   reachable" and RUNTIME "everything reached", so STATIC ≥ RUNTIME by
+   construction. It came out smaller. The relation was violated, the violation was
+   the finding — thirteen `@dataclass`-generated `__init__`s the static
+   enumeration could not see — and no inspection of either number alone would have
+   raised it.
+2. **This entry.** Baseline must move; it did not; the ratios were fiction.
+
+**One more that is a candidate and is not adjudicated:** the whole-frame guard's
+eight terms are compared against a committed baseline, and the comparison would
+pass if BOTH sides were broken identically. A relation between them — the
+contaminated side must find and the corrected side must not — is asserted in the
+harness's prose but is not a check that could fail independently of the term-by-
+term comparison. Whether that is a gap or a redundancy is unexamined.
+
+**Not mechanically enumerable.** Finding an instance means asking what relation a
+given measurement ought to satisfy, which is judgment. No sweep is claimed and the
+exemption is recorded rather than left as silence.
 ---
 
 # THE CLASSIFICATION — made by hand, with its membership list
@@ -997,7 +1060,7 @@ share are the vocabulary the whole project is written in — *population*, *sile
 separated TB-19 from TB-12, which are the same lesson one layer apart. Grouping by
 shared vocabulary in a corpus with one vocabulary is grouping by nothing.
 
-**The rule for membership.** All **23** entries are in **exactly
+**The rule for membership.** All **24** entries are in **exactly
 one** family, and the families **jointly cover** all twenty-one — the same totality
 shape the probe path set and the config-key complement use, and for the same
 reason: a classification with an unassigned entry has not classified anything.
@@ -1011,7 +1074,7 @@ cross-reference is not a second membership.
 *Declared, cited, documented — and connected to no consumer. The class the config
 complement was built to close, recurring at four different levels.*
 
-**Members: TB-02, TB-14, TB-20, TB-21.** Four of twenty-three.
+**Members: TB-02, TB-14, TB-20, TB-21.** Four of twenty-four.
 
 - **TB-02** — an invariant asserted and cited, enforced by nothing.
 - **TB-14** — an extraction that replaced nothing: a third implementation wearing
@@ -1029,7 +1092,7 @@ name reported it absent. That is a claim-side failure, so it sits in F2.
 *The absence claim and the bare number. The two halves of one discipline: say what
 you looked at, and say what the figure rests on.*
 
-**Members: TB-04, TB-05, TB-09, TB-16, TB-17, TB-23.** Six of twenty-three.
+**Members: TB-04, TB-05, TB-09, TB-16, TB-17, TB-23.** Six of twenty-four.
 
 - **TB-04** — an absence claim about a registered document needs a population too.
 - **TB-05** — a ceiling is a property of the frame, not of the tool.
@@ -1053,13 +1116,23 @@ which fails during an investigation.
 
 *The positive fires, and the firing establishes less than it appears to.*
 
-**Members: TB-12, TB-15, TB-19.** Three of twenty-three.
+**Members: TB-12, TB-15, TB-19, TB-24.** Four of twenty-four.
 
 - **TB-12** — a known positive tests the premise, not only the code.
 - **TB-15** — the wrong prediction is the one that pays; a correct one would have
   told nobody anything.
 - **TB-19** — a positive every wrong instrument also fires on is a wiring test, and
   the discriminating case is often a negative.
+- **TB-24** — a benchmark whose baseline does not move is measuring nothing,
+  and it will still return a number.
+
+**TB-24 extends F3 from controls to MEASUREMENTS**, and the extension is what
+makes the family's name too narrow rather than wrong. TB-12, TB-15 and TB-19 ask
+whether a positive discriminates. TB-24 asks whether a *measurement* is
+discriminating at all — whether the quantity being reported is even present in
+the run. A benchmark whose baseline does not move is the exact analogue of a
+known positive every instrument fires on: internally consistent, reproducible,
+and establishing nothing.
 
 **These three are one lesson at three depths and the ordering is the content.**
 TB-12 asks whether the positive tests the *premise*. TB-19 asks whether it
@@ -1072,7 +1145,7 @@ distinguishes nothing, and its value was entirely in being falsifiable.
 *It is internally consistent, it is signed, and it does not survive contact with
 execution.*
 
-**Members: TB-03, TB-07, TB-08, TB-10, TB-13.** Five of twenty-three.
+**Members: TB-03, TB-07, TB-08, TB-10, TB-13.** Five of twenty-four.
 
 - **TB-03** — a registration can be internally consistent and still unscoreable.
 - **TB-07** — signed, consistent, and with an acceptance gate that cannot be run.
@@ -1086,7 +1159,7 @@ execution.*
 
 *The collateral, and it lands on whatever the change was holding constant.*
 
-**Members: TB-01, TB-06, TB-18, TB-22.** Four of twenty-three.
+**Members: TB-01, TB-06, TB-18, TB-22.** Four of twenty-four.
 
 - **TB-01** — a merge can resurrect a defect that was deliberately removed.
 - **TB-06** — backticks in a commit message, and a heredoc in a file edit: content
@@ -1103,7 +1176,7 @@ and nobody read it that way until there were two more.
 
 ## F6 — The reading is biased by what it would cost
 
-**Member: TB-11.** One of twenty-three — and the family of one is the finding.
+**Member: TB-11.** One of twenty-four — and the family of one is the finding.
 
 - **TB-11** — claims that could be unfavourable were verified; claims that flatter
   the process were accepted.
