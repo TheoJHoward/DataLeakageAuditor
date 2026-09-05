@@ -1043,16 +1043,132 @@ commit, and is not a general claim about the instruments.
 
 ### One thing this did establish that was not being looked for
 
-**`INSTALL.md`'s bolded 3.11.9 floor row is not reproducible from anything on
-this machine, and there is no trace of the environment that produced it.** Every
-`pyvenv.cfg` anywhere under the session temp root — two of them, `dod_env` and
-`floor_env` — records `version = 3.12.10`. No virtualenv was ever built on 3.11,
-and base 3.11 was never installed into. The row records numpy 1.26.4 / pandas
-2.1.4 / pyarrow 14.0.2 under 3.11.9, and nothing on disk corroborates it.
+**`INSTALL.md`'s bolded 3.11.9 floor row has no surviving environment behind
+it.** Every `pyvenv.cfg` anywhere under the session temp root — two of them,
+`dod_env` and `floor_env` — records `version = 3.12.10`.
 
-**What that does and does not license.** It does not show the row is wrong: an
-install to a temporary directory with `PYTHONPATH`, or an environment since
-deleted, would leave exactly this absence. It does show that **the row cannot be
-re-measured here as things stand**, which is a different property from the other
-four rows in that table and is not currently marked as such. Reported, not
-resolved — the disposition of a published environment row is the author's.
+> **CORRECTED, R228 §0, and the correction matters more than the sentence.** This
+> paragraph first read *"No virtualenv was ever built on 3.11, and base 3.11 was
+> never installed into."* The population searched was **surviving `pyvenv.cfg`
+> files**, and a venv deleted with its scratch directory leaves neither config nor
+> trace — so the supported statement is only that *no surviving `pyvenv.cfg`
+> records a 3.11 environment*. The base-`site-packages` evidence bounds a
+> different thing, cleanly: nothing was installed into base 3.11. A venv does not
+> install into base `site-packages`, so it never reached the venv question.
+>
+> **And a surviving artifact of another kind does record the environment.**
+> `dod_work/py311_out.txt`, timestamped 3 September 13:15, carries the banner
+> `# python 3.11.9 / # numpy 1.26.4 / # pandas 2.1.4 / # pyarrow 14.0.2`. The
+> search looked for the environment's configuration and not for what it produced,
+> and the second survived. `DEVIATIONS.md` D-V30A-59.
+
+**And the row was then rebuilt rather than annotated. MV-15.** A fresh corner venv
+— CPython 3.11.9 with the three floors pinned exactly — reproduces the **pipeline**
+byte-for-byte against the development environment, and does **not** reproduce the
+**suite** figure: 4 failures against the row's 1, all three extra ones caused by
+`tools/probe_path_guard.py` reaching `sys.monitoring`, which is 3.12+. That is
+`DEVIATIONS.md` D-V30A-58, and it is a live finding rather than a missing
+artifact.
+
+---
+
+## MV-15 — the corner was rebuilt, and half of it does not reproduce
+
+*(5 September 2026, R228 §0. Every figure carries its command and its resolved
+interpreter.)*
+
+**The environment, rebuilt and kept.** `py -3.11 -m venv
+C:\Users\ttbea\AppData\Local\Temp\v311corner`, then
+`<venv>\Scripts\python.exe -m pip install numpy==1.26.4 pandas==2.1.4
+pyarrow==14.0.2 pytest`. Resolved: **CPython 3.11.9, numpy 1.26.4, pandas 2.1.4,
+pyarrow 14.0.2, pytest 9.1.1**. It is not deleted.
+
+> It lives outside the session scratch directory, at a short path, because the
+> scratch path is deep enough that installing numpy into a venv there fails with
+> a Windows long-path `OSError` on `numpy.libs\libopenblas64__…dll`. Recorded
+> because it is the kind of detail that makes a rebuild look impossible when it
+> is only inconveniently located.
+
+### The pipeline reproduces
+
+| invocation | body sha256 |
+|---|---|
+| `<v311corner>\Scripts\python.exe <scratch>\dod_work\portability_run.py` — CPython 3.11.9, numpy 1.26.4, pandas 2.1.4, pyarrow 14.0.2 | `ddb133ff2fc959f0efb24124ca4d0f9dfc70f528cd5e1892136436c8dc34d9f1` |
+| `py -3.12 <scratch>\dod_work\portability_run.py` — CPython 3.12.10, numpy 2.4.2, pandas 3.0.1, pyarrow 23.0.1 | `ddb133ff2fc959f0efb24124ca4d0f9dfc70f528cd5e1892136436c8dc34d9f1` |
+
+**Byte-identical.** 26 findings, 7 cohorts, 4 features, same base columns — the
+corner and the development environment agree at this commit. The property the row
+asserts holds and is now re-measurable.
+
+**The published VALUE `15dc83c78950d42b…` was not reproduced, and two separate
+things stand between it and today's number.** First, the code changed: the stored
+3 September outputs and today's differ by exactly **one line** — the note
+`comparator: a(j,c) <= d(i) -- ties AVAILABLE …`, which the tool began emitting
+when the tie branch was wired. Everything else is identical. Second, the digest's
+**rendering convention is not recoverable from surviving artifacts**: sixteen
+plausible conventions were computed over the five stored `*_out.txt` bodies —
+`\n` and `\r\n` joins, with and without a trailing separator, banner included and
+excluded, raw bytes, stripped bytes, and from the `VERDICT` offset — and **none**
+begins `15dc83c7`. All five stored bodies hash identically to each other under
+every convention, so the artifacts agree with one another and with the original
+finding; what is lost is the recipe that turned them into the published number.
+
+### The suite does NOT reproduce
+
+| invocation | result |
+|---|---|
+| `<v311corner>\Scripts\python.exe -m pytest tests` (CPython 3.11.9, floors) | 763 collected — **755 passed, 4 failed, 4 skipped** |
+| `py -3.12 -m pytest tests` (CPython 3.12.10) | 763 collected — 758 passed, **1 failed**, 4 skipped |
+| the published row for this corner | 632 passed, 4 deferred, **1 known failure** |
+
+**Three extra failures, all one cause**, and it is named in the traceback:
+
+    tests/phase1/test_probe_path_guard.py::test_watch_is_quiet_when_nothing_unrecorded_runs
+    tests/phase1/test_probe_path_guard.py::test_watch_REPORTS_a_module_that_ran_and_is_not_recorded
+    tests/phase1/test_probe_path_guard.py::test_watch_does_not_report_third_party_frames
+
+    tools\probe_path_guard.py:136: AttributeError:
+        module 'sys' has no attribute 'monitoring'
+
+`sys.monitoring` is Python 3.12 and later.
+
+### When it broke — established from the tree, not inferred
+
+At **`a023011`, 3 September 13:23**, whose commit message is *"The corner of the
+declared space is measured"*:
+
+- `tests/phase1/test_probe_path_guard.py` **exists** and contains all three
+  `test_watch_*` tests;
+- `tools/probe_path_guard.py` **already contains `sys.monitoring`** (five
+  occurrences), including the line
+  `raise RuntimeError("sys.monitoring is unavailable; this needs 3.12+")`;
+- **`watch()` uses `sys.setprofile`** — not `record_modules` — which works on
+  3.11;
+- there is no version guard anywhere in the test file.
+
+So at the moment the corner was measured, the row was **correct**: the three tests
+passed on 3.11 because the code path they exercise did not touch `sys.monitoring`.
+
+At **`7cfa037`, 3 September 14:26** — *"…and a profiler I had left inside the
+guard"* — `watch()` was rewired onto `record_modules()`, and `record_modules` is
+the `sys.monitoring` recorder. **Sixty-three minutes after the corner was
+measured, and nothing re-measured the corner afterwards.**
+
+**The 3.12-only requirement was written down in the same file at the time.** The
+`RuntimeError` quoted above was already there when `watch()` was wired onto it.
+Nobody asked what wiring a caller onto a 3.12-only recorder did to a declared
+floor of 3.11, because the floor was a fact in a different file.
+
+### The bound on the finding, stated so it is not read as larger than it is
+
+**`tools/` is not distributed.** `pyproject.toml` declares
+`packages = ["leakaudit", "protocol"]`, so `probe_path_guard.py` is a repository
+instrument and not shipped code. **`requires-python = ">=3.11"` is not falsified
+by this**: 755 tests pass at the corner, the package imports, and the pipeline
+produces the identical answer. What is false is the **published suite figure for
+the corner row**, and what is broken is a repository tool on the interpreter the
+project declares as its floor.
+
+**Not established:** whether any other repository tool has acquired a 3.12-only
+dependency in the same way. Only `probe_path_guard.py` was implicated by the
+failures, and no sweep was run.

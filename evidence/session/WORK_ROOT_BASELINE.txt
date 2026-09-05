@@ -484,6 +484,10 @@ r226_spearman.py
 r227_entry.md
 r227_mv.md
 r227_tb.md
+r228_corner_out.txt
+r228_dev_out.txt
+r228_entry.md
+r228_mv.md
 r89.py
 r95_pointer.py
 r95a.py

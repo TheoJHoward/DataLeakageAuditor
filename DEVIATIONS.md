@@ -2180,3 +2180,92 @@ safe on side-by-side installation and reversibility, which are claims about file
 on disk, while what changed was name resolution — the same shape as R220, where
 `.gitattributes`' guarantee about git storage was read as a guarantee about a
 Python edit performed above it.
+
+## D-V30A-58 — a repository tool acquired a 3.12-only dependency an hour after the 3.11 floor was measured
+
+**True, and found by rebuilding a measurement rather than annotating it.**
+
+`tools/probe_path_guard.py`'s `watch()` calls `record_modules()`, which uses
+`sys.monitoring` — Python 3.12 and later. The project declares
+`requires-python = ">=3.11"`, and on CPython 3.11.9 the three `test_watch_*`
+tests in `tests/phase1/test_probe_path_guard.py` fail with
+`AttributeError: module 'sys' has no attribute 'monitoring'`.
+
+**Measured at the corner of the declared dependency space**, rebuilt for this
+purpose and kept: CPython 3.11.9 with `numpy==1.26.4`, `pandas==2.1.4`,
+`pyarrow==14.0.2` pinned exactly. `<venv>\Scripts\python.exe -m pytest tests`
+reports **763 collected, 755 passed, 4 failed, 4 skipped**. The published row for
+that corner says **632 passed, 4 deferred, 1 known failure**.
+
+**WHEN IT BROKE, ESTABLISHED FROM THE TREE.** At `a023011` (3 September 13:23),
+the commit whose message is *"The corner of the declared space is measured"*, the
+guard test file already existed with all three tests, and
+`tools/probe_path_guard.py` already contained `sys.monitoring` — including the
+line `raise RuntimeError("sys.monitoring is unavailable; this needs 3.12+")`. But
+`watch()` used `sys.setprofile`, which works on 3.11, so those tests passed and
+the row was correct when written.
+
+At `7cfa037` (3 September 14:26) — *"a profiler I had left inside the guard"* —
+`watch()` was rewired onto `record_modules()`. **Sixty-three minutes after the
+corner was measured, and nothing re-measured the corner afterwards.**
+
+**The 3.12-only requirement was already written down in the same file.** The
+`RuntimeError` above was there when the caller was wired onto it. What was missing
+was not knowledge of the constraint but any question about what it did to a floor
+declared in a different file — TB-22's shape again, a guarantee at one layer and
+a change at another.
+
+**THE BOUND, so this is not read as larger than it is.** `pyproject.toml` declares
+`packages = ["leakaudit", "protocol"]`, so `tools/` is **not distributed**.
+`requires-python = ">=3.11"` is **not falsified**: at the corner the package
+imports, 755 tests pass, and the non-fixture pipeline produces a body byte-
+identical to the development environment's — sha256
+`ddb133ff2fc959f0efb24124ca4d0f9dfc70f528cd5e1892136436c8dc34d9f1` under both.
+What is false is the published suite figure for that row, and what is broken is a
+repository instrument on the interpreter the project declares as its floor.
+
+**Not repaired here.** R228 §0's branch for a measurement that does not reproduce
+is to report what differs before touching any number, and the repair — a version
+gate, a `setprofile` fallback, or a narrowed floor — is a decision about the
+declared floor rather than a defect fix.
+
+**Not swept.** Whether any other repository tool has acquired a 3.12-only
+dependency the same way is unexamined, not confirmed clean.
+
+**Expected:** that wiring a caller onto a recorder which raises "this needs 3.12+"
+prompts the question of what the project's declared floor is.
+
+## D-V30A-59 — "no venv was ever built on 3.11" claimed more than its population
+
+**True, and it is mine, from R227 §1.** The population actually measured was
+**surviving `pyvenv.cfg` files**, and a virtualenv deleted with its scratch
+directory leaves no config and no trace. The supported statement is the weaker
+one: *no surviving `pyvenv.cfg` records a 3.11 environment.*
+
+**And the base-interpreter evidence was cited for something it cannot reach.**
+That evidence — 3.11's `site-packages` holding only the installer's pip and
+setuptools, every entry stamped within seven seconds of the install — bounds one
+thing well: **nothing was installed into base 3.11**. A virtualenv does not
+install into base `site-packages`, so it says nothing whatever about the venv
+question. Two sound observations were joined into a conclusion neither supports.
+
+**AND THE STRONGER CORRECTION IS THAT A SURVIVING ARTIFACT DOES RECORD IT.**
+`<scratch>\dod_work\py311_out.txt`, timestamped 3 September 13:15 — two minutes
+after the 3.11 installer finished — carries the banner:
+
+    # python  3.11.9
+    # numpy   1.26.4
+    # pandas  2.1.4
+    # pyarrow 14.0.2
+
+That is the corner environment, recorded by the run itself. **The search
+population was wrong, not merely narrow**: it looked for the environment's
+configuration and not for what the environment produced, and the second survived
+while the first did not.
+
+**Expected:** that an absence claim names the population it searched, and that the
+population is chosen to be one where the thing sought would appear.
+
+**Why it is recorded at this weight.** It is a small sentence, and it is exactly
+the kind that gets quoted later as settled. The correction costs one entry now;
+the alternative is a false premise circulating with a disclosure number behind it.

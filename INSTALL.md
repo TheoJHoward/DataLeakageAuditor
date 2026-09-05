@@ -59,7 +59,7 @@ that reading is false here. So the combinations are listed.
 | 3.12.10 | 2.4.2 | 3.0.1 | 23.0.1 | same | `15dc83c7…` |
 | 3.12.10 | 2.5.2 | 3.0.5 | 25.0.1 | same | `15dc83c7…` |
 | 3.13.1 | 2.5.2 | 3.0.5 | 25.0.1 | 601 passed, 5 deferred, 1 known failure | `15dc83c7…` |
-| **3.11.9** | **1.26.4** | **2.1.4** | **14.0.2** | 632 passed, 4 deferred, 1 known failure | `15dc83c7…` |
+| **3.11.9** | **1.26.4** | **2.1.4** | **14.0.2** | 632 passed, 4 deferred, 1 known failure — **and this figure no longer reproduces; see below** | `15dc83c7…` |
 
 The bolded rows are the declared floor of every dependency dimension at once —
 the last of them at the declared floor of Python too, which is the corner of the
@@ -71,6 +71,37 @@ resolution. The known
 failure is the one disclosed at `DEVIATIONS.md` D-V30A-11 and described under
 **Verify** in `README.md`. The fifth deferred test on 3.13 is a
 string-interning-conditional case that has no subject on that interpreter.
+
+### The corner row was rebuilt on 5 September, and its suite figure did not reproduce
+
+**The environment behind the bolded row was rebuilt rather than annotated** —
+`py -3.11 -m venv`, then `numpy==1.26.4 pandas==2.1.4 pyarrow==14.0.2` pinned
+exactly, resolving to CPython 3.11.9. It is kept.
+
+**The pipeline column reproduces.** At that corner and on the development
+environment the non-fixture pipeline's canonical body is byte-identical at the
+current commit — sha256 `ddb133ff2fc959f0…` under both. The portability property
+this column asserts holds, and is now re-measurable. (The published *value*
+`15dc83c7…` is from 3 September's code and is not this number: the tool has since
+added one run note, and the digest's rendering convention is not recoverable from
+surviving artifacts. `evidence/session/METHOD_VERIFICATIONS.md` MV-15.)
+
+**The suite column does not.** `<venv>\Scripts\python.exe -m pytest tests` now
+reports **763 collected, 755 passed, 4 failed, 4 skipped** — three failures beyond
+the known one, all from `tools/probe_path_guard.py` reaching `sys.monitoring`,
+which exists only on Python 3.12 and later.
+
+**The row was correct when written.** At the commit that measured it, `watch()`
+used `sys.setprofile`; it was rewired onto the `sys.monitoring` recorder
+sixty-three minutes later, and nothing re-measured the corner afterwards.
+
+**What this does and does not touch.** `tools/` is not distributed — this file's
+package list is `leakaudit` and `protocol` — so `requires-python = ">=3.11"` is
+**not** falsified: at the corner the package imports, 755 tests pass, and the
+pipeline agrees. What is false is this row's suite figure, and what is broken is a
+repository instrument on the interpreter declared as the floor. Disclosed at
+`DEVIATIONS.md` D-V30A-58; the repair is a decision about the floor and is not
+made here.
 
 ### Two things this table does NOT say
 
