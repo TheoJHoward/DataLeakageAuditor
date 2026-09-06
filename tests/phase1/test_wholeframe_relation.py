@@ -128,3 +128,100 @@ def test_the_guard_lives_in_the_REPOSITORY_not_in_a_scratch_directory():
         "the guard hardcodes a repository path, so it runs on one machine only")
     assert "Temp" not in src and "scratchpad" not in src, (
         "the guard still refers to a scratch directory")
+
+
+# ---------------------------------------------------------------------------
+# THE CONSTANTS. R232 §4.
+# ---------------------------------------------------------------------------
+
+SCOPE = {"stride": 997, "max_cohorts": 300, "seed": 20260828,
+         "instruments": ["cl", "es", "zc"], "months": ["2025-01", "2025-08"]}
+ARGS = ("zc", "2025-01", 997, 20260828, 300)
+
+
+def test_the_baseline_ALREADY_carries_its_constants():
+    """R232 §4 supposed the baseline would have to start recording them. It
+    already does -- `scope`, written by the generating harness -- so this is a
+    READ rather than an addition, and no dated acceptance artifact is edited."""
+    import json
+    prior = json.loads(
+        (ROOT / "evidence" / "phase1" / "criteria_12_population.json")
+        .read_text(encoding="utf-8"))
+    scope = prior["scope"]
+    for k in ("stride", "max_cohorts", "seed", "instruments", "months"):
+        assert k in scope, "the baseline's scope no longer records %r" % k
+
+
+def test_the_REAL_baseline_matches_the_REAL_guard_constants():
+    """The live case. If this fails, every prior comparison was between two
+    different runs and nobody would have known."""
+    import json
+    import re
+    prior = json.loads(
+        (ROOT / "evidence" / "phase1" / "criteria_12_population.json")
+        .read_text(encoding="utf-8"))
+    src = (ROOT / "tools" / "wholeframe_guard.py").read_text(encoding="utf-8")
+    m = re.search(r"SYM, MONTH, STRIDE, SEED, MAXC = "
+                  r'"(\w+)", "([\d-]+)", (\d+), (\d+), (\d+)', src)
+    assert m, "the guard's constants line has changed shape"
+    sym, month, stride, seed, maxc = (m.group(1), m.group(2), int(m.group(3)),
+                                      int(m.group(4)), int(m.group(5)))
+    assert wg.constants_match(prior["scope"], sym, month, stride, seed, maxc), (
+        wg.constants_report(prior["scope"], sym, month, stride, seed, maxc))
+
+
+def test_a_DIFFERENT_stride_is_refused():
+    assert not wg.constants_match(SCOPE, "zc", "2025-01", 500, 20260828, 300)
+
+
+def test_a_DIFFERENT_seed_is_refused():
+    assert not wg.constants_match(SCOPE, "zc", "2025-01", 997, 1, 300)
+
+
+def test_a_DIFFERENT_max_cohorts_is_refused():
+    assert not wg.constants_match(SCOPE, "zc", "2025-01", 997, 20260828, 50)
+
+
+def test_an_INSTRUMENT_the_baseline_never_covered_is_refused():
+    assert not wg.constants_match(SCOPE, "nq", "2025-01", 997, 20260828, 300)
+
+
+def test_a_MONTH_the_baseline_never_covered_is_refused():
+    assert not wg.constants_match(SCOPE, "zc", "2025-12", 997, 20260828, 300)
+
+
+def test_a_MISSING_scope_is_refused_rather_than_treated_as_agreement():
+    """An absent frame is not a matching frame. This is the case a regenerated
+    or truncated baseline would present."""
+    assert not wg.constants_match({}, *ARGS)
+    assert not wg.constants_match(None, *ARGS)
+
+
+def test_the_report_names_WHICH_constant_differs():
+    lines = wg.constants_report(SCOPE, "zc", "2025-01", 500, 20260828, 300)
+    failed = [ln for ln in lines if "FAIL" in ln]
+    assert len(failed) == 1, lines
+    assert failed[0].startswith("stride")
+    assert "baseline=997" in failed[0] and "guard=500" in failed[0]
+
+
+def test_the_constants_are_checked_BEFORE_anything_is_probed():
+    """A warning on a seven-minute run is a line somebody scrolls past, and
+    refusing after the computation spends seven minutes to say the comparison
+    was never going to mean anything."""
+    src = (ROOT / "tools" / "wholeframe_guard.py").read_text(encoding="utf-8")
+    halt = src.index("if not constants_match(")
+    capture = src.index("cap = fa.read_inputs(")
+    assert halt < capture, (
+        "the constants are checked after the fixture is captured, so a mismatch "
+        "costs a capture before it refuses")
+    assert "return 4" in src[halt:capture], (
+        "a constants mismatch does not refuse with its own exit code")
+
+
+def test_the_three_halts_have_DISTINCT_exit_codes():
+    """A caller must be able to tell 'the numbers changed' from 'the numbers
+    mean nothing' from 'these are not the same run'."""
+    src = (ROOT / "tools" / "wholeframe_guard.py").read_text(encoding="utf-8")
+    for code, why in ((2, "MOVED"), (3, "relation"), (4, "constants")):
+        assert "return %d" % code in src, "%s halt (%d) is gone" % (why, code)

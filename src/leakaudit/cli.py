@@ -181,6 +181,13 @@ def build_parser() -> argparse.ArgumentParser:
                           "a declared label or split reports that it DID NOT "
                           "LOOK, which is not a clean result")
 
+    dft = sub.add_parser(
+        "draft", help="draft a model file from your frames -- structure filled, "
+                      "availability left blank for you")
+    dft.add_argument("--frame", action="append", metavar="name=path",
+                     help="an input frame; repeat for several. .parquet, .csv "
+                          "or .json")
+
     sub.add_parser("schema", help="print the config file format")
     return ap
 
@@ -289,6 +296,15 @@ def _main(argv=None) -> int:
         from .model_file import SCHEMA_DOC
         print(SCHEMA_DOC)
         return 0
+    if args.command == "draft":
+        # INFERENCE PROPOSES; IT NEVER PICKS. The draft fills what is a shape in
+        # the frames and leaves what is a fact about the world blank, and its
+        # header says which is which. It writes no file and runs no probe: what
+        # comes out is text for a person to read and complete.
+        from .inference import draft as make_draft
+        from .inference import render_draft
+        print(render_draft(make_draft(_parse_frames(args.frame))))
+        return EXIT_OK_SILENT
     if args.command not in ("run", "check"):
         ap.print_help()
         return EXIT_USAGE

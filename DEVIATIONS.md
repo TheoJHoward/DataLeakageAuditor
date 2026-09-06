@@ -2607,3 +2607,99 @@ ran the guard would assert nothing about the relation's teeth.
 
 **Expected:** that an instrument's clean result establishes the instrument could
 have said something else, and that the instrument lives where it can be re-run.
+
+## D-V30A-67 — the guard now reads the constants the baseline was generated under
+
+**The last entry on the hand-typed list with a mechanical form**, and the repair
+was smaller than the instruction that asked for it.
+
+**The gap.** The whole-frame guard's stride, seed, instrument and month were typed
+in the guard; the baseline it compares against lived in another file; and nothing
+checked that the two described the same run. Same shape as a digest without its
+recipe — **the baseline is a figure and its generation constants are its frame** —
+and a guard comparing against a baseline from a different run produces a number
+that means nothing.
+
+**AND NOTHING HAD TO BE ADDED TO THE BASELINE, which is the part worth
+recording.** R232 §4 supposed the baseline would need to start carrying its
+constants. **It already carries them**: `criteria_12_population.json` has a
+`scope` block with `stride`, `max_cohorts`, `seed`, and the `instruments` and
+`months` the run covered, written by the generating harness itself. The frame was
+beside the figure the whole time and nobody had read it. So the change is a READ,
+not an addition — **and no dated acceptance artifact is edited to add a field**,
+which this project's own rule about dated measurements would have made awkward.
+
+**A refusal, not a warning, and it happens BEFORE the probe runs.** A warning on a
+seven-minute run is a line somebody scrolls past on the way to the verdict, and
+refusing after the computation would spend seven minutes to say the comparison was
+never going to mean anything. Exit 4, distinct from the relation halt's 3 and the
+MOVED halt's 2, so a caller can tell *these are not the same run* from *the numbers
+mean nothing* from *the numbers changed*.
+
+**Measured on the live pair:** stride 997 = 997, max_cohorts 300 = 300, seed
+20260828 = 20260828, `zc` among the baseline's eight instruments, `2025-01` among
+its six months. All five OK. Nine tests cover the mismatches — each constant
+differing alone, an instrument the baseline never covered, a month it never
+covered, and an absent `scope`, which is refused rather than treated as agreement.
+
+**Expected:** that a comparison against a stored baseline establishes the baseline
+describes the run being compared.
+
+## D-V30A-68 — inference ships: structure determined, availability blank and refused
+
+**The largest ease feature in the design, built to the spec at `R215 §3` and
+`PRE_BUILD_READS.md`, and it is built around one sentence: infer what is IN the
+data; require what is ABOUT the world.**
+
+**Structure is determined and marked as determined** — which column is a key, its
+granularity, whether it sits on second boundaries, whether it is monotone — with
+the evidence named per column.
+
+**Availability is never written.** `PRE_BUILD_READS.md` §1's S2 case is decisive
+and is now a test: an aggregate over [t, t+1s) and an instantaneous reading at t
+have **byte-identical key columns** and availability a full second apart. No shape
+in the frames separates them. So the field is blank, the observable evidence sits
+beside it, and `accept()` **refuses** while any blank the draft left is still
+blank — not a default, and not silence read as assent.
+
+**The header sentence is the feature**, not decoration: without it a reader meets
+a half-filled file and concludes the tool failed on the other half.
+
+**S6 IS OMITTED AND THE OMISSION IS VISIBLE.** The dependency map is the most
+reliable-*looking* signal available and it is a category error: *which columns are
+read is not when they became knowable; it can only produce "read, therefore
+available" — the assumption of no leak restated as a finding.* `draft()` takes
+frames and nothing else, and a test asserts no probe symbol is reachable from that
+path, so the map cannot arrive by accident. The reason is printed in the draft's
+own output because output is where a future contributor would look before adding
+it as an obvious improvement.
+
+**EVERY SIGNAL SHIPS WITH ITS WRONG CASE AS A TEST, and what is asserted is the
+ABSENCE of a conclusion** — the reverse of a normal test, because a signal that
+answers confidently on its own wrong case is one nobody understands yet. Seven
+cases: a future instant named like a release (`expiry_at`), a birth date, the 1 Hz
+lattice, two equally monotone clocks with no basis to choose, a constant that is
+constant only in the window, the dependency map, and a reference table's load time.
+
+**AND THE WRONG-CASE TESTS EARNED THEIR PLACE ON THE FIRST RUN.** S2's case
+asserted the boundary fraction reads 100% on a 1 Hz lattice; it read 0.00%. The
+computation was `astype("int64") % 1_000_000_000`, which assumes the integer view
+is NANOSECONDS — on a `datetime64[us]` column it is microseconds. Replaced with
+floor-and-compare, which is resolution-independent.
+
+**A SECOND DEFECT WAS FOUND ONLY BY RUNNING IT, NOT BY THE SUITE.** `_is_datetimeish`
+asked `s.dtype == object`, which is how a text column presents under pandas 2 and
+**not** under pandas 3, where it is `str`. Every test frame here is built with
+`pd.date_range` and takes the datetime branch; **the CLI loads CSVs, where every
+column arrives as text**. So on the development environment the draft determined
+*nothing at all*, and the suite was green. **The positive did not exercise the path
+the user takes** — R215 §0's refinement again — and it was caught by running
+`leakaudit draft` once. The repair excludes by dtype and then parses, so it does
+not enumerate the ways a library spells "text", and a CSV-loaded positive is now
+in the suite with two discriminating negatives beside it.
+
+**Reachable as `leakaudit draft --frame name=path`.** It writes no file and runs
+no probe.
+
+**Expected:** that a tool which cannot know something says so and refuses, rather
+than supplying a value that reads like knowledge.

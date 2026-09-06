@@ -46,6 +46,11 @@ from .availability import (
     align_key, eligible_cohorts, run_probe_a)
 from .availability_trace import traces_for
 from .identity_control import IdentityControlResult, run_identity_control
+# INFERENCE. R232 §5. It proposes and never picks: structure is
+# determined from the frames, availability is left blank because it is
+# not in them, and `accept` refuses a draft whose blanks are still blank.
+from .inference import (  # noqa: F401
+    Draft, UnfilledAvailability, accept, draft, render_draft)
 from .modes import (
     ALL_MODES, FILE_MODES, ColumnMode, ModeError, availability,
     availability_matrix, bar_duration, undeclared_columns)
@@ -58,6 +63,11 @@ __all__ = [
     "run_all", "CheckResult", "CheckFinding", "check_split_validity",
     "check_duplicate_rows_across_split", "check_constant_columns",
     "check_pairwise_label_correlation",
+    "Draft",
+    "UnfilledAvailability",
+    "accept",
+    "draft",
+    "render_draft",
     "normalise_raw", "ContractError", "resolve_decision_time", "Alignment",
     "check_frame", "frames_equal", "DeterminismResult",
     # Layer 1 -- the column dependency probe. No availability model needed.

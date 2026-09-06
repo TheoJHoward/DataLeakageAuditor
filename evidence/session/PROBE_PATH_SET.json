@@ -42,6 +42,7 @@
     "src/leakaudit/determinism.py",
     "src/leakaudit/findings.py",
     "src/leakaudit/identity_control.py",
+    "src/leakaudit/inference.py",
     "src/leakaudit/model_file.py",
     "src/leakaudit/probe.py"
   ],

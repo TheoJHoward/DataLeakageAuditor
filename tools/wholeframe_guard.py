@@ -92,6 +92,65 @@ def relation_report(out: dict) -> list:
             for name, ok, detail in limbs]
 
 
+# ---------------------------------------------------------------------------
+# THE CONSTANTS. R232 §4.
+# ---------------------------------------------------------------------------
+#
+# WHAT WAS MISSING. The guard's stride, seed, instrument and month were typed
+# here; the baseline it compares against lived in another file; and nothing
+# checked that the two described the same run. Same shape as a digest without its
+# recipe: **the baseline is a figure and its generation constants are its
+# frame**, and a guard comparing against a baseline from a different run produces
+# a number that means nothing.
+#
+# AND NOTHING HAD TO BE WRITTEN TO THE BASELINE, which is the part worth
+# recording because it was not what anyone expected. R232 §4 supposed the
+# baseline would need to start recording its constants. It already does:
+# `criteria_12_population.json` carries a `scope` block with `stride`,
+# `max_cohorts`, `seed`, and the `instruments` and `months` the run covered,
+# written by the generating harness itself
+# (`tests/phase1/harness_criteria_12_population.py`). The frame was beside the
+# figure the whole time and nobody read it. So this is a READ, not an addition --
+# and no dated acceptance artifact is edited to add a field, which the project's
+# own rule about dated measurements would have made awkward.
+#
+# A REFUSAL, NOT A WARNING, and it happens BEFORE the probe runs. A warning on a
+# seven-minute run is a line somebody scrolls past on the way to the verdict; and
+# refusing after the computation would spend seven minutes to say the comparison
+# was never going to mean anything.
+
+
+def constants_match(scope: dict, sym: str, month: str, stride: int,
+                    seed: int, maxc: int) -> bool:
+    """Does the baseline's `scope` describe the run this guard is about to do?"""
+    return all(ok for _n, ok, _d in _constant_limbs(
+        scope, sym, month, stride, seed, maxc))
+
+
+def _constant_limbs(scope, sym, month, stride, seed, maxc):
+    scope = scope or {}
+    return [
+        ("stride", scope.get("stride") == stride,
+         "baseline=%s guard=%s" % (scope.get("stride"), stride)),
+        ("max_cohorts", scope.get("max_cohorts") == maxc,
+         "baseline=%s guard=%s" % (scope.get("max_cohorts"), maxc)),
+        ("seed", scope.get("seed") == seed,
+         "baseline=%s guard=%s" % (scope.get("seed"), seed)),
+        ("instrument", sym in (scope.get("instruments") or []),
+         "guard=%r baseline covers %s" % (sym, scope.get("instruments"))),
+        ("month", month in (scope.get("months") or []),
+         "guard=%r baseline covers %s" % (month, scope.get("months"))),
+    ]
+
+
+def constants_report(scope: dict, sym: str, month: str, stride: int,
+                     seed: int, maxc: int) -> list:
+    """One line per constant, so a mismatch names which one."""
+    return ["%-12s %-4s %s" % (name, "OK" if ok else "FAIL", detail)
+            for name, ok, detail in _constant_limbs(
+                scope, sym, month, stride, seed, maxc)]
+
+
 from leakaudit.availability import AvailabilityModel, run_probe_a  # noqa: E402
 from leakaudit.availability_trace import traces_for  # noqa: E402
 
@@ -114,10 +173,23 @@ def main() -> int:
                               decision_column="timestamp")
 
     prior = json.loads(PRIOR.read_text(encoding="utf-8"))
+
+    # BEFORE ANYTHING IS COMPUTED. Seven minutes spent to discover the comparison
+    # was never going to mean anything is seven minutes spent badly.
+    scope = prior.get("scope", {})
+    print("CONSTANTS, this guard against the baseline's own `scope`:")
+    for line in constants_report(scope, SYM, MONTH, STRIDE, SEED, MAXC):
+        print("  " + line)
+    if not constants_match(scope, SYM, MONTH, STRIDE, SEED, MAXC):
+        print("\nHALT: this guard's constants are not the ones the baseline was "
+              "generated under, so any comparison against it would be a "
+              "comparison between two different runs. Nothing was probed.")
+        return 4
+
     im = [i for i in prior["instrument_months"]
           if i["instrument"] == SYM and i["month"] == MONTH][0]
 
-    print("BASELINE, from the committed population run:")
+    print("\nBASELINE, from the committed population run:")
     for s in ("contaminated", "corrected"):
         x = im["sides"][s]
         print("  %-13s verdict=%-17s eligible=%-4d records=%-5d features=%d"

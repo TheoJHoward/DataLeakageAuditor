@@ -1047,6 +1047,71 @@ term comparison. Whether that is a gap or a redundancy is unexamined.
 **Not mechanically enumerable.** Finding an instance means asking what relation a
 given measurement ought to satisfy, which is judgment. No sweep is claimed and the
 exemption is recorded rather than left as silence.
+
+## TB-25 — *(5 September 2026)* The document about a defect class is where the class appears
+
+**Four instances this cycle, one mechanism, and the population is enumerable —
+which makes this the first Track B entry whose siblings line can be a list of
+places to look rather than a list of things already found.**
+
+**The instances.**
+
+1. **R216 dropped "a config key the loader reads and ignores" from the halt
+   list** — in the delta headlined by that phrase.
+2. **`ROUND_STATE.md` says it is rewritten every round** and has accreted for
+   sixty.
+3. **TB-21's shape — knowledge written where it governs nothing — recurred in the
+   file that records TB-21.**
+4. **`HAND_TYPED_FIGURES.md` hand-typed four figures**, three already stale, and
+   its two tallies disagreed with each other.
+
+**The mechanism.** Writing about a failure mode puts you in the abstraction: you
+are describing the shape, ranking its instances, choosing its examples. Applying
+it is a different act, aimed at the artifact in your hands, and nothing about
+being deep in the first prompts the second. **The document about X is the most
+likely place for X, not the least** — the author is thinking hardest about X and
+about something other than the document.
+
+**Why it is not simply carelessness.** Each of the four was written carefully.
+`HAND_TYPED_FIGURES.md` quoted its four values *in order to be concrete*, which is
+good writing and is exactly what put the defect in. The instinct that produces the
+document produces the instance.
+
+**The tell, and it is one question:** having written a document about a defect
+class, read the document as an instance. Not "is this well written" — "does this
+file do the thing it describes."
+
+**SIBLINGS — and this is the entry where the siblings line can be a SEARCH rather
+than a recollection**, because the population is enumerable: the documents in this
+repository that describe a defect class. Listed here, **not swept** — R232 §1 asks
+for the list this round and the checking later, which is the right order given
+that a sweep done in the same breath as the listing is the same act of attention
+and would inherit the same blind spot.
+
+| document | the class it describes | check it against itself by asking |
+|---|---|---|
+| `HAND_TYPED_FIGURES.md` | figures typed rather than emitted | does it quote figures? **Instance 4. Found and repaired.** |
+| `TRACKB_LESSONS.md` | every class in this register | does any entry commit the shape it records? **Instance 3.** |
+| `ROUND_STATE.md` | its own currency discipline | is it current? **Instance 2.** |
+| `OPERATING_RULES.md` | rules that get dropped when not carried | are its own provenance rows current, and does it state its limits on its own front page? |
+| `COST_FIGURES_SWEEP.md` | figures from stopped runs quoted as costs | does it quote any duration of its own without saying whether that run finished? |
+| `GUARD_COST_CRITERION.md` | thresholds set after the number is read | was its own limit set before or after? *(It says so, in its first section — deliberately.)* |
+| `LABEL_SCREEN_CASES.md` | screens whose bounds go unstated | does it state its own measurement's bounds — seed, row count, one machine? |
+| `WORK_ROOT_RESIDUE.md` | populations declared by count rather than by content | does it describe its own population, or only count it? |
+| `DEVIATIONS.md` | every disclosed defect | does the disclosure applier have the defects it discloses — append-only, no rewriting? |
+| `PRACTICES.md` | practices that bind nothing | does it say that it binds nothing? |
+| `PREREG.md` §0.2.1 | duplicated authority | does the registration duplicate authority anywhere? *(Already found once and recorded in the file itself.)* |
+| `probe_path_guard.py`'s docstring | populations that are a function of which runs measured them | does it name the runs its own path set came from? |
+
+**Twelve documents, one confirmed instance repaired, three previously found, eight
+unchecked.** The unchecked are unchecked — not clean.
+
+**What makes this different from TB-21 and TB-23**, whose siblings lines both had
+to say *not mechanically enumerable*. Here the population is a list somebody can
+write down, and the check per member is a single question. **That is the strongest
+form a siblings line has taken in this register**, and it is worth noticing that
+it became possible only because the class is defined by a property of documents
+rather than by a property of reasoning.
 ---
 
 # THE CLASSIFICATION — made by hand, with its membership list
@@ -1060,7 +1125,7 @@ share are the vocabulary the whole project is written in — *population*, *sile
 separated TB-19 from TB-12, which are the same lesson one layer apart. Grouping by
 shared vocabulary in a corpus with one vocabulary is grouping by nothing.
 
-**The rule for membership.** All **24** entries are in **exactly
+**The rule for membership.** All **25** entries are in **exactly
 one** family, and the families **jointly cover** all twenty-one — the same totality
 shape the probe path set and the config-key complement use, and for the same
 reason: a classification with an unassigned entry has not classified anything.
@@ -1074,7 +1139,7 @@ cross-reference is not a second membership.
 *Declared, cited, documented — and connected to no consumer. The class the config
 complement was built to close, recurring at four different levels.*
 
-**Members: TB-02, TB-14, TB-20, TB-21.** Four of twenty-four.
+**Members: TB-02, TB-14, TB-20, TB-21, TB-25.** Five of twenty-five.
 
 - **TB-02** — an invariant asserted and cited, enforced by nothing.
 - **TB-14** — an extraction that replaced nothing: a third implementation wearing
@@ -1082,6 +1147,14 @@ complement was built to close, recurring at four different levels.*
 - **TB-20** — a defect that makes a thing do nothing is invisible to tests *of that
   thing*, because they exercise the thing and not its wiring.
 - **TB-21** — knowledge written where it governs nothing has to be discovered twice.
+- **TB-25** — the document about a defect class is where the class appears.
+
+**TB-25 is F1's sharpest case and its most enumerable one.** The family is about
+something present that governs nothing; TB-21 is knowledge placed where it cannot
+act, and TB-25 is knowledge placed *directly against* the thing it should act on
+and still not acting. It is also the only member whose siblings line is a list of
+places to look rather than a list of instances already found, because the
+population — documents describing a defect class — is one somebody can write down.
 
 *Cross-reference:* TB-16 is the near-miss of this family and is deliberately not
 in it — there the declaration **did** govern, by mechanism, and the search for its
@@ -1092,7 +1165,7 @@ name reported it absent. That is a claim-side failure, so it sits in F2.
 *The absence claim and the bare number. The two halves of one discipline: say what
 you looked at, and say what the figure rests on.*
 
-**Members: TB-04, TB-05, TB-09, TB-16, TB-17, TB-23.** Six of twenty-four.
+**Members: TB-04, TB-05, TB-09, TB-16, TB-17, TB-23.** Six of twenty-five.
 
 - **TB-04** — an absence claim about a registered document needs a population too.
 - **TB-05** — a ceiling is a property of the frame, not of the tool.
@@ -1116,7 +1189,7 @@ which fails during an investigation.
 
 *The positive fires, and the firing establishes less than it appears to.*
 
-**Members: TB-12, TB-15, TB-19, TB-24.** Four of twenty-four.
+**Members: TB-12, TB-15, TB-19, TB-24.** Four of twenty-five.
 
 - **TB-12** — a known positive tests the premise, not only the code.
 - **TB-15** — the wrong prediction is the one that pays; a correct one would have
@@ -1145,7 +1218,7 @@ distinguishes nothing, and its value was entirely in being falsifiable.
 *It is internally consistent, it is signed, and it does not survive contact with
 execution.*
 
-**Members: TB-03, TB-07, TB-08, TB-10, TB-13.** Five of twenty-four.
+**Members: TB-03, TB-07, TB-08, TB-10, TB-13.** Five of twenty-five.
 
 - **TB-03** — a registration can be internally consistent and still unscoreable.
 - **TB-07** — signed, consistent, and with an acceptance gate that cannot be run.
@@ -1159,7 +1232,7 @@ execution.*
 
 *The collateral, and it lands on whatever the change was holding constant.*
 
-**Members: TB-01, TB-06, TB-18, TB-22.** Four of twenty-four.
+**Members: TB-01, TB-06, TB-18, TB-22.** Four of twenty-five.
 
 - **TB-01** — a merge can resurrect a defect that was deliberately removed.
 - **TB-06** — backticks in a commit message, and a heredoc in a file edit: content
@@ -1176,7 +1249,7 @@ and nobody read it that way until there were two more.
 
 ## F6 — The reading is biased by what it would cost
 
-**Member: TB-11.** One of twenty-four — and the family of one is the finding.
+**Member: TB-11.** One of twenty-five — and the family of one is the finding.
 
 - **TB-11** — claims that could be unfavourable were verified; claims that flatter
   the process were accepted.
