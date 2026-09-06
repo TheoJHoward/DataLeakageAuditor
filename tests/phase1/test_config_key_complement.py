@@ -60,6 +60,7 @@ KEY_TO_ATTR = {
     "split":            ("config", "train_idx"),
     "column_modes":     ("config", "column_modes"),
     "bar_duration_seconds": ("config", "bar_duration"),
+    "draft_provenance":  ("config", "draft_provenance"),
     "note":             (None, None),
 }
 

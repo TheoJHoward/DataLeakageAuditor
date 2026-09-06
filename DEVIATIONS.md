@@ -2703,3 +2703,97 @@ no probe.
 
 **Expected:** that a tool which cannot know something says so and refuses, rather
 than supplying a value that reads like knowledge.
+
+## D-V30A-69 — `draft` writes the file, and the half-filled file is safe because the boundary that reads it refuses
+
+**Printing only meant the user hand-copied the output into a file.** That is a
+transcription step, which is the class this project spent five rounds removing
+from its own records — and a feature whose first step is *"copy this carefully"*
+is not the ease feature the mandate asked for.
+
+**What a half-filled model file on disk means to the audit path: a refusal.** The
+blanks are safe on disk for exactly one reason, and it is structural rather than
+hopeful — the loader is the boundary that reads them, and it refuses.
+
+**THE REFUSAL NAMES THE FILE AS A DRAFT AND LISTS WHAT IS BLANK.** Measured
+through the CLI:
+
+> `THIS IS A DRAFT AND 2 AVAILABILITY FIELD(S) ARE STILL BLANK: scans.scanned_at,
+> stations.timestamp.` … *Fill each field above in `column_modes`, then remove it
+> from `draft_provenance.unfilled_availability`.*
+
+*"Missing field"* is a message; that is a route out.
+
+**THE DRAFT CARRIES PROVENANCE** — `generated_by`, `commit`, `source_frames` with
+their shapes, `determined_from_data`, `unfilled_availability`,
+`unfilled_other`, `structure_edited_by_hand`, and the signals used and omitted.
+The frame travelling with the figure, applied to a model file. The commit is
+`unknown` outside a checkout rather than absent: one says nobody could tell, the
+other says nobody looked.
+
+**A FINDING UNDER DRAFTED STRUCTURE CARRIES THAT FACT.** There is no
+accept-the-guess path for availability — the tool never guesses it — but structure
+*can* be accepted unread: a user can fill the availability blanks and never look
+at the `aggregate_frames` a program determined. Every finding then rests on a key
+column nobody chose, so the run says so, names the frames, and says what a wrong
+key would mean: *the probe is asking about the wrong clock and a clean result
+would mean nothing.*
+
+**NEVER OVERWRITE.** If the target exists, `draft` refuses and the file is
+verified unchanged. A hand-written model's availability fields are the ones
+nothing can reconstruct, because they were never in the data.
+
+**And the config-key complement caught the new key on its first live use** —
+`draft_provenance` was accepted, stored, and read by nothing, which is the
+accepted-and-ignored state that guard exists to make illegal. Wiring §1(d)'s
+consumer is what satisfied it; the guard would not accept a declaration.
+
+**Expected:** that a tool which writes a user's file refuses to destroy one, and
+that a file it wrote half-finished is refused by name rather than acted on.
+
+## D-V30A-70 — every CLI command now has a test that invokes it as a user does
+
+**The hole has bitten three times and always the same way: the test took the
+library path and the user takes the command line.**
+
+1. **P0** was fixed at `audit()` and not at the CLI.
+2. **Three config keys** reached the library and not the command.
+3. **`draft` worked on frames and not on files** — every test built its frames
+   with `pd.date_range`, which yields `datetime64`, while the CLI loads CSVs where
+   columns arrive as text. On the development environment the draft determined
+   nothing at all and the suite was green.
+
+**`tests/phase1/test_cli_path.py` closes it structurally.** One test per command,
+invoked through the CLI entry point with file inputs in the user's format.
+`COMMANDS` is checked against the parser's own subparsers — disjoint, covering,
+and a new command fails the file until it has a test.
+
+**The discriminating input already existed: the CSV with string timestamps.** A
+CLI-path test that passed on pre-built frames would be testing the library path in
+disguise, so the file asserts, by parsing itself, that it never constructs a
+frame.
+
+**THAT SELF-CHECK FAILED TWICE ON ITSELF BEFORE IT WORKED, and both failures are
+worth the record.** A substring scan matched its own banned-token list; rewritten
+to exclude its own source, it then matched the module docstring that *explains*
+the defect. **R218 ruled this exact case** — the installability checker read an
+English sentence as an import, and the ruling was *fix the parser, do not reword
+the docstring*. With `ast` a docstring is a string constant and simply is not a
+call, so there is nothing to exempt. The check was verified to still catch a
+smuggled `pd.DataFrame` call.
+
+**A check about a property tripping over that property, twice, in the round that
+recorded TB-25** — the document about a defect class is where the class appears.
+
+**AND THE NEW FILE INTRODUCED SUITE-ORDER DEPENDENCE, caught by the tests that
+already existed.** Its fixture wrote a pipeline module named `mypipe`, which is
+also what `test_the_walks_wrong_turns.py` writes into its own temporary
+directory. `sys.modules` caches by NAME, not by path, so whichever imported first
+won and the other three tests got the wrong pipeline — failing with `Label(s)
+['weight_kg'] do not exist`, an error naming a column in a module they never
+wrote. Repaired with a unique name and a `sys.modules` cleanup, and verified by
+running the two files in both orders.
+
+**Expected:** that a command a user runs has a test that runs it, and that a test
+file which creates importable modules does not name them what another file names
+its own.

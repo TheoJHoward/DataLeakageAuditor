@@ -100,6 +100,24 @@ def _load_callable(spec: str):
     return fn
 
 
+def _head_commit() -> str:
+    """The commit a draft was generated at, or an honest unknown.
+
+    PROVENANCE, and the unknown is a real state rather than a blank. A draft
+    written outside a checkout has no commit, and saying "unknown" is different
+    from omitting the field -- one says nobody could tell, the other says nobody
+    looked.
+    """
+    import subprocess
+    try:
+        r = subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True,
+                           text=True, cwd=str(Path(__file__).resolve().parent),
+                           timeout=15)
+        return r.stdout.strip() if r.returncode == 0 else "unknown"
+    except Exception:                                        # noqa: BLE001
+        return "unknown"
+
+
 def _load_frame(path: Path):
     import pandas as pd
     suffix = path.suffix.lower()
@@ -187,6 +205,11 @@ def build_parser() -> argparse.ArgumentParser:
     dft.add_argument("--frame", action="append", metavar="name=path",
                      help="an input frame; repeat for several. .parquet, .csv "
                           "or .json")
+    dft.add_argument("--out", metavar="path.json",
+                     help="write the draft here instead of printing it. REFUSES "
+                          "if the file exists: a hand-written model's "
+                          "availability fields are the ones nothing can "
+                          "reconstruct, because they were never in your data")
 
     sub.add_parser("schema", help="print the config file format")
     return ap
@@ -260,6 +283,32 @@ def _run_availability(frames, build, model_path, stride, max_cohorts):
     traces = traces_for(result, elig.eligible, case_id="user")
     for note in elig.notes:
         result.notes.append(note)
+
+    # A FINDING PRODUCED UNDER DRAFTED STRUCTURE CARRIES THAT FACT. R233 §1(d).
+    #
+    # There is no "accept the tool's guess" path for AVAILABILITY -- the tool
+    # never guesses it, and the loader refuses a draft whose availability fields
+    # are still blank. But STRUCTURE can be accepted unread: a user can run
+    # `draft`, fill the availability blanks it left, and never look at the
+    # `aggregate_frames` it determined. Every finding in this run then rests on a
+    # key column a program chose, and that is a condition of the result rather
+    # than a detail of how the file was made.
+    prov = getattr(config, "draft_provenance", None)
+    if prov:
+        det = (prov.get("determined_from_data") or {}).get("aggregate_frames")
+        result.notes.append(
+            "THIS RUN'S STRUCTURE WAS DRAFTED, NOT WRITTEN. The model file "
+            "carries `draft_provenance`: %s determined by `%s`%s, and "
+            "`structure_edited_by_hand` is %s. Every finding here rests on those "
+            "key columns. If a key is wrong, the probe is asking about the wrong "
+            "clock and a clean result would mean nothing -- check them against "
+            "what your pipeline actually joins on."
+            % ("aggregate_frames for %s" % ", ".join(det) if det
+               else "structure",
+               prov.get("generated_by", "an unrecorded generator"),
+               " at commit %s" % prov["commit"] if prov.get("commit") else "",
+               prov.get("structure_edited_by_hand")))
+
     return AuditResult(traces, source=result)
 
 
@@ -301,9 +350,35 @@ def _main(argv=None) -> int:
         # the frames and leaves what is a fact about the world blank, and its
         # header says which is which. It writes no file and runs no probe: what
         # comes out is text for a person to read and complete.
+        from .inference import DraftTargetExists
         from .inference import draft as make_draft
-        from .inference import render_draft
-        print(render_draft(make_draft(_parse_frames(args.frame))))
+        from .inference import render_draft, write_draft
+        frames = _parse_frames(args.frame)
+        d = make_draft(frames)
+        if not args.out:
+            print(render_draft(d))
+            return EXIT_OK_SILENT
+        # WRITING IS THE DEFAULT PATH A USER TAKES. R233 §1(a). Printing only
+        # means the user hand-copies the output into a file, which is the
+        # transcription step this project spent five rounds removing from its
+        # own records; a feature whose first step is "copy this carefully" is
+        # not an ease feature.
+        try:
+            p = write_draft(
+                d, args.out,
+                generated_by="leakaudit draft",
+                commit=_head_commit(),
+                source_frames={k: (int(v.shape[0]), int(v.shape[1]))
+                               for k, v in frames.items()})
+        except DraftTargetExists as e:
+            raise SystemExit(str(e))
+        print(render_draft(d))
+        print()
+        print("WRITTEN: %s" % p)
+        print("It is a DRAFT: its structure is determined and its availability "
+              "fields are blank.")
+        print("`leakaudit run --model %s` will REFUSE until you fill them, and "
+              "the refusal names each one." % p)
         return EXIT_OK_SILENT
     if args.command not in ("run", "check"):
         ap.print_help()

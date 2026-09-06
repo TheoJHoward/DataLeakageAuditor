@@ -60,7 +60,7 @@ _V2_KEYS = _V1_KEYS | {"label_column", "split"}
 # Version 3 adds per-column availability modes. `AVAILABILITY_MODES.md`
 # states what each computes and was committed before this parser existed.
 _V3_KEYS = _V2_KEYS | {"column_modes", "timestamp_column",
-                       "bar_duration_seconds"}
+                       "bar_duration_seconds", "draft_provenance"}
 _KEYS_BY_VERSION = {1: _V1_KEYS, 2: _V2_KEYS, 3: _V3_KEYS}
 
 # `aggregate_frames` is required only where an availability model is the point.
@@ -97,6 +97,9 @@ class LoadedConfig:
     column_modes: dict | None = None
     bar_duration: object = None
     timestamp_column: str = "timestamp"
+    # Present only on a file `leakaudit draft` wrote. R233 §1(d): a
+    # finding produced under structure nobody edited should say so.
+    draft_provenance: dict | None = None
     version: int = SCHEMA_VERSION
 
     @property
@@ -405,6 +408,38 @@ def load_model(path) -> AvailabilityModel:
     if not isinstance(ties, bool):
         _refuse("`ties_available` is %r; true or false was expected" % (ties,), path)
 
+    # THE DRAFT'S PROVENANCE, AND ITS REFUSAL. R233 §1(b), (c).
+    #
+    # `leakaudit draft` writes a file with its STRUCTURE determined and its
+    # AVAILABILITY fields blank, because availability is not in the frames. The
+    # blanks are safe on disk for exactly one reason: the boundary that reads
+    # them refuses. This is that boundary.
+    #
+    # THE REFUSAL NAMES THE FILE AS A DRAFT AND LISTS WHAT IS UNFILLED, because
+    # "missing field" is a generic message and "this draft has 3 availability
+    # fields you have not filled, here they are" is a route out. A user who ran
+    # `draft` and then `run` meets an instruction, not a puzzle.
+    prov = raw.get("draft_provenance")
+    if prov is not None:
+        if not isinstance(prov, dict):
+            _refuse("`draft_provenance` is %r; the object `leakaudit draft` "
+                    "writes was expected. It is not a field to hand-write."
+                    % (prov,), path)
+        unfilled = prov.get("unfilled_availability") or []
+        if unfilled:
+            _refuse(
+                "THIS IS A DRAFT AND %d AVAILABILITY FIELD(S) ARE STILL BLANK: "
+                "%s.\n"
+                "`leakaudit draft` determined the structure of your data and "
+                "left availability blank on purpose -- when a value became "
+                "knowable is a fact about how it was published, not a shape in "
+                "the frames. Fill each field above in `column_modes`, then "
+                "remove it from `draft_provenance.unfilled_availability`. The "
+                "audit refuses rather than guessing on your behalf, and a blank "
+                "is not agreement."
+                % (len(unfilled), ", ".join(str(u) for u in sorted(unfilled))),
+                path)
+
     decision = raw.get("decision_column", "timestamp")
     if not isinstance(decision, str) or not decision:
         _refuse("`decision_column` is %r; a column name was expected"
@@ -422,4 +457,5 @@ def load_model(path) -> AvailabilityModel:
         column_modes=modes,
         bar_duration=bar_duration_seconds,
         timestamp_column=timestamp_column,
+        draft_provenance=prov,
         version=version)

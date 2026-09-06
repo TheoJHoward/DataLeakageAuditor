@@ -499,6 +499,12 @@ r231b_entry.md
 r232_consts_tests.py
 r232_entry.md
 r232_tb.md
+r233_cli.py
+r233_consume.py
+r233_entry.md
+r233_fix_collision.py
+r233_live.py
+r233_write.py
 r89.py
 r95_pointer.py
 r95a.py

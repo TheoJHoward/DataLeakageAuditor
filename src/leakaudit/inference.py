@@ -40,6 +40,9 @@ in its own output, so the omission is visible rather than absent.
 """
 from __future__ import annotations
 
+import json
+import pathlib
+
 from dataclasses import dataclass, field
 
 import numpy as np
@@ -339,3 +342,63 @@ def accept(d: Draft, availability: dict) -> dict:
             % ", ".join(sorted(missing)))
     return {"version": 3, "aggregate_frames": dict(d.aggregate_frames),
             "note": "accepted from a draft; availability supplied by the user"}
+
+
+class DraftTargetExists(FileExistsError):
+    """The draft would have overwritten a file that is already there.
+
+    NEVER OVERWRITE. A user with a hand-written model who runs `draft` by mistake
+    must not lose it, and there is no recovery path from a clobbered config: the
+    availability fields in it are the ones nothing can reconstruct, because they
+    were never in the data. One check, and it is the irreversible-act rule
+    applied at the only place in this package that writes a user's file.
+    """
+
+
+def as_model_dict(d: Draft, *, generated_by: str, commit: str,
+                  source_frames: dict) -> dict:
+    """The draft as a config file, with its provenance and its blanks marked.
+
+    THE FRAME TRAVELS WITH THE FIGURE, applied to a model file. Every field the
+    draft filled is marked DETERMINED-FROM-DATA and every field it left blank is
+    listed under `unfilled_availability`, so the loader can refuse by name rather
+    than generically and a later reader can tell what a person decided from what
+    a program observed.
+    """
+    unfilled = ["%s.%s" % (c.frame, c.column) for c in d.columns
+                if c.availability_evidence and c.availability_is_unfilled]
+    determined = {"aggregate_frames": sorted(d.aggregate_frames)}
+    return {
+        "version": 3,
+        "note": HEADER,
+        "draft_provenance": {
+            "generated_by": generated_by,
+            "commit": commit,
+            "source_frames": {k: list(v) for k, v in sorted(source_frames.items())},
+            "determined_from_data": determined,
+            "unfilled_availability": sorted(unfilled),
+            "unfilled_other": (["decision_column"]
+                               if d.decision_column is UNFILLED else []),
+            "structure_edited_by_hand": False,
+            "signals_used": list(SIGNALS_USED),
+            "signals_omitted": sorted(SIGNALS_OMITTED),
+        },
+        "aggregate_frames": dict(d.aggregate_frames),
+    }
+
+
+def write_draft(d: Draft, path, *, generated_by: str, commit: str,
+                source_frames: dict) -> pathlib.Path:
+    """Write the draft as JSON. REFUSES if the target exists."""
+    p = pathlib.Path(path)
+    if p.exists():
+        raise DraftTargetExists(
+            "%s already exists and this will not overwrite it. If it is a model "
+            "you wrote, its availability fields are the ones nothing can "
+            "reconstruct -- they were never in your data. Move it aside, or "
+            "name a different target." % p)
+    body = as_model_dict(d, generated_by=generated_by, commit=commit,
+                         source_frames=source_frames)
+    p.write_text(json.dumps(body, indent=2, sort_keys=True) + "\n",
+                 encoding="utf-8", newline="\n")
+    return p
