@@ -1077,6 +1077,29 @@ about something other than the document.
 good writing and is exactly what put the defect in. The instinct that produces the
 document produces the instance.
 
+**TWO LIVE INSTANCES IN THE ROUND THAT RECORDED THIS, and they are evidence FOR
+the class rather than a wart on it (R234 §3).** `tests/phase1/test_cli_path.py`
+asserts that it never constructs a DataFrame — the property that makes it a
+CLI-path suite rather than a library-path suite in disguise. Its first version
+matched **its own banned-token list**. Rewritten to exclude its own source, it
+matched **the module docstring explaining the defect**. A check about a property
+exhibited that property twice, in the file written to close a different instance
+of it, in the round that recorded the lesson.
+
+**R218's ruling applied cleanly and is the general repair:** parse, do not match
+text. With `ast` a docstring is a string constant and simply is not a call, so
+there is nothing to exempt — the same disposition the installability checker
+needed when it read an English sentence as an import. **A defect class that
+reproduces inside the test written to detect a different instance of it is not a
+coincidence**, and it is the argument that made the eight-document sweep worth a
+round of its own.
+
+**And the sweep, run cold a round later, found one more instance in eight
+documents** — `OPERATING_RULES.md`, whose scope sentence described a fourteen-rule
+extraction after three rules had arrived by another route. Recorded at
+`evidence/session/DEFECT_CLASS_DOCUMENT_SWEEP.md`. Seven were clean, and three of
+those seven were clean because an earlier round had been bitten and repaired them.
+
 **The tell, and it is one question:** having written a document about a defect
 class, read the document as an instance. Not "is this well written" — "does this
 file do the thing it describes."
@@ -1112,6 +1135,26 @@ write down, and the check per member is a single question. **That is the stronge
 form a siblings line has taken in this register**, and it is worth noticing that
 it became possible only because the class is defined by a property of documents
 rather than by a property of reasoning.
+
+## TB-26 — *(5 September 2026)* A fixture that names a module must assume another fixture named it too
+
+`sys.modules` caches by NAME, not by path. A new test file's fixture wrote a
+pipeline module called `mypipe` into its own temporary directory; so does
+`test_the_walks_wrong_turns.py`. Whichever imported first won, and three unrelated
+tests failed with `Label(s) ['weight_kg'] do not exist` — **an error naming a
+column in a module they never wrote**, which is what makes this expensive to
+diagnose rather than merely annoying.
+
+**Suite-order dependence, introduced by a new file and caught by tests that
+already existed.** Nothing about the new file failed; the damage landed entirely
+on its neighbours, which is TB-18's shape (*the damage from a fix lands on what
+the fix was holding constant*) in the test suite rather than in the code.
+
+**The repair is a unique name and a `sys.modules` cleanup**, verified by running
+the two files in both orders. **The tell:** a fixture that writes an importable
+module is writing into a process-global namespace, and `tmp_path` isolates the
+filesystem, not `sys.modules`. Temporary-directory isolation reads as total and
+is not.
 ---
 
 # THE CLASSIFICATION — made by hand, with its membership list
@@ -1125,7 +1168,7 @@ share are the vocabulary the whole project is written in — *population*, *sile
 separated TB-19 from TB-12, which are the same lesson one layer apart. Grouping by
 shared vocabulary in a corpus with one vocabulary is grouping by nothing.
 
-**The rule for membership.** All **25** entries are in **exactly
+**The rule for membership.** All **26** entries are in **exactly
 one** family, and the families **jointly cover** all twenty-one — the same totality
 shape the probe path set and the config-key complement use, and for the same
 reason: a classification with an unassigned entry has not classified anything.
@@ -1139,7 +1182,7 @@ cross-reference is not a second membership.
 *Declared, cited, documented — and connected to no consumer. The class the config
 complement was built to close, recurring at four different levels.*
 
-**Members: TB-02, TB-14, TB-20, TB-21, TB-25.** Five of twenty-five.
+**Members: TB-02, TB-14, TB-20, TB-21, TB-25.** Five of twenty-six.
 
 - **TB-02** — an invariant asserted and cited, enforced by nothing.
 - **TB-14** — an extraction that replaced nothing: a third implementation wearing
@@ -1165,7 +1208,7 @@ name reported it absent. That is a claim-side failure, so it sits in F2.
 *The absence claim and the bare number. The two halves of one discipline: say what
 you looked at, and say what the figure rests on.*
 
-**Members: TB-04, TB-05, TB-09, TB-16, TB-17, TB-23.** Six of twenty-five.
+**Members: TB-04, TB-05, TB-09, TB-16, TB-17, TB-23.** Six of twenty-six.
 
 - **TB-04** — an absence claim about a registered document needs a population too.
 - **TB-05** — a ceiling is a property of the frame, not of the tool.
@@ -1189,7 +1232,7 @@ which fails during an investigation.
 
 *The positive fires, and the firing establishes less than it appears to.*
 
-**Members: TB-12, TB-15, TB-19, TB-24.** Four of twenty-five.
+**Members: TB-12, TB-15, TB-19, TB-24.** Four of twenty-six.
 
 - **TB-12** — a known positive tests the premise, not only the code.
 - **TB-15** — the wrong prediction is the one that pays; a correct one would have
@@ -1218,7 +1261,7 @@ distinguishes nothing, and its value was entirely in being falsifiable.
 *It is internally consistent, it is signed, and it does not survive contact with
 execution.*
 
-**Members: TB-03, TB-07, TB-08, TB-10, TB-13.** Five of twenty-five.
+**Members: TB-03, TB-07, TB-08, TB-10, TB-13.** Five of twenty-six.
 
 - **TB-03** — a registration can be internally consistent and still unscoreable.
 - **TB-07** — signed, consistent, and with an acceptance gate that cannot be run.
@@ -1232,7 +1275,7 @@ execution.*
 
 *The collateral, and it lands on whatever the change was holding constant.*
 
-**Members: TB-01, TB-06, TB-18, TB-22.** Four of twenty-five.
+**Members: TB-01, TB-06, TB-18, TB-22, TB-26.** Five of twenty-six.
 
 - **TB-01** — a merge can resurrect a defect that was deliberately removed.
 - **TB-06** — backticks in a commit message, and a heredoc in a file edit: content
@@ -1240,6 +1283,8 @@ execution.*
 - **TB-18** — the damage from a fix lands on what the fix was holding constant.
 - **TB-22** — a safety argument is about a layer, and the thing that changes
   is often at another one.
+- **TB-26** — a fixture that names a module must assume another fixture
+  named it too. *(`tmp_path` isolates the filesystem, not `sys.modules`.)*
 
 **TB-22 is this family's DIAGNOSIS rather than a fourth instance of it**, and it
 arrived last for a reason: collateral is what you notice, and the scope of the
@@ -1249,7 +1294,7 @@ and nobody read it that way until there were two more.
 
 ## F6 — The reading is biased by what it would cost
 
-**Member: TB-11.** One of twenty-five — and the family of one is the finding.
+**Member: TB-11.** One of twenty-six — and the family of one is the finding.
 
 - **TB-11** — claims that could be unfavourable were verified; claims that flatter
   the process were accepted.

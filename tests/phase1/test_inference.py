@@ -54,8 +54,10 @@ def test_the_known_positive_structure_filled_availability_blank():
     frames = {"scans": pd.DataFrame({"scanned_at": SECS,
                                      "items": rng.integers(0, 200, 60)})}
     d = draft(frames)
-    assert d.aggregate_frames == {"scans": "scanned_at"}, (
-        "structure IS determinable here and was not determined")
+    assert d.forks["scans"].datetime_columns == ["scanned_at"], (
+        "the datetime column IS observable here and was not observed")
+    assert d.forks["scans"].mode_is_unfilled, (
+        "a mode was assigned. `aggregate_frames` is availability, not structure")
     for cd in d.columns:
         assert cd.availability_is_unfilled, (
             "%s.%s has an availability VALUE. Nothing in the frames carries "
@@ -72,7 +74,10 @@ def test_NO_column_anywhere_receives_an_availability_value():
                            "y": rng.integers(0, 9, 60)}),
     }
     d = draft(frames)
-    assert d.aggregate_frames, "structure was determinable and was not determined"
+    assert d.forks, "the frames were not observed at all"
+    assert all(f.mode_is_unfilled for f in d.forks.values()), (
+        "a frame received an availability mode: %s"
+        % [f.frame for f in d.forks.values() if not f.mode_is_unfilled])
     filled = [(c.frame, c.column, c.availability)
               for c in d.columns if not c.availability_is_unfilled]
     assert not filled, "availability was inferred for %s" % (filled,)
@@ -137,8 +142,9 @@ def test_S3_wrong_case__two_monotone_clocks_and_no_basis_to_choose():
     d = draft({"trades": pd.DataFrame({
         "ts_recv": SECS, "ts_event": SECS - pd.Timedelta(milliseconds=5),
         "px": range(60)})})
-    assert "trades" not in d.aggregate_frames, (
+    assert d.forks["trades"].mode_is_unfilled, (
         "a key was chosen between two equally monotone datetime columns")
+    assert sorted(d.forks["trades"].datetime_columns) == ["ts_event", "ts_recv"]
     why = " ".join(w for _f, _c, w in d.unresolved)
     assert "no basis to choose" in why, why
     assert "ts_recv" in str(d.unresolved) and "ts_event" in str(d.unresolved)
@@ -196,25 +202,131 @@ def test_accept_REFUSES_while_any_availability_field_is_blank():
     with pytest.raises(UnfilledAvailability) as e:
         accept(d, {})
     msg = str(e.value)
-    assert "scans.scanned_at" in msg
+    assert "scans.scanned_at (availability)" in msg
+    assert "scans (availability mode)" in msg, (
+        "the frame-level MODE is not in the refusal, so a user could accept a "
+        "draft without ever deciding whether their frame is an aggregate: %s"
+        % msg)
     assert "availability model you did not write" in msg
 
 
-def test_accept_SUCCEEDS_once_the_user_has_answered():
+def test_accept_SUCCEEDS_once_the_user_has_answered_BOTH_kinds():
     d = draft({"scans": pd.DataFrame({"scanned_at": SECS, "n": range(60)})})
-    model = accept(d, {"scans.scanned_at": "at_timestamp"})
+    model = accept(d, {"scans.scanned_at (availability)": "at_timestamp",
+                       "scans (availability mode)": "aggregate:scanned_at"})
     assert model["aggregate_frames"] == {"scans": "scanned_at"}
     assert model["version"] == 3
+
+
+def test_a_frame_the_user_says_is_NOT_an_aggregate_gets_no_entry():
+    """The other half of the fork, and the case the old draft could not express:
+    a frame whose timestamp is the decision instant is not an aggregate at all."""
+    d = draft({"stations": pd.DataFrame({"timestamp": SECS, "q": range(60)})})
+    model = accept(d, {"stations.timestamp (availability)": "at_timestamp",
+                       "stations (availability mode)": "decision_frame"})
+    assert model["aggregate_frames"] == {}, (
+        "the user said this frame carries the decision instant and it was "
+        "still declared an aggregate")
 
 
 def test_a_BLANK_is_not_read_as_agreement_even_if_explicitly_none():
     """The plausible wrong repair: letting the user pass the key with a null to
     mean 'I agree with whatever you inferred'. There is nothing to agree with."""
     d = draft({"scans": pd.DataFrame({"scanned_at": SECS, "n": range(60)})})
-    model = accept(d, {"scans.scanned_at": None})
+    model = accept(d, {"scans.scanned_at (availability)": None,
+                       "scans (availability mode)": None})
     assert model["version"] == 3, (
         "an explicit None from the USER is an answer they gave; a blank the "
         "draft left is not. Only the second is refused.")
+
+
+# ---------------------------------------------------------------------------
+# R234 §0 -- the defect, and the station frame is its discriminating case.
+# ---------------------------------------------------------------------------
+
+def test_THE_STATION_FRAME_gets_the_fork_and_NOT_a_mode():
+    """THE DISCRIMINATING POSITIVE. One datetime column, monotone, on no
+    boundary -- and in the live run it carries the DECISION INSTANT, not an
+    aggregate. The first draft gave it `aggregate_frames` because that is what a
+    lone timestamp looks like. A draft that assigns it any mode fails here."""
+    d = draft({"stations": pd.DataFrame({"timestamp": SECS,
+                                         "queue_depth": range(60)})})
+    fork = d.forks["stations"]
+    assert fork.mode_is_unfilled, "a mode was assigned to the station frame"
+    assert fork.datetime_columns == ["timestamp"]
+    ev = " ".join(fork.evidence)
+    assert "THE FORK" in ev
+    assert "AGGREGATES an interval" in ev and "DECISION INSTANT" in ev, (
+        "the evidence does not name BOTH branches, so it is a hint rather than "
+        "a fork: %s" % ev)
+
+
+def test_NO_frame_anywhere_receives_a_mode_however_suggestive_its_shape():
+    """Every shape that previously produced a confident assignment."""
+    cases = {
+        "one_col_on_boundary": pd.DataFrame({"t": SECS, "v": range(60)}),
+        "one_col_off_boundary": pd.DataFrame(
+            {"t": SECS + pd.Timedelta(milliseconds=300), "v": range(60)}),
+        "two_cols": pd.DataFrame({"a": SECS, "b": SECS, "v": range(60)}),
+        "no_datetime": pd.DataFrame({"v": range(60)}),
+    }
+    d = draft(cases)
+    for name, fork in d.forks.items():
+        assert fork.mode_is_unfilled, "%s received a mode" % name
+
+
+def test_the_frame_mode_is_in_the_SAME_unfilled_list_as_the_columns():
+    """R234 §0(b): one refusal path, not two. A user meets one list."""
+    d = draft({"scans": pd.DataFrame({"scanned_at": SECS, "n": range(60)})})
+    fields = d.unfilled_fields
+    assert "scans (availability mode)" in fields
+    assert "scans.scanned_at (availability)" in fields
+
+
+def test_the_rendered_draft_shows_the_mode_as_BLANK():
+    text = render_draft(draft({"s": pd.DataFrame({"t": SECS, "n": range(60)})}))
+    assert "availability mode: <BLANK -- you decide>" in text
+    assert "NOT turned into a mode" in text
+
+
+# ---------------------------------------------------------------------------
+# R234 §1 -- the skeleton, generated from the same pass.
+# ---------------------------------------------------------------------------
+
+def test_the_written_file_carries_a_column_modes_SKELETON():
+    import json
+    import tempfile
+    from leakaudit.inference import write_draft
+    from leakaudit.model_file import FILL_ME
+
+    d = draft({"scans": pd.DataFrame({"scanned_at": SECS, "items": range(60)})})
+    out = Path(tempfile.mkdtemp()) / "m.json"
+    write_draft(d, out, generated_by="t", commit="c",
+                source_frames={"scans": (60, 2)})
+    body = json.loads(out.read_text(encoding="utf-8"))
+    assert body["column_modes"] == {"scanned_at": FILL_ME}, body.get("column_modes")
+    ev = body["draft_provenance"]["column_mode_evidence"]
+    assert "scanned_at" in ev and "S2:" in ev["scanned_at"]
+    assert "(frame) scans" in ev and "THE FORK" in ev["(frame) scans"]
+
+
+def test_the_skeleton_is_GENERATED_not_typed_alongside():
+    """R234 §1: one source. Every skeleton key must be a column the same pass
+    produced evidence for -- a hand-maintained list would drift."""
+    import json
+    import tempfile
+    from leakaudit.inference import write_draft
+
+    frames = {"a": pd.DataFrame({"t": SECS, "x": range(60)}),
+              "b": pd.DataFrame({"k": SECS, "y": range(60)})}
+    d = draft(frames)
+    out = Path(tempfile.mkdtemp()) / "m.json"
+    write_draft(d, out, generated_by="t", commit="c",
+                source_frames={k: (60, 2) for k in frames})
+    body = json.loads(out.read_text(encoding="utf-8"))
+    evidenced = {c.column for c in d.columns if c.availability_evidence}
+    assert set(body["column_modes"]) == evidenced, (
+        "the skeleton and the draft disagree about which columns need a mode")
 
 
 # ---------------------------------------------------------------------------
@@ -246,7 +358,7 @@ def test_the_rendered_draft_names_the_omitted_signals_and_why():
 def test_an_empty_frame_set_still_produces_a_header_and_no_values():
     d = draft({})
     assert d.notes and d.notes[0] == HEADER
-    assert not d.columns and not d.aggregate_frames
+    assert not d.columns and not d.forks and not d.unfilled_fields
 
 
 def test_a_CSV_LOADED_frame_is_drafted__the_path_the_USER_takes():
@@ -265,8 +377,10 @@ def test_a_CSV_LOADED_frame_is_drafted__the_path_the_USER_takes():
         "the fixture no longer arrives as text, so this test no longer "
         "exercises the path it exists for")
     d = draft(frames)
-    assert d.aggregate_frames == {"stations": "timestamp",
-                                  "scans": "scanned_at"}, d.aggregate_frames
+    assert sorted(d.forks) == ["scans", "stations"]
+    assert d.forks["stations"].datetime_columns == ["timestamp"]
+    for fork in d.forks.values():
+        assert fork.mode_is_unfilled
     for cd in d.columns:
         assert cd.availability_is_unfilled
 
@@ -277,11 +391,11 @@ def test_a_numeric_column_is_never_read_as_a_timestamp():
     parsing is what keeps a count column from becoming a clock."""
     d = draft({"f": pd.DataFrame({"count": range(60),
                                   "price": np.linspace(1.0, 2.0, 60)})})
-    assert not d.aggregate_frames
+    assert not d.forks["f"].datetime_columns
     assert all(c.role != "timestamp candidate" for c in d.columns)
 
 
 def test_a_text_column_that_is_NOT_dates_is_not_read_as_a_timestamp():
     d = draft({"f": pd.DataFrame({"sym": ["ES"] * 60, "note": ["x"] * 60})})
-    assert not d.aggregate_frames
+    assert not d.forks["f"].datetime_columns
     assert all(c.role != "timestamp candidate" for c in d.columns)

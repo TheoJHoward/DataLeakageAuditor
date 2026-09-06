@@ -123,11 +123,19 @@ that can refuse should refuse rather than be written down.
 
 ## What this file does not claim
 
-**It is not proof the set is complete.** It is the fourteen rules a mechanical
-extraction across R119–R220 found had fallen off, plus those the current delta
-carries, plus two restored to their strongest form. A durable rule that was
-*never* written into any halt list would not appear here, and nothing has looked
-for those.
+**It is not proof the set is complete.** It began as the fourteen rules a
+mechanical extraction across R119–R220 found had fallen off, plus those R221's
+delta carried, plus two restored to their strongest form. **It has grown since,
+and by a different route:** the rows first stated at R226, R227 and R229 come from
+rounds that found a rule by breaking it, not from that extraction. A durable rule
+that was *never* written into any halt list would still not appear here, and
+nothing has looked for those.
+
+> *This sentence read "It is the fourteen rules a mechanical extraction across
+> R119–R220 found" until R234, by which point three rows had a later origin than
+> the extraction it named — so the file describing rule provenance carried stale
+> provenance about itself. Found by the sweep in
+> `evidence/session/DEFECT_CLASS_DOCUMENT_SWEEP.md`; disclosed at D-V30A-71.*
 
 **The extraction is mechanical; the durable-versus-round-specific split is a
 reading.** Items were normalised to their first five significant words, which

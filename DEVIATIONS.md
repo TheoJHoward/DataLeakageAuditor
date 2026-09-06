@@ -2797,3 +2797,109 @@ running the two files in both orders.
 **Expected:** that a command a user runs has a test that runs it, and that a test
 file which creates importable modules does not name them what another file names
 its own.
+
+## D-V30A-71 — `draft` assigned an availability mode, which is the mirror risk arriving through the front door
+
+**True, and it is a defect rather than a limitation.** `leakaudit draft`
+determined `aggregate_frames` for every frame that had exactly one datetime
+column. **`aggregate_frames` is an availability MODE, not structure**: declaring a
+frame an aggregate says its cells become knowable at `floor(key) + window` rather
+than at the key, which is a claim about publication. So the draft was inferring
+what is ABOUT the world from what is IN the data — the one thing `R215 §3` rules
+out and the entire draft/require split was built to prevent.
+
+**THE STATION FRAME IS THE PROOF, and it is the discriminating case.** In the live
+run it has exactly one datetime column, so it got `aggregate_frames` — and it
+carries the **decision instant**, not an aggregate. A frame with one timestamp
+column looks identical either way. The draft filled a field that belonged on the
+require side, **through the one field nobody guarded because it looked
+structural.**
+
+**Found in the feature built to prevent it**, which is why it leads its round: the
+module whose docstring says *infer what is in the data; require what is about the
+world* was inferring an availability mode from a column count.
+
+**The repair, and the mode moves to the require side.** `draft()` assigns nothing.
+It reports, per frame, the datetime columns present and their evidence, then
+states the fork it cannot take:
+
+> *one datetime column, `'timestamp'`. THE FORK, AND ONLY YOU CAN TAKE IT: if this
+> frame AGGREGATES an interval, `aggregate_frames['stations'] = 'timestamp'` fits
+> and its cells become knowable at floor(key) + window. If it carries the DECISION
+> INSTANT — the clock your output rows are built on — it is not an aggregate at
+> all and belongs in `decision_column` instead. The two look identical here.*
+
+**ONE REFUSAL PATH, NOT TWO.** Frame modes join the column-level blanks in a
+single `unfilled_availability` list, so a user meets one list and the loader
+refuses on one path. `accept()` refuses until both kinds are answered, and a frame
+the user says carries the decision instant gets **no** `aggregate_frames` entry —
+a state the old draft could not express.
+
+**The discriminating positive is a test now:** a draft that assigns the station
+frame any mode fails, and a second test asserts no frame receives one across four
+shapes that previously produced confident assignments.
+
+**Expected:** that a field which is a claim about publication is treated as one,
+however structural it looks.
+
+## D-V30A-72 — the drafted file carries a `column_modes` skeleton, and the loader refuses its sentinel
+
+**The refusal named a place that did not exist in the file.** `run --model` on a
+draft told the user to fill each field *in `column_modes`* — and `column_modes`
+was absent, so the route out dead-ended at a key they had to invent.
+
+**The skeleton is generated from the same pass that produced the draft**, not
+typed beside it: one source, because a skeleton written alongside is two
+descriptions of one thing and they drift.
+
+**JSON HAS NO COMMENTS**, so the guidance cannot sit beside the value. It sits in
+`draft_provenance.column_mode_evidence`, keyed the same, and the value is a
+sentinel — and **the loader refuses the sentinel exactly as it refuses a blank**,
+in both the string and the object form. A fill-me left unfilled is an unfilled
+field, not a mode.
+
+**The sentinel is defined in `model_file.py`, which is what refuses it.** Defining
+it where it is written and matching it where it is read would be two sources for
+one string.
+
+**AND THE ORDER OF THE TWO REFUSALS IS THE MESSAGE.** The drafted-file refusal
+runs before `column_modes` is parsed, because it lists *every* unfilled field —
+frame modes and columns together — while the sentinel refusal names one key. A
+user who ran `draft` then `run` meets the complete list; the per-key refusal
+catches somebody who cleared the list and left a sentinel behind.
+
+**Expected:** that an instruction naming a place is an instruction to a place that
+exists.
+
+## D-V30A-73 — the file describing rule provenance carried stale provenance about itself
+
+**Found by the eight-document sweep**, run cold a round after the class was
+recorded, reading each file as somebody hunting the defect rather than as its
+author. `evidence/session/DEFECT_CLASS_DOCUMENT_SWEEP.md` carries all eight with
+their concrete checks.
+
+**`OPERATING_RULES.md`'s scope sentence read:** *"It is the fourteen rules a
+mechanical extraction across R119–R220 found had fallen off, plus those the
+current delta carries, plus two restored to their strongest form."* **Three rows
+have a `first stated` of R226, R227 and R229** — rules found by breaking them in
+later rounds, from no such extraction and from no delta current at the time. The
+document about rules that get dropped when nobody carries them was describing a
+set it no longer held.
+
+**Corrected in place with the superseded sentence quoted**, which is the one-line
+stale-figure repair R234 §2 permits.
+
+**The sweep's result, stated as a result rather than a relief: eight checked, one
+found, seven clean** — each with the specific check named. And **three of the
+seven were clean because an earlier round had been bitten**:
+`GUARD_COST_CRITERION.md` opens by disclosing its own ordering defect,
+`PRACTICES.md` says it binds nothing in its fifth line, `WORK_ROOT_RESIDUE.md` is
+titled *"what they are"* because R224 refused a count. Not accidents of good
+writing.
+
+**What the sweep did not do:** it checked each document against **one** class —
+the one it names. A document can exhibit a different class than the one it
+describes, and nothing here looks for that.
+
+**Expected:** that a document describing a defect class is checked against it, by
+somebody reading rather than by whoever wrote it.

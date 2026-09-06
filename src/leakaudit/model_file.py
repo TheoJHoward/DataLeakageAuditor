@@ -71,6 +71,21 @@ _REQUIRED_BY_VERSION = {1: {"version", "aggregate_frames"}, 2: {"version"},
                         3: {"version"}}
 
 
+# THE SENTINEL `leakaudit draft` WRITES INTO A SKELETON, AND THIS FILE OWNS IT.
+# R234 section 1.
+#
+# JSON has no comments, so a drafted `column_modes` skeleton cannot carry its
+# guidance beside the value; it carries a sentinel instead, with the evidence in
+# `draft_provenance.column_mode_evidence`. The sentinel lives HERE rather than in
+# `inference` because the loader is what refuses it, and a sentinel defined where
+# it is written and matched where it is read is two sources for one string.
+#
+# A FILL-ME LEFT UNFILLED IS AN UNFILLED FIELD, NOT A MODE. It is refused on the
+# same path as a blank -- one refusal, not two -- because to a user they are the
+# same situation: a question the tool asked and they have not answered.
+FILL_ME = "<FILL IN -- see draft_provenance.column_mode_evidence>"
+
+
 class ModelFileError(Exception):
     """The model file cannot be read as written."""
 
@@ -285,6 +300,45 @@ def load_model(path) -> AvailabilityModel:
         _refuse("`label_column` is %r; a column name was expected" % (label,), path)
 
     modes = None
+    # CHECKED BEFORE `column_modes` IS PARSED, and the order is the
+    # message. R234 §1. Both refusals are correct, and the drafted-file
+    # one lists EVERY unfilled field -- the frame modes and the columns
+    # together -- while the sentinel one names a single key. A user who
+    # ran `draft` and then `run` should meet the complete list first;
+    # the per-key refusal is what catches somebody who cleared the list
+    # and left a sentinel behind.
+    # THE DRAFT'S PROVENANCE, AND ITS REFUSAL. R233 §1(b), (c).
+    #
+    # `leakaudit draft` writes a file with its STRUCTURE determined and its
+    # AVAILABILITY fields blank, because availability is not in the frames. The
+    # blanks are safe on disk for exactly one reason: the boundary that reads
+    # them refuses. This is that boundary.
+    #
+    # THE REFUSAL NAMES THE FILE AS A DRAFT AND LISTS WHAT IS UNFILLED, because
+    # "missing field" is a generic message and "this draft has 3 availability
+    # fields you have not filled, here they are" is a route out. A user who ran
+    # `draft` and then `run` meets an instruction, not a puzzle.
+    prov = raw.get("draft_provenance")
+    if prov is not None:
+        if not isinstance(prov, dict):
+            _refuse("`draft_provenance` is %r; the object `leakaudit draft` "
+                    "writes was expected. It is not a field to hand-write."
+                    % (prov,), path)
+        unfilled = prov.get("unfilled_availability") or []
+        if unfilled:
+            _refuse(
+                "THIS IS A DRAFT AND %d AVAILABILITY FIELD(S) ARE STILL BLANK: "
+                "%s.\n"
+                "`leakaudit draft` determined the structure of your data and "
+                "left availability blank on purpose -- when a value became "
+                "knowable is a fact about how it was published, not a shape in "
+                "the frames. Fill each field above in `column_modes`, then "
+                "remove it from `draft_provenance.unfilled_availability`. The "
+                "audit refuses rather than guessing on your behalf, and a blank "
+                "is not agreement."
+                % (len(unfilled), ", ".join(str(u) for u in sorted(unfilled))),
+                path)
+
     raw_modes = raw.get("column_modes")
     if raw_modes is not None:
         if not isinstance(raw_modes, dict) or not raw_modes:
@@ -295,6 +349,17 @@ def load_model(path) -> AvailabilityModel:
         for col, spec in raw_modes.items():
             if not isinstance(col, str):
                 _refuse("`column_modes` key %r is not a column name" % (col,), path)
+            if spec == FILL_ME or (isinstance(spec, dict)
+                                   and spec.get("mode") == FILL_ME):
+                _refuse(
+                    "`column_modes[%r]` is still the fill-me sentinel "
+                    "`leakaudit draft` wrote. THAT IS AN UNFILLED FIELD, NOT A "
+                    "MODE, and it is refused exactly as a blank is. The evidence "
+                    "for this column is in "
+                    "`draft_provenance.column_mode_evidence[%r]`; read it and "
+                    "replace the sentinel with the mode your data actually has. "
+                    "A drafted skeleton is a question, and leaving it in place "
+                    "is not an answer." % (col, col), path)
             if isinstance(spec, str):
                 name, src = spec, None
             elif isinstance(spec, dict):
@@ -407,38 +472,6 @@ def load_model(path) -> AvailabilityModel:
     ties = raw.get("ties_available", True)
     if not isinstance(ties, bool):
         _refuse("`ties_available` is %r; true or false was expected" % (ties,), path)
-
-    # THE DRAFT'S PROVENANCE, AND ITS REFUSAL. R233 §1(b), (c).
-    #
-    # `leakaudit draft` writes a file with its STRUCTURE determined and its
-    # AVAILABILITY fields blank, because availability is not in the frames. The
-    # blanks are safe on disk for exactly one reason: the boundary that reads
-    # them refuses. This is that boundary.
-    #
-    # THE REFUSAL NAMES THE FILE AS A DRAFT AND LISTS WHAT IS UNFILLED, because
-    # "missing field" is a generic message and "this draft has 3 availability
-    # fields you have not filled, here they are" is a route out. A user who ran
-    # `draft` and then `run` meets an instruction, not a puzzle.
-    prov = raw.get("draft_provenance")
-    if prov is not None:
-        if not isinstance(prov, dict):
-            _refuse("`draft_provenance` is %r; the object `leakaudit draft` "
-                    "writes was expected. It is not a field to hand-write."
-                    % (prov,), path)
-        unfilled = prov.get("unfilled_availability") or []
-        if unfilled:
-            _refuse(
-                "THIS IS A DRAFT AND %d AVAILABILITY FIELD(S) ARE STILL BLANK: "
-                "%s.\n"
-                "`leakaudit draft` determined the structure of your data and "
-                "left availability blank on purpose -- when a value became "
-                "knowable is a fact about how it was published, not a shape in "
-                "the frames. Fill each field above in `column_modes`, then "
-                "remove it from `draft_provenance.unfilled_availability`. The "
-                "audit refuses rather than guessing on your behalf, and a blank "
-                "is not agreement."
-                % (len(unfilled), ", ".join(str(u) for u in sorted(unfilled))),
-                path)
 
     decision = raw.get("decision_column", "timestamp")
     if not isinstance(decision, str) or not decision:

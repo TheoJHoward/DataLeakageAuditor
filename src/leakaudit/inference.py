@@ -95,10 +95,37 @@ class ColumnDraft:
 
 
 @dataclass
+class FrameFork:
+    """One frame's datetime evidence, and the choice it does NOT make.
+
+    `aggregate_frames` IS AN AVAILABILITY MODE, NOT STRUCTURE. R234 §0. Declaring
+    a frame an aggregate says its cells become knowable at `floor(key) + window`
+    rather than at the key -- a claim about publication, which is the require
+    side. The first version of this module assigned it to any frame with one
+    datetime column, because that is what a lone timestamp LOOKS like.
+
+    THE STATION FRAME IS THE PROOF AND IT IS THE DISCRIMINATING CASE. In the live
+    run it has exactly one datetime column and got `aggregate_frames` -- and it
+    carries the DECISION INSTANT, not an aggregate. The draft filled a field it
+    should have left blank, through the one field nobody guarded because it
+    looked structural. That is the mirror risk this whole draft/require split
+    exists to prevent, found inside the feature built to prevent it.
+    """
+    frame: str
+    datetime_columns: list = field(default_factory=list)
+    evidence: list = field(default_factory=list)
+    mode: object = UNFILLED          # never assigned here
+
+    @property
+    def mode_is_unfilled(self) -> bool:
+        return self.mode is UNFILLED
+
+
+@dataclass
 class Draft:
-    """A draft model file: structure filled, availability blank, both said."""
+    """A draft model file: structure reported, every mode blank, both said."""
     frames: dict = field(default_factory=dict)      # frame -> [ColumnDraft]
-    aggregate_frames: dict = field(default_factory=dict)
+    forks: dict = field(default_factory=dict)       # frame -> FrameFork
     decision_column: object = UNFILLED
     notes: list = field(default_factory=list)
     unresolved: list = field(default_factory=list)  # (frame, column, why)
@@ -107,13 +134,26 @@ class Draft:
     def columns(self) -> list:
         return [c for cols in self.frames.values() for c in cols]
 
+    @property
+    def unfilled_fields(self) -> list:
+        """Everything the audit will refuse on. ONE list, not two. R234 §0(b)."""
+        out = ["%s (availability mode)" % f
+               for f, fk in sorted(self.forks.items()) if fk.mode_is_unfilled]
+        out += ["%s.%s (availability)" % (c.frame, c.column)
+                for c in self.columns
+                if c.availability_evidence and c.availability_is_unfilled]
+        return sorted(out)
+
 
 HEADER = (
-    "The structure below was determined from your data. The availability column "
+    "The structure below was determined from your data. Every AVAILABILITY field "
     "is blank because your data does not contain it: when a value became "
     "knowable is a fact about how it was published, not a shape in the frames -- "
     "two datasets with identical timestamps can have availability a full second "
-    "apart. Fill it in, or the audit will refuse rather than guess on your "
+    "apart. THAT INCLUDES WHICH FRAMES ARE AGGREGATES: `aggregate_frames` is an "
+    "availability mode, not a shape, and a frame with one timestamp column looks "
+    "the same whether it aggregates an interval or carries your decision "
+    "instant. Fill them in, or the audit will refuse rather than guess on your "
     "behalf.")
 
 
@@ -242,22 +282,38 @@ def draft(frames: dict) -> Draft:
         d.frames[fname] = cols
 
         keys = [c for c in cols if c.role == "timestamp candidate"]
+        fork = FrameFork(frame=fname,
+                         datetime_columns=[k.column for k in keys])
         if len(keys) == 1:
-            d.aggregate_frames[fname] = keys[0].column
+            k = keys[0]
             keys[0].structure_evidence.append(
-                "the only datetime-like column in frame %r, so it is the "
-                "frame's key by elimination" % fname)
+                "the only datetime-like column in frame %r" % fname)
+            fork.evidence.append(
+                "one datetime column, %r. THE FORK, AND ONLY YOU CAN TAKE IT: "
+                "if this frame AGGREGATES an interval, `aggregate_frames[%r] = "
+                "%r` fits and its cells become knowable at floor(key) + window. "
+                "If it carries the DECISION INSTANT -- the clock your output "
+                "rows are built on -- it is not an aggregate at all and belongs "
+                "in `decision_column` instead. The two look identical here."
+                % (k.column, fname, k.column))
         elif len(keys) > 1:
+            fork.evidence.append(
+                "%d datetime columns, %s. S3's wrong case, live: monotonicity "
+                "gives no basis to choose between them, and naming one would "
+                "infer a pipeline that may not exist."
+                % (len(keys), ", ".join(repr(k.column) for k in keys)))
             d.unresolved.append((
                 fname, ", ".join(k.column for k in keys),
                 "S3's wrong case, live: %d datetime-like columns and "
-                "monotonicity gives no basis to choose between them. Naming a "
-                "key here would infer a pipeline that may not exist. Declare "
-                "`aggregate_frames` yourself." % len(keys)))
+                "monotonicity gives no basis to choose between them."
+                % len(keys)))
         else:
+            fork.evidence.append(
+                "no datetime column, so this frame has no key to aggregate on.")
             d.unresolved.append((
                 fname, "(whole frame)",
                 "no datetime-like column, so no key was determined."))
+        d.forks[fname] = fork
     return d
 
 
@@ -274,12 +330,10 @@ def render_draft(d: Draft) -> str:
     for note in d.notes[1:]:
         out += [note, ""]
 
-    out.append("DETERMINED FROM YOUR DATA -- structure")
-    if d.aggregate_frames:
-        for fname, key in sorted(d.aggregate_frames.items()):
-            out.append("  aggregate_frames[%r] = %r" % (fname, key))
-    else:
-        out.append("  (nothing determined; see UNRESOLVED below)")
+    out.append("OBSERVED IN YOUR DATA -- and NOT turned into a mode")
+    for fname, fork in sorted(d.forks.items()):
+        out.append("  %s: %s" % (fname, "; ".join(fork.evidence)))
+        out.append("    availability mode: <BLANK -- you decide>")
     out.append("")
 
     out.append("NOT DETERMINED, AND NOT GUESSED -- availability")
@@ -326,21 +380,24 @@ def accept(d: Draft, availability: dict) -> dict:
     REFUSES rather than defaulting. `availability` maps "frame.column" to the
     user's answer, and every column the draft left blank has to appear in it.
     """
-    missing = [
-        "%s.%s" % (cd.frame, cd.column)
-        for cd in d.columns
-        if cd.availability_evidence
-        and "%s.%s" % (cd.frame, cd.column) not in availability]
+    missing = [f for f in d.unfilled_fields if f not in availability]
     if missing:
         raise UnfilledAvailability(
-            "these columns were drafted with a BLANK availability field and the "
-            "blank is still blank: %s. The draft does not fill it and neither "
-            "does this: when a value became knowable is a fact about how your "
-            "data was published, and nothing in the frames carries it. An "
-            "unfilled field is refused rather than defaulted, because a default "
-            "here is an availability model you did not write."
-            % ", ".join(sorted(missing)))
-    return {"version": 3, "aggregate_frames": dict(d.aggregate_frames),
+            "these fields were drafted BLANK and are still blank: %s. The draft "
+            "does not fill them and neither does this: when a value became "
+            "knowable is a fact about how your data was published, and nothing "
+            "in the frames carries it. THE FRAME-LEVEL MODES ARE IN THAT LIST "
+            "TOO -- `aggregate_frames` says a frame's cells arrive at "
+            "floor(key) + window rather than at the key, which is a claim about "
+            "publication and not a shape. An unfilled field is refused rather "
+            "than defaulted, because a default here is an availability model "
+            "you did not write." % ", ".join(sorted(missing)))
+    aggregates = {}
+    for fname, fork in d.forks.items():
+        answer = availability.get("%s (availability mode)" % fname)
+        if isinstance(answer, str) and answer.startswith("aggregate:"):
+            aggregates[fname] = answer.split(":", 1)[1]
+    return {"version": 3, "aggregate_frames": aggregates,
             "note": "accepted from a draft; availability supplied by the user"}
 
 
@@ -365,26 +422,46 @@ def as_model_dict(d: Draft, *, generated_by: str, commit: str,
     than generically and a later reader can tell what a person decided from what
     a program observed.
     """
-    unfilled = ["%s.%s" % (c.frame, c.column) for c in d.columns
-                if c.availability_evidence and c.availability_is_unfilled]
-    determined = {"aggregate_frames": sorted(d.aggregate_frames)}
-    return {
+    from .model_file import FILL_ME
+
+    # THE SKELETON IS GENERATED FROM THE SAME PASS, NOT TYPED ALONGSIDE IT.
+    # R234 §1. A skeleton written by hand beside the draft is two descriptions of
+    # one thing, and they drift -- which is the defect this project has recorded
+    # under a dozen names. Both come out of `d` here.
+    #
+    # JSON HAS NO COMMENTS, so the guidance cannot sit beside the value. It sits
+    # in `column_mode_evidence`, keyed the same, and the value is a sentinel the
+    # LOADER refuses. A fill-me left unfilled is an unfilled field, not a mode.
+    skeleton, evidence = {}, {}
+    for c in d.columns:
+        if not c.availability_evidence:
+            continue
+        skeleton[c.column] = FILL_ME
+        evidence[c.column] = " | ".join(c.availability_evidence)
+    for fname, fork in sorted(d.forks.items()):
+        evidence["(frame) %s" % fname] = " | ".join(fork.evidence)
+
+    body = {
         "version": 3,
         "note": HEADER,
         "draft_provenance": {
             "generated_by": generated_by,
             "commit": commit,
             "source_frames": {k: list(v) for k, v in sorted(source_frames.items())},
-            "determined_from_data": determined,
-            "unfilled_availability": sorted(unfilled),
+            "observed_not_decided": {
+                f: fk.datetime_columns for f, fk in sorted(d.forks.items())},
+            "unfilled_availability": list(d.unfilled_fields),
             "unfilled_other": (["decision_column"]
                                if d.decision_column is UNFILLED else []),
+            "column_mode_evidence": evidence,
             "structure_edited_by_hand": False,
             "signals_used": list(SIGNALS_USED),
             "signals_omitted": sorted(SIGNALS_OMITTED),
         },
-        "aggregate_frames": dict(d.aggregate_frames),
     }
+    if skeleton:
+        body["column_modes"] = skeleton
+    return body
 
 
 def write_draft(d: Draft, path, *, generated_by: str, commit: str,

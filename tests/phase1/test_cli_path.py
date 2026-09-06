@@ -139,13 +139,20 @@ def test_draft_through_the_cli_writes_a_file_from_csvs(work, capsys):
     assert out.is_file(), "the draft was not written"
 
     body = json.loads(out.read_text(encoding="utf-8"))
-    assert body["aggregate_frames"] == {"stations": "timestamp",
-                                        "scans": "scanned_at"}, (
-        "structure was NOT determined from CSV-loaded frames -- which is the "
-        "exact defect this file exists for: %s" % body.get("aggregate_frames"))
     prov = body["draft_provenance"]
-    assert sorted(prov["unfilled_availability"]) == ["scans.scanned_at",
-                                                     "stations.timestamp"]
+    assert prov["observed_not_decided"] == {"stations": ["timestamp"],
+                                            "scans": ["scanned_at"]}, (
+        "the datetime columns were NOT observed in CSV-loaded frames -- which "
+        "is the exact defect this file exists for: %s"
+        % prov.get("observed_not_decided"))
+    assert "aggregate_frames" not in body, (
+        "the draft assigned an availability MODE. R234 §0: a frame with one "
+        "timestamp column looks the same whether it aggregates an interval or "
+        "carries the decision instant, and the station frame here is the "
+        "second: %s" % body.get("aggregate_frames"))
+    assert sorted(prov["unfilled_availability"]) == [
+        "scans (availability mode)", "scans.scanned_at (availability)",
+        "stations (availability mode)", "stations.timestamp (availability)"]
     assert prov["structure_edited_by_hand"] is False
     assert prov["generated_by"] == "leakaudit draft"
     assert prov["source_frames"]["stations"][0] > 0
@@ -171,6 +178,8 @@ def test_run_through_the_cli_REFUSES_an_unfilled_draft_and_NAMES_the_blanks(work
                    + ["--model", str(out)])
     assert rc == cli.EXIT_USAGE
     assert "THIS IS A DRAFT" in msg
+    assert "scans (availability mode)" in msg, (
+        "the frame-level mode is missing from the refusal: %s" % msg)
     assert "scans.scanned_at" in msg and "stations.timestamp" in msg, (
         "the refusal does not name which fields are blank, which is the "
         "difference between a message and a route out: %s" % msg)
@@ -192,6 +201,8 @@ def test_run_under_DRAFTED_structure_says_so_in_the_output(work, capsys):
     body = json.loads(out.read_text(encoding="utf-8"))
     body["draft_provenance"]["unfilled_availability"] = []
     body["decision_column"] = "timestamp"
+    body["aggregate_frames"] = {"scans": "scanned_at"}
+    body["column_modes"] = {"scanned_at": "at_timestamp"}
     out.write_text(json.dumps(body, indent=2), encoding="utf-8")
     capsys.readouterr()
 
