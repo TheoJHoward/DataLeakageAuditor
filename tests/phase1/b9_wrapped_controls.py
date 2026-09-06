@@ -38,7 +38,14 @@ stamps = [s + pd.Timedelta(milliseconds=200 + 250 * k)
           for s in secs for k in range(ROWS_PER_SECOND)]
 snap = pd.DataFrame({"timestamp": stamps, "own": rng.standard_normal(len(stamps))})
 RAW = {"snap": snap, "agg": agg}
-MODEL = AvailabilityModel(aggregate_frames={"agg": "ts_floor"})
+# DECLARED, NOT INHERITED. R236 §1: this was the one model construction in
+# the repository that took the library default, and the default is gone. The
+# built output below is `out[["timestamp", "own", "feature"]]` and its
+# `timestamp` IS each row's decision instant, so the inherited value was
+# correct -- by naming rather than by declaration, which is the difference
+# the sentinel exists to make visible.
+MODEL = AvailabilityModel(aggregate_frames={"agg": "ts_floor"},
+                          decision_column="timestamp")
 
 
 def _merge(raw, shift):

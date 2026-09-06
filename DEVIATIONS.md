@@ -2970,3 +2970,170 @@ so is more use than listing source-frame columns that may not survive the build.
 **Expected:** that a field the audit compares every availability instant against
 is declared rather than assumed, and that a tool which cannot know which clock is
 yours says so.
+
+## D-V30A-75 — the decision-column refusal covered the file and not the library, and the scope proxy behind it was measured rather than argued
+
+**R236 §3 asked two establish questions before anything was built**, which is the
+step that turned D-V30A-74 from a suspected scaffold gap into a live defect and
+is the step repeated here.
+
+**HOLE 1 BITES. MEASURED.** D-V30A-74 repaired `load_model`. Two entry points
+reach the availability probe, and in this project a fix at one has failed to
+cover the other four times — P0 at `audit()` against the CLI, three config keys,
+`_is_datetimeish` on frames against files, and now this. Same frame set as
+D-V30A-74, same pipeline, `timestamp` two seconds ahead of `decided_at`:
+
+| entry point | `decision_column` | result |
+|---|---|---|
+| model file, undeclared | refused since R235 | exit 2, refusal |
+| **library, `AvailabilityModel(...)`** | **silently `"timestamp"`** | **`observed_silence`, 0 findings** |
+| library, declared as the true clock | `decided_at` | **3 findings** |
+
+**So the defect D-V30A-74 describes was repaired at the boundary a config file
+crosses and left standing at the boundary a Python caller crosses**, on the same
+data, producing the same false silence. The repair had been reported closed.
+
+**HOLE 2 DOES NOT BITE, and that is a measurement rather than a reassurance.**
+R235's refusal keyed on *"`aggregate_frames` is present"*, a stand-in for *"this
+run needs a decision clock"*. A file carrying `column_modes` and no
+`aggregate_frames` loads with `has_availability_model` false. `decision_column`
+is read in exactly two places — `availability.run_probe_a` and
+`identity_control` — and both are reached only through an availability model, so
+the proxy was exact. It is recorded because a third consumer added anywhere else
+is what makes it stop being exact, and the sentinel below removes the dependency
+on it either way.
+
+**THE REPAIR: a not-set sentinel at the field, refused where the clock is read.**
+`decision_column` defaults to `NOT_SET` — a string that is not a column name and
+is visible as an absence — and `require_decision_column(value, where)` is one
+refusal that every consumer calls. It fires on the real condition, a consumer
+reaching for a clock nobody declared, rather than on a proxy for it.
+
+**R235's file-boundary refusal is now a cheap early message that calls the same
+implementation**, not a second refusal with its own words. R236 §3(c)'s
+requirement, and the reason is the two-lists hazard in another costume: two
+refusals for one condition drift apart, and which one a user meets depends on
+which path they took. Each boundary keeps its own exception type, so a caller of
+`load_model` still catches `ModelFileError` and is not made to learn that one of
+its checks lives elsewhere.
+
+**AND THE FIRST VERSION OF THE HELPER TOOK A MODEL, which the defaults
+instrument refused.** `require_decision_column(model, where)` made the loader
+construct a throwaway `AvailabilityModel` to ask about one field, and
+`tools/default_sites.py` reported two newly-taken default sites on the next run
+— `window=` and `ties_available=` — because the throwaway omitted them. A helper
+that makes its callers build an object to ask about one field is asking for the
+wrong thing; it takes the value now. **The instrument caught this, not a
+reading.**
+
+**THE SCHEMA WAS STILL ADVERTISING THE REMOVED DEFAULT.** `leakaudit schema`
+said *`decision_column` … Default "timestamp"` one round after the default was
+removed. A repo-wide sweep for the claim found exactly one live site, the entry
+itself; `DEVIATIONS.md` carries it in past tense as a record, and `build/lib` is
+untracked. The entry now states that there is no default and what the default
+did, so a reader meets a reason rather than a rule. **The example object above it
+also declared `"decision_column": "timestamp"`** — modelling the exact
+coincidence the entry beneath it warns about — and now declares `"decided_at"`.
+
+**Neither hole was found by the suite.** Hole 1 was found by asking what the
+library does, and the 872-test suite was green across both states of the defect.
+The standing positive is `tests/phase1/test_decision_column_required.py`, on the
+overlapping two-second construction, because the hour-apart version is rescued by
+an unrelated timezone guard and would have passed before the fix.
+
+**R163 §1's exemption test.** *Would this change have been made if the triggering
+question had not been asked?* **Yes.** A default that turns a real leak into
+`observed_silence` is the failure this package exists to find in other people's
+pipelines, and the entry point it arrives through does not change what it does.
+
+## D-V30A-76 — every unrecognised answer to the draft's fork became "not an aggregate", including the branch the fork itself offered
+
+**R235 §2 enumerated the fork's cases before any word was fixed**, and the
+enumeration found the question and its answers were not the same set. The fork
+text named **two** branches — *aggregates an interval* and *carries the decision
+instant*. `accept()` recognised **one** string, `"aggregate:<col>"`, and read
+everything else as a fallthrough meaning *not an aggregate*.
+
+**So a user could read the question, answer it in the question's own words, and
+have the answer silently discarded.** *"This frame carries my decision instant"*,
+a typo, and an empty box were one answer to the code and three different answers
+in the prose that had just been read. The discarded answer did not vanish
+quietly either: a successful `accept()` emits `aggregate_frames: {}`, which is
+the substantive claim *this frame does not aggregate an interval* — recorded on
+behalf of a user who had said something else.
+
+**THE STRUCTURAL READ CAME FIRST, AND IT MADE THE ROUND ROUTING RATHER THAN
+INVENTION.** Population: the whole declarable availability vocabulary — the six
+`ALL_MODES` plus the frame-level `aggregate_frames` key, seven constructs — read
+from `modes.py` and `AVAILABILITY_MODES.md` rather than recalled. Against R235's
+five enumerated frame cases:
+
+| R235's case | where it lands | new vocabulary? |
+|---|---|---|
+| aggregates an interval | `aggregate_frames[f] = k` | no |
+| carries the decision instant | `decision_column` | no |
+| **read at its own stamp** | **`at_timestamp`** | **no — declarable since R204 P5** |
+| **no time semantics at all** | **`always`** | **no — declarable since R204 P5** |
+| several candidate clocks | not an answer; name the clock, then one of the above | no |
+
+**Nothing new was named.** Two of the three cases R235 reported inexpressible
+were expressible all along. **The gap was in the question, not in the
+vocabulary** — and a token invented here would have been a second name for a mode
+that already had one, which is the failure the section was opened to fix
+committed again inside the fix.
+
+**THE FORK ASKED TWO QUESTIONS AS ONE.** *A*: frame-level, and a **role** — is
+this the spine the decisions are stamped on, does it aggregate an interval, or is
+it a plain source? *B*: per-column, and a **mode** — when did this column's cells
+become knowable? *"Aggregate, or decision instant"* sets a mode beside a role,
+and that mixing is exactly why the third case had nowhere to go: *a plain source*
+answers A and `at_timestamp` answers B, so one question could hold only half of
+it.
+
+**THE QUESTION R235 LEFT OPEN IS ANSWERED: "read at its own stamp" is not a
+frame-level answer.** A frame's columns may honestly differ — a tick frame whose
+`price` is knowable at its own stamp beside a `cpi` knowable at a release stamp
+is ordinary — so a frame-level `at_timestamp` would assign one column's mode to
+every column next to it. That is inference picking, which this package refuses at
+the column level and now refuses at the frame level for the same reason. The case
+answers A with `source` and leaves B to `column_modes`.
+
+**THE REPAIR: one table, three roles, and a fourth answer refused.**
+`modes.FRAME_ROLE_TABLE` renders the fork text `draft` prints, the tokens
+`accept()` takes, and the section `leakaudit schema` shows. The roles are
+disjoint and jointly cover every frame, and the third state fails: an
+unrecognised answer raises `UnknownFrameRole` naming the answers that were
+offered, rather than collapsing into one of them. Two frames answered `spine` is
+refused as well, because there is one decision clock.
+
+**THE TEST THAT CHECKS THE GENERATION IS THE MONKEYPATCH ONE, and the weaker
+version was ruled out by running it.** Asserting *"the fork mentions `source` and
+`accept()` takes `source`"* passes just as happily against two hand-typed lists
+that currently agree — the state R235 measured, one round after they had already
+drifted. Adding a role to the table at runtime and requiring both halves to
+follow it was run against a deliberately hand-typed `fork_lines`: it passed on
+the generated form and failed on the copy.
+
+**A TEST'S NAME AND ITS BODY HAD DISAGREED, and the fallthrough is why.**
+`test_a_BLANK_is_not_read_as_agreement_even_if_explicitly_none` asserted that
+`accept()` **succeeded** on an explicit `None` — and success emits that
+`aggregate_frames: {}` claim. The name says a blank is not read as agreement; the
+body accepted a claim built from one. It sits on the edge of the standing rule
+in force since R215 against *treating an unfilled availability field as
+agreement*: the key was supplied, so the field was not unfilled, and the value
+supplied was not an answer that carries the claim recorded from it. Both halves
+are now asserted apart — key-presence still clears `UnfilledAvailability`, and
+the value is then measured against the three roles.
+
+**A second test answered `"decision_frame"`**, a word it invented and `accept()`
+had never heard of, which appeared to work through the same fallthrough.
+
+**THE SCHEMA'S MODE LIST WAS HAND-TYPED beside `FILE_MODES` with nothing
+comparing them** — five entries next to a five-entry tuple, in the document whose
+job is telling a user what they may declare. It is printed from `modes.py` now,
+count included.
+
+**R163 §1's exemption test.** *Would this change have been made if the triggering
+question had not been asked?* **Yes.** An answer a user gives and the tool
+discards is the same class as a field the tool fills in unasked, and this one
+recorded an availability claim from a reply that did not contain it.

@@ -34,8 +34,11 @@ from pathlib import Path
 
 import pandas as pd
 
-from .availability import AvailabilityModel
-from .modes import AVAILABILITY_FN, FILE_MODES, ColumnMode, ModeError
+from .availability import (AvailabilityModel, NOT_SET, ProbeError,
+                           require_decision_column)
+from .modes import (ALL_MODES, AVAILABILITY_FN, FILE_MODES,
+                    FRAME_ROLE_TABLE, FRAME_ROLES, MODE_ARITHMETIC,
+                    ColumnMode, ModeError)
 
 SCHEMA_VERSION = 3
 SUPPORTED_VERSIONS = (1, 2, 3)
@@ -122,13 +125,61 @@ class LoadedConfig:
         return bool(self.model.aggregate_frames)
 
 
+def _wrap(text: str, indent: str, width: int = 79) -> str:
+    """Fill `text` to `width`, every line carrying `indent`."""
+    out, line = [], indent
+    for word in text.split():
+        if len(line) + 1 + len(word) > width and line.strip():
+            out.append(line)
+            line = indent + word
+        else:
+            line = (line + " " + word) if line.strip() else (indent + word)
+    if line.strip():
+        out.append(line)
+    return "\n".join(out)
+
+
+def _mode_lines() -> str:
+    """The declarable modes, PRINTED FROM `modes.py`. R236 §2.
+
+    This list was hand-typed here, five entries beside a five-entry
+    `FILE_MODES`, with nothing checking one against the other -- the two-lists
+    hazard sitting in the document whose whole job is to tell a user what they
+    may declare. A mode added upstream would have been undocumented and a mode
+    removed would have gone on being advertised.
+    """
+    pad = " " * 22
+    w = max(len(m) for m in FILE_MODES)
+    return "\n".join("%s%-*s %s" % (pad, w, m, MODE_ARITHMETIC[m])
+                      for m in FILE_MODES)
+
+
+def _library_only() -> str:
+    return ", ".join("`%s`" % m for m in ALL_MODES if m not in FILE_MODES)
+
+
+def _role_lines() -> str:
+    """The frame fork's three answers, PRINTED FROM `modes.FRAME_ROLE_TABLE`.
+
+    R236 §2(d). The same table renders the question `leakaudit draft` asks and
+    the tokens `accept()` takes, so what a user reads here is what the tool will
+    accept, by construction rather than by anybody remembering.
+    """
+    out = []
+    for role in FRAME_ROLES:
+        r = FRAME_ROLE_TABLE[role]
+        out.append("  %s -> %s" % (r.token, r.lands_in))
+        out.append(_wrap(r.prose, " " * 6))
+    return "\n".join(out)
+
+
 SCHEMA_DOC = """\
 leakaudit config, schema version 3.
 
     {
       "version": 3,
       "aggregate_frames": {"trades": "ts_event", "book": "ts_floor"},
-      "decision_column": "timestamp",
+      "decision_column": "decided_at",
       "window_seconds": 1.0,
       "ties_available": true,
       "label_column": "target",
@@ -163,7 +214,19 @@ reporting a clean result it did not earn.
                     Required at version 1; optional at version 2, where a file
                     may declare only a label and a split.
   decision_column   the built output's column holding each row's decision
-                    instant. Default "timestamp".
+                    instant -- the moment that row's prediction was made, which
+                    every availability instant is compared against.
+                    NO DEFAULT, AND THERE WAS ONE UNTIL R236: it was
+                    "timestamp", and the removal was measured rather than
+                    argued. On one frame set, two files differing only in
+                    whether this key was present, the defaulted run reported
+                    `observed_silence` and exit 0 where the declared run found
+                    three findings -- a real leak reported in the tool's most
+                    confident state, because a column happened to carry that
+                    name and sat two seconds from the true decision instant.
+                    If your output genuinely calls it "timestamp", declare that.
+                    The declaration and the coincidence are different things and
+                    only one of them is checkable.
   window_seconds    the aggregation window. Default 1.0.
   ties_available    whether a value whose instant equals the decision instant
                     counts as available. Default true, which is the registered
@@ -194,14 +257,10 @@ reporting a clean result it did not earn.
                     knowable. A bare string names a mode; an object names a mode
                     and the column it reads. THE ARITHMETIC OF EACH MODE IS IN
                     AVAILABILITY_MODES.md, which was written before the parser
-                    that reads these. The five a file may declare:
-                      at_timestamp         the row's own stamp
-                      at_bar_close         that stamp plus the bar duration
-                      at_source_timestamp  a named column's value at the row
-                      always               before every decision in the frame
-                      explicit             a named column's value at the row
-                    `availability_fn` is a sixth, reachable from the library
-                    only: a file cannot carry a function.
+                    that reads these. __MODE_COUNT__ a file may declare:
+__MODE_LINES__
+                    __LIBRARY_ONLY__ __IS_ARE__ reachable from the library only:
+                    a file cannot carry a function.
                     A column with NO mode is not given one. It is reported as
                     undeclared rather than defaulted, because an assumed mode is
                     an availability model you did not write.
@@ -221,6 +280,20 @@ WHICH KEYS CORRESPOND TO REGISTERED VOCABULARY, for a reader who needs to know:
 A reader who does not need that distinction is not made to navigate it: the
 file is one object and the tool reads it as one.
 
+WHAT `leakaudit draft` ASKS YOU ABOUT EACH FRAME, and where each answer lands.
+The draft never fills these in -- when a value became knowable is a fact about
+how your data was published, and nothing in the frames carries it -- so it asks
+one question per frame with exactly these answers:
+
+__ROLE_LINES__
+
+The three are DISJOINT and they COVER EVERY FRAME: a frame supplies the decision
+clock, or it aggregates an interval, or it is neither. A fourth answer is a
+mistake and is refused rather than read as one of the three. Note that "read at
+its own stamp" is NOT a fourth role -- it is `source` at the frame level and
+`at_timestamp` at the column level, because one frame's columns may honestly
+differ and a frame-level answer would assign one column's mode to all of them.
+
 A frame NOT named in aggregate_frames is not perturbed, and the probe says so:
 its silence is `none`, not `observed_silence`. The same holds for every check:
 one with nothing declared to run against reports that it did not look, which is
@@ -231,7 +304,12 @@ TOOL, never with a registration. It has no standing, it supersedes nothing, and
 a result produced with it is not a gate result. If you want your model inside
 your own pre-registration, include this file and hash it -- that is inclusion,
 not version coupling.
-"""
+""".replace("__MODE_LINES__", _mode_lines()) \
+   .replace("__MODE_COUNT__", "The %d modes" % len(FILE_MODES)) \
+   .replace("__LIBRARY_ONLY__", _library_only()) \
+   .replace("__IS_ARE__",
+            "is" if len(ALL_MODES) - len(FILE_MODES) == 1 else "are") \
+   .replace("__ROLE_LINES__", _role_lines())
 
 
 def _refuse(msg: str, path: Path) -> None:
@@ -499,22 +577,7 @@ def load_model(path) -> AvailabilityModel:
     # decision instant is used: without one there is no availability probe and
     # the field reaches nothing. A user running `leakaudit check` alone is not
     # asked for it.
-    if "aggregate_frames" in raw and "decision_column" not in raw:
-        _refuse(
-            "`aggregate_frames` is declared and `decision_column` is not. THERE "
-            "IS NO DEFAULT FOR IT, and there was one until R235: it was "
-            "`timestamp`, and a column of that name which is not your decision "
-            "instant produced `observed_silence` on a frame set whose true "
-            "clock produced three findings. That is a real leak reported as "
-            "evidence of absence.\n"
-            "`decision_column` names the column of your BUILT OUTPUT holding "
-            "each row's decision instant -- the moment that row's prediction was "
-            "made, against which every availability instant is compared. Name "
-            "it. If your output genuinely calls it `timestamp`, say so; the "
-            "declaration and the coincidence are different things and only one "
-            "of them is checkable.", path)
-
-    decision = raw.get("decision_column", "timestamp")
+    decision = raw.get("decision_column", NOT_SET)
     if decision == FILL_ME:
         _refuse(
             "`decision_column` is still the fill-me sentinel `leakaudit draft` "
@@ -526,6 +589,32 @@ def load_model(path) -> AvailabilityModel:
     if not isinstance(decision, str) or not decision:
         _refuse("`decision_column` is %r; a column name was expected"
                 % (decision,), path)
+
+    # THE SAME REFUSAL, CALLED EARLY. R236 §3(c).
+    #
+    # R235 put a check here with its own message and R236 put one at the
+    # consumption point; two refusals for one condition is the two-lists hazard
+    # in another costume -- they drift, and which one a user meets depends on
+    # which path they took. So this is not a second check: it CALLS the one in
+    # `availability`, so the words cannot diverge. It runs here rather than only
+    # at probe time because a file should get its answer before any frame is
+    # read, which is R210 §1's boundary lesson.
+    #
+    # AND IT FIRES ON THE REAL CONDITION, not a proxy. R235's version keyed on
+    # "aggregate_frames present", which is a stand-in for "needs a decision
+    # clock". Measured: the clock is consumed in exactly two places -- the
+    # availability probe and the identity control -- and both are reached only
+    # with aggregate frames, so the proxy happened to be exact. Keying on
+    # `has_availability_model` says what is meant rather than what correlates.
+    if frames:
+        # ONE MESSAGE, EACH BOUNDARY'S OWN EXCEPTION TYPE. The words come from
+        # `availability`; the type is this module's, because a caller of
+        # `load_model` catches `ModelFileError` and should not have to know that
+        # one of its checks lives elsewhere.
+        try:
+            require_decision_column(decision, "the model file %s" % path)
+        except ProbeError as e:
+            _refuse(str(e), path)
 
     return LoadedConfig(
         model=AvailabilityModel(

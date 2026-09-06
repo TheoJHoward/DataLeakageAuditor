@@ -55,6 +55,119 @@ MODES_TAKING_A_COLUMN = (AT_SOURCE_TIMESTAMP, EXPLICIT)
 NEVER_UNAVAILABLE = pd.Timestamp.min
 
 
+#: Each mode's one-line arithmetic, for anything that must PRINT the set.
+#: `SCHEMA_DOC` hand-typed this list beside `FILE_MODES` and nothing checked the
+#: two against each other -- the two-lists hazard, in the document that tells a
+#: user what they may declare. Printed from here now, so a mode added above
+#: appears there and a mode removed cannot linger in the prose.
+MODE_ARITHMETIC = {
+    AT_TIMESTAMP: "the row's own stamp",
+    AT_BAR_CLOSE: "that stamp plus the bar duration",
+    AT_SOURCE_TIMESTAMP: "a named column's value at the row",
+    ALWAYS: "before every decision in the frame",
+    EXPLICIT: "a named column's value at the row",
+    AVAILABILITY_FN: "whatever the user's callable returns",
+}
+
+
+# ---------------------------------------------------------------------------
+# THE FRAME FORK'S ANSWER SET. R236 §2.
+# ---------------------------------------------------------------------------
+#
+# THE STRUCTURAL READ CAME FIRST AND IT SETTLED THE QUESTION. Read over the whole
+# declarable availability vocabulary -- `ALL_MODES` above, plus the frame-level
+# `aggregate_frames` key, seven constructs -- against R235's five enumerated
+# frame cases:
+#
+#   1 aggregates an interval        -> `aggregate_frames[f] = k`, floor(k)+window
+#   2 carries the decision instant  -> `decision_column`; not a mode at all
+#   3 read at its own stamp         -> AT_TIMESTAMP   <-- ALREADY IN THE SET
+#   4 no time semantics at all      -> ALWAYS         <-- ALREADY IN THE SET
+#   5 several candidate clocks      -> not an answer; name the clock, then 1-4
+#
+# **NOTHING NEW IS NAMED HERE.** The two cases R235 reported inexpressible were
+# expressible all along: `at_timestamp` and `always` have been file-declarable
+# since R204 P5. What was missing was a QUESTION that offered them. Vocabulary
+# invented here would have been a second name for a mode that already had one --
+# and a second name for one thing is the failure this section was opened to fix,
+# not a new instance of it.
+#
+# THE TWO QUESTIONS THE OLD FORK ASKED AS ONE:
+#
+#   A. FRAME-LEVEL, and it is a ROLE. Is this frame the spine your decisions are
+#      stamped on, does it aggregate an interval, or is it a plain source?
+#   B. PER-COLUMN, and it is a MODE. When did this column's cells become
+#      knowable? The five `FILE_MODES` answer it.
+#
+# The old text mixed them -- "aggregate, or decision instant" sets a mode beside
+# a role -- and the mixing IS why case 3 had no branch. "A plain source" is an
+# answer to A and `at_timestamp` is an answer to B, so a single question had
+# nowhere to put a frame that needed both halves.
+#
+# AND CASE 3 IS NOT A FRAME-LEVEL MODE, which is the question R235 left open in
+# as many words. A frame's columns may legitimately differ -- a tick frame whose
+# `price` is knowable at its own stamp and whose `cpi` is knowable at a release
+# stamp is ordinary, not exotic -- so a frame-level `at_timestamp` would assign
+# one column's mode to every column beside it. That is inference picking, and
+# this package forbids it at the frame level for the same reason it forbids it
+# at the column level. Case 3 answers A with SOURCE and leaves B to
+# `column_modes`, per column, where the answer already lives.
+
+SPINE = "spine"
+AGGREGATE = "aggregate"
+SOURCE = "source"
+
+#: The frame fork's answers. DISJOINT AND JOINTLY COVERING, and the third state
+#: fails: a frame supplies the decision clock, or aggregates an interval, or is
+#: neither, and no frame is two of these. Anything else is REFUSED rather than
+#: falling through -- which is the measured defect. `accept()` recognised one
+#: string and treated every other answer as the same fallthrough, so "this is my
+#: decision frame" and "I have no idea" were one answer to the code and two
+#: different answers in the prose a user had just read.
+FRAME_ROLES = (SPINE, AGGREGATE, SOURCE)
+
+
+@dataclass(frozen=True)
+class FrameRole:
+    """One answer to the frame fork, and where that answer lands in the file.
+
+    THIS IS THE ONE SOURCE. The fork text `draft` prints, the tokens `accept()`
+    takes, and the section `leakaudit schema` shows are all rendered from this
+    table. Before R236 they were three hand-maintained statements of one
+    vocabulary and they had ALREADY disagreed -- the fork named two branches and
+    `accept()` knew one.
+    """
+    token: str
+    lands_in: str
+    takes_column: bool
+    arithmetic: str
+    prose: str
+
+
+FRAME_ROLE_TABLE = {
+    AGGREGATE: FrameRole(
+        AGGREGATE, "aggregate_frames", True, "floor(key) + window",
+        "it AGGREGATES an interval. Its cells summarise a window and are not "
+        "knowable until that window closes, so they arrive at floor(key) + "
+        "window -- the END of the wall-clock second the key falls in, not the "
+        "key itself. Answer `aggregate:<key column>`."),
+    SPINE: FrameRole(
+        SPINE, "decision_column", True, "not an availability instant at all",
+        "it carries the DECISION INSTANT -- the clock your built output's rows "
+        "are stamped on. Then it is not an aggregate and takes no availability "
+        "mode at all: it supplies the d(i) that every other frame's a(j,c) is "
+        "compared against. Answer `spine:<column>`, and that column becomes "
+        "`decision_column`."),
+    SOURCE: FrameRole(
+        SOURCE, "column_modes", False, "per column; see column_modes",
+        "it is a plain SOURCE -- neither of the above. It gets NO "
+        "`aggregate_frames` entry, and when its cells became knowable is "
+        "settled per column in `column_modes`: `at_timestamp` if a row's values "
+        "were knowable at its own stamp, `always` for a reference table with no "
+        "time semantics. Answer `source`."),
+}
+
+
 class ModeError(Exception):
     """A column's mode cannot be applied as declared."""
 

@@ -33,7 +33,8 @@ for p in (str(ROOT), str(ROOT / "src")):
         sys.path.insert(0, p)
 
 from leakaudit.inference import (                                # noqa: E402
-    HEADER, SIGNALS_OMITTED, SIGNALS_USED, Draft, UnfilledAvailability, accept,
+    HEADER, SIGNALS_OMITTED, SIGNALS_USED, Draft, UnfilledAvailability,
+    UnknownFrameRole, accept,
     draft, render_draft)
 
 SECS = pd.date_range("2026-04-01 08:00:00", periods=60, freq="1s")
@@ -220,24 +221,53 @@ def test_accept_SUCCEEDS_once_the_user_has_answered_BOTH_kinds():
 
 def test_a_frame_the_user_says_is_NOT_an_aggregate_gets_no_entry():
     """The other half of the fork, and the case the old draft could not express:
-    a frame whose timestamp is the decision instant is not an aggregate at all."""
+    a frame whose timestamp is the decision instant is not an aggregate at all.
+
+    THE ANSWER WAS `"decision_frame"` UNTIL R236 and that string was never a
+    contract -- it was a word this test invented, and it "worked" only because
+    every unrecognised answer fell through to the same branch. `accept()` had
+    never heard of it. The settled token is `spine:<column>`, from
+    `modes.FRAME_ROLE_TABLE`, which is also the word the fork prints.
+    """
     d = draft({"stations": pd.DataFrame({"timestamp": SECS, "q": range(60)})})
     model = accept(d, {"stations.timestamp (availability)": "at_timestamp",
-                       "stations (availability mode)": "decision_frame"})
+                       "stations (availability mode)": "spine:timestamp"})
     assert model["aggregate_frames"] == {}, (
         "the user said this frame carries the decision instant and it was "
         "still declared an aggregate")
+    assert model["decision_column"] == "timestamp", (
+        "the answer named the decision clock and the accepted model did not "
+        "carry it -- which is what the fallthrough did: it could tell that the "
+        "frame was NOT an aggregate and could not tell what it WAS")
 
 
 def test_a_BLANK_is_not_read_as_agreement_even_if_explicitly_none():
     """The plausible wrong repair: letting the user pass the key with a null to
-    mean 'I agree with whatever you inferred'. There is nothing to agree with."""
+    mean 'I agree with whatever you inferred'. There is nothing to agree with.
+
+    **THIS TEST'S NAME AND ITS BODY USED TO DISAGREE, and the fallthrough is
+    why.** It asserted that `accept()` SUCCEEDED on an explicit `None` -- and a
+    successful accept emits `aggregate_frames: {}`, which is the substantive
+    claim *this frame does not aggregate an interval*. So a user who wrote
+    `None` had an availability claim recorded on their behalf, inside a test
+    whose name says a blank is not read as agreement. It was read as agreement.
+
+    Both halves are now asserted separately, and they are different refusals:
+    the KEY BEING PRESENT still gets past `UnfilledAvailability` -- that
+    distinction was real and is kept -- and the VALUE is then measured against
+    the three roles, where `None` is not one of them.
+    """
     d = draft({"scans": pd.DataFrame({"scanned_at": SECS, "n": range(60)})})
-    model = accept(d, {"scans.scanned_at (availability)": None,
-                       "scans (availability mode)": None})
-    assert model["version"] == 3, (
-        "an explicit None from the USER is an answer they gave; a blank the "
-        "draft left is not. Only the second is refused.")
+    with pytest.raises(UnknownFrameRole) as e:
+        accept(d, {"scans.scanned_at (availability)": None,
+                   "scans (availability mode)": None})
+    assert "not one of the answers the fork offered" in str(e.value)
+
+    with pytest.raises(UnfilledAvailability) as e2:
+        accept(d, {"scans.scanned_at (availability)": None})
+    assert "still blank" in str(e2.value), (
+        "an absent key and a present null now produce the same message, so the "
+        "distinction this test exists to protect has been lost")
 
 
 # ---------------------------------------------------------------------------

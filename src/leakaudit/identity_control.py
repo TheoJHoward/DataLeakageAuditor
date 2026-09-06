@@ -79,6 +79,7 @@ import numpy as np
 import pandas as pd
 
 from .availability import AvailabilityModel, ProbeError, _fast_fingerprint
+from .availability import require_decision_column
 
 CONTROL_ID = "probe_a_identity"
 STRATEGY_ID = "identity"
@@ -192,7 +193,8 @@ def run_identity_control(
                          "no control result from it could be attributed")
         return res
 
-    dcol = model.decision_column
+    dcol = require_decision_column(model.decision_column,
+                                   "the identity control")
     if dcol not in base.columns:
         raise ProbeError("the decision column %r is not in the built output" % dcol)
     d = pd.to_datetime(base[dcol])

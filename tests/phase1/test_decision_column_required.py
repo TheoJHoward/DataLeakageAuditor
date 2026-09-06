@@ -113,7 +113,7 @@ def test_an_UNDECLARED_decision_column_is_REFUSED_not_defaulted(work):
     """What this replaces: the same file produced `observed_silence`, exit 0."""
     rc, msg = _run(work, _model(work, "none.json", dict(BASE)))
     assert rc == cli.EXIT_USAGE, "the audit ran without a declared clock"
-    assert "THERE IS NO DEFAULT FOR IT" in msg
+    assert "no decision column is declared" in msg
     assert "observed_silence" in msg
 
 

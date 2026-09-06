@@ -39,6 +39,7 @@ for p in (str(ROOT), str(ROOT / "src"), str(TOOLS)):
 
 # module -> the test file whose import puts it on the floor run's path.
 COVERED = {
+    "append_disclosure": "tests/phase1/test_append_disclosure.py",
     "check_registration": "tests/phase1/test_work_root_resolution.py",
     "default_sites": "tests/phase1/test_default_sites.py",
     "floor_check": "tests/phase1/test_floor_check.py",

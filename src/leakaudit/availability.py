@@ -130,6 +130,46 @@ def _inference_frame(info) -> str:
            _window_text(info.largest), _window_text(info.median)))
 
 
+# The decision clock nobody has declared. A sentinel rather than `None` so the
+# field keeps its type, and rather than `"timestamp"` so the absence is visible.
+NOT_SET = "<decision column not declared>"
+
+
+def require_decision_column(dcol, where: str) -> str:
+    """The clock, or a refusal. ONE refusal, called from every consumer.
+
+    R236 §3(c). There were nearly two: a file-boundary check added at R235 and a
+    consumption-point check added here. Two refusals for one condition is the
+    two-lists hazard in another costume -- they drift, and the one a user meets
+    depends on which path they took. This is the single implementation; the
+    loader calls it early so a file gets its refusal before any work, and the
+    probe calls it so a library caller gets the same words.
+
+    IT TAKES THE VALUE, NOT A MODEL, and the reason is measured. The first
+    version took a model, so the loader had to build a throwaway one to ask the
+    question -- and the defaults instrument immediately reported two newly-taken
+    default sites, `window=` and `ties_available=`, because that throwaway
+    omitted them. A helper that makes its callers construct an object to ask a
+    question about one field is asking for the wrong thing.
+    """
+    if dcol == NOT_SET:
+        raise ProbeError(
+            "no decision column is declared, and there is no default for it. %s\n"
+            "`decision_column` names the column of your BUILT OUTPUT holding "
+            "each row's decision instant -- the moment that row's prediction was "
+            "made, against which every availability instant is compared.\n"
+            "IT DEFAULTED TO `timestamp` UNTIL R236, and that default was "
+            "measured producing `observed_silence` -- this tool's affirmative "
+            "'I looked and found nothing, this is evidence' -- on a frame set "
+            "whose declared clock produced three findings. A real leak reported "
+            "as evidence of absence, because a column happened to be named "
+            "`timestamp` and sat two seconds from the true instant.\n"
+            "If your output genuinely calls it `timestamp`, declare that. The "
+            "declaration and the coincidence are different things and only one "
+            "of them is checkable." % where)
+    return dcol
+
+
 @dataclass(frozen=True)
 class AvailabilityModel:
     """The declared model. Supplied to the probe; never inferred by it.
@@ -152,7 +192,33 @@ class AvailabilityModel:
     non-boundary key is floored AND REPORTED; see `run_probe_a`.
     """
     aggregate_frames: Mapping[str, str]          # frame name -> key column
-    decision_column: str = "timestamp"
+    # NOT_SET, NEVER "timestamp". R236 §3.
+    #
+    # This read `= "timestamp"` for the project's whole history, and the default
+    # was measured producing the worst answer the tool can give. Same frames,
+    # same pipeline, the field the only difference:
+    #
+    #     no decision_column  -> observed_silence, 0 findings
+    #     the true clock      -> 3 findings
+    #
+    # `observed_silence` is the affirmative "I looked over a stated population
+    # and found nothing. This is evidence." A real leak, reported as evidence of
+    # absence, because a column was called `timestamp` and sat two seconds from
+    # the decision instant.
+    #
+    # R235 refused this AT THE FILE BOUNDARY and that covered one of two entry
+    # points. Measured at the other: `AvailabilityModel(aggregate_frames=...)`
+    # in Python, no decision column, silently picked and returned the same
+    # false silence. **A fix at one entry point does not cover the other** --
+    # P0 at `audit()` and not the CLI, three config keys reaching the library
+    # and not the command, `_is_datetimeish` on frames and not on files.
+    #
+    # SO THE SENTINEL SITS ON THE FIELD AND THE REFUSAL SITS WHERE THE CLOCK IS
+    # CONSUMED, which both entry points reach. And it makes two states
+    # distinguishable that a string default merges: "explicitly timestamp" is a
+    # declaration this tool cannot check, and "never chose" is a question nobody
+    # answered. Only the second is refusable.
+    decision_column: str = NOT_SET
     window: pd.Timedelta = SECOND
     ties_available: bool = True                  # §0.3 Claim A, locked
 
@@ -369,7 +435,8 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
                          "no corruption result from it could be attributed")
         return res
 
-    dcol = model.decision_column
+    dcol = require_decision_column(model.decision_column,
+                                   "the availability probe")
     if dcol not in base.columns:
         raise ProbeError("the decision column %r is not in the built output" % dcol)
     d = pd.to_datetime(base[dcol])

@@ -48,6 +48,8 @@ from dataclasses import dataclass, field
 import numpy as np
 import pandas as pd
 
+from .modes import AGGREGATE, FRAME_ROLE_TABLE, FRAME_ROLES, SPINE
+
 # The signals, by the identifiers `PRE_BUILD_READS.md` §1 gave them. Each ships
 # with the wrong case that document constructed for it, and each wrong case is a
 # test that this module must NOT answer confidently on.
@@ -143,6 +145,50 @@ class Draft:
                 for c in self.columns
                 if c.availability_evidence and c.availability_is_unfilled]
         return sorted(out)
+
+
+def fork_lines(fname: str, candidates: list) -> list:
+    """The frame fork, RENDERED FROM `modes.FRAME_ROLE_TABLE`. R236 §2.
+
+    GENERATED, NOT TYPED, and the generation is the deliverable. R235 enumerated
+    the cases and found the fork stating TWO branches while the world has five,
+    and `accept()` recognising ONE string plus a fallthrough -- three
+    hand-maintained statements of one vocabulary that had already drifted apart.
+    A user who reads a question must be able to answer it IN THE WORDS THE
+    QUESTION USED, so the words and the accepted tokens now come from one place
+    and cannot diverge without the table changing.
+
+    THE ANSWER SET IS THE SAME FOR EVERY FRAME. Only the preamble varies, with
+    what this frame's shape does and does not narrow. A question whose options
+    change per frame is a question a user has to re-read each time, and the three
+    roles are exhaustive regardless of how many clocks a frame has.
+
+    AND IT DOES NOT NARROW TO ONE ANSWER when a frame has no datetime column at
+    all, though two of the three are then unusable. R234 §0 is the reason: the
+    last time this module reasoned "this shape can only mean one thing" it
+    handed `aggregate_frames` to the station frame, which carries the decision
+    instant. Worse here, the premise would be `_is_datetimeish`'s output rather
+    than a fact -- and that detector returned nothing at all on CSV columns for
+    a whole round this session, silently. A narrowing resting on an instrument
+    that has failed silently is not a narrowing.
+    """
+    if len(candidates) == 1:
+        pre = ("one datetime column, %r -- and that shape is identical in every "
+               "case below, which is why this asks instead of picking."
+               % candidates[0])
+    elif len(candidates) > 1:
+        pre = ("%d datetime columns, %s. NAME THE CLOCK FIRST, then answer "
+               "below; monotonicity gives no basis to choose between them."
+               % (len(candidates),
+                  ", ".join(repr(c) for c in candidates)))
+    else:
+        pre = ("no datetime column was detected, so `aggregate` and `spine` "
+               "have no key to name. Left in the list rather than hidden: the "
+               "detector, not a fact about your data, is what found none.")
+    out = ["THE FORK, AND ONLY YOU CAN TAKE IT -- %s" % pre]
+    for role in FRAME_ROLES:
+        out.append("%s: %s" % (role, FRAME_ROLE_TABLE[role].prose))
+    return out
 
 
 HEADER = (
@@ -284,32 +330,21 @@ def draft(frames: dict) -> Draft:
         keys = [c for c in cols if c.role == "timestamp candidate"]
         fork = FrameFork(frame=fname,
                          datetime_columns=[k.column for k in keys])
+        # ONE CALL SITE FOR EVERY ARITY. R236 §2. The three branches used to
+        # write three hand-typed fork texts and only the first named any
+        # branches at all, so a frame with two clocks or none was told what was
+        # undetermined and never told what the answers were.
+        fork.evidence.extend(fork_lines(fname, fork.datetime_columns))
         if len(keys) == 1:
-            k = keys[0]
             keys[0].structure_evidence.append(
                 "the only datetime-like column in frame %r" % fname)
-            fork.evidence.append(
-                "one datetime column, %r. THE FORK, AND ONLY YOU CAN TAKE IT: "
-                "if this frame AGGREGATES an interval, `aggregate_frames[%r] = "
-                "%r` fits and its cells become knowable at floor(key) + window. "
-                "If it carries the DECISION INSTANT -- the clock your output "
-                "rows are built on -- it is not an aggregate at all and belongs "
-                "in `decision_column` instead. The two look identical here."
-                % (k.column, fname, k.column))
         elif len(keys) > 1:
-            fork.evidence.append(
-                "%d datetime columns, %s. S3's wrong case, live: monotonicity "
-                "gives no basis to choose between them, and naming one would "
-                "infer a pipeline that may not exist."
-                % (len(keys), ", ".join(repr(k.column) for k in keys)))
             d.unresolved.append((
                 fname, ", ".join(k.column for k in keys),
                 "S3's wrong case, live: %d datetime-like columns and "
                 "monotonicity gives no basis to choose between them."
                 % len(keys)))
         else:
-            fork.evidence.append(
-                "no datetime column, so this frame has no key to aggregate on.")
             d.unresolved.append((
                 fname, "(whole frame)",
                 "no datetime-like column, so no key was determined."))
@@ -332,7 +367,9 @@ def render_draft(d: Draft) -> str:
 
     out.append("OBSERVED IN YOUR DATA -- and NOT turned into a mode")
     for fname, fork in sorted(d.forks.items()):
-        out.append("  %s: %s" % (fname, "; ".join(fork.evidence)))
+        out.append("  %s:" % fname)
+        for e in fork.evidence:
+            out.append("    %s" % e)
         out.append("    availability mode: <BLANK -- you decide>")
     out.append("")
 
@@ -393,12 +430,74 @@ def accept(d: Draft, availability: dict) -> dict:
             "than defaulted, because a default here is an availability model "
             "you did not write." % ", ".join(sorted(missing)))
     aggregates = {}
-    for fname, fork in d.forks.items():
-        answer = availability.get("%s (availability mode)" % fname)
-        if isinstance(answer, str) and answer.startswith("aggregate:"):
-            aggregates[fname] = answer.split(":", 1)[1]
-    return {"version": 3, "aggregate_frames": aggregates,
-            "note": "accepted from a draft; availability supplied by the user"}
+    spine = None
+    for fname, fork in sorted(d.forks.items()):
+        raw = availability.get("%s (availability mode)" % fname)
+        token, _, arg = (raw if isinstance(raw, str) else "").partition(":")
+        token, arg = token.strip(), arg.strip()
+        spec = FRAME_ROLE_TABLE.get(token)
+        if spec is None:
+            raise UnknownFrameRole(
+                "frame %r was answered %r. That is not one of the answers the "
+                "fork offered, which are: %s.\n"
+                "IT IS NOT READ AS `not an aggregate`, and it was until R236: "
+                "every string that did not start with `aggregate:` fell through "
+                "to one branch, so a typo, an empty answer and \"this frame "
+                "carries my decision instant\" were the SAME answer to the code "
+                "and three different answers in the prose the user had just "
+                "read. The three roles are disjoint and cover every frame, so a "
+                "fourth thing is a mistake and is refused."
+                % (fname, raw, ", ".join(sorted(FRAME_ROLES))))
+        if spec.takes_column and not arg:
+            raise UnknownFrameRole(
+                "frame %r was answered %r, and `%s` names a column: write "
+                "`%s:<column>`. %s" % (fname, raw, token, token, spec.prose))
+        if arg and not spec.takes_column:
+            raise UnknownFrameRole(
+                "frame %r was answered %r, and `%s` takes no column -- its "
+                "columns are answered one at a time in `column_modes`. %s"
+                % (fname, raw, token, spec.prose))
+        # THE NAMED COLUMN IS NOT CHECKED AGAINST THE FRAME HERE. R236 §3(c):
+        # one condition, one refusal. An `aggregate` key that is not a column is
+        # already refused where the probe reads it, and a `spine` column is a
+        # column of the BUILT OUTPUT, which this module has never seen -- the
+        # draft reads frames and does not run the pipeline.
+        if token == AGGREGATE:
+            aggregates[fname] = arg
+        elif token == SPINE:
+            if spine is not None:
+                raise UnknownFrameRole(
+                    "two frames were answered `spine`: %r naming %r, and %r "
+                    "naming %r. THE ROLES ARE DISJOINT AND THERE IS ONE "
+                    "DECISION CLOCK -- `decision_column` is a single column of "
+                    "the built output, and two answers here are two clocks with "
+                    "nothing to choose between them."
+                    % (spine[0], spine[1], fname, arg))
+            spine = (fname, arg)
+    out = {"version": 3, "aggregate_frames": aggregates,
+           "note": "accepted from a draft; availability supplied by the user"}
+    # NO SPINE ANSWERED MEANS NO `decision_column` KEY, AND THAT IS DELIBERATE.
+    # The one refusal in `availability.require_decision_column` then fires when
+    # the file is loaded, with the measurement in it. A second message here
+    # would be a second refusal for one condition, which is what §3(c) forbids.
+    if spine is not None:
+        out["decision_column"] = spine[1]
+    return out
+
+
+class UnknownFrameRole(ValueError):
+    """A frame fork answer that is not one of the answers the fork offered.
+
+    THE FALLTHROUGH WAS THE DEFECT. R235 measured it: the fork named two
+    branches and `accept()` knew one string, so every other answer -- including
+    the branch the fork itself had just described -- collapsed into "not an
+    aggregate". A user could read a question, answer it in the question's own
+    words, and have the answer silently discarded.
+
+    This is the third state of a totality guard. The three roles are disjoint and
+    jointly cover every frame; anything else is neither, and neither must fail
+    rather than pick one of the three.
+    """
 
 
 class DraftTargetExists(FileExistsError):

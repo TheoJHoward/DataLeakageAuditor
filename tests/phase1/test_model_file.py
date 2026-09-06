@@ -78,11 +78,15 @@ def test_an_availability_model_REQUIRES_the_decision_column(tmp_path):
         load_model(_write(tmp_path, {"version": SCHEMA_VERSION,
                                      "aggregate_frames": {"a": "k"}}))
     msg = str(e.value)
-    assert "THERE IS NO DEFAULT FOR IT" in msg
+    assert "no decision column is declared" in msg
+    assert "there is no default for it" in msg
     assert "observed_silence" in msg, (
         "the refusal does not say what the default actually did, so a reader "
         "meets a rule rather than a reason: %s" % msg)
     assert "BUILT OUTPUT" in msg, "the refusal does not say what the field names"
+    assert "the model file" in msg, (
+        "the refusal does not say WHERE it fired; the same words serve the "
+        "library entry point and a reader must be able to tell them apart")
 
 
 def test_declaring_it_EXPLICITLY_as_timestamp_is_accepted(tmp_path):
