@@ -441,8 +441,26 @@ def as_model_dict(d: Draft, *, generated_by: str, commit: str,
     for fname, fork in sorted(d.forks.items()):
         evidence["(frame) %s" % fname] = " | ".join(fork.evidence)
 
+    # THE DECISION COLUMN IS SCAFFOLDED TOO, and the evidence says why this
+    # draft cannot name candidates for it. R235 §1.
+    #
+    # `decision_column` names a column of the BUILT OUTPUT. `draft()` takes
+    # frames and never runs the pipeline -- the boundary that keeps S6 out --
+    # so the built output is a thing it has never seen. It can scaffold the
+    # question and it cannot enumerate the answers, and saying so is more use
+    # than listing source-frame columns that may not survive the build.
+    evidence["(decision) decision_column"] = (
+        "THE COLUMN OF YOUR BUILT OUTPUT holding each row's decision instant -- "
+        "the moment that row's prediction was made. This draft cannot list "
+        "candidates for it: it reads your FRAMES and never runs your pipeline, "
+        "so it has not seen the output. There is NO DEFAULT: until R235 an "
+        "undeclared decision column silently became `timestamp`, and on a frame "
+        "set whose true clock produced three findings that default produced "
+        "`observed_silence` -- a real leak reported as evidence of absence.")
+
     body = {
         "version": 3,
+        "decision_column": FILL_ME,
         "note": HEADER,
         "draft_provenance": {
             "generated_by": generated_by,
@@ -453,6 +471,7 @@ def as_model_dict(d: Draft, *, generated_by: str, commit: str,
             "unfilled_availability": list(d.unfilled_fields),
             "unfilled_other": (["decision_column"]
                                if d.decision_column is UNFILLED else []),
+            "decision_column_is_scaffolded": d.decision_column is UNFILLED,
             "column_mode_evidence": evidence,
             "structure_edited_by_hand": False,
             "signals_used": list(SIGNALS_USED),

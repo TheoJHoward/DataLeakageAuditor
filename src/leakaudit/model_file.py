@@ -473,7 +473,56 @@ def load_model(path) -> AvailabilityModel:
     if not isinstance(ties, bool):
         _refuse("`ties_available` is %r; true or false was expected" % (ties,), path)
 
+    # NO DEFAULT WHERE THERE IS AN AVAILABILITY MODEL TO PROBE WITH. R235 §1.
+    #
+    # This read `raw.get("decision_column", "timestamp")` and the default was a
+    # silent pick of the worst kind. MEASURED, on one frame set, one pipeline,
+    # two model files differing only in whether the field was declared:
+    #
+    #     undeclared -> picks "timestamp" -> observed_silence, exit 0
+    #     declared   -> 3 findings, exit 1
+    #
+    # A real leak reported as `observed_silence` -- the tool's affirmative "I
+    # looked over a stated population and found nothing. This is evidence."
+    # Not a crash, not a warning: the wrong answer in the tool's most confident
+    # state, because a column happened to be called `timestamp` and was two
+    # seconds away from the true decision instant.
+    #
+    # AND THE GUARD THAT DID FIRE ON A CRUDER VERSION IS NOT A CHECK ON THIS.
+    # With the wrong clock a whole hour away, `frame matched NO corrupted second`
+    # refuses -- but that guard exists for timezone and resolution mismatch, and
+    # it fires only because nothing overlapped. Move the wrong clock to two
+    # seconds and every second matches, nothing downstream notices, and the probe
+    # runs to completion against an instant nobody declared.
+    #
+    # SCOPED TO FILES THAT DECLARE `aggregate_frames`, because that is where the
+    # decision instant is used: without one there is no availability probe and
+    # the field reaches nothing. A user running `leakaudit check` alone is not
+    # asked for it.
+    if "aggregate_frames" in raw and "decision_column" not in raw:
+        _refuse(
+            "`aggregate_frames` is declared and `decision_column` is not. THERE "
+            "IS NO DEFAULT FOR IT, and there was one until R235: it was "
+            "`timestamp`, and a column of that name which is not your decision "
+            "instant produced `observed_silence` on a frame set whose true "
+            "clock produced three findings. That is a real leak reported as "
+            "evidence of absence.\n"
+            "`decision_column` names the column of your BUILT OUTPUT holding "
+            "each row's decision instant -- the moment that row's prediction was "
+            "made, against which every availability instant is compared. Name "
+            "it. If your output genuinely calls it `timestamp`, say so; the "
+            "declaration and the coincidence are different things and only one "
+            "of them is checkable.", path)
+
     decision = raw.get("decision_column", "timestamp")
+    if decision == FILL_ME:
+        _refuse(
+            "`decision_column` is still the fill-me sentinel `leakaudit draft` "
+            "wrote. THAT IS AN UNFILLED FIELD, NOT A COLUMN NAME. The evidence "
+            "is in `draft_provenance.column_mode_evidence['(decision) "
+            "decision_column']`: it names the column of your BUILT OUTPUT "
+            "carrying each row's decision instant, and the draft cannot list "
+            "candidates because it never runs your pipeline.", path)
     if not isinstance(decision, str) or not decision:
         _refuse("`decision_column` is %r; a column name was expected"
                 % (decision,), path)

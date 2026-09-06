@@ -57,11 +57,59 @@ def test_a_well_formed_model_loads(tmp_path):
 
 
 def test_only_the_required_keys_are_required(tmp_path):
+    """WITHOUT an availability model, almost nothing is required. A user running
+    `leakaudit check` alone declares a label and a split and no more."""
+    c = load_model(_write(tmp_path, {"version": SCHEMA_VERSION}))
+    assert c.model.window == pd.Timedelta(seconds=1)
+    assert c.model.ties_available is True
+    assert not c.has_availability_model
+
+
+def test_an_availability_model_REQUIRES_the_decision_column(tmp_path):
+    """R235 §1, and this test asserted the DEFECT until now.
+
+    It read: declare `aggregate_frames` alone, and `decision_column` defaults to
+    `"timestamp"`. That default was measured producing `observed_silence` -- the
+    tool's affirmative "I looked and found nothing, this is evidence" -- on a
+    frame set whose declared clock produced three findings. A real leak reported
+    as evidence of absence, because a column happened to be called `timestamp`.
+    """
+    with pytest.raises(ModelFileError) as e:
+        load_model(_write(tmp_path, {"version": SCHEMA_VERSION,
+                                     "aggregate_frames": {"a": "k"}}))
+    msg = str(e.value)
+    assert "THERE IS NO DEFAULT FOR IT" in msg
+    assert "observed_silence" in msg, (
+        "the refusal does not say what the default actually did, so a reader "
+        "meets a rule rather than a reason: %s" % msg)
+    assert "BUILT OUTPUT" in msg, "the refusal does not say what the field names"
+
+
+def test_declaring_it_EXPLICITLY_as_timestamp_is_accepted(tmp_path):
+    """The declaration and the coincidence are different things, and only one is
+    checkable. A user whose output really does call it `timestamp` says so."""
     m = load_model(_write(tmp_path, {"version": SCHEMA_VERSION,
-                                     "aggregate_frames": {"a": "k"}})).model
+                                     "aggregate_frames": {"a": "k"},
+                                     "decision_column": "timestamp"})).model
     assert m.decision_column == "timestamp"
-    assert m.window == pd.Timedelta(seconds=1)
-    assert m.ties_available is True
+
+
+def test_the_decision_column_SENTINEL_is_refused_as_an_unfilled_field(tmp_path):
+    from leakaudit.model_file import FILL_ME
+    with pytest.raises(ModelFileError) as e:
+        load_model(_write(tmp_path, {"version": SCHEMA_VERSION,
+                                     "aggregate_frames": {"a": "k"},
+                                     "decision_column": FILL_ME}))
+    assert "UNFILLED FIELD, NOT A COLUMN NAME" in str(e.value)
+
+
+def test_no_availability_model_means_the_decision_column_is_NOT_demanded(tmp_path):
+    """The scope of the refusal, asserted so it does not widen by accident. With
+    no `aggregate_frames` there is no availability probe and the field reaches
+    nothing, so asking for it would be friction with no purchase."""
+    c = load_model(_write(tmp_path, {"version": SCHEMA_VERSION,
+                                     "label_column": "y"}))
+    assert c.label_column == "y"
 
 
 # ---------------------------------------------------------------------------

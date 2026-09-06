@@ -58,8 +58,39 @@ class had just bitten somewhere else.
 **The one found is small and is the kind §2 permits fixing:** a stale figure in a
 scope sentence. It is corrected in the same commit and disclosed.
 
-**What this sweep did not do.** It checked eight documents against **one** class
-each — the class each names. A document can exhibit a *different* class than the
-one it describes, and nothing here looks for that. `TRACKB_LESSONS.md`,
-`ROUND_STATE.md` and `HAND_TYPED_FIGURES.md` are not in the table because their
-instances were already found and recorded; they are not re-cleared here.
+## THE AXIS THIS SWEEP COVERED
+
+**A sweep result carries the axis it swept**, exactly as a count carries its
+invocation and an absence claim its population. *"The eight documents were swept"*
+is the sentence that will be quoted, and it claims a whole matrix. The true
+sentence is narrower.
+
+> **THE DIAGONAL ONLY.** Each document was checked against **the class it names**.
+> Eight documents × one class each = **eight checks**, of a matrix that is eight
+> documents × the enumerable class list.
+
+**THE OFF-DIAGONAL IS NOT SWEPT** — a document checked against a class it does
+*not* describe. `COST_FIGURES_SWEEP.md` was checked for stopped-run figures and
+not for hand-typed ones; `PRACTICES.md` was checked for binding and not for stale
+provenance; and so on for all eight.
+
+**It is not swept deliberately, and R215 §2 is why: the case for the work starts
+from a demonstrated need.** Every measured instance of this class — the four that
+produced TB-25 and the one this sweep found — has been a document exhibiting **its
+own** class. Not one has been a document exhibiting a class it does not name.
+Sweeping a matrix on the strength of a shape nobody has observed is the work this
+project declines everywhere else.
+
+**THE TRIGGER THAT OPENS IT**, recorded so the gap is bounded rather than open:
+**the first instance of a document exhibiting a class it does not describe.** One
+such instance turns the off-diagonal from speculation into a population with a
+reason, and the sweep above becomes the template for it.
+
+**So the honest status is "unexamined on a named axis, with the trigger
+recorded"** — not "unexamined, not clean", which says less, and not "swept",
+which says more.
+
+**Three documents are outside this table entirely.** `TRACKB_LESSONS.md`,
+`ROUND_STATE.md` and `HAND_TYPED_FIGURES.md` had their instances found and
+recorded before the sweep; they are **not re-cleared here**, on the diagonal or
+anywhere else.

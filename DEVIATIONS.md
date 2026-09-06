@@ -2903,3 +2903,70 @@ describes, and nothing here looks for that.
 
 **Expected:** that a document describing a defect class is checked against it, by
 somebody reading rather than by whoever wrote it.
+
+## D-V30A-74 — an undeclared decision column defaulted to `timestamp` and reported a real leak as evidence of absence
+
+**Established before anything was built, which is what turned a suspected
+scaffold gap into a live defect.** R235 §1 asked what the audit does when no
+decision column is declared: refuse, or pick? **It picked.**
+`load_model` read `raw.get("decision_column", "timestamp")`.
+
+**MEASURED. One frame set, one pipeline, two model files differing only in
+whether the field was declared:**
+
+| `decision_column` | result |
+|---|---|
+| undeclared → defaults to `timestamp` | **`observed_silence`, exit 0** |
+| declared as the true clock | **3 findings, exit 1** |
+
+**A real leak reported as `observed_silence`** — the tool's affirmative *"I looked
+over a stated population and found nothing. This is evidence."* Not a crash and
+not a warning: **the wrong answer in the tool's most confident state**, because a
+column happened to be called `timestamp` and sat two seconds from the true
+decision instant.
+
+**AND THE GUARD THAT FIRED ON A CRUDER VERSION IS NOT A CHECK ON THIS.** The first
+construction put the wrong clock a whole hour away, and `frame matched NO
+corrupted second` refused — which reads like protection and is not. That guard
+exists for timezone and resolution mismatch and fires only because nothing
+overlapped. **Moving the wrong clock to two seconds defeats it**: every second
+still matches, nothing downstream notices, and the probe runs to completion
+against an instant nobody declared. Two seconds is also the realistic error — a
+load stamp beside an event stamp, plausibly named.
+
+**So the standing positive is the overlapping case, not the hour.** A test built
+on the hour-apart frames would have passed *before* the fix, because the
+downstream guard caught it — a positive every plausible wrong implementation also
+survives. R215 §0's refinement: the discriminating case is the one where the
+existing machinery does not save you.
+
+**THE REPAIR. `aggregate_frames` declared and `decision_column` absent is
+refused**, and the refusal says what the default did rather than merely stating a
+rule. **Scoped to files that declare an availability model**: without one there is
+no probe and the field reaches nothing, so `leakaudit check` is not asked for it.
+
+**Declaring `timestamp` explicitly is still accepted, and that is the point.** A
+user may declare the wrong clock and be wrong; this tool cannot check a
+declaration. What is removed is the *silent pick*, not the user's freedom to be
+mistaken — the declaration and the coincidence are different things and only one
+of them is checkable.
+
+**AND A TEST ASSERTED THE DEFECT.** `test_only_the_required_keys_are_required`
+declared `aggregate_frames` alone and asserted `decision_column == "timestamp"`.
+It has been rewritten to assert the refusal, and the case it was really testing —
+that a checks-only file requires almost nothing — is kept as its own test.
+
+**R163 §1's exemption test.** *Would this change have been made if the triggering
+question had not been asked?* **Yes.** A default that turns a leak into evidence
+of absence is wrong whatever prompts the look. Defect repair, ruled, disclosed.
+
+**The scaffold half, which was the original ask.** `draft` now writes
+`decision_column` as the fill-me sentinel, and the loader refuses that sentinel as
+an unfilled field. **The evidence beside it says the draft cannot list candidates
+and why:** `decision_column` names a column of the BUILT OUTPUT, and `draft()`
+reads frames and never runs the pipeline — the boundary that keeps S6 out. Saying
+so is more use than listing source-frame columns that may not survive the build.
+
+**Expected:** that a field the audit compares every availability instant against
+is declared rather than assumed, and that a tool which cannot know which clock is
+yours says so.
