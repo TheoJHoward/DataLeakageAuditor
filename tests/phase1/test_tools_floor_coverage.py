@@ -44,6 +44,7 @@ COVERED = {
     "certify_preconditions": "tests/phase1/test_certify_preconditions.py",
     "clean_tree": "tests/phase1/test_clean_tree.py",
     "coverage_assertion_sweep": "tests/phase1/test_coverage_assertion_sweep.py",
+    "empty_population_probe": "tests/phase1/test_empty_population_probe.py",
     "default_sites": "tests/phase1/test_default_sites.py",
     "floor_check": "tests/phase1/test_floor_check.py",
     "manifest_verify": "tests/phase1/test_manifest_hashes.py",

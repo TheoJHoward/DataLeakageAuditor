@@ -4235,3 +4235,80 @@ can stop a shell command being chosen, and twice now the choice was mine.**
 question had not been asked?* **The probe, no** — R250 specified it. **The two
 fixes, yes**: an assertion that passes over a population that cannot be empty is
 reporting a result it did not obtain, whoever asked.
+
+## D-V30A-91 — the vacuity detector had no known positive, and 62 unprobed assertions were sitting inside a "swept" count
+
+**THE PROBE THAT HUNTS VACUITY WAS ITSELF VACUOUS, and the correction was
+diligence rather than a mechanism.** Its first version patched the population
+helpers on the TEST module while the tests call them on the tool they imported,
+so it emptied almost nothing and reported **37 candidates**. It was caught by
+chasing a number that looked high. **Had the bug produced a plausible count,
+nothing would have prompted the look.**
+
+**SO THE PROBE NOW CARRIES WHAT IT DEMANDS OF EVERYTHING ELSE.**
+`tools/empty_population_probe.py` is a shipped instrument — it was a scratch
+script, which is the vanishing-instrument class D-V30A-60 recorded — and
+`tests/phase1/test_empty_population_probe.py` gives it four known positives:
+
+| construction | required verdict |
+|---|---|
+| a deliberately vacuous assertion over a readable population | **`candidate`** |
+| a healthy assertion that checks its population is non-empty | **`reddens`** |
+| a test over a hardcoded literal, with nothing to empty | **`unprobed`** |
+| a test taking a fixture | **`unprobed`** |
+
+Five real assertions reddening shows it *can* fire. Only the constructed pair
+shows it fires **on the shape it exists to catch and not on everything** — a
+detector that flagged all or none would look identical in the summary counts. A
+fifth test pins the bug itself: `patch_targets` has to reach the imported tool,
+not stop at the test module.
+
+**THE 62 UNPROBED WERE NOT CLEAN, AND THEY ARE NOW SPLIT.** *"The
+empty-population subclass is swept"* was false while 62 sat unreached, and
+folding them into a swept count is the totality over-claim this sweep exists to
+catch, made about the sweep.
+
+| | count | basis |
+|---|---|---|
+| **reachable-but-unprobed** | **45** | 40 take a fixture, so the probe cannot call them directly; 3 fail to import under its loader; 2 are genuine totality claims that parse files per-path with no helper to empty |
+| **not a coverage assertion** | **17** | single-artifact content and ordering checks — a substring in one file, `is_file()`, a line-number comparison. The enumerator over-included them because the function calls a repository read. They leave the population. |
+
+The two genuine ones are `test_the_TWO_ENTRY_POINTS_DO_NOT_JOIN_above_the_refusal`
+and `test_the_two_lists_together_COVER_the_package`.
+
+**EVERY CELL NOW CARRIES A STATUS AND A REASON**, because membership is not
+coverage: *"159 coverage assertions exist"* plus *"some were probed"* read
+together as *"the coverage assertions are checked"*, which is false.
+
+| status | count |
+|---|---|
+| `probed_healthy` — reddens when its population is emptied | **5** |
+| `candidate_fixed` — was vacuous, now asserts non-emptiness | **2** |
+| `candidate_legitimate` — empty is a genuine valid state, with the reason | **1** |
+| `candidate_artifact` — passed, but the emptied helper is not its population. **UNVERIFIED** | **14** |
+| `unprobed_reachable` — a real assertion this mechanism cannot reach. **UNVERIFIED** | **45** |
+| `out_of_scope` — over-included; leaves the population | **17** |
+
+**Eight of eighty-four are established. Fifty-nine are unverified and say so.**
+That is the deliverable — a map whose blanks are visible — rather than a verdict.
+
+**AND THE AGREEMENT TEST FIRED ON ITS AUTHOR IMMEDIATELY.** Adding the probe's
+own test file put new coverage assertions into the population; they were
+unstatused, and `test_the_TRACKED_population_AGREES_with_the_enumerator` failed
+until the map was regenerated. A new coverage assertion cannot arrive silently.
+Two further tests pin that every cell has a status **and a reason** — a status
+without one is a label — and that the artifact's stated counts agree with the
+rows it holds, which is the hand-typed-figure class inside the artifact built to
+remove it.
+
+**THE SCOPE IS UNCHANGED AND STILL NARROW.** One vacuity subclass.
+VALUE-COINCIDENCE is not covered — a wrong value matching data already present
+has a non-empty population, so emptying it makes the assertion fail correctly.
+WRONG-INPUT is not covered — an assertion that never exercises its subject is
+untouched by emptying anything.
+
+**R163 §1's exemption test.** *Would this change have been made if the triggering
+question had not been asked?* **The known positive, no** — R251 §0 required it,
+and the probe had already been believed once on a number it produced while
+emptying nothing. **The 62's split, yes**: an unreached assertion counted as
+swept is a coverage claim over a population nobody looked at.

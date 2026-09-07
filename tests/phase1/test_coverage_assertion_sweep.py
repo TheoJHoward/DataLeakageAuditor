@@ -180,14 +180,56 @@ def test_the_tracked_artifact_STATES_ITS_CRITERION_AND_ITS_SCOPE():
     assert "WRONG-INPUT" in d["scope_NOT_covered"]
 
 
-def test_every_CANDIDATE_is_judged_or_counted_as_owed():
-    """R250 §1(c): a partial judgment reported as partial is fine; a partial one
-    reported as complete is the failure. So the artifact carries the count."""
+def test_EVERY_assertion_carries_a_STATUS_and_a_REASON():
+    """R251 §2. **MEMBERSHIP IS NOT COVERAGE.**
+
+    "157 coverage assertions exist" plus "some were probed" read together as
+    "the coverage assertions are checked", which is false. So every cell carries
+    one of the declared statuses and a reason, and a new coverage assertion
+    lands unstatused and fails the agreement test above -- which is what makes
+    the blanks visible instead of absorbed.
+    """
     d = _tracked()
-    cands = [e for e in d["functions"]
-             if e["empty_probe"] == "empty_probe_CANDIDATE"]
-    judged = [e for e in cands if e.get("judgment")]
-    owed = len(cands) - len(judged)
-    assert d["counts"]["unjudged_candidates"] == owed, (
-        "the artifact states %d unjudged candidates and holds %d"
-        % (d["counts"]["unjudged_candidates"], owed))
+    declared = set(d["statuses"])
+    assert declared, "the artifact declares no statuses"
+    for e in d["functions"]:
+        assert e.get("status") in declared, (
+            "%s :: %s carries status %r, which is not one of the declared "
+            "statuses %s" % (e["file"], e["function"], e.get("status"),
+                             sorted(declared)))
+        assert e.get("reason", "").strip(), (
+            "%s :: %s has a status and no reason -- a status without one is a "
+            "label, and the register becomes a formality"
+            % (e["file"], e["function"]))
+
+
+def test_the_counts_AGREE_with_the_entries():
+    """A stated count that disagrees with the rows is the hand-typed-figure
+    class inside the artifact built to remove it."""
+    d = _tracked()
+    tally = {}
+    for e in d["functions"]:
+        tally[e["status"]] = tally.get(e["status"], 0) + 1
+    for status, n in tally.items():
+        assert d["counts"].get(status) == n, (
+            "the artifact states %r for %s and holds %d"
+            % (d["counts"].get(status), status, n))
+    assert d["counts"]["functions_total"] == len(d["functions"])
+
+
+def test_UNVERIFIED_is_not_reported_as_swept():
+    """The statuses that mean 'nobody has established this' are named as such,
+    and there are enough of them that a blanket 'swept' would be false."""
+    d = _tracked()
+    unverified = sum(d["counts"].get(s, 0) for s in
+                     ("candidate_artifact", "unprobed_reachable",
+                      "candidate_UNJUDGED"))
+    assert unverified > 0, (
+        "no assertion is unverified, so this guard no longer establishes that "
+        "the artifact can express an unverified cell")
+    verified = sum(d["counts"].get(s, 0) for s in
+                   ("probed_healthy", "candidate_fixed",
+                    "candidate_legitimate"))
+    assert verified < d["counts"]["functions_total"], (
+        "every assertion reads as verified, which would make the honest "
+        "blanks this artifact exists to show invisible")
