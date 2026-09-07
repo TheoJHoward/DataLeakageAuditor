@@ -1,7 +1,6 @@
 {
  "what_this_is": "A STATUS PER COVERAGE ASSERTION, not a membership list. '141 coverage assertions exist' plus 'some were probed' read together as 'the coverage assertions are checked', which is false -- so every cell carries a status and the blanks are visible.",
  "why_it_is_tracked": "The enumerator's definition was wrong three times in one round and was corrected each time only because somebody remembered which assertions had to be in the set. That knowledge does not survive to the next person.",
- "regeneration_order": "THE POPULATION CHANGES AT COMMIT TIME, and the map is regenerated after the commit rather than before it. The floor is `git ls-files`, so a new test file's assertions are INVISIBLE until the file is tracked: a map generated before the commit that adds it disagrees with the enumerator immediately after. That happened at R251 -- the agreement test failed on four assertions in a file that had just become tracked. It is R247's rule in a new place: evidence measured at state A, artifact shipped at state B. The agreement test is what makes the disagreement loud instead of silent.",
  "the_criterion": "An assert inside a function named test_* or check_* is IN when the function reads the repository -- directly, through a module helper, or through a FIXTURE that does. It MUST catch `assert not <collection>` (the shape the first definition missed) and a test receiving its population from a fixture (the shape the third missed). Both are known-positives in the test file.",
  "the_probe": "tools/empty_population_probe.py empties each population helper and runs the test. A pass is a CANDIDATE, never a finding. The probe carries its own known positives: a constructed vacuous assertion has to come back `candidate`, a constructed healthy one `reddens`, and a test whose population it cannot empty `unprobed`.",
  "scope_NOT_covered": "One vacuity subclass only. VALUE-COINCIDENCE is not covered -- a wrong value matching data already present (\\b27\\b inside TB-27) has a non-empty population, so emptying it makes the assertion fail correctly and the probe passes it. WRONG-INPUT is not covered -- an assertion that never exercises its subject (the bare=True control handed a frame where a dict was expected) is untouched by emptying.",
@@ -21,11 +20,11 @@
   "candidate_artifact": 14,
   "candidate_fixed": 2,
   "candidate_legitimate": 1,
-  "out_of_scope": 17,
+  "out_of_scope": 19,
   "probed_healthy": 5,
-  "unprobed_reachable": 48,
-  "functions_total": 88,
-  "assertions_total": 164
+  "unprobed_reachable": 45,
+  "functions_total": 87,
+  "assertions_total": 163
  },
  "functions": [
   {
@@ -449,13 +448,6 @@
    "reason": "not a coverage assertion: a single-artifact content or ordering check. The enumerator over-included it because the function calls a repository read. It leaves the population."
   },
   {
-   "file": "tests/phase1/test_probe_path_guard.py",
-   "function": "test_the_two_lists_together_COVER_the_package",
-   "assertions": 1,
-   "status": "unprobed_reachable",
-   "reason": "a real totality claim -- the probe path set's on/off lists covering the package. Same mechanism gap."
-  },
-  {
    "file": "tests/phase1/test_reference_but_silent.py",
    "function": "test_screen_halts_rather_than_returning_an_empty_list",
    "assertions": 2,
@@ -509,14 +501,14 @@
    "function": "test_known_positive_each_route_fires",
    "assertions": 1,
    "status": "unprobed_reachable",
-   "reason": "the probe's loader could not import the module: import failed: ModuleNotFoundError"
+   "reason": "takes a fixture, so the probe cannot call it directly. A pytest-driven mechanism would reach it. takes fixture(s): tmp_path,route"
   },
   {
    "file": "tests/phase1/test_sc7c.py",
    "function": "test_the_docstring_citation_resolves",
    "assertions": 2,
-   "status": "unprobed_reachable",
-   "reason": "the probe's loader could not import the module: import failed: ModuleNotFoundError"
+   "status": "out_of_scope",
+   "reason": "not a coverage assertion: a single-artifact content or ordering check. The enumerator over-included it because the function calls a repository read. It leaves the population."
   },
   {
    "file": "tests/phase1/test_tools_floor_coverage.py",
@@ -641,8 +633,8 @@
    "file": "tests/registration/test_expected_outputs.py",
    "function": "test_expected_outputs_file_matches_generator",
    "assertions": 2,
-   "status": "unprobed_reachable",
-   "reason": "the probe's loader could not import the module: import failed: ModuleNotFoundError"
+   "status": "out_of_scope",
+   "reason": "not a coverage assertion: a single-artifact content or ordering check. The enumerator over-included it because the function calls a repository read. It leaves the population."
   }
  ]
 }

@@ -4312,3 +4312,71 @@ question had not been asked?* **The known positive, no** — R251 §0 required i
 and the probe had already been believed once on a number it produced while
 emptying nothing. **The 62's split, yes**: an unreached assertion counted as
 swept is a coverage claim over a population nobody looked at.
+
+## D-V30A-92 — the headline coverage claim passed over an empty package, and option B ships with the drift guard it depends on
+
+**THE THREE IMPORT FAILURES WERE THE LOADER, NOT THE SHADOWING — checked, because
+the other reading was serious.** Three files failed to import under the probe,
+which would either be a probe limitation or the `leakaudit/__init__` export
+shadowing biting for real: **three tests silently not running.** Measured:
+
+    py -3.12 -m pytest tests/phase1/test_sc7c.py \
+                       tests/registration/test_expected_outputs.py
+    -> 9 passed
+
+All six named functions pass. The cause is precise — the probe's loader did not
+put the test file's own directory on `sys.path`, which pytest does, so
+`test_sc7c.py` could not import its sibling `sc7c` and
+`test_expected_outputs.py` could not import `generate_expected_outputs`. **The
+export shadowing stays a parked candidate; this check did not escalate it.** The
+loader is fixed, and the three moved out of `unprobed`.
+
+**THE HEADLINE VACUITY WAS REAL.** `test_the_two_lists_together_COVER_the_package`
+built its population from `glob("*.py")` over `src/leakaudit` and asserted
+`not missing`. **With the glob empty, `missing` is empty and the assertion
+passes** — a claim named *COVER the package* reporting success over no package
+at all. The package holds sixteen modules, so empty is not a legitimate state.
+
+Fixed by asserting the population first, split content-in so the mutation needs
+no file on disk, and **pinned by two tests**: it reddens over an empty package,
+and it still reddens on an unclassified module — the second being the negative
+control, because a check that only reddened on emptiness would have stopped
+catching what it was built for.
+
+**THE OTHER GENUINE CLAIM IS HEALTHY, and hand-judged rather than left blank.**
+`test_the_TWO_ENTRY_POINTS_DO_NOT_JOIN_above_the_refusal` asserts an exact
+four-name list, so an empty scan yields `[] == [four names]` and reddens. It
+needed a judgment, not a probe.
+
+**OPTION B IS WIRED, AND IT SHIPS WITH THE GUARD IT DEPENDS ON.** The work root
+is the scratch subdirectory again, so `tasks/` falls outside it: **no frozen
+`_EPHEMERAL` change, no ruled-difference slot, the count stays 2 of 4, and the
+gate's `tasks/` red is gone.**
+
+- **The 49 loose files were MOVED under the subdir, not grandfathered.** The
+  session root now holds exactly `scratchpad/` and `tasks/`, so the root's
+  contents are the round's work and the harness's, and nothing else.
+- **The baseline was RE-KEYED, preserving 686 paths** — `scratchpad/X` becomes
+  `X`, a moved file keeps its name, and 45 `tasks/` entries drop out because
+  they are no longer in the population. A fresh baseline would have asserted
+  twelve thousand files were read; this asserts nothing new.
+
+**B'S PRICE IS A DISCIPLINE DEPENDENCY, AND IT IS NOW A CHECK.**
+`tools/scratch_drift.py` reports any round-work file outside the work root,
+treating only explicitly named harness directories as not-round-work. **That
+dependency is not hypothetical**: 49 files sat one level above the declared root
+and were invisible to `round_reconciliation` for many rounds, which is the
+failure B would otherwise be waiting to repeat.
+
+Its own known positive: **a work file placed outside the subdir makes it red**,
+and a work directory too. Three negative controls — a clean layout, harness logs,
+and files deep under the subdir — keep it from being a guard that reddens on
+everything. An unset work root is `UNREADABLE`, not clean, which is the shape
+`round_reconciliation` was reporting for a session. On the real layout: **NO
+DRIFT, exit 0.**
+
+**R163 §1's exemption test.** *Would this change have been made if the triggering
+question had not been asked?* **The COVER fix, yes** — a coverage assertion that
+passes over an empty package is reporting a result it did not obtain. **The
+drift guard, no**: R252 §3(c) required it, and B without it is the same silence
+that produced the 49.

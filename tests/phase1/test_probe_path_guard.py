@@ -65,17 +65,56 @@ def test_the_not_on_path_list_and_the_path_set_are_DISJOINT():
     assert not overlap, "a module is recorded as both on and off the path: %s" % overlap
 
 
-def test_the_two_lists_together_COVER_the_package():
-    """A module in neither list is a module nobody classified."""
-    doc = ppg.load()
+def _package_modules(root=None):
+    """The package's modules on disk. Content-in so a mutation can empty it."""
+    base = (root or ROOT) / "src" / "leakaudit"
+    return {"src/leakaudit/%s" % p.name for p in base.glob("*.py")}
+
+
+def check_the_two_lists_COVER_the_package(on_disk, doc):
+    """A module in neither list is a module nobody classified.
+
+    **THE POPULATION IS ASSERTED NON-EMPTY FIRST.** R252 §2. With `on_disk`
+    empty, `missing` is empty and `assert not missing` passes -- a coverage
+    claim named COVER_the_package reporting success over no package at all.
+    The package holds sixteen modules, so empty is not a legitimate state, and
+    this is the headline shape the vacuity sweep exists for.
+
+    Split content-in from the reader below so the mutation can hand it an empty
+    package without touching the repository (R247 §3).
+    """
+    assert on_disk, (
+        "no modules were found in src/leakaudit, so 'the two lists cover the "
+        "package' would be a claim about an empty package")
     named = set(doc["path_set"]) | set(doc.get("not_on_the_path", [])) | set(
         doc.get("added_by_judgment_not_by_the_trace", {}))
-    on_disk = {"src/leakaudit/%s" % p.name
-               for p in (ROOT / "src" / "leakaudit").glob("*.py")}
     missing = on_disk - named
     assert not missing, (
         "these modules are in neither list, so the rule does not say whether an "
         "edit to them needs the guard: %s" % sorted(missing))
+
+
+def test_the_two_lists_together_COVER_the_package():
+    check_the_two_lists_COVER_the_package(_package_modules(), ppg.load())
+
+
+def test_the_COVER_claim_REDDENS_over_an_empty_package():
+    """The mutation, pinned. R252 §2: this claim is not allowed to sit
+    unprobed when it is judgeable in one line -- and it was vacuous."""
+    import pytest as _pytest
+    with _pytest.raises(AssertionError) as e:
+        check_the_two_lists_COVER_the_package(set(), ppg.load())
+    assert "empty package" in str(e.value)
+
+
+def test_the_COVER_claim_still_CATCHES_an_unclassified_module():
+    """The negative control: it reddens on the thing it exists to catch, not
+    only on emptiness."""
+    import pytest as _pytest
+    with _pytest.raises(AssertionError) as e:
+        check_the_two_lists_COVER_the_package(
+            {"src/leakaudit/a_module_nobody_classified.py"}, ppg.load())
+    assert "neither list" in str(e.value)
 
 
 # ---------------------------------------------------------------------------

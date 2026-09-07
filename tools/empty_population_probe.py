@@ -63,14 +63,40 @@ EMPTIERS = {
 
 
 def load(rel: str, root: pathlib.Path = None):
+    """Import a test module the way pytest does.
+
+    THE TEST FILE'S OWN DIRECTORY GOES ON `sys.path`, and leaving it off is
+    what made three files unimportable under the probe while they run and pass
+    under pytest. `tests/phase1/test_sc7c.py` imports `sc7c` and
+    `tests/registration/test_expected_outputs.py` imports
+    `generate_expected_outputs` -- sibling modules that pytest makes importable
+    by inserting their directory, and that a bare `spec_from_file_location`
+    does not.
+
+    Recorded because the alternative reading was serious: three tests failing to
+    import could have been the `leakaudit/__init__` export shadowing biting for
+    real, which would mean three tests silently not running. Checked instead of
+    assumed -- all six of their functions pass under
+    `py -3.12 -m pytest tests/phase1/test_sc7c.py
+    tests/registration/test_expected_outputs.py` -- so it is this loader's gap
+    and the shadowing stays a parked candidate.
+    """
     root = root or REPO
     name = "eprobe_" + str(rel).replace("/", "_").replace("\\", "_").replace(
         ".py", "")
-    spec = importlib.util.spec_from_file_location(name, root / rel)
-    mod = importlib.util.module_from_spec(spec)
-    sys.modules[name] = mod
-    spec.loader.exec_module(mod)
-    return mod
+    here = str((root / rel).parent)
+    added = here not in sys.path
+    if added:
+        sys.path.insert(0, here)
+    try:
+        spec = importlib.util.spec_from_file_location(name, root / rel)
+        mod = importlib.util.module_from_spec(spec)
+        sys.modules[name] = mod
+        spec.loader.exec_module(mod)
+        return mod
+    finally:
+        if added and here in sys.path:
+            sys.path.remove(here)
 
 
 def patch_targets(mod, root: pathlib.Path = None) -> list:
