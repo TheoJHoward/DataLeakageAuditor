@@ -3525,3 +3525,81 @@ attestation inside a signed commit is the failure the manifest exists to prevent
 and this round produced one. **For the two axes the honest answer is no**: the
 file axis was closed because R241 asked whether `.py` was established, and it
 was not.
+
+## D-V30A-82 — the gate certified the manifest's coverage and never its content, and the instrument that certifies is the one that owed the check
+
+**THE INTEGRITY MANIFEST HAD AN UNENFORCED INTEGRITY FIELD.** `manifest_coverage`
+asks which paths are listed against which are on disk, in both directions, and
+passes on a listed path whatever the file now contains. Nothing in the gate
+compared an attested hash to its file. R241 added a pytest check, which leaves
+the question R242 §1 asks: the gate is a separate invocation and it is the
+instrument that certifies the registration.
+
+**ESTABLISHED BY PRODUCING THE DEFECT, not by reading the source.** One manifest
+line was corrupted to a hash of zeros and both instruments were asked:
+
+| | with a corrupted manifest line |
+|---|---|
+| `py -3.12 tools/check_registration.py --stage prereg` | **identical to a clean tree** — 1 failed check, the disclosed one, no manifest finding |
+| `py -3.12 -m pytest tests/phase1/test_manifest_hashes.py` | **1 failed** |
+
+The file was restored byte-for-byte and the restoration verified against git
+rather than assumed. **So the gate certified content it never checked**, and the
+suite's copy did not close that, because the suite is not what certifies.
+
+**THE REPAIR: `manifest_content`, in the gate, beside its coverage sibling.**
+Re-running the same corruption confirms the gate now fails on it. The check
+carries its recipe — sha256 over raw bytes, `<64 hex>  <path>`, paths relative to
+`evidence/` except `../` lines relative to the repository root — and reports
+`COVERAGE IS ZERO` rather than passing if it ever verifies nothing, which is the
+shape a pass over an empty population takes.
+
+**THE COST IS A SLOT IN A PRE-COMMITTED BUDGET, and it is named rather than
+absorbed.** `tools/check_registration.py` is a frozen instrument: the gate runs
+the tagged checker beside the current one and any difference has to be RULED.
+R223 §1 fixed the ceiling at **4** before there was pressure on it and wrote *"It
+is not a budget to spend."* This takes the count from **2 to 3**.
+
+**AND THE THIRD ENTRY IS NOT THE SAME KIND AS THE FIRST TWO.**
+`line_citations` and `round_reconciliation` are checks BOTH instruments carry
+whose VERDICTS differ — places the two disagree about one question, which is
+what the ceiling bounds. `manifest_content` reads `absent -> PASS`: a check one
+instrument cannot be asked. The mechanism compares verdict sets and cannot tell
+those apart, so it registers either way. **The count was taken at 3 regardless**,
+because the round that feels the pressure is exactly the round that would find a
+reason the pressure does not apply to it. Whether the accounting separates the
+two categories is a question about the budget, raised for the author and **not
+self-granted**.
+
+**THE REPOSITORY'S OWN TEST CAUGHT THE FIRST ATTEMPT.** The reason was written
+into the running-count comment BELOW the table;
+`test_every_ruled_difference_carries_a_REASON_in_the_source` requires it in the
+block ABOVE, and failed — *"an entry without a reason is a silence, not a
+ruling."* A mechanism from an earlier round refusing this round's shortcut, in
+the file being edited to add a mechanism.
+
+**THE RETROACTIVE QUESTION, BOUNDED — and R242's own bound was too narrow.** The
+premise offered was that the manifest is regenerated from disk each round, so
+exposure is the window between regeneration and commit. **Measured: there is no
+regeneration tool.** `tools/` holds ten scripts and the only one naming the
+manifest is the checker; `git log --numstat` shows the manifest changing by
+**one to five lines per commit**, never wholesale. It is maintained by hand,
+line by line.
+
+So the window is wider than stated: **every round that changed an attested file
+and did not restate its line.** What bounds the risk is the measurement rather
+than the mechanism — **826 attesting lines, 0 stale, 0 absent**, over the tree as
+it stands. The discipline held every round, which is the finding: it held
+without anything checking that it did.
+
+**NO HISTORY WALK, and the trigger is named.** R215 §2 starts work from a
+demonstrated need and no instance motivates one: the current tree is clean and
+coverage has been enforced throughout. The trigger that would justify walking
+commits is any sign that a past commit's manifest disagrees with its own tree.
+Prospectively the window is closed, because the gate now verifies content on
+every run.
+
+**R163 §1's exemption test.** *Would this change have been made if the triggering
+question had not been asked?* **Yes.** A false attestation inside a signed commit
+is the failure the manifest exists to prevent, and the previous round produced
+one that every instrument passed.
