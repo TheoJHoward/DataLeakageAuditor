@@ -227,7 +227,20 @@ def test_NO_TRACKED_FILE_OUTSIDE_py_CARRIES_RUNNABLE_PYTHON():
     Python that could read the clock. A notebook that read it would be a
     consumer a `.py` scan never sees.
     """
-    tail = [f for f in tracked_files() if not f.endswith(".py")]
+    files = tracked_files()
+    # THE POPULATION IS ASSERTED NON-EMPTY BEFORE ANYTHING IS CONCLUDED FROM IT.
+    # R250 §1(b): the empty-population probe found this assertion passing with
+    # `tracked_files()` emptied -- no tail, so no notebook, no shebang and no
+    # executable bit, all three vacuously true. The population cannot legitimately
+    # be empty (the repository tracks ~956 files), so a silent pass over zero is
+    # the round_reconciliation defect in miniature.
+    assert len(files) > 500, (
+        "the tracked set came back with %d files, so every conclusion below "
+        "would be drawn from nothing" % len(files))
+    tail = [f for f in files if not f.endswith(".py")]
+    assert tail, (
+        "no non-.py tracked files at all, which is not this repository -- the "
+        "tail is what these three checks range over")
 
     notebooks = [f for f in tail
                  if f.lower().endswith(PYTHON_SUFFIXES[1:])]

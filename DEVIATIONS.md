@@ -4147,3 +4147,91 @@ shipped.
 question had not been asked?* **No** — it was scheduled at R247 and carried
 through R248, which is why R249 ruled that it leads. The three-carry rule is what
 produced it.
+
+## D-V30A-90 — the empty-population probe, its candidates judged, and the two subclasses it does not cover
+
+**THE PROBE, AND WHY ITS OUTPUT IS A CANDIDATE LIST.** Each coverage assertion's
+population helpers are replaced with empty results and the test is run. One that
+still PASSES reported success over a population it could not see — the
+`round_reconciliation` defect exactly. **An empty population is sometimes a
+legitimate vacuous truth and sometimes a masked bug**, and only a per-assertion
+judgment separates them, so this is the defaults-tracer shape (R222): nothing
+here returns anything named a finding.
+
+**THE PROBE WAS WRONG FIRST, AND CHECKING IT WAS THE PRECONDITION FOR BELIEVING
+IT.** Version one patched the population helpers on the TEST module — but a test
+calls them on the tool it imported (`mv.entries()`, `cas.population()`), so those
+ran against the real repository. It reported **37 candidates** having emptied
+almost nothing. Patching every repository module the test module holds, and
+recording how many patches actually applied per test, gives **16**; a test with
+zero patches applied is recorded NOT PROBED rather than counted as a candidate.
+
+| | |
+|---|---|
+| functions in the population | **83** |
+| candidate — passed with its population emptied | **13** (16 before this round's fixes) |
+| reddened on empty | **8** |
+| not probed — receives its population from a fixture | **40** |
+| not probed — no helper the probe reaches | **19** |
+| not probed — other | **3** |
+
+**THE JUDGMENTS. Three of the sixteen had their iterated population actually
+emptied**; the other thirteen passed because the emptied helper is not what they
+iterate — a probe artifact, and classified as one rather than counted.
+
+- **`test_the_filter_matches_the_shipped_one`** — *empty is legitimate.* The
+  population is the working tree's uncommitted entries and a clean tree has
+  none. The comparison then establishes nothing on a clean tree, and the
+  discrimination lives in the siblings that dirty it. **Closed with a reason,
+  not waved off.**
+- **`test_NO_TRACKED_FILE_OUTSIDE_py_CARRIES_RUNNABLE_PYTHON`** — *empty is not
+  legitimate*, the repository tracks ~956 files. With `tracked_files()` emptied
+  the tail is empty, so no notebook, no shebang and no executable bit, all three
+  vacuous. **Fixed:** the population is asserted non-empty before anything is
+  concluded from it.
+- **`test_the_manifest_does_not_attest_ITSELF`** — *empty is not legitimate*,
+  827 attesting lines. A sibling guards the file's non-emptiness and **does not
+  protect this assertion**, which is the distinction the probe draws. **Fixed:**
+  the rows are asserted non-empty first.
+
+**THE SCOPE, STATED — one subclass swept, two named.** This probe covers the
+EMPTY-POPULATION subclass only.
+
+- **VALUE-COINCIDENCE is not covered.** A wrong value matching data already
+  present — `\b27\b` matching inside `TB-27` — has a non-empty population, and
+  emptying it makes the assertion fail correctly, so the probe passes it. That
+  is the bug R246 was spent on.
+- **WRONG-INPUT is not covered.** An assertion that never exercises its subject
+  — the `bare=True` control handed a frame where a dict was expected — is
+  untouched by emptying anything.
+
+*"The coverage assertions are swept"* would be the totality over-claim this
+sweep exists to catch, made about the sweep itself.
+
+**THE POPULATION IS NOW TRACKED, because the definition took three tries and was
+right only by recall.** `evidence/session/COVERAGE_ASSERTION_POPULATION.json`
+holds all 83 functions with each one's probe result and any judgment, and a test
+regenerates the enumeration and fails if the list and the code disagree. The
+criterion is recorded with it — **including that it has to catch `assert not
+<collection>` and a test receiving its population from a fixture**, the two
+shapes earlier definitions missed — so the definition that took three attempts is
+written where the next change to it can be checked. Both shapes are
+known-positives; a unit assertion is the negative control.
+
+**PARTIAL, AND COUNTED AS PARTIAL.** 13 candidates remain unjudged and the
+artifact carries that number, checked by a test against the entries it holds. A
+partial judgment reported as partial is not the half-sweep failure; reported as
+complete, it would be.
+
+**AND THE SHELL ATE A BACKTICK SEQUENCE AGAIN.** One assertion's message was
+built through `py -3.12 -c` with prose containing backticks, and the shell
+substituted them — the second such slip in two rounds, immediately after the
+first was reported and its rule named. The tests stayed green because only the
+message text was damaged, which is the quieter version of the same failure.
+Repaired through the Write tool. **The rule is discipline-only because nothing
+can stop a shell command being chosen, and twice now the choice was mine.**
+
+**R163 §1's exemption test.** *Would this change have been made if the triggering
+question had not been asked?* **The probe, no** — R250 specified it. **The two
+fixes, yes**: an assertion that passes over a population that cannot be empty is
+reporting a result it did not obtain, whoever asked.

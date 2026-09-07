@@ -65,9 +65,19 @@ def test_EVERY_manifest_hash_MATCHES_the_file_it_attests():
 
 def test_the_manifest_does_not_attest_ITSELF():
     """It cannot: writing its own hash into itself changes the hash. Asserted so
-    the absence reads as a property rather than an oversight."""
-    assert not [rel for _, rel in mv.entries()
-                if rel.endswith("MANIFEST.sha256")]
+    the absence reads as a property rather than an oversight.
+
+    THE POPULATION IS ASSERTED FIRST. R250 §1(b): the empty-population probe
+    found this passing with `mv.entries()` emptied -- no entries, so none of
+    them names the manifest, vacuously. A sibling test guards non-emptiness for
+    the file as a whole, and that does not protect THIS assertion, which is the
+    distinction the probe exists to draw.
+    """
+    rows = mv.entries()
+    assert rows, (
+        "no attesting lines at all, so 'none of them is the manifest' is a "
+        "claim about nothing")
+    assert not [rel for _, rel in rows if rel.endswith("MANIFEST.sha256")]
 
 
 def test_the_verifier_runs_CLEAN_as_a_command():

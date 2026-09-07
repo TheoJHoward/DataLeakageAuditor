@@ -128,3 +128,66 @@ def test_the_sweep_REPORTS_and_does_not_gate():
     assert cas.state()["outstanding"], (
         "there are no outstanding entries, so this assertion no longer "
         "establishes that the instrument tolerates them")
+
+
+# ---------------------------------------------------------------------------
+# the tracked population. R250 §3.
+# ---------------------------------------------------------------------------
+TRACKED = ROOT / "evidence/session/COVERAGE_ASSERTION_POPULATION.json"
+
+
+def _tracked():
+    import json
+    return json.loads(TRACKED.read_text(encoding="utf-8"))
+
+
+def test_the_TRACKED_population_AGREES_with_the_enumerator(swept):
+    """**THE DEFINITION TOOK THREE TRIES AND WAS RIGHT ONLY BY RECALL.**
+
+    Each wrong version was caught because somebody remembered which assertions
+    had to be in the set. That knowledge does not survive to the next person, so
+    the population is pinned here and regenerated from the code: a coverage
+    assertion added later is either in this list or fails this test.
+    """
+    tracked = {(e["file"], e["function"]) for e in _tracked()["functions"]}
+    live = swept["functions"]
+    added = sorted(live - tracked)
+    gone = sorted(tracked - live)
+    assert not added, (
+        "these coverage assertions exist in the code and are not in the tracked "
+        "population, so nothing carries their empty-population judgment: %s"
+        % added)
+    assert not gone, (
+        "these are tracked and no longer in the code, so the list makes claims "
+        "about assertions that are gone: %s" % gone)
+
+
+def test_the_tracked_artifact_STATES_ITS_CRITERION_AND_ITS_SCOPE():
+    """An enumeration whose rule is not written down is one the next change
+    cannot be checked against, and a sweep that does not say what it does NOT
+    cover is the totality over-claim it exists to catch."""
+    d = _tracked()
+    for key in ("the_criterion", "the_probe", "scope_NOT_covered",
+                "why_it_is_tracked"):
+        assert d.get(key), "the tracked population does not state %s" % key
+    assert "assert not" in d["the_criterion"], (
+        "the criterion does not record that it has to catch "
+        "`assert not <collection>`, the shape it first missed")
+    assert "fixture" in d["the_criterion"], (
+        "the criterion does not record the fixture shape, which the third "
+        "definition missed")
+    assert "VALUE-COINCIDENCE" in d["scope_NOT_covered"]
+    assert "WRONG-INPUT" in d["scope_NOT_covered"]
+
+
+def test_every_CANDIDATE_is_judged_or_counted_as_owed():
+    """R250 §1(c): a partial judgment reported as partial is fine; a partial one
+    reported as complete is the failure. So the artifact carries the count."""
+    d = _tracked()
+    cands = [e for e in d["functions"]
+             if e["empty_probe"] == "empty_probe_CANDIDATE"]
+    judged = [e for e in cands if e.get("judgment")]
+    owed = len(cands) - len(judged)
+    assert d["counts"]["unjudged_candidates"] == owed, (
+        "the artifact states %d unjudged candidates and holds %d"
+        % (d["counts"]["unjudged_candidates"], owed))
