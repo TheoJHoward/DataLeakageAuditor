@@ -1183,6 +1183,48 @@ the two files in both orders. **The tell:** a fixture that writes an importable
 module is writing into a process-global namespace, and `tmp_path` isolates the
 filesystem, not `sys.modules`. Temporary-directory isolation reads as total and
 is not.
+## TB-27 — *(6 September 2026)* A mechanism fires on the person who built it, in the round they built it
+
+**TWO INSTANCES, ONE ROUND APART, AND BOTH ARE MINE.**
+
+**R242.** The decision-clock totality test was written that round. Its
+registrations are keyed on `(file, enclosing function, expression)`, and two
+were typed from memory rather than measured. Both halves of the test fired on
+the first run: the reason check reported the two real reads as unexplained, and
+the stray-registration check reported the two invented function names as claims
+about nothing.
+
+**R243.** `manifest_verify.py` was written that round to catch a manifest hash
+that had gone stale. Documenting the new two-command certification meant editing
+`ROUND_STATE.md`, which is itself an attested file — so that edit made its own
+manifest line stale, and the verifier reported it on the very next run.
+
+**THE SHAPE.** *A mechanism catches its author while they are moving fast and
+sure, which is the state no amount of care covers.* Neither catch involved
+anyone being careless in the ordinary sense. Both were the small shortcut a
+person takes while concentrating on something else — a name recalled instead of
+looked up, a file edited without thinking about what attests it.
+
+**WHY THIS IS THE ARGUMENT FOR THE COST, and not a happy accident.** Turning a
+count into a test is expensive: the R239–R241 chain spent three rounds on a
+question a careful reading answers in ten minutes. The return is not that the
+test finds what a reading would miss. **It is that the test is awake when the
+reader is not**, and the reader who is not awake is specifically the one who
+just built the thing and is confident about it.
+
+**THE COUNTER-EVIDENCE THIS DOES NOT HAVE, said rather than implied.** Two
+instances is two, not a rate. Nothing here measures how often a mechanism fires
+on its author against how often one sits green through an author's mistake —
+that second number is unmeasured and is the one that would tell you whether
+mechanisms are generally worth their cost. What these two establish is the
+weaker, sufficient claim: **it happens, it happened twice running, and neither
+time would a checklist have fired.**
+
+*Siblings:* TB-11, whose remedy line predicted exactly this route — *"the counter
+has to be external or mechanical"*. TB-21, on knowledge written where it governs
+nothing, is the inverse: a lesson in prose governs no one, and a lesson in a test
+governs its author first.
+
 ---
 
 # THE CLASSIFICATION — made by hand, with its membership list
@@ -1196,8 +1238,8 @@ share are the vocabulary the whole project is written in — *population*, *sile
 separated TB-19 from TB-12, which are the same lesson one layer apart. Grouping by
 shared vocabulary in a corpus with one vocabulary is grouping by nothing.
 
-**The rule for membership.** All **26** entries are in **exactly
-one** family, and the families **jointly cover** all twenty-one — the same totality
+**The rule for membership.** All **27** entries are in **exactly
+one** family, and the families **jointly cover** all twenty-seven — the same totality
 shape the probe path set and the config-key complement use, and for the same
 reason: a classification with an unassigned entry has not classified anything.
 Where an entry genuinely touches a second family it is cross-referenced, and the
@@ -1210,7 +1252,7 @@ cross-reference is not a second membership.
 *Declared, cited, documented — and connected to no consumer. The class the config
 complement was built to close, recurring at four different levels.*
 
-**Members: TB-02, TB-14, TB-20, TB-21, TB-25.** Five of twenty-six.
+**Members: TB-02, TB-14, TB-20, TB-21, TB-25.** Five of twenty-seven.
 
 - **TB-02** — an invariant asserted and cited, enforced by nothing.
 - **TB-14** — an extraction that replaced nothing: a third implementation wearing
@@ -1236,7 +1278,7 @@ name reported it absent. That is a claim-side failure, so it sits in F2.
 *The absence claim and the bare number. The two halves of one discipline: say what
 you looked at, and say what the figure rests on.*
 
-**Members: TB-04, TB-05, TB-09, TB-16, TB-17, TB-23.** Six of twenty-six.
+**Members: TB-04, TB-05, TB-09, TB-16, TB-17, TB-23.** Six of twenty-seven.
 
 - **TB-04** — an absence claim about a registered document needs a population too.
 - **TB-05** — a ceiling is a property of the frame, not of the tool.
@@ -1260,7 +1302,7 @@ which fails during an investigation.
 
 *The positive fires, and the firing establishes less than it appears to.*
 
-**Members: TB-12, TB-15, TB-19, TB-24.** Four of twenty-six.
+**Members: TB-12, TB-15, TB-19, TB-24.** Four of twenty-seven.
 
 - **TB-12** — a known positive tests the premise, not only the code.
 - **TB-15** — the wrong prediction is the one that pays; a correct one would have
@@ -1289,7 +1331,7 @@ distinguishes nothing, and its value was entirely in being falsifiable.
 *It is internally consistent, it is signed, and it does not survive contact with
 execution.*
 
-**Members: TB-03, TB-07, TB-08, TB-10, TB-13.** Five of twenty-six.
+**Members: TB-03, TB-07, TB-08, TB-10, TB-13.** Five of twenty-seven.
 
 - **TB-03** — a registration can be internally consistent and still unscoreable.
 - **TB-07** — signed, consistent, and with an acceptance gate that cannot be run.
@@ -1303,7 +1345,7 @@ execution.*
 
 *The collateral, and it lands on whatever the change was holding constant.*
 
-**Members: TB-01, TB-06, TB-18, TB-22, TB-26.** Five of twenty-six.
+**Members: TB-01, TB-06, TB-18, TB-22, TB-26.** Five of twenty-seven.
 
 - **TB-01** — a merge can resurrect a defect that was deliberately removed.
 - **TB-06** — backticks in a commit message, and a heredoc in a file edit: content
@@ -1322,7 +1364,8 @@ and nobody read it that way until there were two more.
 
 ## F6 — The reading is biased by what it would cost
 
-**Member: TB-11.** One of twenty-six — and the family of one is the finding.
+**Members: TB-11, TB-27.** Two of twenty-seven — and HOW THE SECOND ONE
+ARRIVED is the finding.
 
 - **TB-11** — claims that could be unfavourable were verified; claims that flatter
   the process were accepted.
@@ -1350,6 +1393,20 @@ and had to be corrected from outside. **Neither was written down as a Track B
 entry**, and the reason is visible from inside the family: an entry about one's own
 asymmetric scrutiny is exactly the entry asymmetric scrutiny does not write. It is
 recorded here as a gap in the register rather than as a lesson with one instance.
+
+**ADDENDUM, 6 September 2026 (R244 §2) — the register grew, and not by anyone
+noticing.** TB-27 is F6's second member, and it arrived by the only route this
+family's own text says is available: *"the counter has to be external or
+mechanical."* Both of its instances are mechanisms firing on their author in the
+round he built them — not someone remembering to look.
+
+**This does not repair the gap above.** The two shapes recorded there as
+unwritten are still unwritten, and TB-27 is not an instance of asymmetric
+scrutiny; it is an instance of the REMEDY working. So F6 is now a family of two
+holding one failure and one piece of evidence that the adopted counter fires,
+which is a slightly odd family and is left odd on purpose: forcing the evidence
+into a failure taxonomy, or spinning up a seventh family for one entry, would
+both be tidier than the truth.
 
 ---
 

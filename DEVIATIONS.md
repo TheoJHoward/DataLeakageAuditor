@@ -3693,3 +3693,90 @@ commands now carry `py -3.12`.
 question had not been asked?* **Yes.** A slot spent on an addition that could
 stand beside the frozen file is distance lost from a re-examination trigger for
 nothing, and the sibling closes the same hole at no cost to the frozen core.
+
+## D-V30A-84 — the integrity picture is partial by design, and the totality was invented in the sentence describing it
+
+**THE CLAIM WAS THE DEFECT, NOT THE COVERAGE.** R243 §3 recorded the two
+integrity mechanisms as *"disjoint and jointly cover"*. Measured over 956 tracked
+files: **826** manifest-attested, **2** frozen-compared, **0 in both** — disjoint
+holds — and **132 in neither**. The false half reached
+`tools/manifest_verify.py`'s own docstring before the measurement caught it,
+which is the docstring-diverges-from-behaviour class (D-V30A-43) arriving as a
+totality claim nobody had checked.
+
+**THE REPAIR IS ACCURACY, NOT COVERAGE.** The two mechanisms are partial by
+design and never claimed otherwise: the manifest exists so the evidence tree
+cannot change under a reader without saying so; the frozen comparison exists so
+the certifying instrument cannot drift from the tagged one. Building coverage
+until the sentence became true would have been inventing a scheme to match a
+claim. `evidence/session/INTEGRITY_POSTURE.md` records each mechanism's actual
+population and purpose, and states that neither is repository-wide.
+
+**THE REMAINDER, AS A FACT.** Of the 132: 88 `tests/`, 16 `src/`, 9 `tools/`,
+and five root documents including `DEVIATIONS.md` and `DESIGN.md`. What covers
+them is git history, and **Phase 2 history is unsigned** — `git log
+--format=%G?` reports `N` on every commit. The signed `prereg-v30a` tag attests
+`b5a05c0`, the registration, not the current tree. So for those files git's
+content addressing detects corruption and does not attest authorship. **Nothing
+about that is new; it was simply never written down.** A development phase whose
+registration is signed and whose evidence tree is hashed is a coherent posture.
+
+**THE SWEEP CONFIRMED THE FALSE CLAIM IS GONE.** Every surviving occurrence of
+the phrasing across tracked `.py` and `.md` is a different and true totality —
+the frame roles, the config-key complement, the CLI command set, the lesson
+families — plus the corrected sentence itself. None is the integrity claim.
+
+**BYTE-FROZEN AND VERDICT-FROZEN ARE DIFFERENT, and the conflation is what made
+the instruction destructive-if-literal.** `PREREG.md` and
+`protocol/runtime_reference.py` are byte-identical to the tag.
+`tools/check_registration.py` is verdict-frozen with ruled differences: **141 431
+bytes at the tag against 180 767 before R242**. Reverting it to the tag's bytes
+would have removed both ruled repairs and every round since. Recorded in
+`INTEGRITY_POSTURE.md` so the two senses are not conflated again.
+
+**THE OPEN QUESTION IS RECORDED WITH ITS COST AND NOT ACTED ON.** Signing the
+Phase 2 commits is `PREREG.md` §10-reserved and unavailable to the executing
+layer. Extending the manifest to `src/` and `tools/` would multiply the
+hand-restatement failure this round and the last both produced. A regeneration
+tool would make a forgotten hash impossible rather than caught, and stays a
+candidate.
+
+**TB-27 IS BANKED, with both instances.** *A mechanism fires on the person who
+built it, in the round they built it.* R242: the totality test's two
+registrations were keyed on function names typed from memory, and both halves
+fired on the first run — the reason check on the real reads, the stray check on
+the invented names. R243: `manifest_verify.py` was written to catch a stale
+manifest hash, and documenting the new certification meant editing an attested
+file, so the verifier caught its author's own edit on the next run. **What the
+two establish is the weaker sufficient claim** — it happens, it happened twice
+running, and neither time would a checklist have fired. **What they do not
+establish is a rate**: how often a mechanism sits green through its author's
+mistake is unmeasured, and that is the number that would settle whether
+mechanisms are generally worth their cost.
+
+**F6 GAINED ITS SECOND MEMBER BY THE ONLY ROUTE ITS OWN TEXT ALLOWS.** That
+family records a failure that suppresses its own recording, and says *"the
+counter has to be external or mechanical."* TB-27 is that counter firing. The
+addendum says plainly that this does not repair F6's recorded gap — TB-27 is
+evidence the remedy works, not another instance of the failure — so the family
+now holds one failure and one piece of remedy-evidence, which is odd and is left
+odd rather than tidied by forcing a taxonomy.
+
+**A STALE FIGURE FOUND IN PASSING.** The classification's rule line read *"All
+**26** entries … the families jointly cover all twenty-one"* — internally
+inconsistent, a denominator left behind by five earlier entries. Carried to 27
+along with all six per-family denominators.
+
+**AND THE TWO CHECKS DEMONSTRATED THEIR COMPLEMENTARITY ON THIS ROUND'S OWN
+EDITS.** Banking TB-27 changed an attested file and adding
+`INTEGRITY_POSTURE.md` created an unattested one. The sibling reported the first
+and said nothing about the second; the gate's coverage check reported the second
+and said nothing about the first. Neither could have caught both, which is why
+certification is both.
+
+**R163 §1's exemption test.** *Would this change have been made if the triggering
+question had not been asked?* **For the corrected record, yes** — a coverage
+story that sounds total and is not is the failure this project names most often,
+and it was sitting in a shipped docstring. **For TB-27, no**: R244 §2 asked for
+it, and a lesson about mechanisms catching authors is one the author does not
+reliably write.
