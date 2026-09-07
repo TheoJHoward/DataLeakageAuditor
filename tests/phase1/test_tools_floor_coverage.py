@@ -41,6 +41,7 @@ for p in (str(ROOT), str(ROOT / "src"), str(TOOLS)):
 COVERED = {
     "append_disclosure": "tests/phase1/test_append_disclosure.py",
     "check_registration": "tests/phase1/test_work_root_resolution.py",
+    "clean_tree": "tests/phase1/test_clean_tree.py",
     "default_sites": "tests/phase1/test_default_sites.py",
     "floor_check": "tests/phase1/test_floor_check.py",
     "manifest_verify": "tests/phase1/test_manifest_hashes.py",

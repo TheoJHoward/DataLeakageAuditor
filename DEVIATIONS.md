@@ -3915,3 +3915,81 @@ question had not been asked?* **No, and that is the finding.** The assertion was
 green, had been green for every round it existed, and reported the reassuring
 answer. It took R245 §2's demand to *prove* a property — rather than observe it
 holding — for the absence to become visible.
+
+## D-V30A-87 — evidence measured at one tree state and reported of another, and the gate figures were quoted under an invocation that zeroed a check
+
+**THE SHAPE, SAID ONCE.** *A verification is a claim about a specific tree state.
+Any edit after it, in the same round, voids it.* Half this session's defects are
+that one sentence, each found separately before the shape was named: the manifest
+hash attested and then the file edited; a suite count measured before three files
+joined its commit; the guard owed after a probe-path file moved; the interpreter
+pin recorded after the figures it framed; and R245's count repair verified and
+then broken by the paragraph documenting it. **Evidence measured at state A,
+artifact shipped at state B.**
+
+**THE MECHANISM, ESTABLISHED THEN ADDED.** Measured first: the gate has no
+dirty-tree check of any kind. So `tools/clean_tree.py` is a **sibling** — R243's
+rule, since `check_registration.py` is verdict-frozen and an addition does not
+need a slot when it can stand beside. It runs FIRST in certification, because
+every instrument after it measures a tree and which tree is the whole question.
+The rule is in `OPERATING_RULES.md` §2; the certification block carries the new
+step. It reports rather than assumes: a directory git cannot answer for is
+`TreeUnreadable`, not clean.
+
+**AND THE ROUND'S OWN GATE FIGURES WERE WRONG ALL SESSION.** R247 §2 asked which
+branch `round_reconciliation` was in. Measured, the same stage under two
+commands:
+
+| invocation | `round_reconciliation` |
+|---|---|
+| what was actually run for many rounds | **PASS** — *"COVERAGE IS ZERO: LEAKAUDIT_WORK_ROOT is unset … This is not a pass."* |
+| the documented one, with the variable | **FAIL** — 10 723 ephemeral reconciled, 622 in the level, **28 appeared since the baseline**, each a HALT |
+
+**The instrument was never the problem.** It is not can't-fail: given its
+population it fails. The invocation was the problem, and the invocation is the
+population — R226's rule, and R227's, both turned on the operator. Every "23 of
+24 PASS" reported this session was produced by a command that silently emptied
+one check.
+
+**THE DISPOSITION.** All 28 were this round's and prior rounds' own scratch —
+scripts, disclosure bodies, commit messages, CSV fixtures, every one authored and
+read here — so they were accepted into the baseline, which is one of the three
+dispositions the instrument itself names. Under the documented invocation the
+check now reads: **10 723 ephemeral, 622 level, 0 appeared, 0 gone.** A populated
+pass rather than an empty one.
+
+**A SECOND POPULATION ERROR, STACKED, and it is not fixed.** The declared work
+root is the session's `scratchpad/` directory. **49 files of this session's
+scratch live one level above it** — every disclosure body from `d77.md` onward
+and every commit message from `msg2.txt` onward — so even run correctly the
+reconciliation's population excludes them. The reconciliation is over where the
+work was declared to happen, not where it happened. Recorded rather than
+repaired: widening the declared root or relocating the scratch is a decision
+about what a work root means.
+
+**THE MUTATION TESTS NO LONGER WRITE THE FILE THEY TEST.** R247 §3. The first
+version wrote mutated text to the real `TRACKB_LESSONS.md` and restored it in a
+`finally` — an irreversible-act hazard dressed as a tradeoff, since no `finally`
+survives a kill. It was framed as the price of exercising the real path; it was
+not a price. The real path is the assertion LOGIC, and that takes content. Every
+assertion in that file is now `check(text)` with a thin test supplying the real
+bytes, so mutation happens in memory and nothing on disk is touched.
+
+**THE MECHANISM CAUGHT ITS AUTHOR AGAIN, in the round adding it.** Editing
+`ROUND_STATE.md` to document the new certification step made that attested file's
+hash stale, and the manifest tests went red before the commit. Third consecutive
+round (TB-27 records the first two).
+
+**THE COUNT/COVERAGE SWEEP IS FLAGGED, NOT DONE.** Four can't-fail assertions
+have been found this session, each by a different accident. The practice — every
+count, totality or coverage assertion ships with a mutation shown to redden it —
+is recorded and applied to one file's neighbours. **Enumerating every such
+assertion in the tracked tree is a round of its own**, with the `git ls-files`
+floor, and cramming it into this tail would produce the half-sweep this project
+exists to notice.
+
+**R163 §1's exemption test.** *Would this change have been made if the triggering
+question had not been asked?* **Yes for the clean-tree sibling** — the shape had
+already produced five distinct defects. **No for the invocation**: the gate was
+reporting a pass, the pass was reported onward, and it took R247 §2 asking which
+branch to reveal that the command being run was not the command recorded.

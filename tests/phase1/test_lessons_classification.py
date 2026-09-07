@@ -53,8 +53,11 @@ def test_the_classification_section_exists_at_all():
         "this file checks does not exist" % LESSONS.name)
 
 
-def test_every_lesson_is_classified():
-    text = _text()
+# EVERY ASSERTION TAKES CONTENT, AND THE TESTS ARE THIN READERS. R247 §3.
+# The logic never opens a path, so a mutation test hands it altered text and
+# nothing on disk is touched.
+
+def check_every_lesson_is_classified(text: str) -> None:
     entries = _entries(text)
     assert entries, "no TB entries found; the heading form must have changed"
     classified = set().union(*_families(text).values())
@@ -65,8 +68,7 @@ def test_every_lesson_is_classified():
         % sorted(unassigned))
 
 
-def test_no_family_names_a_lesson_that_does_not_exist():
-    text = _text()
+def check_no_family_names_a_lesson_that_does_not_exist(text: str) -> None:
     phantom = set().union(*_families(text).values()) - _entries(text)
     assert not phantom, (
         "these are named in a membership list and are not entries in the file, "
@@ -74,9 +76,9 @@ def test_no_family_names_a_lesson_that_does_not_exist():
         % sorted(phantom))
 
 
-def test_the_families_are_DISJOINT():
+def check_the_families_are_DISJOINT(text: str) -> None:
     """An entry in two families is a classification nobody has made."""
-    fams = _families(_text())
+    fams = _families(text)
     seen: dict[str, str] = {}
     doubled = []
     for name, members in fams.items():
@@ -85,6 +87,18 @@ def test_the_families_are_DISJOINT():
                 doubled.append("%s is in both %r and %r" % (tb, seen[tb], name))
             seen[tb] = name
     assert not doubled, doubled
+
+
+def test_every_lesson_is_classified():
+    check_every_lesson_is_classified(_text())
+
+
+def test_no_family_names_a_lesson_that_does_not_exist():
+    check_no_family_names_a_lesson_that_does_not_exist(_text())
+
+
+def test_the_families_are_DISJOINT():
+    check_the_families_are_DISJOINT(_text())
 
 
 #: The one form the total may be declared in. Parsed, not searched: a search
@@ -112,16 +126,17 @@ def declared_total(section: str) -> int:
     return int(found[0])
 
 
-def test_every_family_names_members_and_the_section_states_the_TOTAL():
-    """A membership list without its denominator is a figure without its frame.
+def check_the_section_states_the_TOTAL(text: str) -> None:
+    """The declared total agrees with the enumeration.
 
-    The denominator is asserted at the SECTION level rather than per family: the
-    families write their counts in prose ("Five of twenty-one"), and a test that
-    demanded digits in each line would be a checker dictating the writing rather
-    than checking the claim -- the shape R218 ruled against when a docstring was
-    reworded to satisfy a parser.
+    THE DENOMINATOR IS ASSERTED ONCE, AT THE SECTION LEVEL, and R245 removed the
+    per-family ones entirely rather than correcting them. They were prose
+    nothing checked -- and a test demanding digits in each membership line would
+    be a checker dictating the writing rather than checking the claim, which is
+    the shape R218 ruled against when a docstring was reworded to satisfy a
+    parser. Each family now shows its members and no denominator: the numerator
+    is the list, the denominator is stated once, and there is nothing to drift.
     """
-    text = _text()
     total = len(_entries(text))
     section = text.split(MARKER)[-1]
     for name, members in _families(text).items():
@@ -129,6 +144,10 @@ def test_every_family_names_members_and_the_section_states_the_TOTAL():
     assert declared_total(section) == total, (
         "the classification declares %d entries and the file holds %d"
         % (declared_total(section), total))
+
+
+def test_every_family_names_members_and_the_section_states_the_TOTAL():
+    check_the_section_states_the_TOTAL(_text())
 
 
 # ---------------------------------------------------------------------------
@@ -147,22 +166,25 @@ def test_every_family_names_members_and_the_section_states_the_TOTAL():
 # the first. A file with one can't-fail assertion earns a check of its
 # neighbours (TB-25's sweep-the-siblings, pointed at assertions).
 
-def _mutate(fn, *args):
-    """Run one assertion against a mutated file. True = it went RED."""
-    original = LESSONS.read_text(encoding="utf-8")
+def _mutate(fn, check):
+    """Run one CONTENT-IN assertion against mutated content. True = it went RED.
+
+    **NOTHING IS WRITTEN.** R247 §3. The first version wrote the mutated text to
+    the real `TRACKB_LESSONS.md` and restored it in a `finally`, which is an
+    irreversible-act hazard dressed as a tradeoff: a kill between the write and
+    the restore leaves the repository's lessons file holding a deliberately
+    corrupted count, and no `finally` survives a SIGKILL.
+
+    It was framed as the price of exercising the real path. It is not a price:
+    the real path is the ASSERTION LOGIC, and that takes content. The real
+    file's bytes are read once, mutated in memory, and handed in. Real content,
+    real logic, no write.
+    """
     try:
-        LESSONS.write_bytes(fn(original).encode("utf-8"))
-        try:
-            for a in args:
-                a()
-            return False
-        except AssertionError:
-            return True
-    finally:
-        LESSONS.write_bytes(original.encode("utf-8"))
-
-
-TOTAL_ASSERTION = test_every_family_names_members_and_the_section_states_the_TOTAL
+        check(fn(_text()))
+        return False
+    except AssertionError:
+        return True
 
 
 def test_the_total_assertion_REDDENS_on_a_wrong_total_that_matches_an_ID():
@@ -171,7 +193,7 @@ def test_the_total_assertion_REDDENS_on_a_wrong_total_that_matches_an_ID():
     is the case both earlier repairs passed."""
     assert _mutate(lambda t: t.replace("All **27** entries",
                                        "All **25** entries", 1),
-                   TOTAL_ASSERTION), (
+                   check_the_section_states_the_TOTAL), (
         "a wrong stated total coinciding with an entry id did NOT redden the "
         "assertion, which is the exact vacuity R246 was opened on")
 
@@ -184,13 +206,13 @@ def test_the_total_assertion_REDDENS_on_a_wrong_total_with_prose_digits():
         return t.replace("**The rule for membership.**",
                          "**The rule for membership.** (27 rounds sit behind "
                          "this list.)", 1)
-    assert _mutate(mut, TOTAL_ASSERTION)
+    assert _mutate(mut, check_the_section_states_the_TOTAL)
 
 
 def test_the_total_assertion_REDDENS_when_the_declaration_is_MISSING():
     assert _mutate(lambda t: t.replace("All **27** entries",
                                        "All ** ** entries", 1),
-                   TOTAL_ASSERTION), (
+                   check_the_section_states_the_TOTAL), (
         "with no declaration at all the assertion stayed green, so it is not "
         "checking that a total is stated")
 
@@ -201,13 +223,13 @@ def test_the_total_assertion_REDDENS_on_a_DUPLICATED_declaration():
     assert _mutate(lambda t: t.replace(
         "**The rule for membership.**",
         "**The rule for membership.** (Restated: All **27** entries.)", 1),
-        TOTAL_ASSERTION)
+        check_the_section_states_the_TOTAL)
 
 
 def test_the_total_assertion_PASSES_on_the_real_file():
     """The negative control. An assertion that reddened on everything would
     pass every mutation above and be useless."""
-    TOTAL_ASSERTION()
+    check_the_section_states_the_TOTAL(_text())
 
 
 def test_the_SIBLING_assertions_redden_too():
@@ -217,12 +239,12 @@ def test_the_SIBLING_assertions_redden_too():
         lambda t: t.replace("---\n\n# THE CLASSIFICATION",
                             "## TB-91 — an unclassified entry\n\nbody.\n\n"
                             "---\n\n# THE CLASSIFICATION", 1),
-        test_every_lesson_is_classified), "an unclassified entry passed"
+        check_every_lesson_is_classified), "an unclassified entry passed"
     assert _mutate(
         lambda t: t.replace("**Members: TB-11, TB-27.**",
                             "**Members: TB-11, TB-27, TB-92.**", 1),
-        test_no_family_names_a_lesson_that_does_not_exist), "a phantom passed"
+        check_no_family_names_a_lesson_that_does_not_exist), "a phantom passed"
     assert _mutate(
         lambda t: t.replace("**Members: TB-11, TB-27.**",
                             "**Members: TB-11, TB-27, TB-02.**", 1),
-        test_the_families_are_DISJOINT), "a doubled entry passed"
+        check_the_families_are_DISJOINT), "a doubled entry passed"

@@ -56,9 +56,23 @@ carried inline on the command rather than exported once. Second branch of R221
 DECISION 3. Recorded here so it is one place rather than remembered:
 
 ```
+py -3.12 tools/clean_tree.py
 LEAKAUDIT_WORK_ROOT="<this session's scratchpad>" py -3.12 tools/check_registration.py --stage prereg
 py -3.12 tools/manifest_verify.py
 ```
+
+**`clean_tree.py` RUNS FIRST, and the order is the point.** R247 §1. Every
+instrument after it measures a tree, and WHICH tree it measured is the whole
+question. A verification is a claim about a specific tree state; an edit after
+it, in the same round, voids it. Certification against a dirty tree attests a
+mixture of committed and uncommitted work.
+
+**AND THE WORK-ROOT VARIABLE IS NOT OPTIONAL.** Measured at R247: running the
+gate without it, `round_reconciliation` reports *COVERAGE IS ZERO … this is not
+a pass* and the stage still reads as one check short. Running it with the
+variable, the same check FAILS with a populated finding. The instrument was
+never the problem; the invocation was, and it had been omitted for many rounds
+of reported gate figures.
 
 **CERTIFICATION IS BOTH COMMANDS, and it passes only if BOTH pass.** R243 §1.
 The gate verifies that every file in the evidence tree HAS a manifest line and
