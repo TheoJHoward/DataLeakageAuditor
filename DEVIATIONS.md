@@ -3780,3 +3780,69 @@ story that sounds total and is not is the failure this project names most often,
 and it was sitting in a shipped docstring. **For TB-27, no**: R244 §2 asked for
 it, and a lesson about mechanisms catching authors is one the author does not
 reliably write.
+
+## D-V30A-85 — the check that owned the lesson count was satisfied by an entry's own label
+
+**THE DISCRIMINATING READ FIRST, because the two branches are different work.**
+`TRACKB_LESSONS.md` carried *"All **26** entries"* on one line and *"jointly
+cover all twenty-one"* on the next. Either the families covered 21 of 26 — five
+entries unclassified, a real gap — or *"twenty-one"* was stale prose.
+
+**MEASURED at `4557921`, before any edit of mine touched that file: 26 entries,
+26 classified, 0 unclassified**, families 5+6+4+5+5+1. So it was stale prose,
+and the coverage half of the classification is genuinely test-owned:
+
+    def test_every_lesson_is_classified():
+        entries = _entries(text)                      # every entry, from the file
+        classified = set().union(*_families(text).values())
+        assert not (entries - classified)
+
+That has been enforcing full coverage dynamically all along. The stale word was
+five entries out of date and never hid anything.
+
+**AND THEN THE OTHER HALF OF THE SAME TEST TURNED OUT NOT TO ENFORCE WHAT IT
+SAID.**
+
+    total = len(_entries(text))
+    assert re.search(r"\b%d\b" % total, section)
+
+`-` is a word boundary, so `\b27\b` matches the digits inside **`TB-27`**. That
+id occurs three times in the classification section. **Deleting *"All **27**
+entries"* outright left the test green** — the check that owns the count was
+being satisfied by an entry's own label, and had been for as long as the entry
+count matched an existing id.
+
+**Entry ids are stripped before the search now**, so a match is a number
+somebody wrote about the classification rather than a label inside it. Verified
+both directions: with the stated total removed the repaired assertion **fails**
+and the old one **passed**.
+
+**THE COUNT FIX IS REMOVAL, NOT CORRECTION.** R244 hand-corrected seven figures
+(26→27, twenty-one→twenty-seven, and five per-family denominators), which
+re-does the hand-typing and breaks again on the next entry. Six of the seven
+were prose denominators nothing checked — the test declines to check them on
+purpose, because a checker demanding digits per line would dictate the writing
+rather than check the claim, which is R218's shape. **They are removed.** Each
+family shows its members and no denominator: the numerator is the list, the
+denominator is stated once, and one hand-typed number remains where the test can
+fail on it.
+
+**I ASSERTED A PROPERTY OF THE TEST AND THEN MEASURED IT.** The sentence written
+into the file with the removal read *"the number cannot go stale quietly"* —
+which was false when written and true only after the id-stripping repair landed
+in the same round. The file now records both the claim and the interval in which
+it did not hold. Establishing after asserting is the error this session names
+most often, and it is worth recording that it happened in the paragraph
+explaining why hand-typed figures go stale.
+
+**WHY THIS IS THE SAME CLASS TWICE OVER.** A stale figure nothing checks, and a
+check that passes for the wrong reason, are the two halves of the same failure:
+a number that looks attested and is not. The first was visible to a reader who
+compared two adjacent lines. The second was visible to nobody, because the test
+was green.
+
+**R163 §1's exemption test.** *Would this change have been made if the triggering
+question had not been asked?* **No for the discriminating read** — R245 §1 asked
+it. **Yes for the repair**: an assertion satisfiable by the thing it is counting
+cannot fail on the condition it exists for, and that is a defect wherever it is
+found.

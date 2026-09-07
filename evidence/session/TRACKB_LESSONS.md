@@ -1239,9 +1239,40 @@ separated TB-19 from TB-12, which are the same lesson one layer apart. Grouping 
 shared vocabulary in a corpus with one vocabulary is grouping by nothing.
 
 **The rule for membership.** All **27** entries are in **exactly
-one** family, and the families **jointly cover** all twenty-seven — the same totality
-shape the probe path set and the config-key complement use, and for the same
-reason: a classification with an unassigned entry has not classified anything.
+one** family, and the families **jointly cover** every one of them — the same
+totality shape the probe path set and the config-key complement use, and for the
+same reason: a classification with an unassigned entry has not classified
+anything.
+
+**THAT NUMBER IS THE ONLY ONE WRITTEN BY HAND HERE, AND IT IS THE ONE THE TEST
+OWNS — SINCE R245, AND NOT BEFORE.**
+`test_every_family_names_members_and_the_section_states_the_TOTAL` computes
+`len(_entries(text))` from the file and requires those digits in this section,
+so it fails the moment an entry is added without updating it.
+
+**IT DID NOT DO THAT UNTIL R245, AND THE REASON IS WORTH KEEPING.** The
+assertion was `re.search(r"\b27\b", section)`, and `-` is a word boundary — so
+the digits inside **`TB-27`** satisfied it. `TB-27` occurs three times in this
+section, and deleting *"All **27** entries"* outright left the test **green**.
+The check that owned the count was being satisfied by an entry's own label.
+
+**Found by R245 asking whether the count was test-owned**, which is the question
+this file's stale *"twenty-one"* raised. The answer was half yes: coverage was
+genuinely dynamic — `test_every_lesson_is_classified` counts every entry from
+the file and has always enforced that each is in a family — while the *stated
+total* was a believed silence. Entry ids are stripped before the search now, so
+a match is a number somebody wrote about the classification rather than a label
+inside it, and removing the stated total fails the test.
+
+**THE OTHER SIX WERE REMOVED RATHER THAN CORRECTED (R245 §1).** Each family used
+to end *"Five of twenty-six"*, and nothing checked those: the test deliberately
+declines to, because a checker demanding digits in each line would be dictating
+the writing rather than checking the claim — R218's shape. Unchecked, they went
+stale, and this file carried **"All 26 entries"** beside **"jointly cover all
+twenty-one"** for five entries' worth of rounds. Correcting six by hand re-does
+the hand-typing and the next entry breaks them again, so each family now shows
+its members and no denominator: **the numerator is the list, the denominator is
+stated once above, and there is nothing left to drift.**
 Where an entry genuinely touches a second family it is cross-referenced, and the
 cross-reference is not a second membership.
 
@@ -1252,7 +1283,7 @@ cross-reference is not a second membership.
 *Declared, cited, documented — and connected to no consumer. The class the config
 complement was built to close, recurring at four different levels.*
 
-**Members: TB-02, TB-14, TB-20, TB-21, TB-25.** Five of twenty-seven.
+**Members: TB-02, TB-14, TB-20, TB-21, TB-25.**
 
 - **TB-02** — an invariant asserted and cited, enforced by nothing.
 - **TB-14** — an extraction that replaced nothing: a third implementation wearing
@@ -1278,7 +1309,7 @@ name reported it absent. That is a claim-side failure, so it sits in F2.
 *The absence claim and the bare number. The two halves of one discipline: say what
 you looked at, and say what the figure rests on.*
 
-**Members: TB-04, TB-05, TB-09, TB-16, TB-17, TB-23.** Six of twenty-seven.
+**Members: TB-04, TB-05, TB-09, TB-16, TB-17, TB-23.**
 
 - **TB-04** — an absence claim about a registered document needs a population too.
 - **TB-05** — a ceiling is a property of the frame, not of the tool.
@@ -1302,7 +1333,7 @@ which fails during an investigation.
 
 *The positive fires, and the firing establishes less than it appears to.*
 
-**Members: TB-12, TB-15, TB-19, TB-24.** Four of twenty-seven.
+**Members: TB-12, TB-15, TB-19, TB-24.**
 
 - **TB-12** — a known positive tests the premise, not only the code.
 - **TB-15** — the wrong prediction is the one that pays; a correct one would have
@@ -1331,7 +1362,7 @@ distinguishes nothing, and its value was entirely in being falsifiable.
 *It is internally consistent, it is signed, and it does not survive contact with
 execution.*
 
-**Members: TB-03, TB-07, TB-08, TB-10, TB-13.** Five of twenty-seven.
+**Members: TB-03, TB-07, TB-08, TB-10, TB-13.**
 
 - **TB-03** — a registration can be internally consistent and still unscoreable.
 - **TB-07** — signed, consistent, and with an acceptance gate that cannot be run.
@@ -1345,7 +1376,7 @@ execution.*
 
 *The collateral, and it lands on whatever the change was holding constant.*
 
-**Members: TB-01, TB-06, TB-18, TB-22, TB-26.** Five of twenty-seven.
+**Members: TB-01, TB-06, TB-18, TB-22, TB-26.**
 
 - **TB-01** — a merge can resurrect a defect that was deliberately removed.
 - **TB-06** — backticks in a commit message, and a heredoc in a file edit: content
@@ -1364,8 +1395,8 @@ and nobody read it that way until there were two more.
 
 ## F6 — The reading is biased by what it would cost
 
-**Members: TB-11, TB-27.** Two of twenty-seven — and HOW THE SECOND ONE
-ARRIVED is the finding.
+**Members: TB-11, TB-27.** — and HOW THE SECOND ONE ARRIVED is the
+finding.
 
 - **TB-11** — claims that could be unfavourable were verified; claims that flatter
   the process were accepted.

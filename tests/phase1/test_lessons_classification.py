@@ -101,7 +101,23 @@ def test_every_family_names_members_and_the_section_states_the_TOTAL():
     section = text.split(MARKER)[-1]
     for name, members in _families(text).items():
         assert members, "%s names no members" % name
-    assert re.search(r"\b%d\b" % total, section), (
+
+    # THE IDS ARE STRIPPED BEFORE THE SEARCH, AND THAT IS THE WHOLE ASSERTION.
+    #
+    # `re.search(r"\b27\b", section)` matches the digits inside `TB-27`, because
+    # `-` is a word boundary. So this assertion was satisfied by an ENTRY ID
+    # rather than by any stated total, and it was: `TB-27` occurs three times in
+    # the section, and deleting "All **27** entries" outright left the test
+    # green. It had been passing for the wrong reason -- a believed silence in
+    # the test that owns the count, found by R245 asking whether the count was
+    # test-owned.
+    #
+    # Stripping `TB-nn` and `Fn` leaves only prose, so a match is a number
+    # somebody wrote about the classification rather than a label inside it.
+    prose = re.sub(r"\bTB-\d\d\b", "", section)
+    prose = re.sub(r"\bF\d\b", "", prose)
+    assert re.search(r"\b%d\b" % total, prose), (
         "the classification does not state, in digits, how many entries it is "
         "classifying, so no reader can tell whether it covers all of them. The "
-        "file holds %d." % total)
+        "file holds %d. (Entry ids are stripped before this search: the digits "
+        "inside `TB-%d` are not a statement of the total.)" % (total, total))
