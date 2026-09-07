@@ -19,11 +19,11 @@
   "candidate_artifact": 16,
   "candidate_fixed": 2,
   "candidate_legitimate": 1,
-  "out_of_scope": 13,
+  "out_of_scope": 17,
   "probed_healthy": 5,
   "unprobed_reachable": 51,
-  "functions_total": 88,
-  "assertions_total": 165
+  "functions_total": 92,
+  "assertions_total": 173
  },
  "functions": [
   {
@@ -641,6 +641,34 @@
    "assertions": 2,
    "status": "out_of_scope",
    "reason": "not a coverage assertion: a single-artifact content or ordering check. The enumerator over-included it because the function calls a repository read. It leaves the population."
+  },
+  {
+   "file": "tests/phase1/test_slicing.py",
+   "function": "test_the_CLI_availability_path_JOINS_the_library_entry",
+   "assertions": 4,
+   "status": "out_of_scope",
+   "reason": "R255. Substring presence and absence in one file's text -- cli.py -- with no derived collection. A content check, not a coverage claim: it cannot be vacuous, because an empty file fails the `in` assertions rather than passing them. `makes_a_coverage_claim` returns False."
+  },
+  {
+   "file": "tests/phase1/test_slicing.py",
+   "function": "test_the_CLI_second_cohort_selection_is_SLICED_TOO",
+   "assertions": 1,
+   "status": "out_of_scope",
+   "reason": "R255. One substring check against one file's text. Same reason as its neighbour above; `makes_a_coverage_claim` returns False."
+  },
+  {
+   "file": "tests/phase1/test_slicing.py",
+   "function": "test_the_MODEL_FREE_path_refuses_the_flags_rather_than_ignoring_them",
+   "assertions": 2,
+   "status": "out_of_scope",
+   "reason": "R255. Asserts an exit code and a substring of one subprocess's stderr. One artifact's content, no derived collection; `makes_a_coverage_claim` returns False."
+  },
+  {
+   "file": "tests/phase1/test_slicing.py",
+   "function": "test_every_entry_reaching_the_probe_is_ENUMERATED_here",
+   "assertions": 1,
+   "status": "out_of_scope",
+   "reason": "R255, AND THIS ONE IS OUT OF SCOPE FOR A NARROWER REASON THAN ITS NEIGHBOURS, RECORDED BECAUSE THE STATUS ALONE WOULD MISLEAD. It DOES assert over a collection it derived -- `found`, built by walking src/leakaudit -- so on the docstring's first clause it is a coverage claim. It is out of scope on the SECOND clause, which is what this population exists for: the assertion is `found == {one literal}`, and an emptied population makes it FAIL rather than pass. Equality is not vacuity-prone. It was written as `found <= known` and fixed to equality in the same round, after measuring that `found` is exactly one file. THE GAP THAT LEAVES: `makes_a_coverage_claim` returns False for BOTH forms, so the vacuity-prone `<=` version would also have been filed here. See DEFERRED_ITEMS section 255.2."
   }
  ]
 }

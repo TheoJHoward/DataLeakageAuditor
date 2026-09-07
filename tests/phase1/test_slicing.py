@@ -404,7 +404,6 @@ def test_every_entry_reaching_the_probe_is_ENUMERATED_here():
     this session kept finding: an absence claim with no population.
     """
     import re
-    known = {"src/leakaudit/cli.py", "src/leakaudit/__init__.py"}
     found = set()
     for path in (ROOT / "src" / "leakaudit").rglob("*.py"):
         if path.name == "availability.py":
@@ -415,4 +414,12 @@ def test_every_entry_reaching_the_probe_is_ENUMERATED_here():
         for line in text.splitlines():
             if re.search(r"run_probe_a\s*\(", line) and "`" not in line:
                 found.add(path.relative_to(ROOT).as_posix())
-    assert found <= known, "an unenumerated caller of run_probe_a: %s" % (found - known)
+    # EQUALITY, NOT SUBSET, AND THE DIFFERENCE IS THE WHOLE VALUE. Written as
+    # `found <= known` this passed on the EMPTY SET -- a regex that stopped
+    # matching, a moved package, a renamed function would all have produced a
+    # green totality claim over nothing. Measured before it was tightened:
+    # `found` is exactly one file. `__init__.py` re-EXPORTS `run_probe_a` and
+    # never calls it, so it is not a call site; that the export resolves to
+    # this function is pinned by `test_the_LIBRARY_entry_carries_the_refusal`.
+    assert found == {"src/leakaudit/cli.py"}, (
+        "the set of files CALLING run_probe_a changed: %s" % sorted(found))

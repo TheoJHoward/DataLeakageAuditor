@@ -15,6 +15,44 @@ down, and nothing here gates the `prereg-v30a` tag.
 
 ---
 
+## §255.2 — `makes_a_coverage_claim` does not see `assert <derived name> <op> <literal collection>` (found R255)
+
+**A concrete instance of the validation R254 §3 banked, found by walking into
+it rather than by looking for it.** R255 added a test asserting the set of files
+calling `run_probe_a`. It was written as:
+
+    assert found <= known          # passes over the EMPTY set
+
+which is vacuity-prone in exactly the way this population exists to track — a
+regex that stops matching, a renamed function, a moved package all produce a
+green totality claim over nothing. **`makes_a_coverage_claim` returns False for
+it.** The criterion detects `assert not <comprehension | set difference |
+name>`, `len()`, `set()`/`sorted()` calls, comprehensions inside the assertion,
+and asserts inside a `for`. It does not detect a bare comparison between a name
+bound to a derived collection and a literal, in any operator.
+
+**The instance was fixed** — the assertion is now `found == {one literal}`,
+which fails on empty, measured first to confirm the literal is right. **The gap
+is not fixed** and the entry is filed `out_of_scope` with the narrower reason
+written into its cell, because the status alone would read as "not a coverage
+claim" when the truth is "a coverage claim that happens not to be vacuity-prone
+in this form".
+
+**Why this matters more than one cell.** R253 moved 6 of 19 `out_of_scope`
+entries back into the population after auditing them, and the criterion that
+did the auditing is the one with this gap. Any earlier entry filed on a
+`derived <op> literal` comparison is still misfiled and would not have been
+caught by that audit.
+
+**What would settle it:** extend the criterion to flag `ast.Compare` where
+either side is a `Name` assigned from a comprehension, loop-append, or `set()`
+in the same function; then re-audit the whole `out_of_scope` bucket, now **17**,
+against it. That is sweep work and the sweep is banked.
+
+*Raised R255, from the round's own test. Not worked.*
+
+---
+
 ## §255.1 — `run_stage`'s verdict depends on the SPELLING of its root (found R255)
 
 **Measured, not suspected.** The same tree, the same stage, two invocations:
