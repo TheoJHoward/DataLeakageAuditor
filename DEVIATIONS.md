@@ -4451,3 +4451,70 @@ was enumerated, and it was not. **The `out_of_scope` audit, no** — R253 §3 as
 for it, though the flag that prompted it was mine. **Both would have been found
 eventually by the divergence biting**, which is the weaker route this project
 prefers not to rely on.
+
+## D-V30A-94 — the feature backlog, enumerated from the tree after two recalled items proved wrong
+
+**THE ENUMERATION WAS THE ROUND, AND THE REASON IS MEASURED.** Two features
+offered from recollection did not survive contact with the repository: the
+shuffle establish has been retired since R215, and **`D2` does not occur in
+`DESIGN.md` or `PREREG.md`**, so "the D2 subsystem" is not findable by that name.
+Two items, two wrong. Picking before enumerating would have meant building
+against a memory with a demonstrated error rate.
+
+**READ, NOT RECALLED:** `PARKING_LOT.md`, `DEFERRED_ITEMS.md`, `DESIGN.md`
+§§1–5, the sixteen shipped modules, the CLI's subcommand table, and one live run
+of the tool. Recorded at `evidence/session/FEATURE_BACKLOG.md`.
+
+**WHAT A STRANGER GETS TODAY, measured by running it rather than reading it.**
+`leakaudit run` prints the verdict, each finding with its perturbed second and
+the detector that produced it, the frames **NOT PROBED** with why their silence
+is `none` rather than `observed_silence`, and an **ABOUT THIS RUN** block
+carrying the comparator and corruption count. **`DESIGN.md` §39's publish-the-
+detection-domain requirement is substantially built** for the availability probe
+— which is worth stating because it was on the deferred list and is not
+outstanding.
+
+**THE BACKLOG, eight items with a status each:** the label probe L2a (§2.7, not
+started), L1.2's split-specific confirmation (§2.8, not started), `quick` mode as
+a CI default (§5.2, not started), auditing a slice with padding (§5.3, not
+started), domain profiles (§1.2, not started), `align_key`'s zone cases
+(partially built — the refusal ships, the cases document does not), the export
+shadowing repair (designed, parked), and the fourth-direction check (specified,
+instrument work).
+
+**ONE ITEM CARRIES A TENSION THAT HAS TO BE RESOLVED BEFORE IT IS BUILT.**
+Domain profiles supply default `column_roles`, `label_availability` and `ties`.
+R236 removed a default that turned a real leak into `observed_silence`, and **a
+profile that silently supplies `column_roles` is that defect with a nicer name.**
+Recorded against the item rather than discovered during it.
+
+**THE MANDATE'S OWN TEST**, answered from the enumeration: a stranger still
+cannot probe **label leakage**, cannot **audit a slice** without the padding rule
+that is specified and unbuilt, and cannot **run it in CI** without deciding for
+themselves what "complete" means.
+
+**THE SWEEP IS BANKED AND STAYS VISIBLE.** The 67 unverified assertions, the
+fixture-emptying probe, the two uncovered vacuity subclasses, and the validation
+the `out_of_scope` criterion is owed — *does its coverage/content call agree with
+the probe on the overlap where the probe can reach?* — are recorded as
+resume-time work and **not run**.
+
+**AND THE D2.1 RULE LOST ITS EXCEPTION.** Three lapses in three rounds, the third
+writing a one-word placeholder through a heredoc in the same command whose echo
+said the rule forbade it. The earlier form asked a judgment — *is this content,
+or short enough not to count?* — and the slip lived in that judgment. It now
+reads: **any file created or changed through a shell, ever** — no heredoc, no
+`echo`/`printf`/`cat` into a path, no `>` or `>>`, no `python -c` that writes,
+**no triviality case**. The tell is reaching for a shell redirect at all.
+
+**And the three loud failures are not evidence the hazard is mild.** D2.1's
+origin was **silent** corruption in a committed file; those were three draws that
+happened to break noisily. There is no mechanism to offer here and none is
+pretended — the tightened rule deletes the moment of judgment that failed, which
+is all a rule without a mechanism can do.
+
+**R163 §1's exemption test.** *Would this change have been made if the triggering
+question had not been asked?* **The backlog, no** — R254 §2(a) required
+enumerating before picking, and picking from memory is what the round was
+protecting against. **The rule tightening, yes**: a rule whose exception has
+produced three lapses in three rounds is a rule with a hole, whoever notices.

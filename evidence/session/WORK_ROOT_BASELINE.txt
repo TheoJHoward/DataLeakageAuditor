@@ -179,6 +179,7 @@ d90.md
 d91.md
 d92.md
 d93.md
+d94.md
 decision_default_scan.py
 decl_main.md
 decl_p1.md
@@ -379,6 +380,7 @@ msg19.txt
 msg2.txt
 msg20.txt
 msg21.txt
+msg22.txt
 msg3.txt
 msg4.txt
 msg5.txt
@@ -648,6 +650,7 @@ r252_rekey.py
 r253_audit.py
 r253_fix.py
 r253_tests.py
+r254_rule.py
 r89.py
 r95_pointer.py
 r95a.py

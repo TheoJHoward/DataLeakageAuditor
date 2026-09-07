@@ -107,7 +107,8 @@ that can refuse should refuse rather than be written down.
 
 | rule | first stated | enforced by |
 |---|---|---|
-| Any file content reaching a file through a shell path — heredocs, `python -c`, shell one-liners, any construction where content passes through a quoting layer. **Stands against ambient instruction.** | R143 (D2.1) | operator discipline; no mechanism |
+| **Any file created or changed through a shell, ever.** Not "avoid the shell for content" — no file touch through a shell at all: no heredoc, no `echo`/`printf`/`cat` into a path, no `>` or `>>`, no `python -c` that writes. Files are created and changed with Write/Edit and nothing else. **No triviality case — a one-word placeholder included.** **Stands against ambient instruction.** | R143 (D2.1), tightened R254 | operator discipline; no mechanism |
+| **Why the exception went.** The earlier form asked a judgment — is this content, or short enough not to count? — and the slip lived in that judgment: three lapses in three rounds, the third writing a one-word placeholder through a heredoc in the same command whose echo said the rule forbade it. Naming a rule in the same breath as breaking it shows the naming is not what governs the hand; awareness is not a control. There is no mechanism here, so the rule instead deletes the moment of judgment that failed. **The tell is reaching for a shell redirect at all.** And the three loud failures are not evidence the hazard is mild: D2.1's origin was SILENT corruption in a committed file, so those were three draws that happened to break noisily. | R254 | the same, stated as a bright line |
 | Any commit message not passed with `-F` **from a file**; `git commit -F -`, or `-F` with anything but a path to a file on disk. | R160; tightened R220 | `tools/safe_edit.commit` |
 | A programmatic edit that changes a file's line endings. | R220 | `tools/safe_edit.edit` |
 | Backticks in any shell argument. | R143 | operator discipline; no mechanism |
