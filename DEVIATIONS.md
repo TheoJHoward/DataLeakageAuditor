@@ -3291,3 +3291,72 @@ triggering question had not been asked?* **Yes.** A refusal that refuses less
 than the check it replaced is a regression introduced by a consolidation, and
 the fact that today's arrangement hides it is the reason to close it rather
 than the reason not to.
+
+## D-V30A-79 — the single-refusal design was built on a consumer count nobody had established, and the enumeration that found the third also found a fourth
+
+**THE DESIGN'S PREMISE WAS A COUNT, AND THE COUNT WAS NEVER MEASURED.**
+D-V30A-75 recorded *"the clock is consumed in exactly two places"* and built
+one refusal reached by both. That was true of the two consumers anyone had
+looked at and false of the set that existed. **"The refusal covers the clock" is
+an absence claim, and it was made without its population.**
+
+**THE ENUMERATION, and it is over every read rather than over the ones in
+hand.** Parsed from the AST of `src/leakaudit/*.py` and `tools/*.py`: every
+`<expr>.decision_column` load, with whether that exact node is the argument to
+the shared refusal.
+
+| site | in | classification |
+|---|---|---|
+| `availability.py:477` | `run_probe_a` | through the refusal |
+| `identity_control.py:196` | `run_identity_control` | through the refusal |
+| `cli.py:284` | `_run_availability` | through the refusal — **routed at R238; it was the third consumer, and it bypassed** |
+| `tools/wholeframe_guard.py:225` | `main` | **its own means** — a literal `MODEL` declaring the clock |
+| `inference.py:572,573` | `as_model_dict` | not a clock — `Draft`, a different class |
+| `model_file.py:580` | `load_model` | the boundary dict read, not a consumer |
+
+**THREE WAS NOT ALL OF THEM EITHER.** The scan written to confirm "three is the
+population" reported a fourth clock use, outside the package and on the probe
+path: the whole-frame guard replicates the harness loop and indexes
+`built[MODEL.decision_column]` without calling the refusal.
+
+**`cli.py` WAS NOT A LIVE HOLE, and that is measured rather than hoped.** Its
+read sat behind two exhaustive gates: with `aggregate_frames` declared the
+loader refuses an undeclared clock, and without it `_run_availability` exits
+before the read. So neither *silent wrong clock* nor *bare traceback* — a third
+state: **unreachable, but only by other components' behaviour, with nothing
+anywhere recording that this was so.**
+
+**AND THE COMPONENT IT LEANED ON IS ONE I HAD DESCRIBED AS REMOVABLE.** R236
+§3(c) offered two dispositions for the file-boundary check — *"redundant to the
+sentinel — remove it"* or *"a cheap early message"* — and the round chose the
+second while calling it cheap. It was load-bearing: it is the gate that made
+`cli.py`'s read unreachable. **Taking the branch that was on offer would have
+opened the hole that the same round reported closing.**
+
+**THE TOTALITY TEST, which is the point.** Every read is in exactly one of
+`through the refusal`, `own means` (registered with the test that fails when the
+means is removed), or `not a clock` (registered with why). A read in none of
+them **fails**, naming the site. The guard's registration carries
+`test_the_guards_own_means_is_that_its_model_DECLARES_the_clock`, which parses
+the construction and fails if the keyword is deleted — so its means is pinned
+rather than described. The registration also records the weaker second fact it
+does **not** rest on: `run_probe_a` runs three lines earlier.
+
+**WHY A TEST AND NOT A CAREFUL LOOK.** Nothing forced the enumeration that found
+`cli.py`. No test failed on it for two rounds while the design was described as
+covering every entry point. The catch was diligence, and TB-11's family of one
+is exactly the observation that diligence is what does not survive the round
+where somebody is busy.
+
+**THE TEST'S OWN DISCRIMINATION IS PINNED, in both directions.** A synthetic
+module that reads the clock and does none of the three is scanned by the shipped
+`_sites` and judged by the shipped `_unclassified`, and has to be reported; a
+synthetic module that routes through has to be accepted. Mutation-checked: a
+`_unclassified` that flags nothing fails the first, one that flags everything
+fails the second, and only the shipped one passes both.
+
+**R163 §1's exemption test.** *Would this change have been made if the triggering
+question had not been asked?* **Yes.** A coverage claim whose population was
+never established is the failure this project names most often, and the fact
+that today's arrangement happens to be safe is what made it invisible for two
+rounds rather than a reason to leave it.
