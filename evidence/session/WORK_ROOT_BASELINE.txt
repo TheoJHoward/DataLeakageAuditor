@@ -156,6 +156,7 @@ d17.txt
 d17b.txt
 d75.md
 d76.md
+d87.md
 decision_default_scan.py
 decl_main.md
 decl_p1.md
@@ -343,6 +344,8 @@ man_head.txt
 measure_columns.py
 merge.log
 msg.txt
+msg12.txt
+msg13.txt
 msgback.txt
 new3.txt
 node1.py
