@@ -4068,3 +4068,82 @@ question had not been asked?* **No for the step set** — the gate was returning
 pass and the pass was reported onward. **Yes for the precondition**: an
 instrument that can be silently emptied by omitting one variable is one omission
 from reporting nothing as something, and that had already happened for a session.
+
+## D-V30A-89 — the sweep's own population definition excluded the cases that matter, three times
+
+**THE SWEEP WAS CARRIED TWICE AND LANDS HERE.** Four can't-fail checks were found
+in one session, each by a different accident. The practice that followed — *every
+count, coverage or totality assertion is shown to go RED on a violation before
+its green is believed* — was recorded and applied to one file, leaving the
+population of enforcing tests unswept: an absence claim about the tests that make
+absence claims.
+
+**THE POPULATION, and the axis it is defined on.**
+`tools/coverage_assertion_sweep.py` enumerates from `git ls-files -- "*.py"`
+(404 files) every `assert` in a test or check function **whose population is read
+from the repository** — a file list, a registry, a tracked set.
+
+That axis is not a convenience. Change the code under test and a unit
+assertion's output changes with it; **a repository assertion can be satisfied by
+something unrelated that happens to sit in the tree**, which is exactly what
+happened when `\b27\b` matched inside `TB-27`. All four defects had that
+property.
+
+| | |
+|---|---|
+| assertions in the population | **150** |
+| functions holding them | **80** |
+| **established** — a mutation shown to redden them | **10** |
+| **outstanding** | **70** |
+
+**THE ENUMERATOR EXCLUDED THE CASES THAT MATTER, THREE TIMES**, and that is the
+finding rather than an anecdote about drafting.
+
+1. **Keyed on the assert's SHAPE** — `len(...)`, a set difference, a `set(...)`
+   compare. That misses `assert not unclassified`, whose collection is built on
+   an earlier line, and it is the commonest coverage form in this repository. The
+   exclusion dropped `test_decision_clock_consumers`,
+   `test_lessons_classification`, `test_manifest_hashes` and
+   `test_config_key_complement` — the four files whose coverage claims matter
+   most, and three of the four defects.
+2. **Keyed on a first pass at repository-reads** and reported **5** entries where
+   the true figure is 150, because the truncated expression text was searched
+   rather than the enclosing function.
+3. **Keyed on the function's BODY** — which misses a test receiving its
+   population from a FIXTURE. `test_EVERY_read_is_in_exactly_one_class(scanned)`
+   is the flagship coverage assertion in this repository and was invisible to
+   both earlier versions.
+
+**A population definition is itself an absence claim**, and each of these was one
+made without checking what it excluded — the session's recurring failure,
+occurring three times inside the sweep built to find it. The two shapes are now
+known-positives in `tests/phase1/test_coverage_assertion_sweep.py`, with a
+negative control requiring a unit assertion NOT to be swept in.
+
+**THE REGISTRY CAUGHT ITS AUTHOR ON THE FIRST RUN.** Two entries registered as
+established named functions the detector did not include, and the
+stray-registration check reported them as claims about nothing.
+
+**IT REPORTS AND DOES NOT GATE, deliberately.** An instrument that failed the
+build until every entry was marked done would be pressure to mark entries done,
+which is how a register becomes a formality. A test pins that it exits zero
+*while outstanding entries exist*, so the tolerance is a property rather than an
+accident.
+
+**WHAT IS NOT CLAIMED.** 70 functions are outstanding: their assertions have not
+been shown able to fail. That is not a claim they are broken — it is the claim
+that nothing establishes they are not, which is the honest state and is now
+tracked rather than remembered. **The sweep is not done; it is enumerated**, and
+the difference is the whole point of writing it down.
+
+**AND THE GENERIC MUTATION WAS RULED OUT BY MEASUREMENT, not skipped.** Negating
+each assertion detects an unreached assertion and cannot detect a tautological
+one: an always-true condition negated is always-false, so the test fails and the
+sweep would report it load-bearing. **A generic negation sweep would have
+reported green on precisely the defect class it was built for**, so it is not
+shipped.
+
+**R163 §1's exemption test.** *Would this change have been made if the triggering
+question had not been asked?* **No** — it was scheduled at R247 and carried
+through R248, which is why R249 ruled that it leads. The three-carry rule is what
+produced it.

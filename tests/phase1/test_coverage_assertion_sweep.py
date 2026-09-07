@@ -1,0 +1,130 @@
+"""The sweep's own population is enumerated, and its registry cannot lie. R249 §1.
+
+**THE SWEEP IS ITSELF A COVERAGE CLAIM**, so it gets the treatment it exists to
+apply: its population comes from `git ls-files`, its registry is checked against
+that population in both directions, and the detector is mutation-checked against
+a synthetic assertion it has to find.
+
+**AND ITS FIRST TWO DEFINITIONS EXCLUDED THE CASES THAT MATTER**, which is the
+finding this file pins. Keying on the assert's SHAPE missed `assert not
+unclassified`; keying on the function's BODY missed tests that receive their
+population from a fixture. Both times the excluded set contained the flagship
+coverage assertions of this repository. A population definition is an absence
+claim, and these are its known-positive cases.
+"""
+from __future__ import annotations
+
+import sys
+import textwrap
+from pathlib import Path
+
+import pytest
+
+ROOT = Path(__file__).resolve().parents[2]
+for p in (str(ROOT), str(ROOT / "tools")):
+    if p not in sys.path:
+        sys.path.insert(0, p)
+
+import coverage_assertion_sweep as cas                             # noqa: E402
+
+
+@pytest.fixture(scope="module")
+def swept():
+    return cas.state()
+
+
+# ---------------------------------------------------------------------------
+# the population
+# ---------------------------------------------------------------------------
+def test_the_population_comes_from_git_ls_files(swept):
+    files = cas.tracked_python_files()
+    assert len(files) > 100, (
+        "the floor returned %d python files, too few to be this repository"
+        % len(files))
+    assert swept["rows"], "the sweep found no coverage assertions at all"
+
+
+def test_the_registry_names_only_functions_THAT_EXIST(swept):
+    """A registration for a function not in the population is a claim about
+    nothing — and it caught its author on the first run: two entries named
+    functions the detector did not include."""
+    assert not swept["stray"], (
+        "registered as established and not present in the population: %s"
+        % swept["stray"])
+
+
+def test_established_and_outstanding_are_DISJOINT_and_COVERING(swept):
+    both = swept["established"] & set(swept["outstanding"])
+    assert not both, both
+    assert swept["established"] | set(swept["outstanding"]) == swept["functions"]
+
+
+# ---------------------------------------------------------------------------
+# the detector's known positives — the two shapes it used to miss
+# ---------------------------------------------------------------------------
+def _detect(tmp_path, monkeypatch, source):
+    """Run the SHIPPED population() over one synthetic file."""
+    (tmp_path / "t_synthetic.py").write_text(textwrap.dedent(source),
+                                             encoding="utf-8")
+    monkeypatch.setattr(cas, "REPO", tmp_path)
+    monkeypatch.setattr(cas, "tracked_python_files", lambda: ["t_synthetic.py"])
+    return cas.population()
+
+
+def test_it_FINDS_the_assert_not_collection_shape(tmp_path, monkeypatch):
+    """The shape the first definition missed: the collection is built earlier,
+    so the assert holds no `len`, no set difference and no `set(...)`."""
+    rows = _detect(tmp_path, monkeypatch, '''
+        def test_everything_is_covered():
+            listed = set(open("x").read_text().split())
+            unclassified = listed - {"a"}
+            assert not unclassified, "some are unclassified"
+    ''')
+    assert len(rows) == 1 and rows[0]["func"] == "test_everything_is_covered", (
+        "the detector missed `assert not <collection>`, which is the commonest "
+        "coverage form in this repository")
+
+
+def test_it_FINDS_a_test_that_gets_its_population_from_a_FIXTURE(
+        tmp_path, monkeypatch):
+    """The shape the second definition missed: no repository read in the test's
+    own body, because the fixture did it."""
+    rows = _detect(tmp_path, monkeypatch, '''
+        import pytest
+
+        @pytest.fixture
+        def scanned():
+            return open("x").read_text().split()
+
+        def test_all_of_them_are_classified(scanned):
+            assert not [s for s in scanned if s == "bad"]
+    ''')
+    assert len(rows) == 1 and rows[0]["func"] == "test_all_of_them_are_classified", (
+        "the detector missed a test receiving its population via a fixture, "
+        "which is how the flagship coverage assertion is written")
+
+
+def test_it_does_NOT_claim_a_unit_assertion(tmp_path, monkeypatch):
+    """The negative control. A detector that swept everything would pass both
+    positives above and make the outstanding list meaningless."""
+    rows = _detect(tmp_path, monkeypatch, '''
+        def test_the_function_returns_two():
+            assert len(compute()) == 2
+    ''')
+    assert rows == [], (
+        "an assertion over a function's output was pulled into the "
+        "repository-population sweep, so the population is not the "
+        "coincidence-susceptible one it claims to be")
+
+
+# ---------------------------------------------------------------------------
+# what the instrument is and is not
+# ---------------------------------------------------------------------------
+def test_the_sweep_REPORTS_and_does_not_gate():
+    """Exit 0 with outstanding entries, deliberately. An instrument that failed
+    the build until every entry was marked done would be pressure to mark
+    entries done, which is how a register becomes a formality."""
+    assert cas.main([]) == 0
+    assert cas.state()["outstanding"], (
+        "there are no outstanding entries, so this assertion no longer "
+        "establishes that the instrument tolerates them")
