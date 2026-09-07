@@ -3220,3 +3220,74 @@ question had not been asked?* **Yes** for the test — an entry point with a
 repaired defect and no check on the repair is the gap that lets the defect
 return. **The import shadowing is disclosed rather than changed**, so the
 question does not arise for it.
+
+## D-V30A-78 — consolidating to one refusal made it refuse less than the boundary it replaced, and a neighbouring line hid that
+
+**THE CONSOLIDATION WAS SUPPOSED TO BE THE STRONGER DESIGN.** D-V30A-75 replaced
+a file-boundary check with one refusal at the point the clock is consumed,
+reached by both entry points. Measured at R238: the file boundary refused
+`None`, `''` and `0`; the shared refusal passed all three through. **One point
+was weaker than the two it replaced**, and nothing said so because a membership
+test sat on the next line of each probe.
+
+**DESIGN OR ORDERING — the question R238 §1 asked, and the test that separates
+them.** Move the consumption so the membership test is not adjacent, then ask
+whether the clock is still refused:
+
+| value | with the neighbour (as shipped) | with the neighbour removed |
+|---|---|---|
+| the unset sentinel | `ProbeError` | `ProbeError` |
+| `None` | `ProbeError` (membership) | **`KeyError: None`** |
+| `''` | `ProbeError` (membership) | **`KeyError: ''`** |
+| `0` | `ProbeError` (membership) | **`KeyError: 0`** |
+
+**ORDERING.** The refusal's completeness rested on a neighbouring line's
+position, and with that line gone the value reaches pandas — a detection
+arriving as somebody else's exception, which is the failure mode
+`modes.availability` was hardened against twice.
+
+**AND THERE WAS A THIRD CONSUMER, counted as two for two rounds.** `cli.py:279`
+and `:282` read `built[model.decision_column]` directly, with no membership test
+beside them and no call to the shared refusal at all. It was covered only
+because `run_probe_a` runs nine lines earlier. **The one consumer shaped exactly
+like the "neighbour removed" column above was the one nobody had counted.**
+
+**THE REPAIR.** `require_column_name(value, where)` holds the predicate that had
+lived only in the loader; `require_decision_column` calls it after the unset
+test, so a consumption point refuses both conditions on its own. The loader
+delegates rather than keeping its copy, **ungated**, because a value that is not
+a column name is malformed whether or not a file declares an availability model
+— while the unset test stays gated on that, since a clock nobody consumes is a
+question nobody has to answer. `cli.py` now calls the shared refusal, so its
+cover is a call rather than a line number.
+
+**THE TWO CONDITIONS KEEP SEPARATE MESSAGES.** Merging them would tell a user
+who wrote `"decision_column": 0` that they declared nothing, which is not what
+they did.
+
+**A GUARD ON THE SENTINEL TEST ITSELF.** `dcol == NOT_SET` asks an arbitrary
+object's `__eq__` a question about a string, and an array-like answers with an
+array rather than a truth value. `isinstance(dcol, str) and dcol == NOT_SET` is
+exact, since only a `str` can equal a `str`. An object claiming equality with
+everything is now refused as a non-column rather than read as unset.
+
+**THE STRUCTURAL TEST CAUGHT THE CHANGE THE SAME ROUND IT WAS WRITTEN.**
+R237's `test_the_TWO_ENTRY_POINTS_DO_NOT_JOIN_above_the_refusal` asserted three
+call sites of the shared refusal and failed here when `cli.py` became a fourth.
+That is what a structural count is for: the thing it counts moved, and the count
+noticed rather than a person.
+
+**WHAT IS NOT CLOSED, and it is named rather than left implied.** *"A declared
+name that is not a column of the built output"* still cannot be asked at the
+shared refusal, which receives a value and not a frame. Both probes ask it
+adjacently, deliberately, in the only place the built output exists. `cli.py`'s
+safety for that case follows from `run_probe_a` having run first **and** from
+the determinism check that precedes it — an argument rather than an accident,
+but still an ordering argument. Stated so the next reader meets it here rather
+than deriving it.
+
+**R163 §1's exemption test.** *Would this change have been made if the
+triggering question had not been asked?* **Yes.** A refusal that refuses less
+than the check it replaced is a regression introduced by a consolidation, and
+the fact that today's arrangement hides it is the reason to close it rather
+than the reason not to.

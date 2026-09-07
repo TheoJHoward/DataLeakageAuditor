@@ -35,7 +35,7 @@ from pathlib import Path
 import pandas as pd
 
 from .availability import (AvailabilityModel, NOT_SET, ProbeError,
-                           require_decision_column)
+                           require_column_name, require_decision_column)
 from .modes import (ALL_MODES, AVAILABILITY_FN, FILE_MODES,
                     FRAME_ROLE_TABLE, FRAME_ROLES, MODE_ARITHMETIC,
                     ColumnMode, ModeError)
@@ -586,9 +586,15 @@ def load_model(path) -> AvailabilityModel:
             "decision_column']`: it names the column of your BUILT OUTPUT "
             "carrying each row's decision instant, and the draft cannot list "
             "candidates because it never runs your pipeline.", path)
-    if not isinstance(decision, str) or not decision:
-        _refuse("`decision_column` is %r; a column name was expected"
-                % (decision,), path)
+    # DELEGATED, NOT COPIED. R238 §1. This predicate used to live here and
+    # nowhere else, which is exactly how the consolidated refusal ended up
+    # weaker than the boundary it replaced. One implementation, called from
+    # both, and this call is UNGATED because a value that is not a column name
+    # is malformed whether or not the file declares an availability model.
+    try:
+        require_column_name(decision, "the model file %s" % path)
+    except ProbeError as e:
+        _refuse(str(e), path)
 
     # THE SAME REFUSAL, CALLED EARLY. R236 §3(c).
     #

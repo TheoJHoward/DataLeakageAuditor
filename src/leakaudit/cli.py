@@ -240,7 +240,8 @@ def _run_checks(frames, build, model_path):
 
 def _run_availability(frames, build, model_path, stride, max_cohorts):
     """The availability probe, end to end, from a declared model file."""
-    from .availability import eligible_cohorts, run_probe_a
+    from .availability import (eligible_cohorts, run_probe_a,
+                               require_decision_column)
     from .availability_trace import traces_for
     from .findings import AuditResult
     from .model_file import ModelFileError, load_model
@@ -275,11 +276,18 @@ def _run_availability(frames, build, model_path, stride, max_cohorts):
     # row in has nothing to corrupt, and scheduling it would report a dead
     # process where the truth is an empty probe surface.
     built = build(dict(frames))
+    # THE THIRD CONSUMER, AND IT HAD NO REFUSAL OF ITS OWN. R238 §1. These two
+    # lines read the clock directly and were covered only because `run_probe_a`
+    # above calls the shared refusal first -- ordering again, in the one
+    # consumer with no membership test beside it. Asking here makes the cover
+    # a call rather than a line number.
+    dcol = require_decision_column(model.decision_column,
+                                   "the CLI's cohort selection")
     picked = sorted(
-        pd.to_datetime(built[model.decision_column]).dt.floor("s").unique()
+        pd.to_datetime(built[dcol]).dt.floor("s").unique()
     )[::stride][:max_cohorts]
     elig = eligible_cohorts(frames, model, picked,
-                            pd.to_datetime(built[model.decision_column]))
+                            pd.to_datetime(built[dcol]))
     traces = traces_for(result, elig.eligible, case_id="user")
     for note in elig.notes:
         result.notes.append(note)

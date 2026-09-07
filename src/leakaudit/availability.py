@@ -135,6 +135,40 @@ def _inference_frame(info) -> str:
 NOT_SET = "<decision column not declared>"
 
 
+def require_column_name(dcol, where: str) -> None:
+    """A value that is not a non-empty string is not a column name.
+
+    SEPARATE FROM THE UNSET QUESTION, because the two are asked in different
+    scopes. "Nobody declared a clock" matters only where a clock is consumed; "a
+    clock was declared as the integer 0" is malformed wherever it appears, so
+    the loader asks this one of every file and the other only of files that
+    declare an availability model.
+
+    IT LIVES HERE RATHER THAN IN THE LOADER, and R238 §1 is why. The loader
+    refused `None`, `''` and `0`; the consolidated refusal at the consumption
+    point did not, so the consolidation made the check WEAKER than the boundary
+    it replaced. Measured: with the membership test that sits on the next line
+    of each probe removed, those three values reach pandas as `KeyError: None`
+    -- a detection arriving as somebody else's exception, which is the failure
+    mode `modes.availability` was hardened against twice.
+
+    So the completeness of the refusal had been resting on a NEIGHBOURING LINE'S
+    POSITION. That is not a property a refusal can have: `cli.py` reads the
+    clock with no membership test beside it at all and was covered only because
+    `run_probe_a` runs first.
+    """
+    if isinstance(dcol, str) and dcol == NOT_SET:
+        return                      # a different question, asked elsewhere
+    if not isinstance(dcol, str) or not dcol:
+        raise ProbeError(
+            "`decision_column` is %r, and a column name was expected. %s\n"
+            "REFUSED HERE RATHER THAN DOWNSTREAM. Until R238 a value like this "
+            "passed through the shared refusal and was stopped by a membership "
+            "test on the next line of each probe -- so whether it was caught "
+            "depended on that line's position, and a consumer without one "
+            "handed it to pandas." % (dcol, where))
+
+
 def require_decision_column(dcol, where: str) -> str:
     """The clock, or a refusal. ONE refusal, called from every consumer.
 
@@ -152,7 +186,11 @@ def require_decision_column(dcol, where: str) -> str:
     omitted them. A helper that makes its callers construct an object to ask a
     question about one field is asking for the wrong thing.
     """
-    if dcol == NOT_SET:
+    # `isinstance` FIRST. `dcol == NOT_SET` alone asks an arbitrary object's
+    # `__eq__` a question about a string, and an array-like answers with an
+    # array, which is not a truth value. NOT_SET is a str, so only a str can be
+    # equal to it.
+    if isinstance(dcol, str) and dcol == NOT_SET:
         raise ProbeError(
             "no decision column is declared, and there is no default for it. %s\n"
             "`decision_column` names the column of your BUILT OUTPUT holding "
@@ -167,6 +205,7 @@ def require_decision_column(dcol, where: str) -> str:
             "If your output genuinely calls it `timestamp`, declare that. The "
             "declaration and the coincidence are different things and only one "
             "of them is checkable." % where)
+    require_column_name(dcol, where)
     return dcol
 
 

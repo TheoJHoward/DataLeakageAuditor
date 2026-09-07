@@ -183,6 +183,13 @@ def test_the_TWO_ENTRY_POINTS_DO_NOT_JOIN_above_the_refusal():
 
     If these ever did join, one test would cover both and this file could
     retire. Asserted so that a refactor which merges them has to say so.
+
+    **AND IT EARNED ITS KEEP IMMEDIATELY.** It was written at R237 asserting
+    THREE call sites and failed at R238 when `cli.py` gained one -- `cli.py`
+    being a consumer that read the clock directly and had been counted as two
+    consumers rather than three for two rounds. A structural count is worth
+    asserting precisely because the thing it counts moves without anyone
+    noticing.
     """
     import ast
 
@@ -194,10 +201,10 @@ def test_the_TWO_ENTRY_POINTS_DO_NOT_JOIN_above_the_refusal():
             if isinstance(n, ast.Call) and isinstance(n.func, ast.Name) \
                     and n.func.id == "require_decision_column":
                 sites.append(p.name)
-    assert sorted(sites) == ["availability.py", "identity_control.py",
+    assert sorted(sites) == ["availability.py", "cli.py", "identity_control.py",
                              "model_file.py"], (
-        "the call sites of the shared refusal changed: %s. Three are expected "
-        "-- two consumers and one early message at the file boundary -- and the "
+        "the call sites of the shared refusal changed: %s. Four are expected -- "
+        "THREE consumers and one early message at the file boundary -- and the "
         "count is what makes 'they do not join' true." % sorted(sites))
 
 
@@ -205,3 +212,123 @@ def test_the_SENTINEL_is_not_a_column_name_anyone_would_write():
     assert " " in NOT_SET and NOT_SET != "timestamp"
     assert require_decision_column("decided_at", "x") == "decided_at", (
         "the refusal does not pass a declared clock through unchanged")
+
+
+# ---------------------------------------------------------------------------
+# R238 §1 -- the shared refusal refuses what the file boundary refused
+# ---------------------------------------------------------------------------
+@pytest.mark.parametrize("bad", [None, "", 0, 3.5, ["decided_at"]])
+def test_a_NON_COLUMN_clock_is_refused_BY_THE_REFUSAL_not_by_the_next_line(bad):
+    """THE DISCRIMINATING FORM: the refusal is called with NOTHING adjacent.
+
+    R238 §1 asked whether the downstream `ProbeError` catches these by DESIGN or
+    by ORDERING, and named the test that separates them — move the consumption
+    so the membership check is not next to it. Measured before the fix: with the
+    neighbour removed, `None`, `''` and `0` reached pandas as `KeyError: None`,
+    a detection arriving as somebody else's exception. **Ordering, not design.**
+
+    Consolidating to one refusal had therefore made it refuse LESS than the file
+    boundary it replaced — TB-22's shape, a guarantee at one layer read as a
+    guarantee at another.
+    """
+    with pytest.raises(ProbeError) as e:
+        require_decision_column(bad, "a consumer with no neighbour")
+    assert "a column name was expected" in str(e.value)
+    assert "a consumer with no neighbour" in str(e.value)
+
+
+def test_the_UNSET_sentinel_and_a_NON_COLUMN_are_DIFFERENT_refusals():
+    """Two questions, two messages. Merging them would tell a user who wrote
+    `"decision_column": 0` that they declared nothing, which is not what they
+    did."""
+    with pytest.raises(ProbeError) as unset:
+        require_decision_column(NOT_SET, "x")
+    with pytest.raises(ProbeError) as junk:
+        require_decision_column(0, "x")
+    assert "no decision column is declared" in str(unset.value)
+    assert "no decision column is declared" not in str(junk.value)
+    assert "a column name was expected" in str(junk.value)
+
+
+def test_the_LOADER_gets_the_SAME_WORDS_because_it_delegates():
+    """Not a copy. The loader's own type check was the only place this
+    predicate lived, which is how the shared refusal came to be weaker."""
+    import json
+    import tempfile
+
+    from leakaudit.model_file import ModelFileError, load_model
+
+    d = Path(tempfile.mkdtemp())
+    p = d / "m.json"
+    p.write_text(json.dumps({"version": 3, "aggregate_frames": {"a": "k"},
+                             "decision_column": 0}), encoding="utf-8")
+    with pytest.raises(ModelFileError) as e:
+        load_model(str(p))
+    assert "a column name was expected" in str(e.value)
+    assert "REFUSED HERE RATHER THAN DOWNSTREAM" in str(e.value), (
+        "the loader is not carrying the shared refusal's words, so it has its "
+        "own copy again")
+
+
+def test_a_DECLARED_clock_still_passes_through_unchanged():
+    """The negative control. A refusal that refused everything would pass every
+    test above and be useless."""
+    assert require_decision_column("decided_at", "x") == "decided_at"
+
+
+def test_the_isinstance_guard_means_a_weird_EQ_cannot_answer_for_NOT_SET():
+    """`dcol == NOT_SET` alone asks an arbitrary object's `__eq__` a question
+    about a string; an array-like answers with an array, which is not a truth
+    value. Only a `str` can equal a `str`."""
+    class AlwaysEqual:
+        def __eq__(self, other):
+            return True
+
+    with pytest.raises(ProbeError) as e:
+        require_decision_column(AlwaysEqual(), "x")
+    assert "a column name was expected" in str(e.value), (
+        "an object claiming equality with everything was read as the unset "
+        "sentinel, so the sentinel test is answering to someone else's __eq__")
+
+# ---------------------------------------------------------------------------
+# the scope split, all four cells. R238 §1.
+# ---------------------------------------------------------------------------
+@pytest.mark.parametrize("body,outcome,why", [
+    ({"version": 3, "label_column": "q"},
+     "loads",
+     "a checks-only file consumes no clock, so it is not asked for one"),
+    ({"version": 3, "label_column": "q", "decision_column": "d"},
+     "loads",
+     "declaring one it will not use is the user's business"),
+    ({"version": 3, "label_column": "q", "decision_column": 0},
+     "a column name was expected",
+     "MALFORMED IS MALFORMED REGARDLESS OF SCOPE -- the type check is ungated "
+     "for exactly this cell, and it is the one the gating would have missed"),
+    ({"version": 3, "aggregate_frames": {"a": "k"}},
+     "no decision column is declared",
+     "an availability model consumes the clock, so the unset test applies"),
+])
+def test_the_SCOPE_SPLIT_is_a_two_by_two_and_all_four_cells_hold(
+        tmp_path, body, outcome, why):
+    """**THE TWO CHECKS HAVE DIFFERENT SCOPES AND THAT IS DELIBERATE.**
+
+    "Nobody declared a clock" matters only where a clock is consumed, so it is
+    gated on the file declaring an availability model. "The clock was declared
+    as the integer 0" is malformed anywhere, so it is not gated. Collapsing the
+    two into one gate loses a cell whichever way it collapses: gate both and a
+    malformed checks-only file loads; gate neither and `leakaudit check` starts
+    demanding a clock it never reads.
+    """
+    import json
+
+    from leakaudit.model_file import ModelFileError, load_model
+
+    p = tmp_path / "m.json"
+    p.write_text(json.dumps(body), encoding="utf-8")
+    if outcome == "loads":
+        cfg = load_model(str(p))
+        assert cfg is not None, why
+    else:
+        with pytest.raises(ModelFileError) as e:
+            load_model(str(p))
+        assert outcome in str(e.value), why
