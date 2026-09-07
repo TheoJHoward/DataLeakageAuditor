@@ -3137,3 +3137,86 @@ count included.
 question had not been asked?* **Yes.** An answer a user gives and the tool
 discards is the same class as a field the tool fills in unasked, and this one
 recorded an availability claim from a reply that did not contain it.
+
+## D-V30A-77 — the library entry point had no standing test at all, so the file-path positive was a wiring test for it
+
+**R237 §4 set the condition and the answer is measured, not argued.** One test
+covers both entry points only if they *join* above the shared refusal. They do
+not. Three call sites of `require_decision_column`, parsed from `src/leakaudit`:
+
+| caller | where | what happens next |
+|---|---|---|
+| `model_file.load_model` | the file boundary | refuses AT LOAD; the probe is never reached |
+| `availability.run_probe_a` | the probe | the library path's own refusal |
+| `identity_control.run_identity_control` | the second consumer | the same |
+
+The file path terminates before the probe's call site. So
+`test_decision_column_required.py`, which drives everything through `cli.main`,
+**would pass with the probe's call site deleted** — a wiring test for the entry
+point D-V30A-75 was written about.
+
+**AND NOTHING ELSE COVERED IT EITHER.** An AST scan over `tests/` for
+`AvailabilityModel(...)` constructions omitting `decision_column` returned
+**zero**. Every construction in the repository declared the clock, so no test
+anywhere exercised the defaulted library path. Hole 1 was closed by design and
+measured once by a throwaway script, and nothing stood behind the closure.
+
+**THE POSITIVE, AND ITS DISCRIMINATION DEMONSTRATED RATHER THAN ASSERTED.** The
+pre-R236 behaviour was reproduced at the consumption point — the sentinel passed
+through as `"timestamp"`, which is exactly what the old field default produced —
+on the overlapping two-second frames:
+
+| consumption point | undeclared clock |
+|---|---|
+| as shipped | **`ProbeError`** |
+| pre-fix behaviour restored | **ran: `observed_silence`, 0 rows moved** |
+
+On the same frames the true clock gives `finding` with 3 rows moved. So the new
+test fails against the defect and passes against the fix, and the hour-apart
+construction is avoided for the reason D-V30A-74 records: an unrelated guard
+rescues it, and a positive every plausible wrong implementation survives is a
+wiring test.
+
+**TWO WRONG-CASE ATTEMPTS FAILED BEFORE ONE WORKED, and both failures were in
+the checking rather than in the code.**
+
+1. Reverting the default by writing to `__dataclass_fields__['decision_column']
+   .default` after class creation changed nothing: the generated `__init__`
+   carries the default as a compiled argument value. The simulation reported
+   "refused anyway", which reads as *the test does not discriminate* — a false
+   negative about the test, produced by an instrument that had not reverted what
+   it claimed to revert.
+2. `ProbeAResult.verdict` is a METHOD. The first draft asserted
+   `res.verdict == "finding"`, comparing a bound method to a string — **False for
+   every possible input**. It was caught only because that assertion sat in the
+   direction that has to FIND. The identical mistake written in the silence
+   direction, `assert res.verdict == "observed_silence"` inside a
+   `pytest.raises`-free test, passes nothing and asserts nothing, and no run
+   would have said so.
+
+**THE SECOND IS THE ONE WORTH KEEPING.** A comparison against a bound method is
+a silence-shaped defect in an assertion: it never raises, it never fails, and it
+looks exactly like a check. It is the tests' version of the thing this package
+exists to find in pipelines.
+
+**A PUBLIC IMPORT FORM RETURNS THE WRONG OBJECT.** `src/leakaudit/__init__.py`
+re-exports the FUNCTION `modes.availability`, which binds over the SUBMODULE
+`leakaudit.availability` on the package namespace:
+
+    import leakaudit.availability as av      -> <function availability>
+    from leakaudit.availability import X     -> works
+    leakaudit.availability                   -> <function availability>
+
+The submodule is in `sys.modules` and reachable; the attribute lookup that
+`import x.y as z` performs finds the function first. A caller then meets
+`'function' object has no attribute 'AvailabilityModel'` — a detection arriving
+as an error that names the wrong thing, which is the failure mode `modes` was
+hardened against twice. Found by hitting it while writing the test above.
+**Recorded and not repaired here: the repair changes the package's public
+surface, and that is the author's call rather than a side effect of a test.**
+
+**R163 §1's exemption test.** *Would this change have been made if the triggering
+question had not been asked?* **Yes** for the test — an entry point with a
+repaired defect and no check on the repair is the gap that lets the defect
+return. **The import shadowing is disclosed rather than changed**, so the
+question does not arise for it.
