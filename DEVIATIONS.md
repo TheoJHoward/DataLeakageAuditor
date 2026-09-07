@@ -3360,3 +3360,86 @@ question had not been asked?* **Yes.** A coverage claim whose population was
 never established is the failure this project names most often, and the fact
 that today's arrangement happens to be safe is what made it invisible for two
 rounds rather than a reason to leave it.
+
+## D-V30A-80 — the totality test made its own absence claim, and its population was two directories somebody had chosen
+
+**THE TEST THAT FIXED AN UNPOPULATED ABSENCE CLAIM MADE ONE.** R239 turned *"the
+clock's consumers are covered"* into a test. That test then asserted *"these are
+all the consumers"* — an absence claim whose population was the files it
+searched, and it searched `src/leakaudit` and `tools` because those are where
+consumers had been found. **A consumer in a directory the scan did not name
+would have been invisible while the test stayed green.**
+
+**AND THE FOURTH CONSUMER IS THE PROOF THE NARROW SCOPE FAILS.** It was
+`tools/wholeframe_guard.py`, outside `src/`. A scan scoped to the package would
+have passed while missing the instrument that gates every round. Reaching past
+the package was a choice made once; nothing made the test keep reaching.
+
+**THE FLOOR IS NOW DEFINITE.** The population is `git ls-files -- "*.py"` —
+every tracked Python file. Not a directory list. That terminates the regress:
+there is no "outside the repository" that can consume this clock, so the
+population cannot be narrower than the thing it ranges over.
+
+**WHAT THE WIDER SCOPE FOUND, measured:**
+
+    py -3.12 -m pytest tests/phase1/test_decision_clock_consumers.py
+
+| | |
+|---|---|
+| tracked `.py` files scanned | **398** |
+| reads of `.decision_column` | **10, in 7 files** |
+| files the parser could not read | **0** |
+| reads the R239 scope would have missed | **4** |
+
+The four are in `tests/`, which the earlier scope excluded by hand as
+"assertions, not uses". That exclusion was a judgment, and it is now a
+structural fact instead.
+
+**CLASSIFICATION IS STRUCTURAL WHEREVER IT CAN BE.** A read whose parent node is
+a `Compare` produces a bool and cannot escape as a clock — a property of the
+syntax rather than an opinion about the caller. That subsumes every test
+assertion and both `Draft.decision_column` reads in `inference.py` without a
+per-site registration, and leaves `dcol = model.decision_column` followed by a
+use deliberately unclassifiable, because binding to a local is precisely how a
+consumer stops looking like one. A standing wrong case pins that shape.
+
+**`protocol/` WAS CHECKED, NOT ASSUMED.** `protocol/runtime_reference.py` is
+frozen, so a consumer there could not be routed through the shared refusal
+without editing a frozen file — it would need an independent-means registration
+instead. Measured: **the string `decision_column` does not appear in it at
+all.** It sits inside the scan population regardless, and a test asserts its
+absence, so a future change reports itself here rather than being discovered a
+round later.
+
+**THE GUARD'S CLOCK IS DECLARED, AND DECLARED IS NOT CORRECT.** R239 accepted
+`decision_column="timestamp"` as an independent means because it is declared
+rather than defaulted. That is the wrong bar on its own: **the guard runs the
+same model on both sides and compares them, so a wrong clock is wrong
+identically in baseline and current, returns SAME, and hides inside the one
+instrument nothing else checks.**
+
+Confirmed from the fixture's OWN CONSTRUCTION rather than from the declaration —
+`evidence/fixture_spike/f2/phase5_ml_fixture.py` builds
+
+    snap["ts_floor"] = snap["timestamp"].dt.floor("1s")
+
+so `ts_floor` is DERIVED FROM `timestamp`. `timestamp` is the primary per-row
+instant and `ts_floor` is its second-boundary alignment for the aggregate join,
+not a rival clock. A test now pins that derivation, so if the fixture stops
+deriving it the reason the guard's clock is right stops holding out loud.
+
+**ONE TRACKED FILE EMITS A SYNTAX WARNING ON PARSE**, found by the wider scan:
+`evidence/fixture_spike/y1/y1_trade_class_map.py:3` writes `n1\declared_map.csv`
+in a non-raw docstring, so `\d` is an invalid escape sequence. It is prose in a
+docstring, it is not on the probe path, and it is an evidence record — so it is
+recorded rather than edited. **The interaction is the part worth keeping:** on a
+Python where that becomes a `SyntaxError`, the file becomes unparseable, and
+`test_NO_TRACKED_FILE_IS_INVISIBLE_TO_THE_SCAN` fails — correctly, since an
+unparseable file is one the absence claim cannot cover, but the failure would
+read as "the scan has a hole" when the cause is a backslash in prose.
+
+**R163 §1's exemption test.** *Would this change have been made if the triggering
+question had not been asked?* **Yes.** An absence claim whose population is a
+list somebody chose is the failure this project names most often, and it does
+not stop being that failure when the claim is made by a test rather than by a
+sentence.

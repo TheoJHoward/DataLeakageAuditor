@@ -1,40 +1,53 @@
-"""Every consumer of the decision clock is classified. R239 §1.
+"""Every consumer of the decision clock is classified. R239 §1, R240 §1.
 
 **WHY THIS IS A TEST AND NOT A CAREFUL LOOK.** R238 found a third consumer —
 `cli.py` read `built[model.decision_column]` directly, never calling the shared
-refusal — and it was found because the reads were enumerated rather than
-recalled. **Nothing forced that enumeration.** No test failed on the third
-consumer; R236 §3 had designed "one refusal, both entry points reach it" against
-a two-consumer model that was simply wrong, and the design read as complete for
-two rounds. The catch was diligence, and diligence is what does not survive the
-round where somebody is busy — TB-11/F6, the family of one, whose whole point is
-that a check you have to remember to run is the check that gets skipped the once
-it matters.
+refusal. **Nothing forced that enumeration.** No test failed on it for two rounds
+while R236 §3's design was described as covering every entry point, because that
+design rested on a two-consumer count nobody had established. The catch was
+diligence, and TB-11's family of one is exactly the observation that diligence
+does not survive the round where somebody is busy.
 
-**AND THE ENUMERATION FOUND A FOURTH.** Written for R239, this scan reported
-`tools/wholeframe_guard.py` indexing `built[MODEL.decision_column]` with no call
-to the refusal — outside the package, on the probe path, and covered by its own
-means rather than by the shared one. Three was not all of them either.
+**THE SCAN SCOPE IS THE ABSENCE CLAIM'S POPULATION, so it is declared and its
+floor is definite.** R240 §1: this test asserts *these are all the consumers*,
+which is an absence claim, and a consumer in a directory the test does not search
+is invisible while the test stays green — the same failure one level up.
 
-**THE TOTALITY.** Every read of `.decision_column` in the shipped package and in
-the instruments is in exactly one class:
+    THE POPULATION IS `git ls-files -- "*.py"`: every tracked Python file in the
+    repository.
 
-    THROUGH_REFUSAL   the read is the argument to `require_decision_column`, so
-                      an unset or non-column clock is refused before use
-    OWN_MEANS         it refuses by an independent means, registered below WITH
-                      the test that fails when that means is removed
-    NOT_A_CLOCK       the attribute belongs to a different class entirely
+Not "the package". Not "the directories I found consumers in". **The fourth
+consumer is why**: it was `tools/wholeframe_guard.py`, outside `src/`, and a scan
+scoped to the package would have passed while missing the instrument that gates
+every round. `git ls-files` terminates the regress — there is no "outside the
+repository" that can consume this clock.
 
-**A read in none of the three FAILS**, naming the site. That is what turns "I
-enumerated them this time" into "a fourth cannot slip in unclassified."
+**CLASSIFICATION IS STRUCTURAL WHEREVER IT CAN BE**, so it does not rest on my
+judgment about each site:
 
-Tests are excluded from the population deliberately: a test reading
-`m.decision_column` is asserting a value, not using it as a clock, and folding
-assertions in would make the population the thing nobody could keep classified.
+    THROUGH_REFUSAL   the read IS the argument to `require_decision_column` /
+                      `require_column_name` — refused before use
+    COMPARED_ONLY     the read's parent node is a `Compare`. The value becomes a
+                      bool and cannot escape as a clock; this is a property of
+                      the syntax, not an opinion about the caller
+    OWN_MEANS         an independent means, REGISTERED below with the test that
+                      fails when that means is removed (R239 §1(b))
+
+A read in none of them **fails, naming the site** — including `dcol =
+model.decision_column` followed by a use, which is deliberately not classifiable
+and is exactly how a fifth consumer would arrive.
+
+**`protocol/` IS COVERED BY THE SCOPE, and was checked rather than assumed.**
+`protocol/runtime_reference.py` is frozen, so a consumer there could not be
+routed through the refusal without editing a frozen file. Measured: the string
+`decision_column` does not appear in it at all. It is in the scan population
+regardless, so if that ever changes this test says so instead of a later round
+discovering it.
 """
 from __future__ import annotations
 
 import ast
+import subprocess
 import sys
 from pathlib import Path
 
@@ -45,35 +58,45 @@ for p in (str(ROOT), str(ROOT / "src")):
     if p not in sys.path:
         sys.path.insert(0, p)
 
-#: Where a decision clock can be consumed: the shipped package, and the
-#: instruments that drive the probe directly.
-SCANNED = [ROOT / "src" / "leakaudit", ROOT / "tools"]
-
 REFUSALS = ("require_decision_column", "require_column_name")
 
 #: A LINE-INDEPENDENT KEY, so a classification survives an edit above it —
 #: `tools/default_sites.py`'s idiom, for the same reason.
-#: (file, enclosing function, expression source)
+#: (repo-relative path, enclosing function, expression source)
 OWN_MEANS = {
-    ("wholeframe_guard.py", "main", "MODEL.decision_column"): (
+    ("tools/wholeframe_guard.py", "main", "MODEL.decision_column"): (
         "`MODEL` is a literal built in the same function, declaring "
         "`decision_column=\"timestamp\"`, so it cannot carry the unset "
-        "sentinel. Pinned by "
-        "`test_the_guards_own_means_is_that_its_model_DECLARES_the_clock`, "
-        "which parses that construction and fails if the keyword is removed. "
+        "sentinel. Pinned by the two tests below: one parses that construction "
+        "and fails if the keyword is removed, the other checks the declared "
+        "clock is the fixture's TRUE clock rather than merely a declared one. "
         "NOTE the weaker second fact, recorded rather than relied on: "
         "`run_probe_a` runs three lines earlier and would refuse first. That "
         "is ordering, and it is not what this registration rests on."),
 }
 
-#: Reads of a `decision_column` attribute that is not an availability model's.
-NOT_A_CLOCK = {
-    ("inference.py", "as_model_dict", "d.decision_column"): (
-        "`d` is a `Draft`, not an `AvailabilityModel`. `Draft.decision_column` "
-        "holds the draft's own blank (`UNFILLED`) and is written into the "
-        "drafted file as the fill-me sentinel, which the loader refuses. It "
-        "never reaches a probe and is never used to index a frame."),
-}
+
+def tracked_python_files():
+    """THE DECLARED SCAN SCOPE. R240 §1(a)."""
+    r = subprocess.run(["git", "-C", str(ROOT), "ls-files", "--", "*.py"],
+                       capture_output=True, text=True, encoding="utf-8")
+    assert r.returncode == 0, (
+        "`git ls-files` failed, so the scan population cannot be established "
+        "and this test would silently search nothing: %s" % r.stderr[:200])
+    files = [f.strip() for f in r.stdout.splitlines() if f.strip()]
+    assert len(files) > 100, (
+        "git ls-files returned %d python files, which is too few to be this "
+        "repository -- the scope is wrong and the absence claim would be made "
+        "over almost nothing" % len(files))
+    return files
+
+
+def _parents(tree):
+    out = {}
+    for parent in ast.walk(tree):
+        for child in ast.iter_child_nodes(parent):
+            out[id(child)] = parent
+    return out
 
 
 def _enclosing(tree, node):
@@ -86,193 +109,251 @@ def _enclosing(tree, node):
     return best.name if best else "<module>"
 
 
-def _sites():
-    """Every `<expr>.decision_column` read, with how it is reached."""
-    out = []
-    for root in SCANNED:
-        for p in sorted(root.glob("*.py")):
-            tree = ast.parse(p.read_text(encoding="utf-8"))
-            guarded = set()
-            for n in ast.walk(tree):
-                if isinstance(n, ast.Call) and isinstance(n.func, ast.Name) \
-                        and n.func.id in REFUSALS and n.args:
-                    guarded.add(ast.dump(n.args[0]))
-            for n in ast.walk(tree):
-                if isinstance(n, ast.Attribute) \
-                        and n.attr == "decision_column" \
-                        and isinstance(n.ctx, ast.Load):
-                    out.append({
-                        "file": p.name,
-                        "line": n.lineno,
-                        "func": _enclosing(tree, n),
-                        "expr": ast.unparse(n),
-                        "through": ast.dump(n) in guarded,
-                    })
-    return out
+def scan():
+    """Every `<expr>.decision_column` read across the declared scope.
+
+    Returns (sites, unparseable). BY PARSE, NOT SUBSTRING (R218): a comment, a
+    docstring or a test name containing "decision_column" is not a read, and the
+    round that matched its own banned-token list and then the prose explaining
+    it settled that the fix is the parser rather than the prose.
+    """
+    sites, unparseable = [], []
+    for rel in tracked_python_files():
+        p = ROOT / rel
+        try:
+            tree = ast.parse(p.read_text(encoding="utf-8", errors="strict"))
+        except (SyntaxError, UnicodeDecodeError, OSError) as e:
+            unparseable.append((rel, type(e).__name__))
+            continue
+        parents = _parents(tree)
+        guarded = set()
+        for n in ast.walk(tree):
+            if isinstance(n, ast.Call) and isinstance(n.func, ast.Name) \
+                    and n.func.id in REFUSALS and n.args:
+                guarded.add(id(n.args[0]))
+        for n in ast.walk(tree):
+            if isinstance(n, ast.Attribute) and n.attr == "decision_column" \
+                    and isinstance(n.ctx, ast.Load):
+                sites.append({
+                    "file": rel.replace("\\", "/"),
+                    "line": n.lineno,
+                    "func": _enclosing(tree, n),
+                    "expr": ast.unparse(n),
+                    "through": id(n) in guarded,
+                    "compared": isinstance(parents.get(id(n)), ast.Compare),
+                })
+    return sites, unparseable
 
 
 def _key(s):
     return (s["file"], s["func"], s["expr"])
 
 
-# ---------------------------------------------------------------------------
-# the totality
-# ---------------------------------------------------------------------------
 def _unclassified(sites):
-    """Sites in no class, or in two. The one piece of logic both the real test
-    and its wrong case below run, so the wrong case cannot pass against a
+    """Sites in no class, or in two. The one piece of logic the real test and
+    its wrong cases below all run, so a wrong case cannot pass against a
     different implementation than the one that ships."""
     out = []
     for s in sites:
-        classes = [s["through"], _key(s) in OWN_MEANS, _key(s) in NOT_A_CLOCK]
+        classes = [s["through"], s["compared"], _key(s) in OWN_MEANS]
         if sum(bool(c) for c in classes) != 1:
             out.append((s, classes))
     return out
 
 
-def test_EVERY_read_of_the_clock_is_in_EXACTLY_ONE_class():
-    """Disjoint and covering, with the third state failing."""
-    sites = _sites()
+@pytest.fixture(scope="module")
+def scanned():
+    """ONE scan, shared. Each call parses every tracked file, so calling it per
+    test parsed the repository four times and repeated any warning a tracked
+    file emits four times over. The wrong cases below deliberately do NOT use
+    this: they call `scan()` directly so their monkeypatched scope takes
+    effect, and so they exercise the shipped function rather than a cache."""
+    return scan()
+
+
+# ---------------------------------------------------------------------------
+# the totality
+# ---------------------------------------------------------------------------
+def test_EVERY_read_of_the_clock_IN_EVERY_TRACKED_FILE_is_in_one_class(scanned):
+    sites, unparseable = scanned
     assert sites, "the scan found no reads at all, so it is not scanning"
 
-    unclassified = _unclassified(sites)
-
-    assert not unclassified, (
+    bad = _unclassified(sites)
+    assert not bad, (
         "these reads of `decision_column` are in no class, or in two:\n%s\n"
-        "Each one either passes through `require_decision_column`, or is "
-        "registered in OWN_MEANS with the test that fails when its means is "
-        "removed, or is registered in NOT_A_CLOCK because the attribute is not "
-        "an availability model's. A new consumer that does none of these is "
-        "the exact shape `cli.py` had for two rounds while the design was "
-        "described as covering every entry point."
-        % "\n".join("  %s:%d  %s (in %s) -> through=%s own_means=%s "
-                    "not_a_clock=%s" % (s["file"], s["line"], s["expr"],
-                                        s["func"], *c)
-                    for s, c in unclassified))
+        "Each one either passes through the shared refusal, or is only "
+        "compared (so the value cannot escape as a clock), or is registered in "
+        "OWN_MEANS with the test that fails when its means is removed. A read "
+        "in none of these is the exact shape `cli.py` had for two rounds while "
+        "the design was described as covering every entry point."
+        % "\n".join("  %s:%d  %s (in %s) -> through=%s compared=%s "
+                    "own_means=%s" % (s["file"], s["line"], s["expr"],
+                                      s["func"], *c) for s, c in bad))
 
 
-def test_the_registrations_NAME_SITES_THAT_EXIST():
+def test_NO_TRACKED_FILE_IS_INVISIBLE_TO_THE_SCAN(scanned):
+    """A file the parser cannot read is a file this test cannot clear, and
+    skipping it silently would put a hole inside the mechanism built to remove
+    holes."""
+    _, unparseable = scanned
+    assert not unparseable, (
+        "these tracked files could not be parsed, so the absence claim does "
+        "not cover them: %s" % unparseable)
+
+
+def test_the_registrations_NAME_SITES_THAT_EXIST(scanned):
     """A registration for a site that is gone is a claim about nothing, and it
-    would silently absorb a future site that happened to match its key."""
-    keys = {_key(s) for s in _sites()}
-    stray = (set(OWN_MEANS) | set(NOT_A_CLOCK)) - keys
-    assert not stray, (
-        "registered here and not present in the scan: %s" % sorted(stray))
+    would silently absorb a future site that matched its key."""
+    sites, _ = scanned
+    stray = set(OWN_MEANS) - {_key(s) for s in sites}
+    assert not stray, "registered and not present in the scan: %s" % sorted(stray)
 
 
-def test_the_three_PACKAGE_consumers_are_all_routed_through_the_refusal():
-    """The population claim, stated as an assertion rather than a count I
-    remember. If a fourth package consumer appears it lands here, not in a
-    later round's enumeration."""
-    pkg = [s for s in _sites()
-           if s["file"] not in ("inference.py",) and _key(s) not in NOT_A_CLOCK
-           and (ROOT / "src" / "leakaudit" / s["file"]).exists()]
-    assert {s["file"] for s in pkg} == {"availability.py", "cli.py",
-                                        "identity_control.py"}, \
-        sorted({s["file"] for s in pkg})
+def test_the_PACKAGE_consumers_are_all_routed_through_the_refusal(scanned):
+    sites, _ = scanned
+    pkg = [s for s in sites
+           if s["file"].startswith("src/leakaudit/") and not s["compared"]]
+    assert {s["file"] for s in pkg} == {
+        "src/leakaudit/availability.py", "src/leakaudit/cli.py",
+        "src/leakaudit/identity_control.py"}, sorted({s["file"] for s in pkg})
     assert all(s["through"] for s in pkg), (
         "a package consumer bypasses the shared refusal: %s"
         % [(s["file"], s["line"]) for s in pkg if not s["through"]])
 
 
+def test_the_FROZEN_protocol_file_was_CHECKED_not_assumed_clock_free():
+    """R240 §1(c). A consumer here could not be routed without editing a frozen
+    file, so its absence is worth asserting rather than assuming."""
+    rel = "protocol/runtime_reference.py"
+    assert rel in tracked_python_files(), (
+        "%s is not in the scan population, so 'protocol/ is clock-free' would "
+        "be an assumption rather than a measurement" % rel)
+    body = (ROOT / rel).read_text(encoding="utf-8")
+    assert "decision_column" not in body, (
+        "the frozen runtime reference now mentions the decision clock. If it "
+        "READS it, it is an independent-means consumer that cannot be routed "
+        "through the refusal without editing a frozen file, and it needs an "
+        "OWN_MEANS registration with a pinning test rather than an edit.")
+
+
 # ---------------------------------------------------------------------------
-# OWN_MEANS carries its pinning test, per R239 §1(b)
+# OWN_MEANS carries its pinning tests, per R239 §1(b) and R240 §2
 # ---------------------------------------------------------------------------
-def test_the_guards_own_means_is_that_its_model_DECLARES_the_clock():
-    """**THE MEANS, PINNED.** R239 §1(b): an independent means counts only if a
-    test fails when it is removed. The guard's means is that its `MODEL` literal
-    declares the clock, so this parses the construction and requires the
-    keyword. Delete `decision_column=` from that literal and this fails.
-    """
-    src = (ROOT / "tools" / "wholeframe_guard.py").read_text(encoding="utf-8")
-    tree = ast.parse(src)
+def _guard_model_keywords():
+    tree = ast.parse((ROOT / "tools" / "wholeframe_guard.py")
+                     .read_text(encoding="utf-8"))
     built = [n for n in ast.walk(tree)
              if isinstance(n, ast.Call) and isinstance(n.func, ast.Name)
              and n.func.id == "AvailabilityModel"]
     assert len(built) == 1, (
-        "the guard builds %d availability models; the registration in "
-        "OWN_MEANS speaks about one" % len(built))
-    kw = {k.arg: k.value for k in built[0].keywords if k.arg}
+        "the guard builds %d availability models; OWN_MEANS speaks about one"
+        % len(built))
+    return {k.arg: k.value for k in built[0].keywords if k.arg}
+
+
+def test_the_guards_own_means_is_that_its_model_DECLARES_the_clock():
+    """R239 §1(b): an independent means counts only if a test fails when it is
+    removed. Delete `decision_column=` from that literal and this fails."""
+    kw = _guard_model_keywords()
     assert "decision_column" in kw, (
         "the guard's MODEL no longer declares `decision_column`, so its "
-        "registered means is gone and its read at `MODEL.decision_column` is "
-        "covered only by `run_probe_a` running first -- which is ordering, and "
-        "is what OWN_MEANS explicitly does not rest on")
+        "registered means is gone and its read is covered only by "
+        "`run_probe_a` running first -- ordering, which OWN_MEANS explicitly "
+        "does not rest on")
     assert isinstance(kw["decision_column"], ast.Constant), (
         "the guard's clock is no longer a literal, so 'it cannot carry the "
         "sentinel' is no longer readable from the source")
-    assert kw["decision_column"].value == "timestamp"
 
 
-def test_NOT_A_CLOCK_is_true_of_the_draft_field():
-    """The other registration, checked rather than asserted in prose."""
-    from leakaudit.inference import UNFILLED, Draft
-    assert Draft().decision_column is UNFILLED
-    from leakaudit.availability import NOT_SET
-    assert UNFILLED is not NOT_SET, (
-        "the draft's blank and the model's sentinel became the same object, so "
-        "NOT_A_CLOCK's reason -- that these are different fields on different "
-        "classes -- no longer holds")
+def test_the_guards_DECLARED_clock_is_its_fixtures_TRUE_clock():
+    """R240 §2. **DECLARED IS NOT CORRECT.**
 
+    The guard runs the same model on both sides and compares them, so a clock
+    that is wrong would be wrong identically in baseline and current, come back
+    SAME, and hide itself in the one instrument nothing else checks. Being
+    declared rather than defaulted makes it legitimate under R239 §1(b); it does
+    not make it right.
 
-# ---------------------------------------------------------------------------
-# and the classes mean what they say
-# ---------------------------------------------------------------------------
-@pytest.mark.parametrize("name", ["availability.py", "identity_control.py",
-                                  "cli.py"])
-def test_each_package_consumer_actually_REFUSES_an_unset_clock(name):
-    """THROUGH_REFUSAL is a claim about behaviour, not about syntax. The scan
-    proves the call is there; this proves the call refuses."""
-    import pandas as pd
-
-    from leakaudit.availability import (AvailabilityModel, ProbeError,
-                                        require_decision_column)
-    m = AvailabilityModel(aggregate_frames={"a": "k"},
-                          window=pd.Timedelta(seconds=1))
-    with pytest.raises(ProbeError):
-        require_decision_column(m.decision_column, "a %s consumer" % name)
-
-
-# ---------------------------------------------------------------------------
-# the wrong case -- does the totality test actually catch a fourth consumer?
-# ---------------------------------------------------------------------------
-def test_A_NEW_UNCLASSIFIED_CONSUMER_FAILS_THE_TOTALITY(tmp_path, monkeypatch):
-    """**THE POINT OF THE WHOLE FILE, and it is worth nothing unless this
-    fails.** A totality test that passes over a population it cannot see, or
-    that classifies everything by accident, reads exactly like a working one.
-
-    So: a synthetic module that reads the clock and does none of the three
-    things, scanned by the SHIPPED `_sites` and judged by the SHIPPED
-    `_unclassified`. `cli.py` looked precisely like this for two rounds while
-    the design was described as covering every entry point.
+    Confirmed from the FIXTURE'S OWN CONSTRUCTION rather than from the
+    declaration: the fixture derives `ts_floor` FROM `timestamp`, so
+    `timestamp` is the primary per-row instant and `ts_floor` is its
+    second-boundary alignment for the aggregate join — not a rival clock.
     """
-    mod = tmp_path / "a_new_consumer.py"
-    mod.write_text(
-        "def audit(model, built):\n"
-        "    return built[model.decision_column]\n", encoding="utf-8")
-    monkeypatch.setattr(sys.modules[__name__], "SCANNED", [tmp_path])
-
-    sites = _sites()
-    assert len(sites) == 1 and sites[0]["file"] == "a_new_consumer.py", sites
-    bad = _unclassified(sites)
-    assert len(bad) == 1, (
-        "a consumer that reads the clock and neither routes through the "
-        "refusal nor is registered was NOT reported, so the totality test "
-        "cannot catch the thing it exists to catch")
-    assert bad[0][0]["expr"] == "model.decision_column"
+    declared = _guard_model_keywords()["decision_column"].value
+    fixture = (ROOT / "evidence" / "fixture_spike" / "f2"
+               / "phase5_ml_fixture.py").read_text(encoding="utf-8")
+    derivation = 'snap["ts_floor"] = snap["timestamp"].dt.floor("1s")'
+    assert derivation in fixture, (
+        "the fixture no longer derives ts_floor from timestamp, so the reason "
+        "`timestamp` is the true decision instant no longer holds and the "
+        "guard's clock needs re-establishing from the new construction")
+    assert declared == "timestamp", (
+        "the guard declares %r as its clock while the fixture's primary "
+        "per-row instant is `timestamp`" % declared)
 
 
-def test_a_synthetic_consumer_that_DOES_route_through_is_accepted(tmp_path,
-                                                                  monkeypatch):
-    """The negative control. A totality test that failed on everything would
-    pass the wrong case above and be useless."""
-    mod = tmp_path / "a_routed_consumer.py"
-    mod.write_text(
+# ---------------------------------------------------------------------------
+# the wrong cases -- does the totality actually catch a fifth consumer?
+# ---------------------------------------------------------------------------
+def _scan_text(src, monkeypatch, tmp_path):
+    """Run the SHIPPED scan over one synthetic file."""
+    mod = tmp_path / "a_consumer.py"
+    mod.write_text(src, encoding="utf-8")
+    monkeypatch.setattr(sys.modules[__name__], "ROOT", tmp_path)
+    monkeypatch.setattr(sys.modules[__name__], "tracked_python_files",
+                        lambda: ["a_consumer.py"])
+    return scan()[0]
+
+
+def test_A_NEW_UNCLASSIFIED_CONSUMER_FAILS_THE_TOTALITY(tmp_path, monkeypatch):
+    """**THE POINT OF THE FILE, and it is worth nothing unless this fails.**
+    A totality test that passes over a population it cannot see, or classifies
+    everything by accident, reads exactly like a working one."""
+    sites = _scan_text("def audit(model, built):\n"
+                       "    return built[model.decision_column]\n",
+                       monkeypatch, tmp_path)
+    assert len(sites) == 1
+    assert len(_unclassified(sites)) == 1, (
+        "a consumer that reads the clock and does none of the three was NOT "
+        "reported, so the totality cannot catch what it exists to catch")
+
+
+def test_THE_INDIRECT_SHAPE_ALSO_FAILS(tmp_path, monkeypatch):
+    """`dcol = model.decision_column` then a use. Deliberately unclassifiable:
+    binding to a local is how a consumer avoids looking like one."""
+    sites = _scan_text("def audit(model, built):\n"
+                       "    dcol = model.decision_column\n"
+                       "    return built[dcol]\n", monkeypatch, tmp_path)
+    assert len(_unclassified(sites)) == 1
+
+
+def test_a_ROUTED_consumer_is_accepted(tmp_path, monkeypatch):
+    """Negative control. A totality that failed on everything would pass the
+    wrong cases above and be useless."""
+    sites = _scan_text(
         "def audit(model, built):\n"
         "    dcol = require_decision_column(model.decision_column, 'here')\n"
-        "    return built[dcol]\n", encoding="utf-8")
-    monkeypatch.setattr(sys.modules[__name__], "SCANNED", [tmp_path])
-
-    sites = _sites()
+        "    return built[dcol]\n", monkeypatch, tmp_path)
     assert len(sites) == 1 and sites[0]["through"] is True
     assert _unclassified(sites) == []
+
+
+def test_a_COMPARED_read_is_accepted(tmp_path, monkeypatch):
+    """The other negative control: the structural class has to actually fire."""
+    sites = _scan_text("def check(model):\n"
+                       "    return model.decision_column == 'timestamp'\n",
+                       monkeypatch, tmp_path)
+    assert len(sites) == 1 and sites[0]["compared"] is True
+    assert _unclassified(sites) == []
+
+
+def test_the_scan_scope_is_the_TRACKED_SET_not_a_directory_list():
+    """R240 §1(a)'s floor, asserted. A scope narrowed back to `src/` would pass
+    every other test in this file and miss the guard."""
+    files = tracked_python_files()
+    tops = {f.split("/")[0] for f in files}
+    for expected in ("src", "tools", "tests", "protocol", "evidence"):
+        assert expected in tops, (
+            "%s/ is absent from the scan population, so a clock consumer there "
+            "would be invisible while this file reported full coverage"
+            % expected)
