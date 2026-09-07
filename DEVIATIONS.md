@@ -3993,3 +3993,78 @@ question had not been asked?* **Yes for the clean-tree sibling** — the shape h
 already produced five distinct defects. **No for the invocation**: the gate was
 reporting a pass, the pass was reported onward, and it took R247 §2 asking which
 branch to reveal that the command being run was not the command recorded.
+
+## D-V30A-88 — "certified" was an absence claim over the certification steps, and its population was whichever commands got typed
+
+**THE INSTRUMENT WAS NEVER BROKEN.** `round_reconciliation` fails when given its
+population: 10 723 reconciled, 617 residue, 28 appeared since baseline. Run
+without `LEAKAUDIT_WORK_ROOT` it reconciles nothing, prints *"COVERAGE IS ZERO …
+This is not a pass"*, and **returns PASS** — because that finding is emitted as a
+NOTE, and a note does not fail a check. **The verdict and the message contradict
+each other, and the verdict is what gates.**
+
+**THE STEP SET IS NOW STATED.** *"Certified"* is an absence claim over the
+certification steps — no required step skipped, no precondition unmet — and it had
+never had its population written down, so in practice it meant *"the commands I
+happened to run passed."* `tools/certify_preconditions.py` carries the set: the
+preconditions tool, the clean-tree check, the frozen checker **with the work-root
+variable**, the hash verifier, the suite, and the whole-frame guard when a
+probe-path file moved. Five always, one conditional.
+
+**AND THE SKIP IS CLOSED WITHOUT TOUCHING THE FROZEN FILE.** The precondition
+refuses when the variable is unset, when it names a path that does not exist, and
+when it names a file rather than a directory — non-zero exit in each case,
+measured. With it in place the contradicting branch is never reached, so the
+verdict-message contradiction needs no slot spent on it.
+
+**RECORDED FOR THE NEXT REGISTRATION rather than patched.**
+`NEXT_REGISTRATION_REQUIREMENTS.md` now carries it: a check that cannot see its
+population reports `could_not_run`, never `PASS`. `PREREG.md` §8.2 already says
+so for results; this is that rule applied to the checker itself, which is the one
+place it was not. **The general form is the tool's own subject** — a check has
+three outcomes, and collapsing *"it could not look"* into *"it looked and found
+nothing"* is `observed_silence` where the honest answer is `none`.
+
+**THE BLAST RADIUS, BOUNDED AND HOW.** Every gate result reported this session
+ran without the variable, so `round_reconciliation` was zeroed each time and each
+reported figure — *"23 of 24 PASS"* — came from a command that had emptied one
+check.
+
+**What the zeroed check does bounds the harm.** It is a WORKING-FILE HYGIENE
+check: it reconciles scratch against the repository and an ephemeral list. It
+measures nothing about the tool's behaviour, nothing about the availability
+probe, and nothing that enters a Phase 1 figure. Checked by reading its
+implementation — it walks the work root and the repository tree and compares
+paths and hashes — and by reading what was quoted from it: every gate figure
+reported this session was quoted as a gate result and never as evidence about the
+tool. **No published figure moves.**
+
+**The hygiene exception is real and is the exception.** Hygiene drift went
+uncaught for the session, which is precisely how 617 residue and 49 files outside
+the root accumulated unnoticed. That is the harm, and it is exactly the harm the
+check exists to prevent.
+
+**THE RECONCILIATION'S POPULATION WAS NARROWER THAN THE WORK — a definition
+gap.** The instrument's own instruction is *"set it to the directory this round's
+scratch work lives in"*, and the declared root was a SUBDIRECTORY of that: 49
+files — every disclosure body from `d77.md` and every commit message from
+`msg2.txt` — sat one level above it and never entered the population.
+
+**Widened to the session directory. The baseline was RE-KEYED, not rewritten.**
+Paths are stored relative to the root, so moving the root invalidates every
+entry; each of the 625 was prefixed with `scratchpad/`, which expresses the same
+claim — *reported and read* — against the new root and asserts nothing new. A
+fresh baseline would have claimed twelve thousand files had been read. The
+increment that then surfaced was **100 files**: edit scripts, disclosure bodies,
+commit messages, CLI fixtures and background-task logs, all produced here, all
+accepted.
+
+**AND THE PLACEHOLDER THAT CAUSED IT IS FIXED.** The recorded command said
+`LEAKAUDIT_WORK_ROOT="<this session's scratchpad>"`, which names a subdirectory;
+it now says the working directory itself, *not a subdirectory of it*.
+
+**R163 §1's exemption test.** *Would this change have been made if the triggering
+question had not been asked?* **No for the step set** — the gate was returning a
+pass and the pass was reported onward. **Yes for the precondition**: an
+instrument that can be silently emptied by omitting one variable is one omission
+from reporting nothing as something, and that had already happened for a session.

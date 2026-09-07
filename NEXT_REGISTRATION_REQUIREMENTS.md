@@ -198,3 +198,47 @@ and a prediction is assessed term by term from the measured output, never agains
 its total.
 
 *Recorded at `TB-11`.*
+
+
+---
+
+## A frozen check whose PASS prints "this is not a pass"
+
+*Recorded at R248 §2. Not repaired here, deliberately.*
+
+`round_reconciliation` reads its population from `LEAKAUDIT_WORK_ROOT`. With the
+variable unset it reconciles nothing and emits:
+
+> *COVERAGE IS ZERO: LEAKAUDIT_WORK_ROOT is unset, so no working directory was
+> reconciled. **This is not a pass.***
+
+**And then returns PASS**, because that finding is emitted as a NOTE and a note
+does not fail a check. **The verdict and the message contradict each other**, and
+the verdict is what gates, so the message is advice a runner reads after already
+having their answer.
+
+**THE COST OF THE CONTRADICTION, MEASURED.** Every gate result reported across an
+entire session ran without the variable. The check was zeroed each time and each
+time reported PASS, and the reported figure — *"23 of 24 checks pass"* — was
+produced by a command that had silently emptied one check's population. The
+instrument was working the whole time; it fails when given its population.
+
+**WHY IT IS NOT FIXED NOW.** The verdict lives in `tools/check_registration.py`,
+which is verdict-frozen against the tagged instrument: every difference is ruled
+against a ceiling of four, currently at two, and R223 §1 fixed that ceiling
+before there was pressure on it. Changing a check's verdict spends a slot on
+something a sibling makes unreachable — `tools/certify_preconditions.py` refuses
+certification when the variable is unset, so the contradicting branch is never
+entered.
+
+**WHAT THE NEXT REGISTRATION IS ASKED TO DO.** Make the verdict match the
+message at the source: a check that cannot see its population reports
+`could_not_run`, never `PASS`. `PREREG.md` §8.2 already says an empty population
+is reported as `could_not_run` rather than as a result; this is that rule applied
+to the checker itself, which is the one place it was not.
+
+**THE GENERAL FORM, worth more than the instance.** A check has three outcomes,
+not two: it looked and found nothing, it looked and found something, and **it
+could not look**. Collapsing the third into the first is the same defect this
+tool exists to find in other people's pipelines — `observed_silence` where the
+honest answer is `none`.

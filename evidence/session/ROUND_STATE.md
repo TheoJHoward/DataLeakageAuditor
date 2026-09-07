@@ -56,8 +56,9 @@ carried inline on the command rather than exported once. Second branch of R221
 DECISION 3. Recorded here so it is one place rather than remembered:
 
 ```
+py -3.12 tools/certify_preconditions.py
 py -3.12 tools/clean_tree.py
-LEAKAUDIT_WORK_ROOT="<this session's scratchpad>" py -3.12 tools/check_registration.py --stage prereg
+LEAKAUDIT_WORK_ROOT="<this session's working directory -- the directory itself, not a subdirectory of it>" py -3.12 tools/check_registration.py --stage prereg
 py -3.12 tools/manifest_verify.py
 ```
 
@@ -98,7 +99,7 @@ about recorded invocations.
 **This round's work root:**
 
 ```
-C:/Users/ttbea/AppData/Local/Temp/claude/C--Users-ttbea-OneDrive-Desktop-MBO-2025-4mon--2026-01/33e8c843-30fa-4bfb-aa9f-814c77bdb2e6/scratchpad
+C:/Users/ttbea/AppData/Local/Temp/claude/C--Users-ttbea-OneDrive-Desktop-MBO-2025-4mon--2026-01/33e8c843-30fa-4bfb-aa9f-814c77bdb2e6
 ```
 
 **Unset during a gate run therefore means the round was not set up from this
