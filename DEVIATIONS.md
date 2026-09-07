@@ -3603,3 +3603,93 @@ every run.
 question had not been asked?* **Yes.** A false attestation inside a signed commit
 is the failure the manifest exists to prevent, and the previous round produced
 one that every instrument passed.
+
+## D-V30A-83 — a new verification is a sibling, not a frozen-slot spend, and the frozen instrument tripping was the design saying so
+
+**THE HOLE IS R242's AND IT IS REAL: the gate certified coverage and never
+content.** The repair is what changed. R242 put the check inside
+`tools/check_registration.py`, the frozen comparison tripped, and a slot went
+from 2 to 4's ceiling — 2 to 3. R223 §1 fixed that ceiling before there was
+pressure on it and wrote *"it is not a budget to spend."*
+
+**A FROZEN INSTRUMENT TRIPPING ON AN EDIT IS NOT AN OBSTACLE TO ROUTE AROUND.**
+The two slots already spent are repairs to what a frozen check DOES —
+`line_citations` and `round_reconciliation`, genuinely unavoidable differences in
+existing behaviour. **An addition is not that.** So the rule, recorded in the
+instrument it produced:
+
+> New verification is added as a NEW INSTRUMENT. Frozen-difference slots are for
+> changes to behaviour that is already frozen, not for additions that could
+> stand beside it.
+
+**THE INVOCATION COULD GAIN A STEP.** Certification is a documented command block
+in `ROUND_STATE.md`, not a definitionally single command, so the runner runs two
+where it ran one and certification passes only if both pass.
+`tools/check_registration.py` is reverted **byte-identical to its pre-R242 state**
+(sha256 `caa2a3ff…`, 180 767 bytes), the permitted set is back to
+`{line_citations, round_reconciliation}`, and **the running count is 2 of 4**.
+
+**A PREMISE IN THE INSTRUCTION DID NOT HOLD, and acting on it literally would
+have destroyed several rounds of work.** *"Revert to byte-identical with the
+tag"* is not available: the checker at `prereg-v30a` is **141 431 bytes** and the
+pre-R242 file is **180 767** — they have differed for many rounds, because the
+frozen mechanism compares **verdicts, not bytes**. Reverting to the tag would
+have undone the two ruled repairs and everything else built since. The coherent
+reading is *revert this round's addition*, and that is what was done.
+
+**MEASURED, both instruments, clean and corrupted:**
+
+| | clean tree | one manifest line corrupted |
+|---|---|---|
+| `py -3.12 tools/manifest_verify.py` | exit 0, 826 verified | **exit 1, names the file** |
+| `py -3.12 tools/check_registration.py --stage prereg` | exit 1 (the disclosed check) | **unchanged — no manifest finding** |
+
+The gate not catching it is now correct rather than a hole: it certifies
+coverage, the sibling certifies content, and certification is both. The manifest
+was restored byte-for-byte and the restoration verified against git.
+
+**THE MECHANISM CAUGHT ITS AUTHOR IN THE ROUND THAT BUILT IT.** Editing
+`ROUND_STATE.md` to document the two-command certification made that file's own
+manifest line stale, and the sibling reported it on the next run — the exact
+defect class, produced and caught inside one round.
+
+**ONE IMPLEMENTATION.** `tests/phase1/test_manifest_hashes.py` was carrying its
+own copy of the verification; it now imports and exercises the shipped tool. Two
+statements of one rule inside the file written to close an integrity gap is the
+two-lists hazard, and the drift would have been invisible because both would
+have been green.
+
+**R242 §2's BOUND RESTED ON A FALSE PREMISE, and the corrected bound is weaker.**
+That round accepted *"the manifest is regenerated from disk each round"*. There
+is no regeneration tool: ten scripts in `tools/`, only the checker names the
+manifest, and `git log --numstat` shows it changing one to five lines per commit.
+**Hand-maintained means every commit is a potential hash error site**, not a
+narrow post-regenerate window, and *"0 stale now"* says nothing about any
+intermediate commit. Current tree: **826 attesting lines, 0 stale, 0 absent.** No
+history walk — R215 §2 starts work from a demonstrated need and none exists; the
+trigger is any sign that a past commit's manifest disagrees with its own tree.
+The sibling is what makes hand-maintenance safe going forward. **A regeneration
+tool is recorded as a candidate and not built**, and would not belong inside the
+frozen instrument if it ever were.
+
+**THE TWO INTEGRITY MECHANISMS ARE DISJOINT AND DO NOT JOINTLY COVER**, and the
+second half is measured rather than assumed. Over 956 tracked files: **826**
+attested by the manifest, **2** covered by the frozen comparison, **0 in both** —
+disjoint, as expected — and **132 in neither**: 88 tests, 16 `src/`, 9 `tools/`,
+and root documents including `DEVIATIONS.md` and `DESIGN.md`. *"The instruments
+are not in the manifest"* is by design; *"nothing is in neither"* is not true.
+And what covers those 132 is narrower than it sounds: **Phase 2 commits are
+unsigned** — `git log --format=%G?` reports `N` for every one — so the signed
+`prereg-v30a` tag attests one commit, `b5a05c0`, and not the current tree. Git's
+content addressing detects corruption; it does not attest authorship.
+
+**AND THE RECORDED INVOCATION DISAGREED WITH THE RULE ABOUT RECORDED
+INVOCATIONS.** The certification block said `python tools/check_registration.py`.
+R227 established that `python` is a NAME rather than an invocation — it resolved
+to 3.12.10 and later to 3.11.9 in one session with no announcement. Both
+commands now carry `py -3.12`.
+
+**R163 §1's exemption test.** *Would this change have been made if the triggering
+question had not been asked?* **Yes.** A slot spent on an addition that could
+stand beside the frozen file is distance lost from a re-examination trigger for
+nothing, and the sibling closes the same hole at no cost to the frozen core.

@@ -56,8 +56,30 @@ carried inline on the command rather than exported once. Second branch of R221
 DECISION 3. Recorded here so it is one place rather than remembered:
 
 ```
-LEAKAUDIT_WORK_ROOT="<this session's scratchpad>" python tools/check_registration.py --stage prereg
+LEAKAUDIT_WORK_ROOT="<this session's scratchpad>" py -3.12 tools/check_registration.py --stage prereg
+py -3.12 tools/manifest_verify.py
 ```
+
+**CERTIFICATION IS BOTH COMMANDS, and it passes only if BOTH pass.** R243 §1.
+The gate verifies that every file in the evidence tree HAS a manifest line and
+every line has a file; it does not compare an attested hash to its file, so it
+certified content it never checked. R242 established that by producing the
+defect: a manifest line corrupted to a hash of zeros left the gate's output
+identical to a clean tree.
+
+**The verifier is a SIBLING rather than a check inside the gate**, and that is
+the rule rather than a convenience. `tools/check_registration.py` is a frozen
+instrument: it is run beside the tagged one and every difference has to be
+ruled, against a ceiling R223 §1 fixed at four before there was pressure on it.
+Putting the addition inside spent a slot; putting it beside spends none. **New
+verification is added as a new instrument; frozen-difference slots are for
+changes to what is already frozen.**
+
+**`py -3.12`, not `python`.** R227: `python` is a NAME, not an invocation — it
+resolved to 3.12.10 and later to 3.11.9 in one session with no announcement, so
+the recorded command carries the version-selecting launcher. This block said
+`python` until R243, which is the recorded invocation disagreeing with the rule
+about recorded invocations.
 
 **This round's work root:**
 

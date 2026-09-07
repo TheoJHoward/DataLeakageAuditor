@@ -43,6 +43,7 @@ COVERED = {
     "check_registration": "tests/phase1/test_work_root_resolution.py",
     "default_sites": "tests/phase1/test_default_sites.py",
     "floor_check": "tests/phase1/test_floor_check.py",
+    "manifest_verify": "tests/phase1/test_manifest_hashes.py",
     "opt_in_currency": "tests/phase1/test_opt_in_currency.py",
     "portability_digest": "tests/phase1/test_portability_digest.py",
     "probe_path_guard": "tests/phase1/test_probe_path_guard.py",

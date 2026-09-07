@@ -1702,78 +1702,6 @@ def check_manifest_covers_tree(root: Path) -> list[Finding]:
     return findings
 
 
-def check_manifest_content_matches(root: Path) -> list[Finding]:
-    """D9b - every attested hash MATCHES the file it attests. R242 §1.
-
-    THE COMPLEMENT OF `manifest_coverage`, AND THE GATE OWED BOTH. Coverage asks
-    which paths are listed against which are on disk; it passes on a listed path
-    whatever the file now contains. So the gate certified CONTENT IT NEVER
-    CHECKED -- an integrity manifest with an unenforced integrity field.
-
-    ESTABLISHED BY PRODUCING THE DEFECT, not by reading the source. R241 edited a
-    file in the evidence tree, its hash went stale, and the gate returned exactly
-    the result it returns on a clean tree. Corrupting a manifest line and
-    re-running confirmed it: the gate reported no manifest finding, and only the
-    suite caught it.
-
-    THE RECIPE, because a digest without one is not evidence (R229 §0): sha256
-    over each file's RAW BYTES; a line is `<64 hex>  <path>`, two spaces; paths
-    are relative to `evidence/`, except `../` lines which are relative to the
-    repository root. The manifest cannot list itself, and does not.
-    """
-    man = root / _MANIFEST_REL
-    if not man.exists():
-        return [Finding("manifest_content", _MANIFEST_REL, None,
-                        "the manifest is missing; nothing attests the evidence "
-                        "tree")]
-    ev = root / "evidence"
-    stale, absent, checked = [], [], 0
-    for line in man.read_text(encoding="utf-8", errors="replace").splitlines():
-        line = line.strip()
-        if not line or line.startswith("#") or "  " not in line:
-            continue
-        digest, rel = line.split("  ", 1)
-        rel = rel.strip()
-        if len(digest) != 64 or any(c not in "0123456789abcdef" for c in digest):
-            continue
-        target = (root / rel[3:]) if rel.startswith("../") else (ev / rel)
-        if not target.is_file():
-            absent.append(rel)
-            continue
-        if hashlib.sha256(target.read_bytes()).hexdigest() != digest:
-            stale.append(rel)
-        checked += 1
-
-    findings = []
-    if stale:
-        findings.append(Finding(
-            "manifest_content", _MANIFEST_REL, None,
-            "D9b: %d attested file(s) have CHANGED since the manifest recorded "
-            "them, so the manifest states a hash the file does not have and the "
-            "commit would ship a false attestation: %s. `manifest_coverage` "
-            "passes on this -- the path IS listed, and coverage and content are "
-            "different claims."
-            % (len(stale), ", ".join(stale[:8])
-               + (" ..." if len(stale) > 8 else ""))))
-    if absent:
-        findings.append(Finding(
-            "manifest_content", _MANIFEST_REL, None,
-            "D9b: the manifest attests %d path(s) that are not on disk: %s"
-            % (len(absent), ", ".join(absent[:8]))))
-    if not checked:
-        findings.append(Finding(
-            "manifest_content", _MANIFEST_REL, None,
-            "D9b: COVERAGE IS ZERO -- no attesting line was verified, so this "
-            "check reports nothing rather than reporting agreement. A pass over "
-            "an empty population reads exactly like a real one."))
-    elif not stale and not absent:
-        findings.append(Finding(
-            "manifest_content", _MANIFEST_REL, None,
-            "D9b: every attested hash matches its file (%d verified)" % checked,
-            is_note=True))
-    return findings
-
-
 # ---------------------------------------------------------------------------
 # D10 (R76/§63) - ROUND-END RECONCILIATION.
 #
@@ -3250,35 +3178,7 @@ _FROZEN_STAGE = "prereg"
 #   suppresses a TRUE FINDING. D17's finding is "these differ and nobody has
 #   ruled on it"; this makes it ruled, with a reason a reader can check against
 #   the two instruments' source.
-#
-#   manifest_content - R242 §1 / D-V30A-82. A check the frozen instrument DOES
-#   NOT HAVE, reading `absent -> PASS`. It verifies that every hash the manifest
-#   attests matches the file it attests, which `manifest_coverage` does not do:
-#   coverage asks which paths are listed against which are on disk and passes on
-#   a listed path whatever the file now contains.
-#
-#   ESTABLISHED BY PRODUCING THE DEFECT. R241 edited a file in the evidence tree,
-#   its manifest line went stale, and the gate returned the result it returns on
-#   a clean tree. Corrupting a manifest line and re-running both instruments
-#   confirmed it: the gate reported no manifest finding and only pytest caught
-#   it. So the instrument that CERTIFIES the registration was certifying content
-#   it never checked -- an integrity manifest with an unenforced integrity field.
-#
-#   THIS ENTRY IS A DIFFERENT KIND FROM THE TWO ABOVE, and the difference is
-#   recorded rather than used to argue the count down. Those are checks BOTH
-#   instruments carry whose VERDICTS differ -- places the two disagree about the
-#   same question, which is what the budget bounds. This is a check one
-#   instrument cannot be asked at all. The mechanism compares verdict sets and
-#   cannot tell the two cases apart, so it registers here either way, and the
-#   count is taken at 3 anyway: R223 §1 pre-committed the threshold before there
-#   was pressure on it, and the round that feels the pressure is the round that
-#   would find a reason it does not apply.
-#
-#   THE TEST THIS PASSES is the same one: it records a TRUE FACT -- the frozen
-#   instrument does not carry this check -- rather than suppressing a true
-#   finding. Nothing here silences a disagreement; it registers an addition.
-_FROZEN_PERMITTED = frozenset({"line_citations", "round_reconciliation",
-                                "manifest_content"})
+_FROZEN_PERMITTED = frozenset({"line_citations", "round_reconciliation"})
 
 # THE COUNT, PRE-COMMITTED BEFORE THERE IS PRESSURE ON IT. R223 §1.
 #
@@ -3296,29 +3196,7 @@ _FROZEN_PERMITTED = frozenset({"line_citations", "round_reconciliation",
 # be re-cut, whether the differences share a cause, whether the check still
 # earns its runtime -- rather than extended a fifth time.
 #
-# RUNNING COUNT: 3 of 4. line_citations (R163 §3), round_reconciliation
-# (R219 §1), manifest_content (R242 §1, D-V30A-82).
-#
-# THE THIRD ONE IS NOT THE SAME KIND OF THING AS THE FIRST TWO, and the
-# difference is recorded here rather than used to argue the count down.
-#
-#   line_citations and round_reconciliation are checks BOTH instruments carry,
-#   whose VERDICTS differ. Each one is a place the two instruments disagree
-#   about the same question, which is what the budget exists to bound: rule
-#   enough of those and the comparison compares nothing.
-#
-#   manifest_content is a check the frozen instrument DOES NOT HAVE. It reads
-#   `absent -> PASS`. The two instruments do not disagree about it; one of them
-#   cannot be asked. Adding a check has to register here because the mechanism
-#   compares verdict sets and cannot tell the two cases apart.
-#
-# THE COUNT IS TAKEN AT 3 ANYWAY, and that is deliberate. R223 §1 pre-committed
-# this threshold before there was pressure on it, and the round that feels the
-# pressure is exactly the round that would find a reason the pressure does not
-# apply to it. Whether the accounting should separate "verdict differs" from
-# "check absent upstream" is a question about the budget, and a round that wants
-# a slot is not the round that settles it. Raised in R242's report for the
-# author; NOT self-granted here.
+# RUNNING COUNT: 2 of 4. line_citations (R163 §3), round_reconciliation (R219 §1).
 _FROZEN_PERMITTED_LIMIT = 4
 
 _FROZEN_VERDICT = re.compile(r"^\[(PASS|FAIL)\] (\S+)", re.M)
@@ -3462,7 +3340,6 @@ CHECKS: tuple[tuple[str, str, object], ...] = (
     ("prereg", "declaration_values", check_declaration_values),
     ("prereg", "line_citations", check_line_citations),
     ("prereg", "manifest_coverage", check_manifest_covers_tree),
-    ("prereg", "manifest_content", check_manifest_content_matches),
     ("prereg", "round_reconciliation", check_round_reconciliation),
     ("prereg", "phase_arithmetic", check_phase_arithmetic),
     ("prereg", "requirement_ids", check_requirement_ids),
