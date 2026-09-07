@@ -3443,3 +3443,85 @@ question had not been asked?* **Yes.** An absence claim whose population is a
 list somebody chose is the failure this project names most often, and it does
 not stop being that failure when the claim is made by a test rather than by a
 sentence.
+
+## D-V30A-81 — the coverage claim had two boundaries, and `.py` was a filter chosen by habit
+
+**BOTH AXES ARE ABSENCE CLAIMS AND BOTH NOW HAVE A FLOOR.** R239 made the clock's
+consumers a population; R240 made the scanned files a population; each fixed one
+boundary and left the other implicit. The claim rests on both, so closing both is
+what ends the chain rather than adding a level to it.
+
+**THE FILE AXIS — `.py` was never established, only used.** The claim underneath
+it is *no tracked file outside `.py` carries runnable Python that reads the
+clock*. Measured over `git ls-files` with no filter:
+
+| | |
+|---|---|
+| tracked files | **955** — 398 `.py`, 557 not |
+| `.ipynb` / `.pyx` / `.pyi` / `.pyw` anywhere | **0** |
+| files whose first line names a python interpreter | **0** |
+| tracked files carrying the executable mode bit | **0** |
+| shell scripts | **1**, bash, embedding no Python |
+| non-`.py` files containing `decision_column` | **5**, all Markdown prose |
+
+So `.py` is the complete floor — proved rather than assumed — and three of those
+rows are now standing assertions, because a notebook added later would be a
+consumer a `.py` scan never sees.
+
+**THE SUBSTRING RULE HAS A DIRECTION, and only one direction needs the parser.**
+R218 settled *parse, not substring*, after a checker read a docstring as an
+import. That ruling is about one direction:
+
+> A use of a named thing REQUIRES its name to occur. So the ABSENCE of the
+> substring PROVES the use absent — no parse can find a use of a string that
+> does not occur. The PRESENCE proves nothing.
+
+Recorded as a dated addendum inside `TRACKB_LESSONS.md`'s TB-25, where R218's
+ruling already lives — **an addendum rather than a new entry**, so the enforced
+classification in that file, its family memberships and its hand-typed totals,
+is untouched.
+
+**AND THE REFINEMENT PAID TWICE.** The scan now excludes 948 of 955 files by
+absence and parses the 7 that survive: the same claim, cheaper. The second
+payment is the one worth keeping — `evidence/fixture_spike/y1/
+y1_trade_class_map.py` carries an invalid escape sequence in a docstring, and
+under the old scan it was parsed and would have become "unparseable", and
+therefore a reported hole in an unrelated coverage claim, on a Python where that
+becomes an error. It is now excluded by proof, because it contains no occurrence
+of the name at all. **A file's unrelated syntax error can no longer read as a
+gap in this claim.**
+
+**THE READ AXIS — ten reads, and the reduction to four now has a reason at each
+step.** Every read that is not routed through the shared refusal carries its own
+recorded reason: what it IS, not merely that it looked harmless. Enforcement
+stays structural — a read whose parent node is a `Compare` yields a bool and
+cannot escape as a clock — so the reasons explain while the syntax decides.
+
+**THE REGISTRY CAUGHT ITS AUTHOR IMMEDIATELY, in both directions.** The first
+version keyed two entries on enclosing-function names typed from memory rather
+than measured. `test_EVERY_NON_ROUTED_read_carries_ITS_OWN_REASON` reported the
+two real reads as unexplained and
+`test_the_registrations_NAME_READS_THAT_EXIST` reported the two invented names
+as claims about nothing. A registry that only checked one direction would have
+accepted an entry naming a function that does not exist.
+
+**A GAP THIS ROUND DEMONSTRATED RATHER THAN SUSPECTED.** Editing a file in the
+evidence tree made its manifest line stale, and **nothing caught it** — not the
+suite, not the prereg gate. `manifest_coverage` verifies which paths are listed
+against which are on disk, and its own message names the complement it does not
+perform: *"`sha256sum -c` cannot see this — it only walks what the manifest
+lists."* Coverage and content are different claims, and only one was checked by
+anything that runs.
+
+Verified across the whole manifest: **826 attesting lines, 0 stale, 0 absent.**
+The hash side had not drifted — so `tests/phase1/test_manifest_hashes.py` pins a
+property that held rather than repairing one that failed, and the reason it held
+is that the discipline was kept every round. Its wrong case tampers with a file
+and requires the checker to name it.
+
+**R163 §1's exemption test.** *Would this change have been made if the triggering
+question had not been asked?* **Yes** for the manifest check — a stale
+attestation inside a signed commit is the failure the manifest exists to prevent,
+and this round produced one. **For the two axes the honest answer is no**: the
+file axis was closed because R241 asked whether `.py` was established, and it
+was not.

@@ -1094,6 +1094,34 @@ reproduces inside the test written to detect a different instance of it is not a
 coincidence**, and it is the argument that made the eight-document sweep worth a
 round of its own.
 
+**ADDENDUM, 6 September 2026 (R241 §3) — the rule has a DIRECTION, and only one
+direction needs the parser.** *Parse, do not match text* is stated above as
+though it were symmetric. It is not, and the asymmetry is usable:
+
+> A use of a named thing REQUIRES its name to occur. So the ABSENCE of the
+> substring PROVES the absence of the use — no parse can find a use of a string
+> that does not occur in the file. The PRESENCE of the substring proves nothing,
+> which is the half R218 ruled on.
+
+So `grep -L` is a **sound exclusion** and `grep -l` is only a **candidate list**.
+A checker may narrow by substring-absence and then parse whatever survives, and
+that is a proof rather than a shortcut.
+
+**Where it paid.** The decision-clock totality test asserts *these are all the
+consumers* over every tracked file. Parsing 398 files to answer a question about
+7 was the cost; excluding 948 of 955 by absence and parsing the remainder is the
+same claim, cheaper, and it made one thing better rather than only faster: a
+tracked file carrying an invalid escape sequence in a docstring is now excluded
+by proof instead of being parsed, so an unrelated syntax error can no longer
+read as a hole in an unrelated coverage claim.
+
+**And the frozen file.** `protocol/runtime_reference.py` cannot be edited, so a
+consumer there would have needed its own registration. It contains no occurrence
+of the name at all — the sound direction — so no use can exist, and the result
+needs no caveat about the freeze. **A clean result proved by absence-of-the-
+necessary-substring is complete on its own**, and manufacturing a doubt the proof
+already excludes would be its own dishonesty.
+
 **And the sweep, run cold a round later, found one more instance in eight
 documents** — `OPERATING_RULES.md`, whose scope sentence described a fourteen-rule
 extraction after three rules had arrived by another route. Recorded at
