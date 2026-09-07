@@ -75,6 +75,14 @@ CLASSIFICATION = {
     "availability.py::param::__init__(notes=)": (NA, "result carrier field"),
     "availability.py::param::__init__(per_frame=)": (NA, "result carrier field"),
     "availability.py::param::__init__(unmodelled_frames=)": (NA, "result carrier field"),
+    # R255. Result carrier fields, and the `None` here is NOT the merged-states
+    # defect this register exists to catch: `slice_plan=None` records that no
+    # slice was asked for, which is a state the run was actually in, not a
+    # question nobody answered. The refusable state -- a slice asked for with no
+    # padding declared -- is carried by `NOT_DECLARED` on the INPUT side, where
+    # a caller can be in it.
+    "availability.py::param::__init__(slice_plan=)": (NA, "result carrier field"),
+    "availability.py::param::__init__(context_seconds=)": (NA, "result carrier field"),
     "checks.py::param::__init__(did_not_look_because=)": (NA, "result carrier field"),
     "checks.py::param::__init__(findings=)": (NA, "result carrier field"),
     "checks.py::param::__init__(notes=)": (NA, "result carrier field"),

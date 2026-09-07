@@ -181,6 +181,17 @@ def build_parser() -> argparse.ArgumentParser:
                           "is attributable to exactly one of them")
     run.add_argument("--max-cohorts", type=int, default=400, metavar="N",
                      help="cap on probed seconds (availability runs only)")
+    run.add_argument("--slice-from", default=None, metavar="TIMESTAMP",
+                     help="audit only cohorts at or after this instant. The "
+                          "data before it is still read by your pipeline and is "
+                          "NOT probed, so --padding is REQUIRED with this "
+                          "(DESIGN.md section 5.3)")
+    run.add_argument("--padding", default=None, metavar="DURATION",
+                     help="how far back your builder reads, e.g. 30D or 1h. "
+                          "Required with --slice-from and refused without it. "
+                          "This tool cannot derive it: the availability model "
+                          "says when a cell became knowable, not how far back "
+                          "your build function reaches")
     run.add_argument("--quiet", action="store_true",
                      help="print the findings only, without the explanation")
 
@@ -238,9 +249,10 @@ def _run_checks(frames, build, model_path):
     return EXIT_OK_SILENT
 
 
-def _run_availability(frames, build, model_path, stride, max_cohorts):
+def _run_availability(frames, build, model_path, stride, max_cohorts,
+                      slice_from=None, padding=None):
     """The availability probe, end to end, from a declared model file."""
-    from .availability import (eligible_cohorts, run_probe_a,
+    from .availability import (NOT_DECLARED, eligible_cohorts, run_probe_a,
                                require_decision_column)
     from .availability_trace import traces_for
     from .findings import AuditResult
@@ -268,10 +280,17 @@ def _run_availability(frames, build, model_path, stride, max_cohorts):
     # data, and the per-column one was built to suppress a false positive the
     # coarse path produces. A user declaring modes to correct a false positive
     # kept the false positive, with no error.
+    # `--padding` ABSENT AND `--padding` DECLARED-AS-NOTHING ARE DIFFERENT
+    # STATES and argparse merges them into `None`. The sentinel is restored here
+    # so the probe's refusal sees the state the user is actually in; passing
+    # `None` through would trip the "not a declaration" branch with a message
+    # about a value the user never typed.
     result = run_probe_a(frames, build, model, side="user",
                          cohort_stride=stride, max_cohorts=max_cohorts,
                          column_modes=config.column_modes or None,
-                         bar_duration=config.bar_duration)
+                         bar_duration=config.bar_duration,
+                         slice_from=slice_from,
+                         padding=NOT_DECLARED if padding is None else padding)
     # Eligibility is derived, not assumed: a second no aggregate frame carries a
     # row in has nothing to corrupt, and scheduling it would report a dead
     # process where the truth is an empty probe surface.
@@ -283,9 +302,20 @@ def _run_availability(frames, build, model_path, stride, max_cohorts):
     # a call rather than a line number.
     dcol = require_decision_column(model.decision_column,
                                    "the CLI's cohort selection")
-    picked = sorted(
-        pd.to_datetime(built[dcol]).dt.floor("s").unique()
-    )[::stride][:max_cohorts]
+    # THE SECOND COHORT SELECTION, AND THE SLICE HAS TO REACH IT. R255 §5.
+    #
+    # This line re-derives the probed seconds instead of taking them from
+    # `result`, so it is a second place the cohort set is decided. Left alone
+    # under a slice it would hand `eligible_cohorts` the padding seconds, and
+    # the eligibility table would list rows the probe never perturbed as probe
+    # subjects -- context reported as audited, which is exactly what R255 §3
+    # forbids. It does NOT re-decide the slice: the plan comes off the result,
+    # already validated by the one refusal in `run_probe_a`, so there is no
+    # second threshold here to drift from the first.
+    _secs = sorted(pd.to_datetime(built[dcol]).dt.floor("s").unique())
+    if result.slice_plan is not None:
+        _secs = [s for s in _secs if s >= result.slice_plan.slice_from]
+    picked = _secs[::stride][:max_cohorts]
     elig = eligible_cohorts(frames, model, picked,
                             pd.to_datetime(built[dcol]))
     traces = traces_for(result, elig.eligible, case_id="user")
@@ -349,6 +379,31 @@ def _main(argv=None) -> int:
 
     ap = build_parser()
     args = ap.parse_args(sys.argv[1:] if argv is None else argv)
+
+    # THE THIRD PATH, WHICH DOES NOT JOIN THE OTHER TWO, AND SO CARRIES ITS OWN.
+    # R255 §5. `audit()` -- the column dependency probe, taken when no --model
+    # is given -- reaches no `run_probe_a`, so the refusal there cannot cover
+    # it. Silently ignoring a slice on that path would leave a user believing
+    # they had audited a window when they had audited everything.
+    #
+    # IT SITS IMMEDIATELY AFTER PARSING, AND THE FIRST PLACEMENT DID NOT. Put
+    # after the pipeline was resolved, it never ran: `--pipeline` fails first
+    # and the user is told about their import while the flag that would have
+    # been ignored goes unmentioned. This is pure argument validation and
+    # belongs where nothing can fail ahead of it.
+    if getattr(args, "slice_from", None) is not None and not getattr(args, "model", None):
+        print("leakaudit: --slice-from needs --model. The slice rule "
+              "(DESIGN.md section 5.3) is about window warmup, and without an "
+              "availability model there is no window to reason about. Declare a "
+              "model, or drop --slice-from and audit the whole frame.",
+              file=sys.stderr)
+        return EXIT_USAGE
+    if getattr(args, "padding", None) is not None and not getattr(args, "model", None):
+        print("leakaudit: --padding needs --model and --slice-from. Nothing was "
+              "excluded from probing, so the padding describes no boundary.",
+              file=sys.stderr)
+        return EXIT_USAGE
+
     if args.command == "schema":
         from .model_file import SCHEMA_DOC
         print(SCHEMA_DOC)
@@ -401,7 +456,9 @@ def _main(argv=None) -> int:
         return _run_checks(frames, build, args.model)
     if args.model:
         result = _run_availability(frames, build, args.model,
-                                   args.stride, args.max_cohorts)
+                                   args.stride, args.max_cohorts,
+                                   slice_from=args.slice_from,
+                                   padding=args.padding)
     else:
         result = audit(frames, build)
 

@@ -42,8 +42,13 @@ from .probe import DETECTOR_ID, ProbeResult, cohort_id_for, probe_columns
 from .detectors import (
     NULL_DETECTOR_ID, VALUE_DETECTOR_ID, probe_nulls, probe_values)
 from .availability import (
-    AvailabilityModel, EligibleCohorts, ProbeAResult, ProbeError,
+    NOT_DECLARED, AvailabilityModel, EligibleCohorts, ProbeAResult, ProbeError,
     align_key, eligible_cohorts, run_probe_a)
+# SLICING. `DESIGN.md` §5.3, R255. A slice without declared padding is refused,
+# and the padding this tool cannot derive is the builder's own lookback -- see
+# the module docstring, which records the establish that preceded the refusal.
+from .slicing import (
+    SliceError, SlicePlan, model_padding_floor, plan_slice, split_seconds)
 from .availability_trace import traces_for
 from .identity_control import IdentityControlResult, run_identity_control
 # INFERENCE. R232 §5. It proposes and never picks: structure is
@@ -82,5 +87,8 @@ __all__ = [
     # arithmetic, written before the parser that reads it.
     "ColumnMode", "ModeError", "availability", "availability_matrix",
     "bar_duration", "undeclared_columns", "FILE_MODES", "ALL_MODES",
+    # the slice rule
+    "SliceError", "SlicePlan", "NOT_DECLARED", "model_padding_floor",
+    "plan_slice", "split_seconds",
     "fixture_adapter",
 ]

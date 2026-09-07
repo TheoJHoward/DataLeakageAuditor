@@ -15,6 +15,49 @@ down, and nothing here gates the `prereg-v30a` tag.
 
 ---
 
+## §255.1 — `run_stage`'s verdict depends on the SPELLING of its root (found R255)
+
+**Measured, not suspected.** The same tree, the same stage, two invocations:
+
+    cr.run_stage("prereg", Path("."))      -> FAIL, 2 checks, 9 findings
+    cr.run_stage("prereg", Path(<abs>))    -> FAIL, 1 check,  1 finding
+
+The extra failure is `control_characters`. Its exemptions are keyed by path
+string, and under a relative root the scanned paths come out as
+`fixture_spike/...` where the exemption keys read `evidence/fixture_spike/...`,
+so **every value-scoped exemption misses and four recorded live defects
+re-report as new findings**. Nothing about the tree differs: the flagged bytes
+(`U+0007`, `U+000C` in `PRE_R9_HASHES.txt`, from `\a` and `\f`) were compared
+byte-for-byte against a `HEAD` worktree and are identical in both.
+
+**Why it is worth an entry rather than a note.** This is **R248's mechanism in a
+new place** — an instrument that works, zeroed by how it was invoked. R248's
+instance ran in the dangerous direction, silently emptying a check's population;
+this one runs in the benign direction, adding noise. **The direction is luck.**
+The same key-matching would go the other way if an exemption key happened to
+match under the wrong root, and then a real defect would be exempted silently.
+
+It also cost real time this round: the noisy verdict read as a **second gate
+failure**, against a gate that has carried exactly one disclosed failure since
+R252, and it took a `git worktree` comparison at `HEAD` to establish it was the
+invocation and not the round's own changes.
+
+**Deliberately NOT fixed here.** `tools/check_registration.py` is verdict-frozen
+with a ruled ceiling of 4 differences, currently **2**. R243 settled that a new
+verification is a **sibling**, never a frozen-slot spend, so the repair is not a
+patch to the checker.
+
+**What would settle it,** as a sibling instrument: a check asserting that
+`run_stage`'s verdict is invariant under root spelling — run it twice on the
+same directory, once relative and once absolute, and require the same exit code
+and finding count. That is a new instrument, costs no slot, and would have
+caught this the first time it happened rather than the round someone noticed.
+
+*Raised R255, during the slice build. Not worked; the round's mandate was
+feature D.*
+
+---
+
 ## §39 — the auditor publishes its detection domain (DESIGN.md, Phase 1 requirement)
 
 To be added to `DESIGN.md` **in `DESIGN.md`'s own voice**, as a Phase 1 requirement:

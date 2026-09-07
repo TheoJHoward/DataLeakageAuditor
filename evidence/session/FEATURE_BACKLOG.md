@@ -69,13 +69,31 @@ distinguishes cohort coverage from detector coverage.
 once and a tool run in CI.
 
 ### D. `DESIGN.md` §5.3 — auditing a slice, with padding
-**Status: NOT STARTED.** The rule is specified precisely: any slice carries
-padding of at least the maximum window before the first probed cohort, present
-in the data, excluded from probing, and reported; a slice without declared
-padding is **refused, not silently run**.
-**Value:** high — it is a refuse-don't-default boundary of exactly the kind this
-session kept finding missing, and slicing is what a user reaches for first on a
-large frame.
+**Status: BUILT at R255.** `src/leakaudit/slicing.py`, `--slice-from` /
+`--padding`, `tests/phase1/test_slicing.py` (24 tests).
+
+**What was established before anything was refused.** R255 §1 required deriving
+the padding threshold from the availability model *first*. Measured: the model
+has four fields and one duration among them, so it founds a **floor**
+(`window`, or a **declared** `bar_duration` where larger) and does **not**
+determine the requirement — the binding quantity is the *builder's own
+lookback*, and `build` is an opaque callable. An inferred `bar_duration` is
+per-row and contributes nothing. So the primary refusal is a **presence test**
+(padding not declared), which needs no threshold and cannot rest on an invented
+one. That is `DESIGN.md` §5.3's own answer, not a gap.
+
+**The known positive is an edge positive, both halves measured.** Same builder,
+same 30 probed cohorts: unpadded → `observed_silence`, 0 findings; padded →
+`finding`, 30. A fixture control (`min_periods=1`) removes the masking and the
+unpadded run then finds all 30, so the silence is the truncated window and not
+a coverage gap.
+
+**Known limit, pinned as a test.** A padding that clears the model-founded floor
+can still be far below the builder's lookback: 2s of padding clears the 1s floor
+and the run is still fully masked. No refusal can close this — only the
+declaration can. `test_THE_RESIDUAL_HOLE_...` fails if a future change closes it.
+**Also out of scope:** a caller who truncates their frames *before* calling. The
+tool cannot distinguish that from data that starts late.
 
 ### E. `DESIGN.md` §1.2 — domain profiles
 **Status: NOT STARTED.** A table of profiles (`generic` and others) supplying
@@ -126,8 +144,10 @@ criterion's error. **Not run now.**
 useful" implies they should?*
 
 1. **Probe label leakage** (A) — the thing most users arrive for.
-2. **Audit a slice safely** (D) — what they reach for on a large frame, and
-   currently unguarded.
+2. ~~**Audit a slice safely** (D)~~ — **closed at R255.** A slice is now refused
+   without declared padding, the padding rows are reported as `not_applicable`
+   rather than audited-clean, and the edge leak the rule exists to stop masking
+   is a measured pair in the suite.
 3. **Run it in CI without deciding what "complete" means** (C).
 
 Everything else on the list is either an instrument, a parked API question, or a

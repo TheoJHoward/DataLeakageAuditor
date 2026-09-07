@@ -134,6 +134,13 @@ def _inference_frame(info) -> str:
 # field keeps its type, and rather than `"timestamp"` so the absence is visible.
 NOT_SET = "<decision column not declared>"
 
+# The slice padding nobody has declared, as distinct from a declared zero.
+# `slicing.py` owns the rule and this constant is DEFINED HERE because a
+# signature default must be importable without a cycle -- `slicing` imports this
+# module, so this module cannot import `slicing` at the top to get it. One
+# definition, imported by `slicing`, so the two cannot drift apart. R255 §5.
+NOT_DECLARED = "<padding not declared>"
+
 
 def require_column_name(dcol, where: str) -> None:
     """A value that is not a non-empty string is not a column name.
@@ -306,10 +313,26 @@ class ProbeAResult:
     # caller who forgot to declare one received a silence about their own
     # configuration and could not tell it from a silence about their pipeline.
     unmodelled_frames: tuple = ()
+    # THE SLICE, IF ONE WAS ASKED FOR. `DESIGN.md` §5.3, R255 §3.
+    #
+    # `context_seconds` are seconds the builder READ and the probe did NOT
+    # perturb. They are carried separately from `cohorts` rather than appended
+    # to it with a flag, because anything inside `cohorts` is a probed subject
+    # and `verdict()` reads that list: a padding second admitted there would
+    # count toward `observed_silence`, which is exactly the claim -- a probe
+    # happened and found nothing -- that never ran over them. Their outcome is
+    # `not_applicable`. `DESIGN.md` §8 locks the same distinction for the
+    # report: not-run states are never displayed as passed.
+    slice_plan: object = None
+    context_seconds: tuple = ()
 
     @property
     def findings(self):
         return [c for c in self.cohorts if c.finding()]
+
+    def context_outcome(self) -> str:
+        """The padding seconds' outcome. Never `observed_silence`, never clean."""
+        return "not_applicable" if self.context_seconds else "no_slice"
 
     def verdict(self) -> str:
         if not self.determinism_ok:
@@ -455,7 +478,9 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
                 cohort_stride: int = 97,
                 max_cohorts: int = 400,
                 seed: int = 20260828,
-                column_modes: Mapping[str, object] | None = None) -> ProbeAResult:
+                column_modes: Mapping[str, object] | None = None,
+                slice_from=None,
+                padding=NOT_DECLARED) -> ProbeAResult:
     """Corrupt a sparse set of seconds, rebuild once, and read WHICH rows moved.
 
     `cohort_stride` keeps corrupted seconds far apart so a moved row can be
@@ -484,6 +509,41 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
     # The corrupted seconds: sparse, deterministic, derived from the data's own
     # range rather than chosen.
     seconds = pd.Index(sorted(base_floor.unique()))
+
+    # THE SLICE REFUSAL SITS HERE, AND HERE IS WHY. R255 §5.
+    #
+    # Two paths reach the availability probe -- `leakaudit.run_probe_a`, which
+    # `__init__.py` exports, and `cli._run_availability` behind `leakaudit run`
+    # -- and the second calls the first. They JOIN at this function, so one
+    # refusal covers both and there is no second copy to fall out of step with
+    # this one. The alternative shape, a check in the CLI, would leave the
+    # exported library entry unguarded, which is the larger of the two surfaces
+    # for a tool whose point is being embedded.
+    #
+    # It sits AFTER `seconds` and BEFORE `picked` for a reason that is not
+    # arrangement: the padding seconds must be removed from the candidate set
+    # before the stride samples it, or the stride would spend cohorts on rows
+    # that are context, and `n_cohorts` would count subjects that were never
+    # probed as subjects.
+    if slice_from is not None:
+        from . import slicing
+        plan = slicing.plan_slice(raw=raw, model=model, slice_from=slice_from,
+                                  padding=padding,
+                                  declared_bar_duration=bar_duration)
+        probed, context = slicing.split_seconds(seconds, plan)
+        res.slice_plan = plan
+        res.context_seconds = tuple(context)
+        res.notes.append(slicing.context_note(plan, len(context)))
+        seconds = pd.Index(probed)
+    elif not isinstance(padding, str) or padding != NOT_DECLARED:
+        # A padding with no slice is a declaration about nothing. Refusing is
+        # cheap and the alternative is silently ignoring an argument the caller
+        # believed was protecting them.
+        raise ProbeError(
+            "`padding=` was declared without `slice_from=`. Padding describes "
+            "the data before a slice's first probed cohort; with no slice "
+            "there is no such boundary and nothing was excluded from probing.")
+
     picked = seconds[::cohort_stride][:max_cohorts]
     res.n_cohorts = len(picked)
     if res.n_cohorts == 0:

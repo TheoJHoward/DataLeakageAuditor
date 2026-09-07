@@ -18,11 +18,13 @@
     "src/leakaudit/availability.py",
     "src/leakaudit/availability_trace.py",
     "src/leakaudit/fixture_adapter.py",
-    "src/leakaudit/modes.py"
+    "src/leakaudit/modes.py",
+    "src/leakaudit/slicing.py"
   ],
   "path_set_reasons": {
     "src/leakaudit/availability.py": "both probe paths, and the reported-figures path",
     "src/leakaudit/modes.py": "the per-column path only",
+    "src/leakaudit/slicing.py": "ADDED R255, BY JUDGMENT AND NOT BY THE TRACE. `run_probe_a` imports and calls it when `slice_from` is given, so an edit here CAN move a probe result through `run_probe_a` -- which is the definition `not_on_the_path` denies, so it cannot go there. It is reached on the SLICE path only: runs A-D pass no slice, the import is lazy inside the branch, and no reported Phase 1 figure was produced under a slice. So a re-measurement with the existing runs would not list it, and listing it is the conservative call rather than a measured one.",
     "src/leakaudit/availability_trace.py": "the reported-figures path",
     "protocol/runtime_reference.py": "the frozen reducer, on the reported-figures path",
     "src/leakaudit/fixture_adapter.py": "MEASURED at guard time on the real fixture, where it PROVIDES the frames. The synthetic runs that first measured this set supplied frames directly, so the trace could not see it; it was listed by judgment and is now listed by measurement.",
@@ -30,6 +32,7 @@
     "evidence/fixture_spike/f2/phase5_ml_fixture.py": "MEASURED at guard time. The fixture's own builder -- what the probe perturbs the inputs of. An edit here changes what the guard compares."
   },
   "added_by_judgment_not_by_the_trace": {
+    "OPEN 2026-09-07 (R255)": "`src/leakaudit/slicing.py` is listed by judgment and NOT by the trace, and unlike the `fixture_adapter.py` case below there is no prospect of the existing trigger confirming it: the trigger records frames entered during the guard run, the guard run passes no `slice_from`, and the import is lazy inside that branch -- so the module is never entered and the trigger stays silent. That silence is not evidence against the listing; it is the instrument being blind here BY CONSTRUCTION. What would confirm it is a guard run that takes a slice, which does not exist because no reported figure was produced under one. Recorded as an open judgment rather than dressed as a measurement.",
     "RESOLVED 2026-09-03": "This block listed `src/leakaudit/fixture_adapter.py` as belonging to the rule by reasoning, with the stated reason that the measuring runs supplied frames directly so the instrument was never going to see it. The staleness trigger's FIRST FIRING, on the R216 guard run against the real fixture, executed it and the fixture's two producing modules and named all three. The judgment was right and is now a measurement. Kept rather than deleted because it records that the trigger CONFIRMED a prediction rather than finding something nobody had considered -- which is the difference between a check that works and a check that got lucky."
   },
   "not_on_the_path": [

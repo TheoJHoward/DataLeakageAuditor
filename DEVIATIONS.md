@@ -4518,3 +4518,110 @@ question had not been asked?* **The backlog, no** — R254 §2(a) required
 enumerating before picking, and picking from memory is what the round was
 protecting against. **The rule tightening, yes**: a rule whose exception has
 produced three lapses in three rounds is a rule with a hole, whoever notices.
+
+## D-V30A-95 — the padding threshold is not derivable, so the refusal was built as a presence test
+
+**THE ESTABLISH CAME FIRST AND IT CHANGED THE ARTIFACT.** R255 §1 required
+deriving the required padding from the availability model *before* any refusal
+existed. Measured off the tree: `AvailabilityModel` has **four** fields and one
+duration among them. `window` is a single value for **every** aggregate frame,
+so "the max over the frames" is the value itself. `bar_duration` is not a model
+field at all — a sibling argument defaulting to `None`, and on that default
+`modes.py` infers a **per-row** series and already declines to name a value when
+the gaps disagree. `at_source_timestamp`, `explicit` and `availability_fn` read
+instants out of data or user code.
+
+**And the binding quantity is none of those.** Padding exists because slicing
+truncates what `build` can READ, and `build` is an opaque `Callable`. The model
+says when a cell became knowable, not how far back the builder reaches: a
+rolling 30-day mean has a 30-day lookback under a 1-second `window`, and no
+field moves when it changes. So the requirement is **not derivable**, which is
+why `DESIGN.md` §5.3 requires the user to declare it.
+
+**That is the reason the primary refusal is a PRESENCE test.** *Padding was not
+declared* needs no threshold and so cannot rest on an invented one. §1's third
+branch halts a refusal "whose threshold is unfounded"; this one has none. A
+weaker, separate **floor** — `window`, or a *declared* `bar_duration` where
+larger — is checked and labelled in the object and in the printed note as **not
+sufficiency**, because a check that is easy to mistake for a stronger one is the
+shape this session kept finding.
+
+**THE KNOWN POSITIVE IS AT THE EDGE AND BOTH HALVES ARE MEASURED.** Same
+builder, same **30** probed cohorts, varying only how far back the data reaches:
+unpadded → `observed_silence`, **0** findings; padded → `finding`, **30**. The
+masked half was confirmed first, since it is the defect being closed. A fixture
+control removes the masking mechanism (`min_periods=1`) and the *same unpadded
+run* then finds all **30**, so the silence is the truncated window and not a
+coverage gap. An interior leak is also found with no slice at all — the wiring
+control, kept labelled as one.
+
+**WARN-AND-AUDIT WAS MEASURED RATHER THAN ARGUED AGAINST.** A mutant that warns
+and continues publishes `verdict=observed_silence` over **30** cohorts the
+control measured as carrying **30** real findings. The warning rides along; the
+verdict — the thing `assert_no_proven_leakage` reads — says a probe happened and
+found nothing. Three tests redden on that mutant.
+
+**THE PADDING ROWS ARE CARRIED SEPARATELY, NOT FLAGGED IN PLACE.** `cohorts` is
+the probed-subject list and `verdict()` reads it, so a padding second admitted
+there would count toward `observed_silence` — the one claim that never ran over
+them. They sit in `context_seconds` with outcome `not_applicable`, and the
+printed note says NOT PROBED, `not_applicable`, *not clean*. `DESIGN.md` §8
+locks the same distinction for the report. **R255 §3 cites "§8.2", which does not
+resolve — `DESIGN.md` §8 has no subsections.** The substance it names is in §8's
+own text and that is what was built to.
+
+**THREE PATHS REACH THE PROBE, NOT TWO.** `run_probe_a` and the CLI's
+availability path **join** at `run_probe_a`, so one refusal covers both. The
+third is the model-free column-dependency path, which reaches no availability
+probe and carries its own refusal of the flags. **A fourth place decides the
+cohort set**: `cli.py` re-derives it for the eligibility table, and left alone
+it would list padding seconds as probe subjects. It now takes the plan off the
+result rather than re-deciding, so there is no second threshold to drift.
+
+**THE FLAG CHECK'S FIRST PLACEMENT NEVER RAN.** Put after the pipeline was
+resolved, `--pipeline` failed first and the user heard about their import while
+the ignored flag went unmentioned. It is argument validation and sits where
+nothing can fail ahead of it. Found by the test, not by reading.
+
+**THE LIMIT IS PINNED AS A TEST, NOT LEFT AS PROSE.** Two seconds of padding
+clears the one-second floor and the data check, and the run is still **fully
+masked** — 30 cohorts, 0 findings, over seconds the control measured as
+carrying 30. No refusal closes that; only the declaration does. A caller who
+truncates their frames *before* calling is also outside it, indistinguishable
+from data that starts late. Both are recorded against the item.
+
+**A GATE READING WAS PRODUCED BY THE INVOCATION, NOT THE TREE.** A relative root
+made `run_stage` report a second failure: `control_characters`' exemptions are
+path-keyed, and under `Path(".")` the scanned paths lose their `evidence/`
+prefix, so four recorded live defects re-report as new findings. A `HEAD`
+worktree established the flagged bytes are byte-identical in both trees. Under
+an absolute root the gate is at its **single disclosed failure**,
+`hash_set_single_source`, where R252 left it. **This is R248's mechanism in a new
+place** — an instrument zeroed by how it was called — and the direction was
+luck: here it added noise, and the same key-matching could exempt a real defect
+instead. Recorded at `DEFERRED_ITEMS.md` §255.1 with the sibling check that
+would settle it. The frozen checker was not touched; the count stays 2 of 4.
+
+**AND THE FOURTH D2.1 LAPSE, THE FIRST SINCE THE EXCEPTION WAS REMOVED.** A
+guard run's output was sent to a file with a shell `>` redirect. R254 deleted
+the judgment the earlier form asked for and named the tell as *reaching for a
+shell redirect at all*, and the hand reached anyway. **The aggravating detail is
+that it bought nothing**: the background runner already captures stdout, so the
+redirect only moved the output somewhere the harness could not show it. No
+repository file was touched and the file was scratch — and the rule has no
+triviality case and no location case, which is the point of its current form.
+Three lapses were reported with the rule named; this is the fourth, reported the
+same way, and four in four rounds is the measurement rather than the disclosure.
+
+`slicing.py` is listed in `PROBE_PATH_SET.json` by **judgment**, not by the
+trace, and unlike the `fixture_adapter.py` case the existing trigger cannot
+confirm it: the guard passes no slice and the import is lazy inside that branch,
+so the module is never entered. That silence is the instrument being blind by
+construction, and it is recorded as an open judgment rather than dressed as a
+measurement. The guard itself ran and all **eight** terms are SAME.
+
+**R163 §1's exemption test.** *Would this change have been made if the triggering
+question had not been asked?* **The feature, yes** — item D was on the enumerated
+backlog and `DESIGN.md` §5.3 specifies it. **The presence-test shape, no**: §1
+forced the derivation before the refusal, and a round that built first would
+have shipped a threshold with a fixed default behind it.
