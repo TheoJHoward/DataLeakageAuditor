@@ -3846,3 +3846,72 @@ question had not been asked?* **No for the discriminating read** — R245 §1 as
 it. **Yes for the repair**: an assertion satisfiable by the thing it is counting
 cannot fail on the condition it exists for, and that is a defect wherever it is
 found.
+
+## D-V30A-86 — the count assertion could not fail, and the paragraph written to explain that re-created it
+
+**THE ASSERTION DID REAL WORK AND THEN COMPARED AGAINST SOMETHING ALWAYS TRUE.**
+It computed the total correctly from the file and then searched the section for
+those digits. Entry labels are `TB-NN` and `-` is a word boundary, so with
+contiguous numbering the entry count always equals the highest label's number and
+that label is always present. **A wrong stated total could not redden it.** Third
+can't-fail assertion this session, and the most convincing kind: everything up to
+the comparison is genuine.
+
+**R245's REPAIR ALSO FAILED, AND HOW IT FAILED IS WORTH MORE THAN THE FIX.**
+Stripping `TB-nn` before the search was verified at the time — with the stated
+total removed, the stripped version went red. Then the paragraph documenting the
+coincidence was written, and it **quoted the declaration verbatim**. That put a
+second copy of the number into the section as ordinary prose: immune to
+label-stripping, and enough to re-satisfy the search. **The document about the
+defect class exhibited the defect class** (TB-25), inside the correction for it.
+
+The mechanical cause is plainer than the irony: **the verification ran before
+the paragraph was added and was never re-run after.** A check performed on an
+earlier state of the file, reported as a property of the later one.
+
+**MEASURED, three versions against four violations:**
+
+| violation | bare search | strip labels | parse declaration |
+|---|---|---|---|
+| clean tree (control) | pass | pass | **pass** |
+| wrong total, coinciding with an entry id | **passed** | **passed** | **red** |
+| wrong total, plus the true total in prose | **passed** | **passed** | **red** |
+| declaration removed entirely | **passed** | **passed** | **red** |
+
+Both earlier versions were green on every violation.
+
+**THE FIX IS BY PROPERTY.** The section carries **exactly one** total
+declaration, parsed and compared against the enumeration. Zero fails — nothing
+states the total. **Two or more fails as ambiguous**, which is not hypothetical:
+it is precisely what R245 produced. One that disagrees fails. Coincidental digits
+elsewhere are irrelevant because nothing searches the prose, and the explanatory
+paragraph no longer reproduces the declaration's literal form, which is why it
+can describe it.
+
+**SIX MUTATIONS SHIP AS STANDING TESTS**, including the immune positive R246
+specified — the stated total wrong AND the wrong number an existing label, the
+case both earlier repairs passed. A negative control requires the assertion to
+stay green on the real file, and `_mutate` itself was checked: identity mutation
+returns `False`, violation returns `True`, so the mutation tests are not vacuous
+in their own right.
+
+**THE PRACTICE, RECORDED.** *"Enforced"* is an absence claim — no violation
+passes — so it needs its own known positive showing the enforcement fires. **A
+green assertion is not evidence until it has been shown able to go red.** That is
+R215 §0 pointed at the enforcing test rather than at the thing enforced, and it
+is the same family as the manifest hash nothing verified: a value attested and
+never checked.
+
+**THE SIBLINGS WERE SWEPT, and all three enforce.** A file with one can't-fail
+assertion earns a check of its neighbours (TB-25's sweep, pointed at assertions).
+Each was mutated and each went red: `test_every_lesson_is_classified` on an entry
+in no family, `test_no_family_names_a_lesson_that_does_not_exist` on a family
+naming a non-entry, `test_the_families_are_DISJOINT` on an entry in two families.
+Those three were genuine all along — which is why the earlier read that *coverage*
+is dynamically enforced stands, and only the *stated total* was the silence.
+
+**R163 §1's exemption test.** *Would this change have been made if the triggering
+question had not been asked?* **No, and that is the finding.** The assertion was
+green, had been green for every round it existed, and reported the reassuring
+answer. It took R245 §2's demand to *prove* a property — rather than observe it
+holding — for the absence to become visible.

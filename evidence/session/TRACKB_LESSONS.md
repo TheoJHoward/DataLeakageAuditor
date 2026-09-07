@@ -1250,19 +1250,33 @@ OWNS — SINCE R245, AND NOT BEFORE.**
 `len(_entries(text))` from the file and requires those digits in this section,
 so it fails the moment an entry is added without updating it.
 
-**IT DID NOT DO THAT UNTIL R245, AND THE REASON IS WORTH KEEPING.** The
-assertion was `re.search(r"\b27\b", section)`, and `-` is a word boundary — so
-the digits inside **`TB-27`** satisfied it. `TB-27` occurs three times in this
-section, and deleting *"All **27** entries"* outright left the test **green**.
-The check that owned the count was being satisfied by an entry's own label.
+**IT DID NOT DO THAT UNTIL R246, AND THE ROUTE THERE IS THE LESSON.** The
+original assertion searched the whole section for the total's digits. Entry
+labels carry digits and `-` is a word boundary, so an entry's own label
+satisfied the search: with contiguous numbering the entry count always equals
+the highest label's number, and that label is always present. **The assertion
+could not fail on a wrong total** — it did real work up to the comparison and
+then compared against something always true.
 
-**Found by R245 asking whether the count was test-owned**, which is the question
-this file's stale *"twenty-one"* raised. The answer was half yes: coverage was
-genuinely dynamic — `test_every_lesson_is_classified` counts every entry from
-the file and has always enforced that each is in a family — while the *stated
-total* was a believed silence. Entry ids are stripped before the search now, so
-a match is a number somebody wrote about the classification rather than a label
-inside it, and removing the stated total fails the test.
+**R245 stripped the labels and believed that fixed it. It did not**, and the way
+it failed is worth more than the fix. The paragraph written to EXPLAIN the
+coincidence quoted the declaration verbatim, which put a second copy of the
+number into the same section as ordinary prose — immune to label-stripping, and
+enough to re-satisfy the search. **The document about the defect class exhibited
+the defect class** (TB-25), inside the correction for it, and the verification
+had been run before that paragraph was added and never re-run after.
+
+**R246's fix is by property rather than by pattern.** The section carries
+**exactly one** total declaration, parsed and compared against the enumeration:
+zero declarations fails, two or more fails as ambiguous, and one that disagrees
+with the count fails. Coincidental digits elsewhere in the prose are irrelevant
+because nothing searches the prose. This paragraph deliberately does not
+reproduce the declaration's literal form, which is why it can describe it.
+
+**What was true all along**, established at `4557921` by counting: coverage is
+genuinely dynamic — `test_every_lesson_is_classified` reads every entry from the
+file and requires each to be in a family, and a mutation confirms it goes red on
+an unclassified entry. Only the *stated total* was the believed silence.
 
 **THE OTHER SIX WERE REMOVED RATHER THAN CORRECTED (R245 §1).** Each family used
 to end *"Five of twenty-six"*, and nothing checked those: the test deliberately
