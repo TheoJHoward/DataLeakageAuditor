@@ -242,3 +242,40 @@ not two: it looked and found nothing, it looked and found something, and **it
 could not look**. Collapsing the third into the first is the same defect this
 tool exists to find in other people's pipelines — `observed_silence` where the
 honest answer is `none`.
+
+
+---
+
+## The work root now contains harness infrastructure, and certifying grows it
+
+*Recorded at R248 §4. Not repaired here.*
+
+R248 widened the declared work root from the session's `scratchpad/`
+subdirectory to the session directory, because 49 files of round work sat above
+the narrower root and never entered the reconciliation's population. That was the
+right widening for the work; it also pulled in `tasks/`, the harness's
+background-command log directory.
+
+**`tasks/` is not round work.** It is infrastructure the harness writes, in the
+same category as `.claude/` -- present in the directory, not produced by the
+round. **And it grows when certification runs**: each backgrounded command leaves
+a log, so `round_reconciliation` reports a new file immediately after the very
+sequence that was supposed to end clean. The increment is self-referential, and
+accepting it creates the next one.
+
+**Why it is not fixed now.** The exclusion belongs in the `_EPHEMERAL` list
+inside `tools/check_registration.py`, which is verdict-frozen with a ceiling of
+four ruled differences, currently at two. `tools/clean_tree.py` solved the same
+problem inside its own scope with an `IGNORED_PREFIXES` constant, because it is a
+sibling and free to; the reconciliation's equivalent is in the frozen file.
+
+**What the next registration is asked to do.** Give the reconciliation an
+infrastructure exclusion -- `tasks/` and anything else the harness owns -- so its
+population is the round's work rather than the directory's contents. Until then
+each such file is accepted into the baseline, which records that it was reported
+and read and asserts nothing about whether it belongs.
+
+**The narrower reading to resist.** "Set the root back to `scratchpad/`" removes
+the log noise and puts the 49 work files back outside the population, which is
+the defect this widening fixed. The infrastructure is the thing to exclude, not
+the work.

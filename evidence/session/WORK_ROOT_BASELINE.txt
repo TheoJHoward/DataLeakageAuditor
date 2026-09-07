@@ -403,6 +403,7 @@ scratchpad/msg.txt
 scratchpad/msg12.txt
 scratchpad/msg13.txt
 scratchpad/msg14.txt
+scratchpad/msg15.txt
 scratchpad/msgback.txt
 scratchpad/new3.txt
 scratchpad/node1.py
@@ -609,6 +610,7 @@ scratchpad/r247_rule.py
 scratchpad/r247_split.py
 scratchpad/r247_split2.py
 scratchpad/r247_split3.py
+scratchpad/r248_infra.py
 scratchpad/r248_rekey.py
 scratchpad/r248_req.py
 scratchpad/r89.py
@@ -716,7 +718,7 @@ tasks/bcf59f959.output
 tasks/bdet19j9z.output
 tasks/bey9925cr.output
 tasks/bfc0ml6kp.output
-tasks/bfkbbt7ys.output
+tasks/bfnm90zu7.output
 tasks/bhp8mp0kt.output
 tasks/bi9spcwoa.output
 tasks/bkhgscxqw.output
