@@ -131,3 +131,53 @@ def test_it_does_NOT_run_the_steps():
         assert runner not in src, (
             "%s appears in the preconditions tool, which is supposed to gate "
             "rather than execute" % runner)
+
+
+# ---------------------------------------------------------------------------
+# the step set and the documented block are ONE sequence. R253 §1.
+# ---------------------------------------------------------------------------
+ROUND_STATE = ROOT / "evidence/session/ROUND_STATE.md"
+
+
+def _documented_commands():
+    """The commands in ROUND_STATE.md's certification block."""
+    text = ROUND_STATE.read_text(encoding="utf-8")
+    marker = "py -3.12 tools/certify_preconditions.py"
+    start = text.index(marker)
+    end = text.index("```", start)
+    return [ln.strip() for ln in text[start:end].splitlines() if ln.strip()]
+
+
+def test_EVERY_STEP_SET_TOOL_APPEARS_IN_THE_DOCUMENTED_BLOCK():
+    """**TWO PLACES HELD THE SEQUENCE AND THEY DIVERGED.** R253 §1: the drift
+    guard was added to `ROUND_STATE.md`'s block and NOT to `STEPS`, so the
+    enumerated step set said certification had five always-steps while the
+    block a runner copies had six. The two-lists hazard, in the pair of lists
+    that define what certification IS.
+
+    The existing check only looked for four named tools, so it could not see
+    the divergence. This compares the sets.
+    """
+    documented = " ".join(_documented_commands())
+    for cmd, when, _why in cp.STEPS:
+        if when != "always":
+            continue
+        tool = [w for w in cmd.split() if w.endswith(".py") or w == "tests"]
+        assert tool, cmd
+        assert tool[0].split("/")[-1] in documented, (
+            "%s is an ALWAYS step and does not appear in ROUND_STATE.md's "
+            "certification block, so a runner copying the block would skip it"
+            % tool[0])
+
+
+def test_the_DRIFT_GUARD_is_an_ALWAYS_step():
+    """Its unit tests are all synthetic (`tmp_path`), so the enumerated step is
+    what exercises it against the real layout. A guard verified only against
+    constructed layouts and hand-run against the real one is one skipped
+    hand-run from unverified."""
+    drift = [(c, w) for c, w, _ in cp.STEPS if "scratch_drift" in c]
+    assert drift, "scratch_drift is not in the certification step set"
+    assert drift[0][1] == "always", drift
+    assert cp.WORK_ROOT_ENV in drift[0][0], (
+        "the drift step does not carry the work-root variable, without which "
+        "it cannot resolve the subdirectory it checks")

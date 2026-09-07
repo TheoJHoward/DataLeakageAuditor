@@ -52,6 +52,16 @@ STEPS = (
      "the working tree is the one shipping; every instrument after this "
      "measures a tree and which tree is the whole question (R247 §1)"),
     ("LEAKAUDIT_WORK_ROOT=<this round's work root> "
+     "py -3.12 tools/scratch_drift.py",
+     "always",
+     "no round work sits outside the work root. Option B keeps the root a "
+     "dedicated scratch subdirectory so `tasks/` falls outside it and no "
+     "frozen exclusion is needed -- and the price is that scratch written "
+     "elsewhere leaves the reconciliation's population silently, which is how "
+     "49 files stayed invisible for many rounds. Its unit tests are all "
+     "synthetic, so THIS step is what exercises it against the real layout "
+     "(R253 §1)"),
+    ("LEAKAUDIT_WORK_ROOT=<this round's work root> "
      "py -3.12 tools/check_registration.py --stage prereg",
      "always",
      "the frozen checker. The variable is NOT optional: without it "

@@ -186,6 +186,59 @@ def population() -> list:
     return rows
 
 
+def makes_a_coverage_claim(rel: str, func: str) -> tuple:
+    """(bool, why) -- does this function assert over a COLLECTION it derived?
+
+    **THE CRITERION THAT AUDITS THE ESCAPE HATCH.** R253 §3. Every entry in the
+    population reads the repository -- that is how it got in -- so re-checking
+    `out_of_scope` against THAT criterion clears all of them and establishes
+    nothing. The sharper question is what the bucket actually asserts:
+
+        a COVERAGE CLAIM asserts something about every member of a set, and can
+        be vacuous over an empty one. A CONTENT CHECK asserts a fact about one
+        artifact's text, and cannot.
+
+    Audited when this was written: **6 of 19 `out_of_scope` entries did make a
+    coverage claim** and had been parked. An exclusion set that grows without
+    audit is where a population silently shrinks, and a misclassified entry is
+    harder to notice than an unprobed one because it looks decided.
+    """
+    try:
+        tree = ast.parse((REPO / rel).read_text(encoding="utf-8"))
+    except (SyntaxError, UnicodeDecodeError, OSError):
+        return False, "unparseable"
+    node = next((x for x in ast.walk(tree)
+                 if isinstance(x, ast.FunctionDef) and x.name == func), None)
+    if node is None:
+        return False, "function not found"
+    why = set()
+    for a in ast.walk(node):
+        if not isinstance(a, ast.Assert):
+            continue
+        t = a.test
+        if isinstance(t, ast.UnaryOp) and isinstance(t.op, ast.Not):
+            inner = t.operand
+            if isinstance(inner, (ast.ListComp, ast.SetComp, ast.GeneratorExp)):
+                why.add("assert not <comprehension>")
+            elif isinstance(inner, ast.BinOp) and isinstance(inner.op, ast.Sub):
+                why.add("assert not <set difference>")
+            elif isinstance(inner, ast.Name):
+                why.add("assert not <name>")
+        for n in ast.walk(t):
+            if isinstance(n, ast.Call) and isinstance(n.func, ast.Name):
+                if n.func.id == "len":
+                    why.add("len() comparison")
+                elif n.func.id in ("set", "frozenset", "sorted"):
+                    why.add("%s() comparison" % n.func.id)
+            if isinstance(n, (ast.ListComp, ast.SetComp, ast.GeneratorExp)):
+                why.add("comprehension in the assertion")
+    for loop in ast.walk(node):
+        if isinstance(loop, ast.For) and any(isinstance(x, ast.Assert)
+                                             for x in ast.walk(loop)):
+            why.add("assert inside a for-loop over a collection")
+    return bool(why), "; ".join(sorted(why))
+
+
 def state() -> dict:
     rows = population()
     keys = {(r["file"], r["func"]) for r in rows}

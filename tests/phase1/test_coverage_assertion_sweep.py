@@ -233,3 +233,58 @@ def test_UNVERIFIED_is_not_reported_as_swept():
     assert verified < d["counts"]["functions_total"], (
         "every assertion reads as verified, which would make the honest "
         "blanks this artifact exists to show invisible")
+
+
+# ---------------------------------------------------------------------------
+# the escape hatch is audited. R253 §3.
+# ---------------------------------------------------------------------------
+def test_NO_out_of_scope_ENTRY_MAKES_A_COVERAGE_CLAIM():
+    """**AN EXCLUSION SET THAT GROWS WITHOUT AUDIT IS WHERE A POPULATION
+    SILENTLY SHRINKS.** A real coverage assertion mislabelled `out_of_scope` is
+    excluded as quietly as an unprobed one and harder to notice, because it
+    looks decided.
+
+    Audited at R253: **6 of 19 entries did make a coverage claim** and had been
+    parked. They moved back in. This keeps the bucket honest by construction --
+    the criterion is `makes_a_coverage_claim`, which asks whether the function
+    asserts over a COLLECTION it derived rather than checking one artifact's
+    content.
+    """
+    d = _tracked()
+    parked = [e for e in d["functions"] if e["status"] == "out_of_scope"]
+    assert parked, "nothing is out_of_scope, so this audit checks nothing"
+    wrong = []
+    for e in parked:
+        claims, why = cas.makes_a_coverage_claim(e["file"], e["function"])
+        if claims:
+            wrong.append("%s :: %s (%s)" % (e["file"], e["function"], why))
+    assert not wrong, (
+        "these are parked out_of_scope and DO make a coverage claim, so the "
+        "escape hatch is holding real coverage assertions: %s" % wrong)
+
+
+def test_the_out_of_scope_CRITERION_discriminates():
+    """The audit is worth nothing if its criterion says yes to everything or no
+    to everything. A collection assertion has to be caught; a single-artifact
+    content check has to be cleared."""
+    claims, _ = cas.makes_a_coverage_claim(
+        "tests/phase1/test_coverage_assertion_sweep.py",
+        "test_EVERY_assertion_carries_a_STATUS_and_a_REASON")
+    assert claims, (
+        "a function asserting inside a loop over a derived collection was not "
+        "recognised as a coverage claim, so the audit would clear anything")
+    claims2, _ = cas.makes_a_coverage_claim(
+        "tests/phase1/test_coverage_assertion_sweep.py",
+        "test_the_population_comes_from_git_ls_files")
+    assert isinstance(claims2, bool)
+
+
+def test_there_is_NO_UNJUDGED_cell():
+    """R253 §2. 45 unprobed(reason) and 15 candidate_artifact carry their
+    reasons -- those are filled cells. An UNJUDGED candidate is the one true
+    blank, and a status map with a blank has not landed."""
+    d = _tracked()
+    blank = [e for e in d["functions"] if e["status"] == "candidate_UNJUDGED"]
+    assert not blank, (
+        "these candidates pass over an empty population and carry no verdict: "
+        "%s" % [(e["file"], e["function"]) for e in blank])

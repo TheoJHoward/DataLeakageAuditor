@@ -16,15 +16,14 @@
  },
  "measured_at_commit": "7ae4fd6",
  "counts": {
-  "candidate_UNJUDGED": 1,
-  "candidate_artifact": 14,
+  "candidate_artifact": 16,
   "candidate_fixed": 2,
   "candidate_legitimate": 1,
-  "out_of_scope": 19,
+  "out_of_scope": 13,
   "probed_healthy": 5,
-  "unprobed_reachable": 45,
-  "functions_total": 87,
-  "assertions_total": 163
+  "unprobed_reachable": 51,
+  "functions_total": 88,
+  "assertions_total": 165
  },
  "functions": [
   {
@@ -73,8 +72,8 @@
    "file": "tests/phase1/test_certify_preconditions.py",
    "function": "test_it_does_NOT_run_the_steps",
    "assertions": 1,
-   "status": "out_of_scope",
-   "reason": "not a coverage assertion: a single-artifact content or ordering check. The enumerator over-included it because the function calls a repository read. It leaves the population."
+   "status": "unprobed_reachable",
+   "reason": "R253 audit: it DOES make a coverage claim (assert inside a for-loop over a collection), so it was misclassified out_of_scope. The probe cannot reach its population by emptying a helper."
   },
   {
    "file": "tests/phase1/test_clean_tree.py",
@@ -108,8 +107,8 @@
    "file": "tests/phase1/test_cli_path.py",
    "function": "test_this_file_never_constructs_a_dataframe",
    "assertions": 1,
-   "status": "out_of_scope",
-   "reason": "not a coverage assertion: a single-artifact content or ordering check. The enumerator over-included it because the function calls a repository read. It leaves the population."
+   "status": "unprobed_reachable",
+   "reason": "R253 audit: it DOES make a coverage claim (assert not <name>), so it was misclassified out_of_scope. The probe cannot reach its population by emptying a helper."
   },
   {
    "file": "tests/phase1/test_coverage_assertion_sweep.py",
@@ -128,6 +127,13 @@
   {
    "file": "tests/phase1/test_coverage_assertion_sweep.py",
    "function": "test_the_counts_AGREE_with_the_entries",
+   "assertions": 2,
+   "status": "candidate_artifact",
+   "reason": "passed, but the emptied helper is not what this test iterates -- the probe did not reach its population. UNVERIFIED, not clean."
+  },
+  {
+   "file": "tests/phase1/test_coverage_assertion_sweep.py",
+   "function": "test_the_out_of_scope_CRITERION_discriminates",
    "assertions": 2,
    "status": "candidate_artifact",
    "reason": "passed, but the emptied helper is not what this test iterates -- the probe did not reach its population. UNVERIFIED, not clean."
@@ -276,8 +282,8 @@
    "file": "tests/phase1/test_empty_population_probe.py",
    "function": "test_patch_targets_REACHES_THE_IMPORTED_TOOL_not_just_the_test_module",
    "assertions": 2,
-   "status": "candidate_UNJUDGED",
-   "reason": "passed with 1 helper(s) emptied"
+   "status": "candidate_artifact",
+   "reason": "R253 section 2: its population is patch_targets(mod) -- the module objects an import yields, which always holds at least the module itself, so it cannot be empty. The emptied repository helpers are not what it iterates, so the pass is the probe not reaching it."
   },
   {
    "file": "tests/phase1/test_floor_check.py",
@@ -332,8 +338,8 @@
    "file": "tests/phase1/test_inference.py",
    "function": "test_the_skeleton_is_GENERATED_not_typed_alongside",
    "assertions": 1,
-   "status": "out_of_scope",
-   "reason": "not a coverage assertion: a single-artifact content or ordering check. The enumerator over-included it because the function calls a repository read. It leaves the population."
+   "status": "unprobed_reachable",
+   "reason": "R253 audit: it DOES make a coverage claim (set() comparison), so it was misclassified out_of_scope. The probe cannot reach its population by emptying a helper."
   },
   {
    "file": "tests/phase1/test_inference.py",
@@ -437,8 +443,8 @@
    "file": "tests/phase1/test_portability_digest.py",
    "function": "test_the_inputs_are_in_the_REPOSITORY_not_in_a_scratch_directory",
    "assertions": 2,
-   "status": "out_of_scope",
-   "reason": "not a coverage assertion: a single-artifact content or ordering check. The enumerator over-included it because the function calls a repository read. It leaves the population."
+   "status": "unprobed_reachable",
+   "reason": "R253 audit: it DOES make a coverage claim (assert inside a for-loop over a collection), so it was misclassified out_of_scope. The probe cannot reach its population by emptying a helper."
   },
   {
    "file": "tests/phase1/test_portability_digest.py",
@@ -542,8 +548,8 @@
    "file": "tests/phase1/test_wholeframe_relation.py",
    "function": "test_the_baseline_ALREADY_carries_its_constants",
    "assertions": 1,
-   "status": "out_of_scope",
-   "reason": "not a coverage assertion: a single-artifact content or ordering check. The enumerator over-included it because the function calls a repository read. It leaves the population."
+   "status": "unprobed_reachable",
+   "reason": "R253 audit: it DOES make a coverage claim (assert inside a for-loop over a collection), so it was misclassified out_of_scope. The probe cannot reach its population by emptying a helper."
   },
   {
    "file": "tests/phase1/test_wholeframe_relation.py",
@@ -570,8 +576,8 @@
    "file": "tests/phase1/test_wholeframe_relation.py",
    "function": "test_the_three_halts_have_DISTINCT_exit_codes",
    "assertions": 1,
-   "status": "out_of_scope",
-   "reason": "not a coverage assertion: a single-artifact content or ordering check. The enumerator over-included it because the function calls a repository read. It leaves the population."
+   "status": "unprobed_reachable",
+   "reason": "R253 audit: it DOES make a coverage claim (assert inside a for-loop over a collection), so it was misclassified out_of_scope. The probe cannot reach its population by emptying a helper."
   },
   {
    "file": "tests/phase1/test_work_root_baseline.py",
