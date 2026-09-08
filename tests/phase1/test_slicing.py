@@ -51,16 +51,56 @@ SLICE_AT = T0 + pd.Timedelta(seconds=LOOKBACK)
 
 
 def _frames(start: pd.Timestamp, stop: pd.Timestamp):
-    """One aggregate row and one decision row per second over [start, stop)."""
+    """One aggregate row and one decision row per second over [start, stop).
+
+    VALUES ARE KEYED TO ABSOLUTE TIME, NOT TO POSITION IN THE RANGE, and the
+    difference is a defect this fixture carried at R255. Position-indexed
+    values made `_frames(SLICE_AT, X)` a DIFFERENT SERIES from the tail of
+    `_frames(T0, X)` rather than its suffix -- measured: 1.0, 2.0, 3.0 against
+    10.0, 11.0, 12.0 at the same instants. The pair therefore varied the data
+    extent AND the data, so "padding is the only difference" was not true of
+    the frames even though it was true of the mechanism. R256 §2 requires the
+    pair on ONE frame. Keying to absolute time makes every construction agree
+    on its overlap, and `_truncate` below CUTS rather than rebuilds.
+    """
     secs = pd.date_range(start, stop, freq="1s", inclusive="left")
-    agg = pd.DataFrame({"k": secs,
-                        "v": [float(i % 17) + 1.0 for i in range(len(secs))]})
+    step = ((secs - T0) // pd.Timedelta(seconds=1)).astype("int64")
+    agg = pd.DataFrame({"k": secs, "v": (step % 17 + 1).astype(float)})
     # Decision instants sit mid-second, so the bar at `floor(d)` completes at
     # `floor(d) + 1s`, which is strictly AFTER the decision. Under the
     # registered `a <= d` comparator that is unambiguously unavailable.
     dec = pd.DataFrame({"d": secs + pd.Timedelta(milliseconds=500),
-                        "row": range(len(secs))})
+                        "row": step})
     return {"agg": agg, "dec": dec}
+
+
+def _full():
+    """THE one frame both halves of the positive are measured on. R256 §2."""
+    return _frames(T0, SLICE_AT + pd.Timedelta(seconds=30))
+
+
+#: Flipped ONLY by `test_the_ONE_FRAME_check_REDDENS_when_the_frame_is_rebuilt`,
+#: which restores it in a `finally`. It reproduces the R255 fixture -- rebuild
+#: the truncated frame instead of cutting it -- so the check added at R256 can
+#: be shown red mechanically rather than asserted to have been shown red once.
+_REBUILD_INSTEAD = False
+
+
+def _truncate(frames, at):
+    """The SAME frame with everything before `at` cut away.
+
+    This is what a user does today: they hand the auditor a slice of their
+    data. Nothing is rebuilt, so the surviving rows are byte-for-byte the rows
+    the padded run reads -- the only difference between the two halves of the
+    pair is how far back the frame reaches.
+    """
+    agg, dec = frames["agg"], frames["dec"]
+    out = {"agg": agg[agg["k"] >= at].reset_index(drop=True),
+           "dec": dec[dec["d"] >= at].reset_index(drop=True)}
+    if _REBUILD_INSTEAD:  # MUTANT M8: the R255 shape -- rebuild, do not cut
+        o = out["agg"]
+        out["agg"] = o.assign(v=[float(i % 17) + 1.0 for i in range(len(o))])
+    return out
 
 
 def _leaky_build(frames):
@@ -92,23 +132,31 @@ def _probe(frames, **kw):
 # --------------------------------------------------------------------------
 
 def test_WITHOUT_padding_the_edge_leak_is_MASKED():
-    """The defect being closed. Confirmed first, per R255 §4."""
-    # Data starts exactly where probing starts: no padding at all.
-    res = _probe(_frames(SLICE_AT, SLICE_AT + pd.Timedelta(seconds=30)))
+    """The defect being closed, and it is TODAY'S ACTUAL USER PATH. R256 §2.
+
+    The truncated slice is audited as an ORDINARY FRAME -- no `slice_from`, no
+    padding, nothing this feature added. That is exactly what a user does now
+    when they hand the auditor a window of their data, and the silent mislead
+    they get back is what D closes. The slice feature REFUSING is the fix; this
+    plain-frame path masking is the defect, and it is still reachable, because
+    a caller who truncates before calling is indistinguishable from one whose
+    data starts late.
+    """
+    res = _probe(_truncate(_full(), SLICE_AT))
     probed = {c.second for c in res.cohorts}
     assert probed, "the run must actually probe, or the silence proves nothing"
     assert res.verdict() == "observed_silence", (
-        "a probe ran over the head of an unpadded slice and found nothing -- "
-        "this is the masking DESIGN.md section 5.3 describes, and if this "
-        "assertion fails the pair below no longer isolates padding as the "
+        "a plain-frame audit ran over the head of a truncated slice and found "
+        "nothing -- this is the masking DESIGN.md section 5.3 describes, and if "
+        "this assertion fails the pair below no longer isolates padding as the "
         "cause. Got %r with %d finding(s)."
         % (res.verdict(), len(res.findings)))
 
 
 def test_WITH_padding_the_SAME_cohorts_find_the_leak():
-    """The same seconds, the same builder, padding present. Found."""
-    padded = _frames(T0, SLICE_AT + pd.Timedelta(seconds=30))
-    res = _probe(padded, slice_from=SLICE_AT, padding=pd.Timedelta(seconds=LOOKBACK))
+    """The same frame uncut, the same builder, padding declared. Found."""
+    res = _probe(_full(), slice_from=SLICE_AT,
+                 padding=pd.Timedelta(seconds=LOOKBACK))
     assert res.findings, (
         "the leak at the head of the slice is present in the data and the "
         "padding makes the builder's window complete there, so the probe must "
@@ -116,13 +164,53 @@ def test_WITH_padding_the_SAME_cohorts_find_the_leak():
     assert res.verdict() == "finding"
 
 
-def test_the_pair_probes_the_SAME_seconds_so_padding_is_the_only_difference():
-    """Without this the pair could be two different experiments. R255 §4."""
-    bare = _probe(_frames(SLICE_AT, SLICE_AT + pd.Timedelta(seconds=30)))
-    padded = _probe(_frames(T0, SLICE_AT + pd.Timedelta(seconds=30)),
-                    slice_from=SLICE_AT,
+def test_the_pair_IS_ONE_FRAME_cut_two_ways():
+    """R256 §2: same frame, same leak, edge-positioned.
+
+    THE R255 VERSION OF THIS TEST DID NOT ESTABLISH WHAT IT CLAIMED. It built
+    the two halves with separate `_frames` calls whose values were indexed by
+    POSITION, so the truncated half was a different series -- 1.0, 2.0, 3.0
+    where the padded half held 10.0, 11.0, 12.0 at the same instants. Two
+    things varied and the test only checked one of them. This checks both: the
+    surviving rows are identical, and the probed seconds are identical, so the
+    only difference left between the halves is how far back the frame reaches.
+    """
+    full = _full()
+    cut = _truncate(full, SLICE_AT)
+
+    tail = full["agg"][full["agg"]["k"] >= SLICE_AT].reset_index(drop=True)
+    assert cut["agg"]["v"].tolist() == tail["v"].tolist(), (
+        "the cut frame must be a SUFFIX of the full one, not a rebuild")
+    assert cut["agg"]["k"].tolist() == tail["k"].tolist()
+
+    bare = _probe(cut)
+    padded = _probe(full, slice_from=SLICE_AT,
                     padding=pd.Timedelta(seconds=LOOKBACK))
     assert {c.second for c in bare.cohorts} == {c.second for c in padded.cohorts}
+    # And the halves genuinely disagree, or the pair shows nothing.
+    assert bare.verdict() == "observed_silence"
+    assert padded.verdict() == "finding"
+
+
+def test_the_ONE_FRAME_check_REDDENS_when_the_frame_is_rebuilt():
+    """The mutation is run by the suite, not asserted in a report. TB-11/F6.
+
+    R255 shipped the rebuild-instead-of-cut shape by accident and its
+    same-cohorts test stayed green, because that test compared probed seconds
+    and never compared the DATA. Flipping `_REBUILD_INSTEAD` reproduces exactly
+    that fixture, and the check added at R256 has to go red on it -- otherwise
+    the check is a restatement of the bug it was written against.
+    """
+    import test_slicing as me
+    me._REBUILD_INSTEAD = True
+    try:
+        with pytest.raises(AssertionError, match="SUFFIX"):
+            test_the_pair_IS_ONE_FRAME_cut_two_ways()
+    finally:
+        me._REBUILD_INSTEAD = False
+    # and the restore worked, or every test after this one is running mutated
+    assert not me._REBUILD_INSTEAD
+    test_the_pair_IS_ONE_FRAME_cut_two_ways()
 
 
 def test_an_INTERIOR_leak_is_the_wiring_test_not_the_defect():
@@ -162,6 +250,28 @@ def test_the_refusal_returns_NO_verdict_at_all():
     assert out == "no result"
 
 
+def test_the_MODEL_ALONE_never_suffices_so_padding_is_ALWAYS_required():
+    """R256 §1's second case is unreachable here, and that is pinned.
+
+    The rule offers three cases: both supply a window, only the model does, only
+    the user does. The middle one does not exist in this design -- the model
+    determines a FLOOR and never the requirement -- so there is no slice on
+    which the tool's own number suffices and the caller may stay silent. Left
+    as an unwritten branch it would be assumed into existence by the next
+    reader; asserted here, a change that makes the model authoritative fails
+    this test and has to say so out loud.
+    """
+    for window in ("1s", "10min", "24h"):
+        model = AvailabilityModel(aggregate_frames={"agg": "k"},
+                                  decision_column="d",
+                                  window=pd.Timedelta(window))
+        with pytest.raises(SliceError) as e:
+            plan_slice(raw=_full(), model=model, slice_from=SLICE_AT)
+        assert "no padding was declared" in str(e.value), (
+            "however large the model's own window, it never stands in for the "
+            "declaration (window=%s)" % window)
+
+
 def test_padding_below_the_model_founded_floor_REFUSES():
     model = AvailabilityModel(aggregate_frames={"agg": "k"}, decision_column="d",
                               window=pd.Timedelta("10min"))
@@ -169,7 +279,11 @@ def test_padding_below_the_model_founded_floor_REFUSES():
         plan_slice(raw=_frames(T0, SLICE_AT), model=model, slice_from=SLICE_AT,
                    padding=pd.Timedelta("1min"))
     msg = str(e.value)
-    assert "below the floor" in msg
+    # R256 §1: the conflict is refused, BOTH numbers are named, and the smaller
+    # is not adopted merely because a user typed it.
+    assert "IS NOT USED BECAUSE IT WAS DECLARED" in msg
+    assert "0 days 00:01:00" in msg, "the declared number is quoted back"
+    assert "0 days 00:10:00" in msg, "the model's number is quoted too"
     assert "AvailabilityModel.window" in msg, "the report names the driver"
 
 
@@ -229,9 +343,14 @@ def test_the_printed_note_refuses_to_call_the_padding_clean():
     note = "\n".join(res.notes)
     assert "NOT PROBED" in note
     assert "not_applicable" in note
+    assert "PREREG.md section 8.2" in note, "the vocabulary names its document"
     assert "not clean" in note
-    assert "does not establish sufficiency" in note, (
-        "clearing the model floor must not be printed as sufficiency")
+    # R256 §1, third case: the padding is the USER's number and the run says so,
+    # because a reader who cannot tell a declared number from a computed one
+    # will read the declared one as corroborated.
+    assert "DECLARED AND UNVERIFIABLE" in note
+    assert "YOUR number, not this tool's" in note
+    assert "clearing a floor is not corroboration" in note
 
 
 def test_the_padding_is_present_claim_CARRIES_ITS_POPULATION():
@@ -321,16 +440,17 @@ def test_THE_RESIDUAL_HOLE_a_padding_that_clears_the_floor_can_still_mask():
     finds it contradicted by the suite. If a future change DOES close it, this
     test fails and that is correct -- it should be rewritten then, deliberately.
     """
-    fr = _frames(SLICE_AT - pd.Timedelta(seconds=2),
-                 SLICE_AT + pd.Timedelta(seconds=30))
+    fr = _truncate(_full(), SLICE_AT - pd.Timedelta(seconds=2))
     res = _probe(fr, slice_from=SLICE_AT, padding=pd.Timedelta(seconds=2))
     assert res.cohorts, "the probe must reach the seconds it then says nothing about"
     assert res.verdict() == "observed_silence", (
         "if this now finds the leak, the tool has gained a check it did not "
         "have at R255 and this test needs rewriting, not deleting")
     assert res.findings == []
-    # And the run says so where a reader will see it.
-    assert "does not establish sufficiency" in "\n".join(res.notes)
+    # And the run says so where a reader will see it: the number was theirs.
+    note = "\n".join(res.notes)
+    assert "DECLARED AND UNVERIFIABLE" in note
+    assert "clearing a floor is not corroboration" in note
 
 
 def test_clearing_the_floor_is_recorded_as_NOT_sufficiency():

@@ -181,6 +181,7 @@ d92.md
 d93.md
 d94.md
 d95.md
+d96.md
 decision_default_scan.py
 decl_main.md
 decl_p1.md
@@ -385,6 +386,7 @@ msg21.txt
 msg22.txt
 msg23.txt
 msg24.txt
+msg25.txt
 msg3.txt
 msg4.txt
 msg5.txt

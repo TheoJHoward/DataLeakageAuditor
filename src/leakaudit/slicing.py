@@ -65,6 +65,38 @@ in the object, and the note the probe prints says so to the user, because a chec
 that is easy to mistake for a stronger one is the failure this session kept
 finding.
 
+DECLARED VERSUS DETERMINED, AND WHICH BRANCH THIS TOOK. R256 §1 rules the case
+`DESIGN.md` §5.3 leaves open -- the model determines something AND the user also
+declares a number -- and offers two honest answers: take the LARGER and report
+the disagreement, or refuse the conflict outright. **This takes REFUSE, and the
+reason is that the conflict here is not a disagreement between two estimates of
+the same quantity.** The model's number is a FLOOR derived from the aggregation
+window; a declared padding below it is not a smaller estimate of the builder's
+lookback, it is a padding shorter than the bucket the model itself specifies,
+which means the declaration has misunderstood what padding is. Silently taking
+the larger would proceed on a number the user did not intend and would not
+recognise. So it stops and says both numbers.
+
+WHAT IS NEVER DONE, AND IT IS THE POINT OF THE RULE: the smaller number is not
+used because it was declared. A declared value is an input to be checked, not an
+authority -- the guard's literal clock was declared too, and declared-but-wrong
+is the shape that produced it.
+
+THE THREE CASES, AND HOW THEY LAND HERE:
+
+  BOTH supply       the user's `padding` and the model's floor. Conflict is
+                    `padding < floor` -> REFUSED, naming both numbers and which
+                    term drove the floor. Never the smaller, never silent.
+  ONLY the model    UNREACHABLE IN THIS DESIGN, and stated rather than left as
+                    an unwritten branch. The model determines a floor and never
+                    the requirement (see above), so there is no slice on which
+                    the tool's own number suffices and the user may stay silent.
+                    `padding` is required on every slice.
+  ONLY the user     EVERY SLICE THAT RUNS. The padding is the user's number, and
+                    the run reports it as DECLARED AND UNVERIFIABLE so a reader
+                    knows it rests on the user's word and not on the model's.
+                    Clearing the floor is not corroboration of it.
+
 SCOPE, STATED SO IT IS NOT MISTAKEN FOR MORE. This governs the slice the tool
 is ASKED for, via `slice_from=`. A caller who truncates their frames before
 calling has performed a slice this tool cannot distinguish from data that simply
@@ -225,14 +257,19 @@ def plan_slice(*, raw, model, slice_from, padding=NOT_DECLARED,
     floor, driver = model_padding_floor(model, declared_bar_duration)
     if pad < floor:
         raise SliceError(
-            "the declared padding %s is below the floor the availability model "
-            "itself founds, %s, driven by %s. Below it the aggregate at the "
-            "slice edge spans a truncated bucket, so its value at the first "
-            "probed cohort is not the value the unsliced run would compute. "
-            "Clearing this floor would not establish the padding is SUFFICIENT "
-            "-- the builder's own lookback is not visible here -- but falling "
-            "under it is refusable on the model's own arithmetic."
-            % (pad, floor, driver))
+            "DECLARED PADDING DISAGREES WITH THE MODEL, AND THE SMALLER NUMBER "
+            "IS NOT USED BECAUSE IT WAS DECLARED. You declared %s; the model "
+            "requires at least %s, driven by %s. This refuses rather than "
+            "quietly padding to either number: below the model's floor the "
+            "aggregate at the slice edge spans a truncated bucket, so its "
+            "value at the first probed cohort is not the value the unsliced "
+            "run would compute, and a run that silently used your %s would "
+            "manufacture the head artifact with your own number on it. Declare "
+            "at least %s, or drop the slice. Note that clearing the floor is "
+            "not corroboration -- the floor is the model's arithmetic, and the "
+            "quantity that actually binds is your builder's lookback, which "
+            "this tool cannot see."
+            % (pad, floor, driver, pad, floor))
 
     required_start = start - pad
     starts, skipped = frame_starts(raw, model)
@@ -269,16 +306,20 @@ def split_seconds(seconds, plan: SlicePlan) -> tuple:
 def context_note(plan: SlicePlan, n_context: int) -> str:
     """The line the probe prints about the padding rows. Never says clean."""
     return (
-        "SLICE: probing cohorts at or after %s, with %s of declared padding "
-        "back to %s. %d second(s) fall in the padding and are NOT PROBED -- "
-        "they are context the builder reads, not subjects. Their outcome is "
-        "`not_applicable`, NOT `observed_silence` and not clean: no probe ran "
-        "over them, so this run carries no evidence about them. The padding "
-        "clears the model-founded floor of %s (%s); that floor does not "
-        "establish sufficiency, because the builder's own lookback is not "
-        "visible to this tool."
+        "SLICE: probing cohorts at or after %s, with %s of padding back to %s. "
+        "%d second(s) fall in the padding and are NOT PROBED -- they are "
+        "context the builder reads, not subjects. Their outcome is "
+        "`not_applicable` (PREREG.md section 8.2), NOT `observed_silence` and "
+        "not clean: no probe ran over them, so this run carries no evidence "
+        "about them. THE PADDING IS DECLARED AND UNVERIFIABLE: %s is YOUR "
+        "number, not this tool's. The model determines only a floor of %s (%s), "
+        "which %s clears -- and clearing a floor is not corroboration of a "
+        "declaration. The quantity that actually binds is how far back your "
+        "build function reads, which the availability model does not describe "
+        "and this tool cannot see, so if that number is wrong this run is "
+        "masked at its own head and nothing here would say so."
         % (plan.slice_from, plan.padding, plan.required_start, n_context,
-           plan.floor, plan.floor_driver)
+           plan.padding, plan.floor, plan.floor_driver, plan.padding)
         + (
             " THE PADDING-IS-PRESENT CHECK DID NOT COVER %d modelled frame(s): "
             "%s. Nothing here claims those carry the declared padding."

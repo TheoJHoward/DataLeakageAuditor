@@ -4625,3 +4625,79 @@ question had not been asked?* **The feature, yes** — item D was on the enumera
 backlog and `DESIGN.md` §5.3 specifies it. **The presence-test shape, no**: §1
 forced the derivation before the refusal, and a round that built first would
 have shipped a threshold with a fixed default behind it.
+
+## D-V30A-96 — the positive's two halves were not the same frame, and a declared window is an input rather than an authority
+
+**THE PAIR R255 REPORTED WAS CONFOUNDED, AND THE TEST THAT WAS SUPPOSED TO
+CATCH IT CHECKED THE WRONG THING.** R256 §2 asked for the edge positive measured
+on ONE frame. It was not. `_frames(start, stop)` indexed its values by POSITION
+within the range, so the truncated half held `1.0, 2.0, 3.0` where the padded
+half held `10.0, 11.0, 12.0` at the same instants — a different series, not a
+suffix. Two things varied between the halves and `test_the_pair_probes_the_SAME_
+seconds` compared only the probed seconds, so it stayed green over the
+difference it was written to exclude. **A control that compares one of the two
+things that vary is not a control.**
+
+**Measured after the repair**, one frame cut two ways, rows byte-identical and
+30 cohorts each: the plain-frame audit of the cut gives `observed_silence` with
+**0** findings; the slice feature with 60s of padding gives `finding` with
+**30**. The "without" half is R256 §2's reading — today's actual user path, the
+truncated slice audited as an ordinary frame — and it stays reachable after this
+feature ships, because a caller who truncates before calling cannot be told from
+one whose data starts late.
+
+**THE MUTATION IS RUN BY THE SUITE NOW, NOT ASSERTED IN A REPORT.**
+`_REBUILD_INSTEAD` reproduces exactly the R255 fixture, and a test flips it,
+requires the new suffix check to redden, and restores it in a `finally` —
+then re-runs the check to confirm the restore, because a leaked mutation would
+silently mutate every test after it. Three rounds of "the mutation was shown
+red" have been operator claims; this one is a mechanism.
+
+**A DECLARED WINDOW IS AN INPUT TO BE CHECKED, NOT AN AUTHORITY.** R256 §1 rules
+the case `DESIGN.md` §5.3 leaves open — the model determines something and the
+user also declares a number — and offers two honest answers. **This takes
+REFUSE**, and the reason is that the two numbers are not competing estimates of
+one quantity: the model's is a FLOOR from the aggregation window, so a padding
+below it is not a smaller guess at the builder's lookback, it is a padding
+shorter than the bucket the model itself specifies. Taking the larger silently
+would proceed on a number the user did not intend and would not recognise. The
+refusal names both numbers, the term that drove the floor, and what a run using
+the smaller one would have manufactured.
+
+**THE UNREACHABLE BRANCH IS PINNED RATHER THAN LEFT UNWRITTEN.** Of R256 §1's
+three cases, *only the model supplies it* does not exist in this design — the
+model founds a floor and never the requirement, so no slice lets the tool's own
+number stand in for the declaration. Left unwritten it would be assumed into
+existence by the next reader; a test now takes windows of 1s, 10min and 24h and
+requires the refusal every time, so a change that makes the model authoritative
+fails loudly.
+
+**AND EVERY SLICE THAT RUNS REPORTS ITS PADDING AS THE USER'S NUMBER.** The
+third case is the only one that reaches a verdict, so the note says the padding
+is DECLARED AND UNVERIFIABLE, quotes it back as *your* number rather than the
+tool's, and states that clearing the model's floor is not corroboration of a
+declaration. The binding quantity is how far back `build` reads, which the
+availability model does not describe — so if that number is wrong the run is
+masked at its own head and nothing in it would say so.
+
+**THE CITATION NOW CARRIES ITS DOCUMENT.** R255 §3's "§8.2" resolved, on the
+planning layer's correction, to `PREREG.md` §8.2 rather than `DESIGN.md`'s. Read
+at the right document, its boundary is *missing or impossible inputs are
+`unsupported`; supplied-and-valid inputs that then fail are `could_not_run`*.
+Padding rows are supplied-and-valid inputs deliberately not probed, so they are
+neither — `not_applicable` stands, and the printed note now names the section
+WITH its document, the way a figure names its invocation.
+
+Mutants M6 (adopt the declared value because it was declared) and M7 (let the
+model's window stand in for the declaration) each redden — M7 across four tests.
+No probe-path file moved after the guard ran; it reports all **eight** terms
+SAME.
+
+**R163 §1's exemption test.** *Would this change have been made if the triggering
+question had not been asked?* **The confound, no** — the R255 pair read as
+controlled and its own control agreed, so nothing in the round would have
+surfaced it; it took the planning layer asking for the pair on one frame.
+**The declared-versus-determined rule, partly**: the below-floor refusal already
+existed, and what R256 added is the reason for choosing refusal over
+larger-of, the pinned unreachable branch, and reporting the padding as the
+user's word rather than a checked fact.
