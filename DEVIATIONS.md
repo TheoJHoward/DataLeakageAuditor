@@ -4701,3 +4701,55 @@ surfaced it; it took the planning layer asking for the pair on one frame.
 existed, and what R256 added is the reason for choosing refusal over
 larger-of, the pinned unreachable branch, and reporting the padding as the
 user's word rather than a checked fact.
+
+## D-V30A-97 — the confound lesson reaches the durable rules, and the round it was promised in had already closed
+
+**THE PREMISE THIS ROUND ARRIVED WITH WAS WRONG, AND ESTABLISHING THAT WAS THE
+FIRST INSTRUCTION.** R257 §1 held that the R256 turn stopped between edit and
+verification, leaving a tree in an unknown state. `git status` reports one
+untracked entry, `.claude/`, which is never committed; `git log` puts HEAD at
+`41aa760`, whose diff carries all five R256 files and whose message ends
+`D-V30A-96`. The round had run its suite, its enumerated certification and its
+guard, and reported. **Nothing was redone**, per the round's own halt list — the
+correction is one of fact, and the delta's §1(a) is what surfaced it rather than
+an assertion of mine.
+
+**WHAT WAS ACTUALLY OUTSTANDING WAS THE PROMISE, NOT THE WORK.** R256 §2 said
+the confound lesson would go into the durable rules. It went into `DEVIATIONS.md`
+as D-V30A-96 and **not** into `OPERATING_RULES.md`, so it was recorded as
+something that happened and not as something in force. A disclosure is a record;
+the rules table is the thing consulted. That gap is this entry's substance.
+
+**THE RULE, AS A SHARPENING OF R215's ROW RATHER THAN A REPLACEMENT.** A positive
+PAIR is a controlled comparison: it varies exactly the thing under test and holds
+everything else fixed — same frame, same values, same leak — and the
+specification names what is HELD CONSTANT, not only what is compared. A pair
+varying two things can fire on either, so its pass proves neither. **R215's
+existing row does not reach this**, and the distinction is worth stating: R215
+governs a positive that fails to DISCRIMINATE, and at R255 each half
+discriminated perfectly well on its own. What failed was the comparison between
+them.
+
+**BOTH INSTANCES ARE IN THE ROW, because a rule whose instance is a paragraph
+elsewhere is the pointer-into-a-transient-location problem.** R255 built the
+slice positive as unpadded-silence against padded-finding, and it passed. The
+halves came from separate constructions whose values were indexed by POSITION
+within each range, so the truncated half held `1.0, 2.0, 3.0` where the padded
+half held `10.0, 11.0, 12.0` **at the same instants** — a different series, not a
+suffix. Extent and data both varied. **The control written to prevent exactly
+this compared the probed seconds and never the data**, and stayed green over the
+difference it existed to exclude. The fix cuts one frame two ways, and a suite
+test flips the old fixture back and requires the new check to redden on it, so
+the mutation is a mechanism rather than a claim in a report.
+
+**WHAT THIS ENTRY DOES NOT CLAIM.** That the R255 conclusion was wrong. The
+repaired pair gives the same answer — plain-frame audit of the cut yields
+`observed_silence` with 0 findings, the slice with 60s of padding yields
+`finding` with 30, over 30 cohorts each and rows byte-identical. The conclusion
+survived the confound; **it was not established by the pair that was reported**,
+and those are different states that a green test cannot tell apart.
+
+**R163 §1's exemption test.** *Would this change have been made if the triggering
+question had not been asked?* **No.** The lesson was written into a disclosure
+and would have stayed there — the round that promised it had already closed, and
+nothing consults `DEVIATIONS.md` before designing the next positive.
