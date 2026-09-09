@@ -83,6 +83,12 @@ CLASSIFICATION = {
     # a caller can be in it.
     "availability.py::param::__init__(slice_plan=)": (NA, "result carrier field"),
     "availability.py::param::__init__(context_seconds=)": (NA, "result carrier field"),
+    # R261 §1(b). Result carrier field, and `False` is a MEASURED state rather
+    # than an unanswered question: the run compares the derived separation
+    # against the smallest probed gap on every run that probes more than one
+    # cohort, and sets this from that comparison. There is no input a caller can
+    # supply it with, so there is nothing here to refuse.
+    "availability.py::param::__init__(attribution_overlap=)": (NA, "result carrier field"),
     "checks.py::param::__init__(did_not_look_because=)": (NA, "result carrier field"),
     "checks.py::param::__init__(findings=)": (NA, "result carrier field"),
     "checks.py::param::__init__(notes=)": (NA, "result carrier field"),

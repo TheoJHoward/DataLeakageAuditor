@@ -277,8 +277,28 @@ class AvailabilityModel:
 class CohortResult:
     second: pd.Timestamp
     rows_in_second: int
-    moved_in_second: int          # rows whose decision time is INSIDE F
-    moved_next_second: int        # rows stamped in F+1
+    # THE THREE NAMES ARE KEPT AND THEIR MEANING IS NOW THE COMPARATOR'S.
+    # R261 §1(a). `moved_in_second` was never a rule about seconds; it was
+    # `a(j) > d(i)` under the one condition that every perturbed cell's declared
+    # instant is exactly `F + window`. That holds on the whole-frame path and
+    # fails under a declared `column_modes` block, where D-V30A-98 measured it
+    # reporting a leak as `observed_silence`. The names did not change because
+    # every reader and every recorded figure uses them and the whole-frame
+    # numbers are unmoved; what they mean is stated here instead.
+    moved_in_second: int          # every perturbed cell UNAVAILABLE to the row
+    moved_next_second: int        # every perturbed cell AVAILABLE to the row
+    # THE THIRD STATE, WHICH IS NOT A DEGENERATE CASE OF EITHER. A row after
+    # some of the batch's instants and before others cannot be attributed: the
+    # movement is consistent with reading an unavailable cell and with reading
+    # an available one, and the run does not know which. Folding it into either
+    # is a claim the evidence does not carry.
+    moved_in_band: int = 0
+    rows_in_band: int = 0
+    # THE BATCH'S INSTANTS, CARRIED OUT WITH THE RESULT. A reader checking a
+    # classification needs the interval it was made against, and recomputing it
+    # from the frames is the second-copy hazard.
+    a_min: pd.Timestamp = None
+    a_max: pd.Timestamp = None
     # WHICH COLUMNS MOVED, not merely that a row did. The frozen output contract
     # requires a FindingRecord to name a `feature`; a probe that reports only row
     # movement cannot fill that field without inventing one, and a placeholder
@@ -325,6 +345,13 @@ class ProbeAResult:
     # report: not-run states are never displayed as passed.
     slice_plan: object = None
     context_seconds: tuple = ()
+    # ATTRIBUTION WINDOWS OVERLAPPED, SO NO COHORT'S CLASSIFICATION IS ITS OWN.
+    # R261 §1(b). The separation a run needs is derived from the batch instants,
+    # not fixed at a second; where the probed cohorts sit closer than that, a
+    # moved row is inside two cohorts' windows and the run cannot say which
+    # corrupted cell moved it. That is a could-not-run with its numbers named,
+    # not a result to be reported with a caveat.
+    attribution_overlap: bool = False
 
     @property
     def findings(self):
@@ -334,12 +361,28 @@ class ProbeAResult:
         """The padding seconds' outcome. Never `observed_silence`, never clean."""
         return "not_applicable" if self.context_seconds else "no_slice"
 
+    @property
+    def band_cohorts(self):
+        return [c for c in self.cohorts if c.moved_in_band]
+
     def verdict(self) -> str:
         if not self.determinism_ok:
             return "could_not_run(determinism)"
         if not self.cohorts:
             return "could_not_run(no_cohorts)"
-        return "finding" if self.findings else "observed_silence"
+        if self.attribution_overlap:
+            return "could_not_run(attribution_overlap)"
+        if self.findings:
+            return "finding"
+        # A BAND ROW IS MOVEMENT, SO THE RUN IS NOT SILENT. R261 §1(a).
+        # `observed_silence` is this tool's affirmative "I looked over a stated
+        # population and found nothing"; a run that saw rows move and could not
+        # attribute them has not found nothing. Reporting it as a silence would
+        # fold the band into liveness, which is the thing the third state
+        # exists to stop.
+        if self.band_cohorts:
+            return "attribution_ambiguous"
+        return "observed_silence"
 
 
 @dataclass
@@ -588,6 +631,45 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
                   else ("It is", "it", "it", "it"))))
 
     touched = 0
+    # THE BATCH INSTANTS, PER PROBED COHORT. R261 §1(a).
+    #
+    # Attribution is the registered comparator applied to the batch a cohort's
+    # corruption actually consists of, so the batch has to be recorded AS IT IS
+    # BUILT. Recomputing it afterwards from the frames would be a second copy of
+    # the selection, and the two selections are already different arithmetic on
+    # the two paths -- which is the defect being repaired, not a shape to repeat.
+    batch_lo: dict = {}
+    batch_hi: dict = {}
+
+    def _record_batch(seconds_of_cell, instants_of_cell, keep) -> None:
+        """Fold one column's corrupted cells into the per-cohort [min, max].
+
+        GROUPED, NOT ITERATED, AND THE FIRST VERSION WAS ITERATED. R261. A
+        per-cell Python loop here is correct and unusable: this runs once per
+        column of every declared frame, and the acceptance fixture's two frames
+        carry 464,199 x 5 and 397,457 x 11 cells. The first version of this
+        function was written as a loop over `zip(secs, inst)` with a
+        `pd.Timestamp` constructed per cell; the whole-frame guard was still
+        running eighteen hours later on 365 seconds of CPU, which is what a
+        Python loop over ten million elements looks like from outside. **The
+        guard is what found it, by not returning** -- the unit tests all pass on
+        twelve-row frames in under a second, so no test in this suite would ever
+        have noticed.
+        """
+        keep = np.asarray(keep, dtype=bool)
+        if not keep.any():
+            return
+        secs = np.asarray(seconds_of_cell)[keep]
+        inst = np.asarray(instants_of_cell)[keep]
+        grouped = pd.Series(inst).groupby(pd.Series(secs))
+        for s, lo in grouped.min().items():
+            cur = batch_lo.get(s)
+            if cur is None or lo < cur:
+                batch_lo[s] = lo
+        for s, hi in grouped.max().items():
+            cur = batch_hi.get(s)
+            if cur is None or hi > cur:
+                batch_hi[s] = hi
     for fname, keycol in model.aggregate_frames.items():
         if fname not in corrupt or corrupt[fname] is None:
             res.notes.append("aggregate frame %r absent from raw; not corrupted" % fname)
@@ -714,6 +796,18 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
                         "becomes knowable in any selected second, so it was not "
                         "perturbed. Its silence is `none`, not `observed_silence`."
                         % (c, fname, getattr(spec, "mode", spec)))
+                # The instant IS `a`, and the cohort is `floor(a - window)`.
+                _record_batch((a - model.window).dt.floor("s").to_numpy(),
+                              a.to_numpy(), cell_mask)
+            else:
+                # The frame rule: the declared instant is `floor(key) + window`
+                # and the cohort is that same floor, so min and max coincide and
+                # the band is empty. This is the path every published figure was
+                # produced on, and the equality is what lets the guard require
+                # bit-identity.
+                _record_batch(key_floor.to_numpy(),
+                              (key_floor + model.window).to_numpy(),
+                              np.asarray(cell_mask))
             # A LARGE, DETERMINISTIC PERTURBATION. Not noise: the question is
             # whether the value is READ, and a perturbation that could coincide
             # with the original would produce a false silence.
@@ -848,20 +942,105 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
     # row and the second was got wrong by exactly one window on the first
     # attempt -- caught by the discriminating positive, which is what it is for.
     at_tie = (d == base_floor).to_numpy()
+    del at_tie   # kept above only as the record of what the old rule needed
 
+    # THE ATTRIBUTION WINDOW, AND WHY IT IS BOUNDED AT BOTH ENDS. R261 §1(a)/(b).
+    #
+    # The registered valid-finding rule (PREREG.md §2.6) has no lower bound: a
+    # change at any row with `d(i) <= d` is valid. That is a statement about ONE
+    # cohort's mask. This probe corrupts every picked second in ONE rebuild, so
+    # an unbounded rule would let every later cohort claim the same early moved
+    # row and attribution would be gone -- which is what `cohort_stride` exists
+    # to prevent. So each cohort classifies only the rows inside its own window,
+    # `[F, max_B a(j) + 1s)`, and the upper second is the liveness OBSERVATION,
+    # exactly as wide as the old `nxt` bucket. On the whole-frame path at a
+    # one-second window that window is `[F, F+2s)` and the two regions inside it
+    # are the old `in_sec` and `nxt`, unchanged.
+    d_np = d.to_numpy()
+    observe = SECOND
+    needed = pd.Timedelta(0)
     for f_sec in picked:
-        in_sec = (base_floor == f_sec).to_numpy()
-        nxt = (base_floor == f_sec + model.window).to_numpy()
-        if not model.ties_available:
-            tie_here = nxt & at_tie
-            in_sec = in_sec | tie_here
-            nxt = nxt & ~tie_here
+        lo = batch_lo.get(f_sec)
+        hi = batch_hi.get(f_sec)
+        if lo is None:
+            # No cell was assigned to this cohort, so there is nothing to
+            # classify against and the cohort probed nothing. Reported as an
+            # empty cohort rather than as a silence about the pipeline.
+            res.cohorts.append(CohortResult(second=f_sec, rows_in_second=0,
+                                            moved_in_second=0,
+                                            moved_next_second=0))
+            continue
+        # WHAT THE SEPARATION HAS TO PROTECT IS THE FINDING REGION, NOT THE
+        # WHOLE WINDOW. Adjacent cohorts' windows OVERLAP BY DESIGN and always
+        # have: cohort F's liveness region `[F+window, F+window+1s)` is cohort
+        # `F+window`'s own finding region, and a run at stride 1 reads the same
+        # row as liveness for one cohort and as finding-eligible for the next.
+        # That is the existing convention and it is not what breaks attribution.
+        # What breaks it is two cohorts calling the SAME moved row a finding, so
+        # the quantity to protect is the width of `[F, min_B a(j))`.
+        needed = max(needed, lo - f_sec)
+        window_rows = (d_np >= np.datetime64(f_sec)) & \
+                      (d_np < np.datetime64(hi + observe))
+        # THE COMPARATOR, UNDER THE DECLARED TIE BRANCH. PREREG.md §2.3: a cell
+        # is available to row i iff `a <= d` (ties available) or `a < d` (ties
+        # unavailable). A row is a FINDING when EVERY perturbed cell of the
+        # batch is unavailable to it, and LIVENESS when every one is available.
+        if model.ties_available:
+            unavail_all = d_np < np.datetime64(lo)
+            avail_all = d_np >= np.datetime64(hi)
+        else:
+            unavail_all = d_np <= np.datetime64(lo)
+            avail_all = d_np > np.datetime64(hi)
+        in_sec = window_rows & unavail_all
+        nxt = window_rows & avail_all
+        band = window_rows & ~unavail_all & ~avail_all
         feats = tuple(sorted(c for c, m in moved_col.items() if (m & in_sec).any()))
         res.cohorts.append(CohortResult(
             second=f_sec,
             rows_in_second=int(in_sec.sum()),
             moved_in_second=int((moved & in_sec).sum()),
             moved_next_second=int((moved & nxt).sum()),
+            moved_in_band=int((moved & band).sum()),
+            rows_in_band=int(band.sum()),
+            a_min=lo,
+            a_max=hi,
             features_in_second=feats,
         ))
+
+    # THE SEPARATION IS DERIVED AND PRINTED, NOT FIXED AT A SECOND. R261 §1(b).
+    #
+    # `cohort_stride` samples which seconds are probed; what the ARITHMETIC
+    # requires is that two cohorts' attribution windows do not overlap, and that
+    # requirement comes out of the batch instants. Both numbers are printed so a
+    # reader can see the margin rather than trust it.
+    if len(picked) > 1:
+        gaps = [picked[i + 1] - picked[i] for i in range(len(picked) - 1)]
+        smallest = min(gaps)
+        res.notes.append(
+            "attribution separation: needed %s, smallest probed gap %s. The "
+            "needed value is DERIVED from the batch instants -- the widest "
+            "`min a(j)` past a probed second, which is that cohort's finding "
+            "region -- and is not fixed at one second. `cohort_stride` chooses "
+            "which seconds are probed; this is what the arithmetic requires of "
+            "that choice."
+            % (_window_text(needed), _window_text(smallest)))
+        if smallest < needed:
+            res.attribution_overlap = True
+            res.notes.append(
+                "ATTRIBUTION OVERLAP: the probed seconds are %s apart and a "
+                "cohort's finding region reaches %s. A moved row then sits in "
+                "two cohorts' finding regions and this run cannot say which "
+                "corrupted cell moved it, so no classification below is its "
+                "own. Widen `cohort_stride`, or probe fewer seconds."
+                % (_window_text(smallest), _window_text(needed)))
+    bands = sum(c.moved_in_band for c in res.cohorts)
+    res.notes.append(
+        "attribution: %d finding row(s), %d liveness row(s), %d band row(s) "
+        "across %d cohort(s). A BAND row moved while some of its cohort's "
+        "perturbed cells were available to it and others were not, so the "
+        "movement is attributable to neither; it is counted here and folded "
+        "into nothing."
+        % (sum(c.moved_in_second for c in res.cohorts),
+           sum(c.moved_next_second for c in res.cohorts),
+           bands, len(res.cohorts)))
     return res

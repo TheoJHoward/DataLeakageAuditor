@@ -4885,3 +4885,59 @@ measurement nobody has taken.
 **The parsing script is in the repository** at
 `evidence/session/r261_window_census.py`, byte-identical to the copy that
 produced the counts above, so they can be re-derived rather than believed.
+
+## D-V30A-100 — R205's pair supports neither reading, because the column its builder reads was never perturbed, and the run reported that as a silence
+
+**R261 §3 suspended a reading and asked for the pair to be re-measured under the
+repaired attribution rule, same inputs, both paths.** Measured on R205's own
+fixture, imported from `tests/phase1/test_modes_wiring.py` rather than
+reconstructed, so the inputs are the inputs: 400 rows, a release lag of 30
+minutes, stride 13, `max_cohorts` 25, seed 7.
+
+| path | verdict | finding | band | liveness | cohorts |
+|---|---|---|---|---|---|
+| whole-frame | `finding` | 25 | 0 | 0 | 25 |
+| per-column | `observed_silence` | 0 | 0 | 0 | 25 |
+
+**The repair does not move this pair.** The counts are what R205 recorded, and the
+band — the state the old geometry had nowhere to put — is empty on both paths.
+
+**The 0 is neither explanation, and the run says so in a note nobody was
+reading.** The builder in that fixture reads exactly one column, `released`.
+Under the per-column declaration that column's availability instants sit half an
+hour before the probed range, so **no cell of it was perturbed at all**:
+
+> column 'released' of frame 'agg' declares mode 'at_source_timestamp' and no
+> cell of it becomes knowable in any selected second, so it was not perturbed.
+> Its silence is `none`, not `observed_silence`.
+
+So the 0 is `none` — a probe that did not happen — and it is not evidence that
+the coarse path over-reported, nor evidence that it did not. **R205's reading is
+unsupported by this fixture, and so is its negation.** The measurement that would
+separate them has still not been taken, and this fixture cannot take it: it would
+need a case where the per-column declaration perturbs the read column and the two
+paths still disagree.
+
+**A second finding, in the tool rather than in the reading.** The run-level
+verdict returned `observed_silence` while the only column the builder reads was
+never perturbed. `observed_silence` is this project's affirmative *I looked over
+a stated population and found nothing*; `none` is *the probe did not happen*, and
+the registration fixes the distinction. **The per-column note carries it and the
+verdict does not**, so a caller reading `verdict()` — which is what the CLI prints
+and what every test in this suite asserts on — gets the stronger of the two
+claims. It is disclosed and not repaired: R261 ruled the attribution geometry and
+did not rule this, and a registered instrument is repaired once ruled.
+
+**How the first pass of this measurement got it wrong, recorded because the
+correction is the useful part.** The script that produced the table above
+originally read the two counts and concluded that the per-column silence had
+survived the repair and that R205's reading was therefore supported. It reached
+that by comparing numbers without asking whether the column under test had been
+perturbed — the same shape as reading a zero-coverage gate result as a pass. The
+run's own notes said otherwise on the line above the counts. The script now asks
+the question before it reads the counts, and prints the note when the answer is
+no.
+
+**The script is in the repository** at `evidence/session/r261_remeasure_r205.py`
+and imports the fixture rather than copying it, so re-running it cannot drift
+from the case it claims to measure.
