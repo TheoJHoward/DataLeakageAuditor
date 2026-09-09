@@ -14,11 +14,20 @@ and inputs where it is not are named and nothing is repaired.
 carries, and fails on the other, which is reachable from a declared version-3
 config file.
 
-**Tree state.** Measured at `cea7414`, working tree clean. `py -3.12`, CPython
-3.12.10, numpy 2.4.2, pandas 3.0.1. The script is
-`identity_probe.py` in the round's work root; it imports the shipped modules and
-recomputes the selection with the shipped expressions rather than paraphrasing
-them.
+**Tree state.** Measured at `cea7414`, working tree clean. CPython 3.12.10, numpy
+2.4.2, pandas 3.0.1. The script is `evidence/session/l31_identity_probe.py`; it
+imports the shipped modules and recomputes the selection with the shipped
+expressions rather than paraphrasing them. Its invocation, from the repository
+root, is
+
+    PYTHONPATH=. py -3.12 evidence/session/l31_identity_probe.py
+
+**It is in the repository rather than in the round's scratch, and the check said
+so before I did.** It was written to the work root, and `round_reconciliation`
+halted on it: a working file in neither the repository nor the ephemeral list. It
+is brought in byte-identical to the copy that produced every figure below,
+because the figures are quoted in a disclosure and R231's rule is that an
+assertion living in a file that can vanish is an assertion nobody can re-run.
 
 ---
 
