@@ -202,10 +202,15 @@ def test_the_TWO_ENTRY_POINTS_DO_NOT_JOIN_above_the_refusal():
                     and n.func.id == "require_decision_column":
                 sites.append(p.name)
     assert sorted(sites) == ["availability.py", "cli.py", "identity_control.py",
-                             "model_file.py"], (
-        "the call sites of the shared refusal changed: %s. Four are expected -- "
-        "THREE consumers and one early message at the file boundary -- and the "
+                             "label_probe.py", "model_file.py"], (
+        "the call sites of the shared refusal changed: %s. Five are expected -- "
+        "FOUR consumers and one early message at the file boundary -- and the "
         "count is what makes 'they do not join' true." % sorted(sites))
+    # R261 §4. `label_probe.py` is the fourth consumer, added with L2a. It reads
+    # the same clock for the same reason -- every availability instant it
+    # computes is compared against the output row's decision instant -- so it
+    # takes the shared refusal rather than a fourth copy of the words. The count
+    # moved and this assertion is what made that a decision instead of a drift.
 
 
 def test_the_SENTINEL_is_not_a_column_name_anyone_would_write():

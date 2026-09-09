@@ -225,7 +225,18 @@ def test_schema_through_the_cli_prints_the_format(capsys):
     rc, _ = _run(["schema"])
     assert rc == 0
     text = capsys.readouterr().out
-    assert '"version": 3' in text and "aggregate_frames" in text
+    # DERIVED FROM THE CONSTANT, NOT TYPED. R261 §4: this read `"version": 3`
+    # and the schema bumped to 4 with L2a's two keys, so a hand-typed number
+    # here would have failed for the one reason that is not a defect -- the
+    # version moving -- and would have to be retyped on every bump. The claim
+    # worth asserting is that the printed example is AT THE CURRENT VERSION,
+    # which is what a user copying it needs to be true.
+    from leakaudit.model_file import SCHEMA_VERSION
+    assert '"version": %d' % SCHEMA_VERSION in text
+    assert "aggregate_frames" in text
+    # And the keys that arrived with that bump are described, because a version
+    # the schema names and does not document is worse than one it omits.
+    assert "raw_label" in text and "label_availability" in text
 
 
 # ---------------------------------------------------------------------------

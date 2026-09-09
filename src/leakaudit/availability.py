@@ -312,6 +312,12 @@ class CohortResult:
 class ProbeAResult:
     side: str
     n_cohorts: int
+    # THE ROW THIS RESULT BELONGS TO. R260 §3(d), R261 §4. `PREREG.md` §6.2's
+    # criteria adjudicate "runtime findings" and name no detector row; with two
+    # runtime rows built, that phrase stops identifying one. The registration
+    # finding is recorded (item 7(v) of NEXT_REGISTRATION_REQUIREMENTS.md) and
+    # the tool's own output does not have to inherit the ambiguity.
+    detector: str = "L3.1"
     cohorts: list = field(default_factory=list)
     determinism_ok: bool = True
     notes: list = field(default_factory=list)
@@ -935,27 +941,48 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
     # structural read is recorded at MV-12. No published figure moves: every
     # recorded result was produced under the default, whose behaviour is
     # unchanged, and that was measured rather than assumed.
-    # A row is AT THE TIE when its own stamp sits exactly on a second boundary:
-    # it then belongs to the `nxt` bucket of cohort F = base_floor - window,
-    # whose instant is F + window = base_floor = d. Written `d == base_floor`
-    # rather than `d == f_sec + window` because the first is a property of the
-    # row and the second was got wrong by exactly one window on the first
-    # attempt -- caught by the discriminating positive, which is what it is for.
-    at_tie = (d == base_floor).to_numpy()
-    del at_tie   # kept above only as the record of what the old rule needed
+    # THE TIE ROW NO LONGER NEEDS A SPECIAL CASE, and that is the repair's
+    # tell. R261 §1(a). The paragraph above describes a rule that had to move
+    # the exactly-on-the-instant row between two buckets by hand, because the
+    # buckets were seconds and the tie is an instant. `classify_cohorts` asks
+    # the comparator instead -- `a <= d` or `a < d`, per the declared branch --
+    # so the tie row falls where the registration puts it with no extra
+    # arithmetic. The two branches still disagree about exactly that one row.
+    cohorts, notes, overlap = classify_cohorts(
+        picked, d, moved, moved_col, batch_lo, batch_hi, model)
+    res.cohorts.extend(cohorts)
+    res.notes.extend(notes)
+    res.attribution_overlap = overlap
+    return res
 
-    # THE ATTRIBUTION WINDOW, AND WHY IT IS BOUNDED AT BOTH ENDS. R261 §1(a)/(b).
-    #
-    # The registered valid-finding rule (PREREG.md §2.6) has no lower bound: a
-    # change at any row with `d(i) <= d` is valid. That is a statement about ONE
-    # cohort's mask. This probe corrupts every picked second in ONE rebuild, so
-    # an unbounded rule would let every later cohort claim the same early moved
-    # row and attribution would be gone -- which is what `cohort_stride` exists
-    # to prevent. So each cohort classifies only the rows inside its own window,
-    # `[F, max_B a(j) + 1s)`, and the upper second is the liveness OBSERVATION,
-    # exactly as wide as the old `nxt` bucket. On the whole-frame path at a
-    # one-second window that window is `[F, F+2s)` and the two regions inside it
-    # are the old `in_sec` and `nxt`, unchanged.
+
+def classify_cohorts(picked, d, moved, moved_col, batch_lo, batch_hi, model,
+                     bounds=None):
+    """The registered comparator, applied per cohort. ONE RULE, BOTH PROBES.
+
+    R261 §1(a). The availability probe and the label probe differ in WHICH cells
+    they perturb and in where those cells' instants come from; they do not differ
+    in what a moved row means. That question is this function, and it lives in
+    one place so the two rows cannot drift into two rules -- which is exactly how
+    `moved_in_second` came to be the comparator on one path and not on the other.
+
+    Returns `(cohorts, notes, attribution_overlap)`.
+
+    THE ATTRIBUTION WINDOW, AND WHY IT IS BOUNDED AT BOTH ENDS. The registered
+    valid-finding rule (`PREREG.md` §2.6) has no lower bound: a change at any row
+    with `d(i) <= d` is valid. That is a statement about ONE cohort's mask. These
+    probes corrupt every picked second in ONE rebuild, so an unbounded rule would
+    let every later cohort claim the same early moved row and attribution would
+    be gone -- which is what `cohort_stride` exists to prevent. So each cohort
+    classifies only the rows inside its own window, `[F, max_B a(j) + 1s)`, and
+    the upper second is the liveness OBSERVATION, exactly as wide as the old
+    `nxt` bucket. On the whole-frame path at a one-second window that window is
+    `[F, F+2s)` and the two regions inside it are the old `in_sec` and `nxt`,
+    unchanged.
+    """
+    cohorts: list = []
+    notes: list = []
+    overlap = False
     d_np = d.to_numpy()
     observe = SECOND
     needed = pd.Timedelta(0)
@@ -966,9 +993,9 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
             # No cell was assigned to this cohort, so there is nothing to
             # classify against and the cohort probed nothing. Reported as an
             # empty cohort rather than as a silence about the pipeline.
-            res.cohorts.append(CohortResult(second=f_sec, rows_in_second=0,
-                                            moved_in_second=0,
-                                            moved_next_second=0))
+            cohorts.append(CohortResult(second=f_sec, rows_in_second=0,
+                                        moved_in_second=0,
+                                        moved_next_second=0))
             continue
         # WHAT THE SEPARATION HAS TO PROTECT IS THE FINDING REGION, NOT THE
         # WHOLE WINDOW. Adjacent cohorts' windows OVERLAP BY DESIGN and always
@@ -979,8 +1006,24 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
         # What breaks it is two cohorts calling the SAME moved row a finding, so
         # the quantity to protect is the width of `[F, min_B a(j))`.
         needed = max(needed, lo - f_sec)
-        window_rows = (d_np >= np.datetime64(f_sec)) & \
-                      (d_np < np.datetime64(hi + observe))
+        # THE WINDOW IS THE CALLER'S WHERE THE MASK IS THE CALLER'S. R261 §4.
+        #
+        # `[F, max a(j) + 1s)` is right for a probe whose batch is selected by a
+        # FLOOR and is therefore narrow and just after F. L2a's batch is selected
+        # by the comparator itself -- every label cell unavailable at F -- so it
+        # reaches to the end of the frame, and the registered scope of that
+        # cohort is `d(i) <= F` (§2.6: a change at any row with `d(i) <= d` is
+        # valid, and silence is informative only for `d(i) = d`). Applying L3.1's
+        # window there would classify rows the cohort says nothing about.
+        # WHAT IS SHARED IS THE COMPARATOR BELOW, which is what a moved row
+        # MEANS; the window is which rows this cohort is entitled to speak for.
+        if bounds is not None and f_sec in bounds:
+            w_start, w_end = bounds[f_sec]
+            window_rows = (d_np >= np.datetime64(w_start)) & \
+                          (d_np < np.datetime64(w_end))
+        else:
+            window_rows = (d_np >= np.datetime64(f_sec)) & \
+                          (d_np < np.datetime64(hi + observe))
         # THE COMPARATOR, UNDER THE DECLARED TIE BRANCH. PREREG.md §2.3: a cell
         # is available to row i iff `a <= d` (ties available) or `a < d` (ties
         # unavailable). A row is a FINDING when EVERY perturbed cell of the
@@ -995,7 +1038,7 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
         nxt = window_rows & avail_all
         band = window_rows & ~unavail_all & ~avail_all
         feats = tuple(sorted(c for c, m in moved_col.items() if (m & in_sec).any()))
-        res.cohorts.append(CohortResult(
+        cohorts.append(CohortResult(
             second=f_sec,
             rows_in_second=int(in_sec.sum()),
             moved_in_second=int((moved & in_sec).sum()),
@@ -1016,7 +1059,7 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
     if len(picked) > 1:
         gaps = [picked[i + 1] - picked[i] for i in range(len(picked) - 1)]
         smallest = min(gaps)
-        res.notes.append(
+        notes.append(
             "attribution separation: needed %s, smallest probed gap %s. The "
             "needed value is DERIVED from the batch instants -- the widest "
             "`min a(j)` past a probed second, which is that cohort's finding "
@@ -1025,22 +1068,22 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
             "that choice."
             % (_window_text(needed), _window_text(smallest)))
         if smallest < needed:
-            res.attribution_overlap = True
-            res.notes.append(
+            overlap = True
+            notes.append(
                 "ATTRIBUTION OVERLAP: the probed seconds are %s apart and a "
                 "cohort's finding region reaches %s. A moved row then sits in "
                 "two cohorts' finding regions and this run cannot say which "
                 "corrupted cell moved it, so no classification below is its "
                 "own. Widen `cohort_stride`, or probe fewer seconds."
                 % (_window_text(smallest), _window_text(needed)))
-    bands = sum(c.moved_in_band for c in res.cohorts)
-    res.notes.append(
+    bands = sum(c.moved_in_band for c in cohorts)
+    notes.append(
         "attribution: %d finding row(s), %d liveness row(s), %d band row(s) "
         "across %d cohort(s). A BAND row moved while some of its cohort's "
         "perturbed cells were available to it and others were not, so the "
         "movement is attributable to neither; it is counted here and folded "
         "into nothing."
-        % (sum(c.moved_in_second for c in res.cohorts),
-           sum(c.moved_next_second for c in res.cohorts),
-           bands, len(res.cohorts)))
-    return res
+        % (sum(c.moved_in_second for c in cohorts),
+           sum(c.moved_next_second for c in cohorts),
+           bands, len(cohorts)))
+    return cohorts, notes, overlap

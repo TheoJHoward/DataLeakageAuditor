@@ -36,12 +36,13 @@ import pandas as pd
 
 from .availability import (AvailabilityModel, NOT_SET, ProbeError,
                            require_column_name, require_decision_column)
+from .label_probe import LabelAvailability, RawLabel
 from .modes import (ALL_MODES, AVAILABILITY_FN, FILE_MODES,
                     FRAME_ROLE_TABLE, FRAME_ROLES, MODE_ARITHMETIC,
                     ColumnMode, ModeError)
 
-SCHEMA_VERSION = 3
-SUPPORTED_VERSIONS = (1, 2, 3)
+SCHEMA_VERSION = 4
+SUPPORTED_VERSIONS = (1, 2, 3, 4)
 
 # THE FILE VERSIONS WITH THE TOOL, NEVER WITH A REGISTRATION. R203 §1.
 #
@@ -64,14 +65,20 @@ _V2_KEYS = _V1_KEYS | {"label_column", "split"}
 # states what each computes and was committed before this parser existed.
 _V3_KEYS = _V2_KEYS | {"column_modes", "timestamp_column",
                        "bar_duration_seconds", "draft_provenance"}
-_KEYS_BY_VERSION = {1: _V1_KEYS, 2: _V2_KEYS, 3: _V3_KEYS}
+# Version 4 adds L2a's two declarations. THEY ARRIVE TOGETHER AND WITH THEIR
+# CONSUMER, R261 §4/R260 §5: one bump for both, because either alone is a
+# partial declaration the probe refuses, and neither before the probe that reads
+# them, because a key documented by `leakaudit schema` and consumed by nothing is
+# a schema asserting a capability that does not exist.
+_V4_KEYS = _V3_KEYS | {"raw_label", "label_availability"}
+_KEYS_BY_VERSION = {1: _V1_KEYS, 2: _V2_KEYS, 3: _V3_KEYS, 4: _V4_KEYS}
 
 # `aggregate_frames` is required only where an availability model is the point.
 # A version-2 file may declare a label and a split and no aggregate frame at all
 # -- that is a user running the checks of `leakaudit.checks` and nothing else,
 # which is a whole and legitimate use.
 _REQUIRED_BY_VERSION = {1: {"version", "aggregate_frames"}, 2: {"version"},
-                        3: {"version"}}
+                        3: {"version"}, 4: {"version"}}
 
 
 # THE SENTINEL `leakaudit draft` WRITES INTO A SKELETON, AND THIS FILE OWNS IT.
@@ -110,6 +117,12 @@ class LoadedConfig:
     """
     model: AvailabilityModel
     label_column: str | None = None
+    #: L2a's two declarations, version 4. Both `None` means the row reports
+    #: `unsupported` naming what it needed; one of the two means the probe
+    #: refuses. That three-way split lives in `label_probe`, once, so the file
+    #: boundary and the library caller meet the same words.
+    raw_label: object = None
+    label_availability: object = None
     train_idx: list | None = None
     test_idx: list | None = None
     column_modes: dict | None = None
@@ -174,15 +187,17 @@ def _role_lines() -> str:
 
 
 SCHEMA_DOC = """\
-leakaudit config, schema version 3.
+leakaudit config, schema version 4.
 
     {
-      "version": 3,
+      "version": 4,
       "aggregate_frames": {"trades": "ts_event", "book": "ts_floor"},
       "decision_column": "decided_at",
       "window_seconds": 1.0,
       "ties_available": true,
       "label_column": "target",
+      "raw_label": {"frame": "labels", "column": "y"},
+      "label_availability": {"base_column": "ts", "horizon_seconds": 60.0},
       "split": {"train": [0, 1, 2], "test": [3, 4]},
       "column_modes": {
         "price":     "at_timestamp",
@@ -236,7 +251,30 @@ reporting a clean result it did not earn.
                     input the two comparators disagree about. A run under the
                     non-default branch SAYS SO in its own output, on every
                     finding it produces.
-  label_column      version 2. The built output's label column.
+  label_column      version 2. THE BUILT OUTPUT'S label column, read by the
+                    checks that need no availability model. It is not L2a's --
+                    see `raw_label` below, and note that the two name different
+                    SIDES of the same pipeline on purpose.
+  raw_label         version 4. {"frame": "...", "column": "..."} -- THE INPUT
+                    FRAME AND COLUMN the label occupies BEFORE your builder
+                    runs. L2a perturbs a cell here and rebuilds, so it needs the
+                    input side; `label_column` is the output side and the two
+                    are not interchangeable. Declared with `label_availability`
+                    or not at all: one without the other is refused, because
+                    half a declaration is evidence you meant the row to run.
+  label_availability
+                    version 4. {"base_column": "...", "horizon_seconds": N,
+                    "publication_delay_seconds": N} -- when a label VALUE became
+                    knowable: a(y) = base + horizon + publication delay.
+                    `base_column` is the column of the label's own frame
+                    carrying its timestamp. THE HORIZON IS NEVER DEFAULTED and
+                    no profile may supply it: a lagged label that is realized at
+                    the decision instant and one that is not are the same data,
+                    and only this number separates them. The publication delay
+                    defaults to zero, and only because you supplied the
+                    declaration it belongs to.
+                    WITH NEITHER KEY, L2a reports `unsupported` naming what it
+                    needed -- never a pass, and never a silence.
   split             version 2. {"train": [...], "test": [...]}, row POSITIONS
                     into the built output.
   bar_duration_seconds
@@ -269,10 +307,17 @@ __MODE_LINES__
 WHICH KEYS CORRESPOND TO REGISTERED VOCABULARY, for a reader who needs to know:
 
   aggregate_frames, decision_column, window_seconds, ties_available,
-  column_modes, timestamp_column
+  column_modes, timestamp_column, label_availability
       correspond to vocabulary declared in this project's registration -- the
-      availability model, the decision instant, the tie comparator, and the
-      per-column roles.
+      availability model, the decision instant, the tie comparator, the
+      per-column roles, and (PREREG.md section 2.4) the label's own three-term
+      availability rule.
+  raw_label
+      is this tool's own mechanism, like `aggregate_frames`. The registration
+      says L2a needs "a label column" and does not say where a label lives in a
+      dict of frames, because that is a fact about this interface and not about
+      measurement. It is named separately from `label_column` so a registered
+      declaration is not carried by an unregistered key.
   label_column, split, note
       do NOT. They serve checks that are not registered detector rows, or are
       in the neighbourhood of one without being it.
@@ -346,8 +391,9 @@ def load_model(path) -> AvailabilityModel:
     known = _KEYS_BY_VERSION[version]
     unknown = sorted(set(raw) - known)
     if unknown:
-        later = sorted(k for k in unknown if k in _V3_KEYS)
-        newest = {k: (2 if k in _V2_KEYS else 3) for k in later}
+        later = sorted(k for k in unknown if k in _V4_KEYS)
+        newest = {k: (2 if k in _V2_KEYS else (3 if k in _V3_KEYS else 4))
+                  for k in later}
         hint = ("" if not later else
                 " %s known at version %s; this file declares version %d."
                 % (later, sorted(set(newest.values())), version))
@@ -376,6 +422,72 @@ def load_model(path) -> AvailabilityModel:
     label = raw.get("label_column")
     if label is not None and (not isinstance(label, str) or not label):
         _refuse("`label_column` is %r; a column name was expected" % (label,), path)
+
+    # L2a'S TWO DECLARATIONS. Version 4, R261 §4.
+    #
+    # `raw_label` and `label_column` ARE DIFFERENT SIDES AND THE NAMES SAY SO.
+    # `label_column` is the BUILT OUTPUT's label, read by the model-free checks
+    # and classified below as vocabulary this registration does not declare.
+    # `raw_label` is the INPUT frame and column L2a perturbs before the builder
+    # runs. Giving one key both jobs is `PREREG.md` §2.3's own recorded defect --
+    # v9's merge gave one name to two jobs -- and it would be worse here,
+    # because it would hand a registered row's declaration to an unregistered
+    # key.
+    raw_label = raw.get("raw_label")
+    if raw_label is not None:
+        if not isinstance(raw_label, dict):
+            _refuse("`raw_label` is %r; an object with `frame` and `column` was "
+                    "expected" % (raw_label,), path)
+        extra = sorted(set(raw_label) - {"frame", "column"})
+        if extra:
+            _refuse("`raw_label` carries unknown key(s) %s. Refused rather than "
+                    "ignored." % extra, path)
+        for k in ("frame", "column"):
+            v = raw_label.get(k)
+            if not isinstance(v, str) or not v:
+                _refuse("`raw_label.%s` is %r; a name was expected" % (k, v), path)
+
+    label_avail = raw.get("label_availability")
+    if label_avail is not None:
+        if not isinstance(label_avail, dict):
+            _refuse("`label_availability` is %r; an object with `base_column`, "
+                    "`horizon_seconds` and an optional "
+                    "`publication_delay_seconds` was expected"
+                    % (label_avail,), path)
+        extra = sorted(set(label_avail) - {"base_column", "horizon_seconds",
+                                           "publication_delay_seconds"})
+        if extra:
+            _refuse("`label_availability` carries unknown key(s) %s. Refused "
+                    "rather than ignored." % extra, path)
+        base = label_avail.get("base_column")
+        if not isinstance(base, str) or not base:
+            _refuse("`label_availability.base_column` is %r; the column carrying "
+                    "the label's own timestamp was expected" % (base,), path)
+        if "horizon_seconds" not in label_avail:
+            # THE HORIZON IS NEVER DEFAULTED AND THE DELAY IS DEFAULTED ONLY
+            # INSIDE A SUPPLIED DECLARATION. `PREREG.md` §2.4 draws exactly that
+            # line, and it is the line the corpus depends on: §6.5 carries a
+            # lagged label that IS realized and one that is not, and only a
+            # declared horizon separates them.
+            _refuse("`label_availability` declares no `horizon_seconds`. It is "
+                    "not defaulted and no profile may supply it (PREREG.md "
+                    "section 2.4): a lagged label that is realized and one that "
+                    "is not are the same data and only this number separates "
+                    "them. `publication_delay_seconds` DOES default to zero, "
+                    "and only because you supplied the declaration it belongs "
+                    "to.", path)
+        for k in ("horizon_seconds", "publication_delay_seconds"):
+            if k not in label_avail:
+                continue
+            v = label_avail[k]
+            if isinstance(v, bool) or not isinstance(v, (int, float)):
+                _refuse("`label_availability.%s` is %r; a number of seconds was "
+                        "expected" % (k, v), path)
+            if v < 0:
+                _refuse("`label_availability.%s` is negative (%r). A label that "
+                        "becomes knowable before its own timestamp is not a "
+                        "horizon or a publication delay, and this tool declines "
+                        "to guess which term was meant." % (k, v), path)
 
     modes = None
     # CHECKED BEFORE `column_modes` IS PARSED, and the order is the
@@ -629,6 +741,13 @@ def load_model(path) -> AvailabilityModel:
             window=window_td,
             ties_available=ties),
         label_column=label,
+        raw_label=None if raw_label is None else RawLabel(
+            frame=raw_label["frame"], column=raw_label["column"]),
+        label_availability=None if label_avail is None else LabelAvailability(
+            base_column=label_avail["base_column"],
+            horizon=pd.Timedelta(seconds=label_avail["horizon_seconds"]),
+            publication_delay=pd.Timedelta(
+                seconds=label_avail.get("publication_delay_seconds", 0))),
         train_idx=None if split is None else list(split["train"]),
         test_idx=None if split is None else list(split["test"]),
         column_modes=modes,

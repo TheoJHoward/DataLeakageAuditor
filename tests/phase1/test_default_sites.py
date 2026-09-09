@@ -89,6 +89,42 @@ CLASSIFICATION = {
     # cohort, and sets this from that comparison. There is no input a caller can
     # supply it with, so there is nothing here to refuse.
     "availability.py::param::__init__(attribution_overlap=)": (NA, "result carrier field"),
+    # R261 §4. The registered row a result belongs to. `L3.1` is not a default
+    # standing in for an unanswered question: this class IS the availability
+    # probe's result and there is no other row it could carry. L2a's result type
+    # carries its own, and neither is settable by a caller.
+    "availability.py::param::__init__(detector=)": (NA, "result carrier field"),
+    # R261 §4. `bounds=None` selects the attribution window a probe's cohort is
+    # entitled to speak for, and `None` means the availability probe's own --
+    # `[F, max a(j) + 1s)`, the window every published figure was produced
+    # under. It is a declared branch and not a merged state: the label probe
+    # passes its window explicitly because its mask reaches to the end of the
+    # frame, and a shared default would have to be wrong for one of them.
+    "availability.py::param::classify_cohorts(bounds=)": (NA, "declared branch"),
+    # L2a's result carrier, R261 §4. Same reading as the availability probe's
+    # fields above: these are what a completed run reports, not questions a
+    # caller left unanswered, and none is settable from a config file.
+    "label_probe.py::param::__init__(cohorts=)": (NA, "result carrier field"),
+    "label_probe.py::param::__init__(notes=)": (NA, "result carrier field"),
+    "label_probe.py::param::__init__(determinism_ok=)": (NA, "result carrier field"),
+    "label_probe.py::param::__init__(base_columns=)": (NA, "result carrier field"),
+    "label_probe.py::param::__init__(detector=)": (NA, "result carrier field"),
+    "label_probe.py::param::__init__(read_beyond=)": (NA, "result carrier field"),
+    # `unsupported=None` is NOT a merged state. `None` means the row ran; a
+    # string means it did not, and names the element it lacked. The refusable
+    # condition -- a declaration supplied in part -- never reaches this field,
+    # because it raises before a result object exists.
+    "label_probe.py::param::__init__(unsupported=)": (NA, "result carrier field"),
+    # The perturbation seed. Recorded and reproducible rather than chosen per
+    # run; the availability probe's is classified the same way.
+    "label_probe.py::param::run_probe_l2a(seed=)": (NA, "reproducibility seed"),
+    # `has_timestamp=True` selects the TEMPORAL mode, and the non-temporal one
+    # is refused with its reason rather than approximated. The default is the
+    # only mode that exists, so it is not a question anybody left unanswered --
+    # and PREREG.md §2.7 makes ABSENCE OF A TIMESTAMP COLUMN, not absence of a
+    # declaration, what selects the other path, so the caller who knows is the
+    # one holding the frames.
+    "label_probe.py::param::run_probe_l2a(has_timestamp=)": (NA, "declared branch"),
     "checks.py::param::__init__(did_not_look_because=)": (NA, "result carrier field"),
     "checks.py::param::__init__(findings=)": (NA, "result carrier field"),
     "checks.py::param::__init__(notes=)": (NA, "result carrier field"),

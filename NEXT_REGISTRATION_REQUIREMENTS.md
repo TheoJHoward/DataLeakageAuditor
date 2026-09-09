@@ -183,6 +183,17 @@ where they govern rather than only in a round report.
   definition is `DESIGN.md` §2.3. **The registration's scoring unit therefore
   depends on a term the registration does not carry**, and `DESIGN.md` is not
   part of the registration.
+- **(vi) A declaration supplied IN PART has no registered outcome.** §2.7 reads
+  *"If the required declaration is neither supplied nor defaulted, L3.1, L2a, and
+  L3.1b return `unsupported` (§8.2), naming the missing element."* It covers
+  supplied and not-supplied, and a user who declares `label_availability` and
+  omits the tool-level locator — or the reverse — is in neither state. **L2a
+  refuses there**, on the ground that half a declaration is evidence the row was
+  meant to run and a run that quietly skips it returns an audit that looks like
+  the one the user asked for. That is a tool-level tightening, which R203
+  permits, and it is recorded here because the registration does not reach the
+  case rather than because it disagrees. **Related to item 6 and to (iii)
+  above:** three distinct real cases now fall outside §8.2's vocabulary.
 - **(v) §6.2's criteria adjudicate "runtime findings" and name no row.** This is
   **item 2 above**, recorded there from R188. It is repeated here only to note
   what makes it bite: with one runtime row built the phrase identifies a row by

@@ -762,6 +762,8 @@ R260/msg.txt
 R260/msg2.txt
 R261/baseline_restore.py
 R261/d100.md
+R261/d101.md
 R261/d99.md
 R261/msg1.txt
 R261/msg2.txt
+R261/msg3.txt

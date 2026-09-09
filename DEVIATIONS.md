@@ -4941,3 +4941,74 @@ no.
 **The script is in the repository** at `evidence/session/r261_remeasure_r205.py`
 and imports the fixture rather than copying it, so re-running it cannot drift
 from the case it claims to measure.
+
+## D-V30A-101 — L2a is built, and three of its decisions are the tool's rather than the registration's
+
+**The label probe is the second of the two runtime rows and it was never built.**
+It is built now, against the registered row read first and reported at R258, and
+on the attribution rule R261 §1 repaired — building it on the old geometry would
+have reproduced D-V30A-98's defect in a second place, which is why the establish
+preceded the build.
+
+**Everything L2a produces is a Phase 2 result.** No figure from it is a
+`PREREG.md` §6.2 result and none belongs beside the Phase 1 acceptance figures.
+Phase 1's evidence came through the whole-frame availability path and is untouched
+by this: the whole-frame guard was re-run after the shared classifier was
+extracted, and reported 8 of 8 SAME.
+
+**Where the registration governs, it governs.** The perturbation is
+availability-restricted label perturbation; `a(y_j) = base + horizon +
+publication delay` with all three terms declared and no profile defaulting any of
+them; the temporal mode corrupts, at each cohort, only the label cells unavailable
+at that cohort; a cohort speaks for rows deciding at or before its own instant and
+for no others; one rebuild per cohort, which is the registered cost model's
+`C x S` term rather than a slow choice.
+
+**Three decisions are this tool's and are recorded as such.**
+
+**(a) A NEW KEY FOR THE INPUT SIDE, NOT A SECOND JOB FOR `label_column`.** The
+registration says L2a needs "a label column" and does not say where a label lives
+in a dict of frames, because that is a fact about this interface and not about
+measurement. The shipped `label_column` is the BUILT OUTPUT's label, serving the
+model-free checks, and is classified in the schema as vocabulary this
+registration does not declare. Extending it would hand a registered row's
+declaration to an unregistered key, and one key with two jobs is the defect
+§2.3 already records against v9's merge. `raw_label` is the new key and the side
+is in its name. Both arrive at schema version 4, together and with the probe that
+reads them, so no key is documented before something consumes it.
+
+**(b) A DECLARATION SUPPLIED IN PART IS REFUSED, WHERE THE REGISTRATION HAS NO
+OUTCOME FOR IT.** §2.7 reads: *"If the required declaration is neither supplied
+nor defaulted, L3.1, L2a, and L3.1b return `unsupported` (§8.2), naming the
+missing element."* That covers supplied and not-supplied. A user who declares one
+of the two elements and not the other is in neither state, and L2a raises there
+rather than reporting `unsupported`, because half a declaration is evidence the
+row was meant to run and a run that quietly skips it returns an audit that looks
+like the one the user asked for. **It is a tool-level tightening, which R203
+permits, and the gap is recorded** as item 7(vi) of
+`NEXT_REGISTRATION_REQUIREMENTS.md`. With NEITHER element declared the registered
+outcome is what happens: an outcome of `none` carrying `unsupported(missing: ...)`,
+never a pass and never a silence.
+
+**(c) THE NON-TEMPORAL MODE IS REFUSED, NOT BUILT.** §4.2 gives it a real job
+under `labels_available_during_feature_construction = false`. It has no decision
+times, so it has no cohorts, and §7.2's scoring unit is *feature x affected output
+cohort*. Building it would mean inventing a cohort identity the registration does
+not supply. The refusal names that reason rather than reporting the mode
+unavailable, and the gap is item 7(ii).
+
+**What the positive establishes, and what it does not.** The pair is the
+registration's own separator — §2.4's lagged label that is realized against one
+that is not, with only the declared horizon between them. One frame set, one
+builder, one cohort selection, one seed, one comparator branch; the horizon is the
+only difference. At 60 seconds the probe reports a finding; at zero it reports
+`observed_silence` with the perturbation measured as read, so the silence is not a
+probe that failed to fire. **It discriminates against both neighbours:** L3.1 on
+the same declared frames runs, perturbs the same column under the frame rule, and
+returns `observed_silence` — pinned, so a future change that makes it catch this
+is reported rather than absorbed — and `check_pairwise_label_correlation` is
+silent at 0.081 Pearson and 0.062 Spearman against a 0.999 screen, asserted with
+the margin printed. **It does not establish anything about the blind spots the
+registration already names:** a label proxy (registry 2) and a label built inside
+the pipeline from a past window (registry 5) are untested here and remain
+uncovered.

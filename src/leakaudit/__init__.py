@@ -50,6 +50,12 @@ from .availability import (
 from .slicing import (
     SliceError, SlicePlan, model_padding_floor, plan_slice, split_seconds)
 from .availability_trace import traces_for
+# THE LABEL PROBE. R261 §4, built after R261 §1 repaired the attribution rule
+# both rows now share. Exported because R201 P2's lesson was that the instrument
+# a user most needs was absent from this list.
+from .label_probe import (
+    LabelAvailability, LabelDeclarationError, LabelProbeResult, RawLabel,
+    resolve_label_declaration, run_probe_l2a)
 from .identity_control import IdentityControlResult, run_identity_control
 # INFERENCE. R232 §5. It proposes and never picks: structure is
 # determined from the frames, availability is left blank because it is
@@ -80,6 +86,9 @@ __all__ = [
     "probe_values", "probe_nulls", "VALUE_DETECTOR_ID", "NULL_DETECTOR_ID",
     # THE AVAILABILITY PROBE. Exported at R201 P2: it is the only instrument
     # that separated the acceptance pair, and it was not in this list.
+    # L2a -- the label probe, and the two declarations it refuses without.
+    "run_probe_l2a", "LabelProbeResult", "LabelAvailability", "RawLabel",
+    "LabelDeclarationError", "resolve_label_declaration",
     "AvailabilityModel", "run_probe_a", "ProbeAResult", "ProbeError",
     "eligible_cohorts", "EligibleCohorts", "align_key", "traces_for",
     "run_identity_control", "IdentityControlResult",

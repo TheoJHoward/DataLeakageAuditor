@@ -61,6 +61,11 @@ KEY_TO_ATTR = {
     "column_modes":     ("config", "column_modes"),
     "bar_duration_seconds": ("config", "bar_duration"),
     "draft_provenance":  ("config", "draft_provenance"),
+    # L2a's two, version 4. R261 §4. Both rest on the loaded config and both are
+    # fetched by `cli._run_availability` on its way into `run_probe_l2a`, which
+    # is what makes them measurable here rather than declared-unconsumed.
+    "raw_label":        ("config", "raw_label"),
+    "label_availability": ("config", "label_availability"),
     "note":             (None, None),
 }
 
@@ -125,7 +130,14 @@ def _measure_read_keys(tmp_path) -> set[str]:
         "    o['target'] = (o['x'] > 0).astype(int)\n"
         "    return o[['timestamp', 'x', 'target']]\n", encoding="utf-8")
     (tmp_path / "m.json").write_text(json.dumps({
-        "version": 3, "aggregate_frames": {"agg": "k"},
+        "version": 4, "aggregate_frames": {"agg": "k"},
+        # L2a's pair, set here because this file's whole method is to run with
+        # EVERY key set and watch which are fetched. `w` is a column of the
+        # input frame and `k` carries its timestamp; whether the probe finds
+        # anything is not this file's subject -- whether the keys are read is.
+        "raw_label": {"frame": "agg", "column": "w"},
+        "label_availability": {"base_column": "k", "horizon_seconds": 5.0,
+                               "publication_delay_seconds": 0.0},
         "decision_column": "timestamp", "window_seconds": 1.0,
         "ties_available": True, "label_column": "target",
         "split": {"train": [0, 1, 2, 3], "test": [4, 5]},

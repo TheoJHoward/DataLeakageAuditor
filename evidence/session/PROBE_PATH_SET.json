@@ -46,9 +46,11 @@
     "src/leakaudit/findings.py",
     "src/leakaudit/identity_control.py",
     "src/leakaudit/inference.py",
+    "src/leakaudit/label_probe.py",
     "src/leakaudit/model_file.py",
     "src/leakaudit/probe.py"
   ],
+  "label_probe_added_R261": "`src/leakaudit/label_probe.py` is a NEW module under src/leakaudit/, which `staleness_condition` below makes a re-measurement trigger. It is placed in `not_on_the_path` by DIRECTION rather than by a fresh trace, and the direction is what makes that safe: it imports `classify_cohorts`, `align_key` and `require_decision_column` FROM availability.py and nothing in availability.py imports it, so no edit here can be reached by `run_probe_a` and none can move a probe result through it. The dependency is one-way and that is checkable by reading the imports, which is a weaker instrument than the trace and is stated as such. THE CONVERSE IS NOT TRUE AND IS WHY THE GUARD STILL RAN THIS ROUND: an edit to availability.py CAN move L2a, because L2a's classifier is availability.py's.",
   "what_not_on_the_path_does_NOT_mean": "It means an edit cannot move a probe result THROUGH run_probe_a. Several of these are on other entry points -- probe.py and corruption.py carry the column dependency probe, checks.py the four checks, findings.py the rendering -- and an edit there can move those results.",
   "staleness_condition": "This set was measured against one commit. A NEW module under src/leakaudit/, or a structural change to the probe's call graph, requires re-measuring it. The recorded `measured_at_commit` is what makes that checkable rather than remembered.",
   "staleness_trigger_built": "The guard harness records every leakaudit/protocol frame it enters during its own run and compares that against `path_set`. A module reached at guard time and absent from this file is reported by the guard itself, so the set cannot drift silently while the thing that reads it keeps passing. This is the cheap version and it exists; it does not detect a module that becomes reachable only on data the guard does not run.",

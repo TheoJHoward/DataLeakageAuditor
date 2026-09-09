@@ -299,6 +299,17 @@ def _run_availability(frames, build, model_path, stride, max_cohorts,
                          bar_duration=config.bar_duration,
                          slice_from=slice_from,
                          padding=NOT_DECLARED if padding is None else padding)
+    # L2a RUNS ON THIS PATH TOO, AND IT JOINS THE LIBRARY ENTRY AT
+    # `run_probe_l2a`. R261 §4. The refusal for a partial or malformed
+    # declaration lives in `resolve_label_declaration`, which both entries
+    # reach, so there is no second copy of the words here to fall out of step --
+    # the shape R255 §5 settled for the slice rule and R238 §1 for the clock.
+    from .label_probe import run_probe_l2a
+    label_result = run_probe_l2a(
+        frames, build, model, side="user",
+        raw_label=config.raw_label,
+        label_availability=config.label_availability,
+        cohort_stride=stride, max_cohorts=min(max_cohorts, 25))
     # Eligibility is derived, not assumed: a second no aggregate frame carries a
     # row in has nothing to corrupt, and scheduling it would report a dead
     # process where the truth is an empty probe surface.
@@ -355,6 +366,18 @@ def _run_availability(frames, build, model_path, stride, max_cohorts,
                " at commit %s" % prov["commit"] if prov.get("commit") else "",
                prov.get("structure_edited_by_hand")))
 
+    # L2a'S OUTCOME REACHES THE READER, AND IT CARRIES ITS ROW ON EVERY LINE.
+    # R260 §3(d), R261 §4. Two runtime rows now produce findings, and `PREREG.md`
+    # §6.2's criteria adjudicate "runtime findings" without naming a row -- a
+    # registration finding recorded at item 7(v). The tool's own output does not
+    # inherit that: every line below says which row it came from, so a reader
+    # holding two results never has to infer it.
+    result.notes.append(
+        "[%s] verdict: %s. %d finding cohort(s) of %d probed."
+        % (label_result.detector, label_result.verdict(),
+           len(label_result.findings), label_result.n_cohorts))
+    for note in label_result.notes:
+        result.notes.append("[%s] %s" % (label_result.detector, note))
     return AuditResult(traces, source=result)
 
 
