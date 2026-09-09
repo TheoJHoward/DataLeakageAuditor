@@ -4824,3 +4824,64 @@ disclosure carries is about evidence: a 0 under the per-column path is not by
 itself evidence that the coarse path was wrong, because the bucket geometry can
 produce a 0 while the comparator says otherwise. Separating the two on R205's
 data was not attempted.
+
+## D-V30A-99 — D-V30A-98's absence claim had one input measured and one not, and the reading of a neighbouring measurement is withdrawn
+
+**D-V30A-98 named two inputs that reach the divergent attribution geometry and
+measured the Phase 1 exposure of one of them.** A declared `column_modes` block
+was shown absent from `evidence/phase1/`. The second input, a `window_seconds`
+other than 1.0, was named in the same disclosure and its Phase 1 exposure was not
+measured. An absence claim with half its population enumerated is the shape this
+project keeps finding, so the other half is enumerated here.
+
+**Measured, by parsing rather than by grepping**, because the question is an
+absence claim and a search for the token reports the lines that carry it while
+saying nothing about the calls that omit it. Every `AvailabilityModel(...)`
+construction and every `run_probe_a(...)` call in a named population was read
+from the abstract syntax tree with its defaults made explicit.
+
+**Population, named and not globbed:** twelve files — the seven Phase 1 harnesses
+(`harness_criteria_12`, `harness_criteria_12_population`, `harness_identity_control`,
+`harness_acceptance`, `harness_probe_b`, `harness_probe_b_shard`, `harness_b9_shard`),
+the four B-series probe scripts (`b6_probe_a_controls`, `b7_probe_a_side`,
+`b9_wrapped_controls`, `b9_wrapped_side`), and `tools/wholeframe_guard.py`.
+`tests/phase1/test_*.py` is excluded and the exclusion is stated: those are unit
+modules, they produced no run record, and no published figure rests on them.
+
+**Result: 8 model constructions and 8 probe calls. Explicit `window=`: zero.
+`column_modes=`: zero.** Every Phase 1 run is therefore on the whole-frame path
+at the default one-second window, which is the path on which the identity holds
+and `moved_in_second` is the registered comparator. **D-V30A-98's claim that no
+published figure moves now has its population complete for both inputs.**
+
+**The run records do not carry the window, and that is worth its own line.**
+`evidence/phase1/criteria_12_run.json` has seventeen top-level keys and none of
+them is the availability model or any of its fields, so the configuration a run
+was produced under is recoverable only from the harness that produced it. The
+harnesses are tracked, so nothing is lost; the record is incomplete.
+
+**A neighbouring reading is withdrawn, and it is a reading rather than a
+measurement.** D-V30A-49 records, from R205, that the whole-frame and per-column
+paths give different answers on the same data — 25 cohorts with a finding against
+0 — on a frame whose column was published half an hour before the row carrying
+it, and reads the 0 as a false positive that the per-column path correctly
+suppressed. **The measurement stands. The reading does not follow from it**, now
+that D-V30A-98 has shown the per-column bucket geometry producing a 0 on a leak
+the registered comparator flags. A 0 on that path is consistent with the coarse
+path having been wrong and equally consistent with the geometry having hidden a
+true finding, and the measurement as taken does not separate them.
+
+**So the reading is not quoted until the pair is re-measured under the repaired
+attribution rule, same inputs, both paths.** The repository carried it in one
+place outside this ledger — a comment in `src/leakaudit/cli.py` — and that
+comment now says so beside the sentence it qualifies. This entry is the pointer
+for the ledger copy, which is append-only and is not edited.
+
+**What is not claimed.** Nothing here says the coarse path was right on R205's
+data. It says the evidence offered for preferring the per-column answer there
+does not distinguish the two explanations, and that separating them is a
+measurement nobody has taken.
+
+**The parsing script is in the repository** at
+`evidence/session/r261_window_census.py`, byte-identical to the copy that
+produced the counts above, so they can be re-derived rather than believed.

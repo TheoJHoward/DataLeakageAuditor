@@ -280,6 +280,14 @@ def _run_availability(frames, build, model_path, stride, max_cohorts,
     # data, and the per-column one was built to suppress a false positive the
     # coarse path produces. A user declaring modes to correct a false positive
     # kept the false positive, with no error.
+    #
+    # THE LAST SENTENCE OF THAT PARAGRAPH IS SUSPENDED AT R261, and the
+    # measurement it rests on is not. The 25-against-0 was measured; reading the
+    # 0 as a false positive correctly suppressed is an INFERENCE, and D-V30A-98
+    # showed the per-column bucket geometry can produce a 0 while the registered
+    # comparator says finding. So a 0 on that path is not by itself evidence the
+    # coarse path was wrong. The reading is not quoted until the pair is
+    # re-measured under the repaired attribution rule.
     # `--padding` ABSENT AND `--padding` DECLARED-AS-NOTHING ARE DIFFERENT
     # STATES and argparse merges them into `None`. The sentinel is restored here
     # so the probe's refusal sees the state the user is actually in; passing

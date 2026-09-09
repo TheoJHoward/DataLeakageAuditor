@@ -188,6 +188,26 @@ where they govern rather than only in a round report.
   what makes it bite: with one runtime row built the phrase identifies a row by
   accident, and building the second makes criterion 1 satisfiable by either.
 
+## 8. The attested set admits a file that binds nothing and excludes the file that binds the work
+
+**The manifest's scope is the evidence tree**, and repository-root files enter
+only through an enumerated `../` set, admitted by a limb of §11 item 8 as the
+ceremony's commit set. `PRACTICES.md` is in it, described there as explicitly
+non-normative — it binds nothing, no gate verdict depends on it — and listed *for
+coverage, not for authority*. `OPERATING_RULES.md` is outside it, and it carries
+the durable rules that govern how every artifact in the tree was produced.
+
+**That is a coverage rule doing exactly what it says, and the result still reads
+backwards**: a reader can verify that the non-binding practices file is the one
+its pointers were written against, and cannot verify the same of the rule set.
+The next registration decides whether the attested set is *what the ceremony
+commits* or *what a reader needs to check a claim*, because those two are not the
+same set and this one chose the first without the question being put.
+
+*Not acted on in this tree: a seventh `../` entry touches the ceremony's own set
+and the frozen checker's counts sit on it. Git history is the rules file's
+attestation meanwhile. Recorded at R261 §6.*
+
 ## Two habits, not requirements, that paid for themselves
 
 **Predict before measuring, including the boring things.** Every regeneration of
