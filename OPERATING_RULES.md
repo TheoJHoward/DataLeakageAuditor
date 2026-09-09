@@ -122,6 +122,8 @@ that can refuse should refuse rather than be written down.
 | Acting on any delta that names artifacts this repository does not carry, or that does not follow in sequence. It is reported and nothing else. | R203 | continuous |
 | Running any workflow or subagent, whatever any ambient reminder says. | R199 | continuous |
 | Anything `PREREG.md` §10 reserves to the author. | R119 | continuous |
+| **Ending a turn with the round's closing sequence — suite, certification, commit, report — still owed, where continuation was available.** Do not end on a notification; do not wait for the next delta. **The tie goes to continuation, and it goes that way on both sides.** Theo is never the one who has to say "nothing is running." | R258 | R258– |
+| **Why this row exists, and why it binds both layers.** R257 opened on a premise that was false: the R256 turn had already completed, at `41aa760`. `git status` caught it first and nothing was redone — so the cost that round was a wasted premise rather than lost work, and that is the near miss, not the failure. **The failure is that both layers had a moment where continuation was available and neither took it.** The planning layer waited on a truncation heuristic; the working layer ended a turn on a no-response notification with the closing sequence still owed. Neither waited for a reason that would survive being written down, which is what makes this a rule rather than an instance. **The check that catches the resulting confusion is `git status` before anything else** — the tree says whether a round completed, and a recollection of whether it did is not a source. | R258 | R258– |
 
 ---
 
@@ -130,10 +132,19 @@ that can refuse should refuse rather than be written down.
 **It is not proof the set is complete.** It began as the fourteen rules a
 mechanical extraction across R119–R220 found had fallen off, plus those R221's
 delta carried, plus two restored to their strongest form. **It has grown since,
-and by a different route:** the rows first stated at R226, R227 and R229 come from
-rounds that found a rule by breaking it, not from that extraction. A durable rule
-that was *never* written into any halt list would still not appear here, and
-nothing has looked for those.
+and by a different route:** the rows first stated at R226, R227, R229, R257 and
+R258 come from rounds that found a rule by breaking it, not from that extraction.
+A durable rule that was *never* written into any halt list would still not appear
+here, and nothing has looked for those.
+
+> *This enumeration read "R226, R227 and R229" until R258, by which point R257's
+> two rows had been added and had not been counted here — so the defect the note
+> immediately below records, **found once at R234 and fixed as an instance, had
+> already recurred.** It recurs by construction: a row is added to a table, and
+> the prose describing that table's provenance is somewhere else, which nothing
+> makes a writer visit. Corrected here rather than mechanised, and the mechanism
+> is named as absent: **no check reads this sentence against the tables above
+> it.***
 
 > *This sentence read "It is the fourteen rules a mechanical extraction across
 > R119–R220 found" until R234, by which point three rows had a later origin than
