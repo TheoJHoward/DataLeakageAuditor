@@ -4753,3 +4753,74 @@ and those are different states that a green test cannot tell apart.
 question had not been asked?* **No.** The lesson was written into a disclosure
 and would have stayed there — the round that promised it had already closed, and
 nothing consults `DEVIATIONS.md` before designing the next positive.
+
+## D-V30A-98 — `moved_in_second` is the registered comparator on one of the probe's two selection paths, and on the other it reported a leak as `observed_silence`
+
+**Found by asking, before building the label probe, whether it could reuse the
+availability probe's attribution.** R260 §3(c) put the question as an identity:
+does every cell `run_probe_a` perturbs have `a(j) = F + 1` exactly, where `F` is
+the corrupted second and `a(j)` the cell's declared availability instant? If it
+does, `moved_in_second` is the registered comparator `a(j) > d(i)` written as a
+special case. It does not.
+
+**Two selection paths, a few lines apart in the same function.** Without
+`column_modes` the mask is `floor(key).isin(picked)` and the declared instant is
+`floor(key) + window`, so `a(j) − F` is exactly `window` by construction. With a
+version-3 `column_modes` block the mask is `floor(a − window).isin(picked)` and
+the instant is the column's own `a`, so the floor discards up to a second and
+`a(j) − F` lies anywhere in `[window, window + 1s)`.
+
+**Measured** at `cea7414`, `py -3.12`, CPython 3.12.10, numpy 2.4.2, pandas
+3.0.1, on twelve aggregate rows keyed at `T0 + n s + 500 ms`: the frame rule
+perturbed 12 cells, all at `a(j) − F = 0:00:01`; the `at_timestamp` column mode
+perturbed 11, all at `a(j) − F = 0:00:01.500000`.
+
+**The consequence, on one probed cohort so that attribution is unambiguous.**
+Output row *m* decides at `T0 + m s` and reads the aggregate row keyed 500 ms
+later, which is unavailable to it under both declarations, so the registered
+comparator says finding under both. The frame rule reported `moved_in=1`,
+`moved_next=0`, verdict `finding`. The declared column mode reported
+`moved_in=0`, `moved_next=1`, verdict `observed_silence` — this tool's
+affirmative *I looked over a stated population and found nothing* — over a leak
+the comparator flags. Same frames, same builder, same cohort; the declared
+per-column mode is the only difference.
+
+**The divergence is one-way, and that was checked rather than assumed.** Every
+row in the `in_sec` bucket satisfies `d(i) < F + window <= a(j)`, so the cell is
+unavailable to it under both tie branches. The geometry can therefore only lose
+findings and never invent them, and no figure this project has published can have
+been inflated by it.
+
+**A second input reaches the same geometry.** `nxt` is
+`base_floor == f_sec + model.window` while `in_sec` is one second wide, and
+`window_seconds` is a registered version-1 key with no constraint. At
+`window = 2s` the rows deciding in `[F + 1s, F + 2s)` are unavailable and fall in
+neither bucket, so they are counted as nothing at all. At `window = 1.5s`,
+`f_sec + 1.5s` is never a second boundary while `base_floor` always is, so `nxt`
+can never match: measured, `moved_next_second` totalled 0 across every cohort on
+frames where the one-second run reports movement there.
+
+**A mid-second key is not a contrived input.** The acceptance fixture's own
+`trades.ts_event` is one on 397,408 of its 397,457 rows, median offset 467.83 ms,
+measured earlier and recorded in `AvailabilityModel`'s docstring where it was
+found as a different defect (D-V30A-43).
+
+**No published Phase 1 figure moves, and the population was measured rather than
+recalled.** `grep -rlc "column_modes" evidence/phase1/ | wc -l` returns 0 at
+`cea7414`, and `VALIDATED_CONFIG.toml` carries no value under any of its four
+tables. The exposed population is runs a user makes with a declared `column_modes`
+block or a `window_seconds` other than 1.0.
+
+**Nothing was repaired, by direction.** R260 §3(c) routes a divergence to a
+record and leaves the instrument alone; `availability.py` is untouched at this
+disclosure, and the label probe it was asked about was not built. The measurement
+and its argument are in `evidence/session/L31_ATTRIBUTION_IDENTITY.md`.
+
+**What it does not establish.** It says nothing about whether the per-column path
+is right to produce fewer findings than the frame rule on real data. D-V30A-49
+records R205's 25-against-0 measurement and reads the 0 as a false positive
+correctly suppressed, which may well be right there. The narrower point this
+disclosure carries is about evidence: a 0 under the per-column path is not by
+itself evidence that the coarse path was wrong, because the bucket geometry can
+produce a 0 while the comparator says otherwise. Separating the two on R205's
+data was not attempted.

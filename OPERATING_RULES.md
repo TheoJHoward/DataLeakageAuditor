@@ -132,19 +132,28 @@ that can refuse should refuse rather than be written down.
 **It is not proof the set is complete.** It began as the fourteen rules a
 mechanical extraction across R119–R220 found had fallen off, plus those R221's
 delta carried, plus two restored to their strongest form. **It has grown since,
-and by a different route:** the rows first stated at R226, R227, R229, R257 and
-R258 come from rounds that found a rule by breaking it, not from that extraction.
-A durable rule that was *never* written into any halt list would still not appear
-here, and nothing has looked for those.
+and by a different route:** **every row above whose *first stated* column names a
+delta later than R220** came from a round that found a rule by breaking it, not
+from that extraction. **They are not listed here.** A durable rule that was
+*never* written into any halt list would still not appear here, and nothing has
+looked for those.
 
-> *This enumeration read "R226, R227 and R229" until R258, by which point R257's
-> two rows had been added and had not been counted here — so the defect the note
-> immediately below records, **found once at R234 and fixed as an instance, had
-> already recurred.** It recurs by construction: a row is added to a table, and
-> the prose describing that table's provenance is somewhere else, which nothing
-> makes a writer visit. Corrected here rather than mechanised, and the mechanism
-> is named as absent: **no check reads this sentence against the tables above
-> it.***
+> *This sentence carried a hand-typed list of those deltas, and the list was
+> wrong twice.* **It read "R226, R227 and R229" from R234 until R258**, by which
+> point four more rows had been added — at R247, R254 and two at R257 — and
+> nobody had visited the sentence. **R258 then "corrected" it to "R226, R227,
+> R229, R257 and R258" and still omitted R247 and R254**, so the repair drifted
+> in exactly the way the thing it was repairing had drifted, one round later, and
+> was reported as fixed. *Measured at R260 by parsing the tables: nine rows carry
+> a first-stated delta after R220, against the five the sentence named.*
+>
+> **So the list is deleted rather than corrected a third time. A number or a
+> list in prose about a table is a second copy of the table, and second copies
+> drift** — which is this file's own opening finding turned on the file again.
+> The sentence now points at the marked rows, which cannot disagree with
+> themselves. Nothing was mechanised: **no check reads this paragraph against the
+> tables above it**, and if the pointer above is ever replaced by a count again,
+> that is the defect returning.
 
 > *This sentence read "It is the fourteen rules a mechanical extraction across
 > R119–R220 found" until R234, by which point three rows had a later origin than

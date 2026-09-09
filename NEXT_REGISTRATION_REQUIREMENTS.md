@@ -155,6 +155,39 @@ mistaken for one.
 *Found by asking what four green-adjacent numbers in a suite line actually were.
 The count had been reported unexamined in every round of Phase 2.*
 
+## 7. What L2a needs and the registration does not determine — five, from R258's establish
+
+**Produced by reading L2a's registered row before building it**, not by running
+it. The argument for each is in `evidence/session/L2A_ESTABLISH.md`, which states
+its structural population; these are the one-line forms so that the findings live
+where they govern rather than only in a round report.
+
+- **(i) How "labels built inside the pipeline" is established.** §4.2 makes L2a
+  return `unsupported` naming L3.1 as covering detector in that case, and states
+  no test for it. It is mechanically derivable — the declared label is absent
+  from the raw frames and present in the built output — and the registration
+  does not say so, so a builder must either invent the test or refuse.
+- **(ii) The non-temporal path has no scoring unit.** §7.2's unit is *feature ×
+  affected output cohort*; a cohort is the output rows sharing one decision time;
+  the non-temporal path has no decision times. §7.2 does not say what replaces
+  the cohort there, and §6.5 nonetheless requires non-temporal cases under both
+  settings of §2.5's policy in the corpus.
+- **(iii) §2.5 routes a supplied, valid value to `unsupported`.**
+  `labels_available_during_feature_construction = true` is neither missing nor
+  impossible, and §8.2's boundary sentence covers only missing or impossible
+  inputs. The routing is registered in terms; the boundary sentence does not
+  reach it. **Related to item 6 above:** both are §8.2 vocabulary that a real
+  case falls outside of.
+- **(iv) The cohort is defined in the design document, not the registration.**
+  §2.6 and §7.2 use "cohort" as a settled term and neither defines it; the
+  definition is `DESIGN.md` §2.3. **The registration's scoring unit therefore
+  depends on a term the registration does not carry**, and `DESIGN.md` is not
+  part of the registration.
+- **(v) §6.2's criteria adjudicate "runtime findings" and name no row.** This is
+  **item 2 above**, recorded there from R188. It is repeated here only to note
+  what makes it bite: with one runtime row built the phrase identifies a row by
+  accident, and building the second makes criterion 1 satisfiable by either.
+
 ## Two habits, not requirements, that paid for themselves
 
 **Predict before measuring, including the boring things.** Every regeneration of

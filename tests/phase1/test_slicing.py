@@ -287,6 +287,43 @@ def test_padding_below_the_model_founded_floor_REFUSES():
     assert "AvailabilityModel.window" in msg, "the report names the driver"
 
 
+def test_padding_EXACTLY_EQUAL_to_the_floor_is_ACCEPTED():
+    """The boundary of the refusal, which had no test until R260 §2.
+
+    `plan_slice` refuses on `pad < floor`, so `pad == floor` is accepted by the
+    shape of one comparison operator and by nothing else. That is the single
+    input where `<` and `<=` differ, and this project has already paid once for
+    leaving such an input untested: the tie comparator's `a <= d` against
+    `a < d` disagree about exactly one row -- the one stamped ON the instant --
+    and R216 found that branch inert because no case ever landed there.
+
+    The two neighbours were tested from the start (below the floor refuses, well
+    above it is accepted); the point between them was not, so a change from `<`
+    to `<=` would have passed the whole suite while turning a correct
+    acceptance into a false refusal.
+    """
+    floor = pd.Timedelta("10min")
+    model = AvailabilityModel(aggregate_frames={"agg": "k"}, decision_column="d",
+                              window=floor)
+    assert model_padding_floor(model)[0] == floor, "the floor is the window here"
+    frames = _frames(SLICE_AT - floor - pd.Timedelta(seconds=1),
+                     SLICE_AT + pd.Timedelta(seconds=10))
+    plan = plan_slice(raw=frames, model=model, slice_from=SLICE_AT,
+                      padding=floor)
+    assert plan.padding == plan.floor, "this test is about the equal case only"
+    # And the acceptance does not quietly become a sufficiency claim: R258 §1
+    # withdrew "declared and sufficient", and equality is the case most likely
+    # to read as "exactly enough".
+    assert "does NOT establish" in plan.floor_is_not_sufficiency
+    # THE BOUNDARY IS PINNED FROM BOTH SIDES, one tick apart, so the assertion
+    # is about the comparison operator and not about a wide gap either side of
+    # it. An acceptance test alone would still pass if the boundary moved; this
+    # pair fails if it moves in either direction by any amount at all.
+    with pytest.raises(SliceError):
+        plan_slice(raw=frames, model=model, slice_from=SLICE_AT,
+                   padding=floor - pd.Timedelta(nanoseconds=1))
+
+
 def test_declared_padding_ABSENT_FROM_THE_DATA_refuses():
     """Declaring the padding is not supplying it. DESIGN.md section 5.3."""
     short = _frames(SLICE_AT - pd.Timedelta(seconds=5), SLICE_AT + pd.Timedelta(seconds=10))
