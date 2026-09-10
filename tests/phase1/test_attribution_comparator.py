@@ -42,7 +42,7 @@ for p in (str(ROOT), str(ROOT / "src")):
 import pytest                                                      # noqa: E402
 
 from leakaudit.availability import (                               # noqa: E402
-    AvailabilityModel, ProbeError, run_probe_a)
+    AvailabilityModel, ProbeError, run_probe_a, stride_floor)
 from leakaudit.modes import ColumnMode                             # noqa: E402
 
 T0 = pd.Timestamp("2026-01-01 00:00:00")
@@ -285,14 +285,102 @@ def test_STRIDE_AT_THE_FLOOR_runs_and_finds_NOTHING_which_is_correct():
     assert res.liveness > 0, "and the silence is licensed -- rows did move"
 
 
-def test_an_UNDECLARED_stride_takes_the_floor_and_says_so():
-    """State three. The floor is used, not a number the tool kept to itself."""
+def test_an_UNDECLARED_stride_takes_the_default_and_says_which():
+    """State three, corrected at R265 §2.
+
+    R264 wrote this asserting that an undeclared stride resolves to the FLOOR.
+    That confused a bound with a value: 97 is a sampling default and clears the
+    floor at every registered window, so resolving to the floor made a
+    stranger's run about fifty times more expensive for no correctness. What
+    the run must do is say WHICH of the two it used.
+    """
     res = run_probe_a(_clean_frames(), _clean_build, MODEL, side="derived",
                       max_cohorts=40)
     note = "\n".join(res.notes)
-    assert "NOT DECLARED" in note and "DERIVED" in note, note
+    assert "NOT DECLARED" in note, note
+    assert "default 97" in note, note
     assert sum(c.moved_in_second for c in res.cohorts) == 0
-    assert res.verdict() == "observed_silence"
+
+
+def test_an_UNDECLARED_stride_takes_the_SHIPPED_DEFAULT_where_it_clears():
+    """R265 §2. The floor is a BOUND, not a value.
+
+    R263 resolved an undeclared stride to the floor, which made a stranger's
+    default run about fifty times more expensive and bought no correctness: 97
+    already cleared the floor at every registered window. The default is
+    restored and the floor is applied to it, which is what a bound is for.
+    """
+    res = run_probe_a(_clean_frames(n=300), _clean_build, MODEL,
+                      side="default", max_cohorts=40)
+    note = "\n".join(res.notes)
+    assert "default 97" in note, note
+    assert "correctness bound and not a schedule" in note, note
+    # 300 seconds at stride 97 is four cohorts; at the floor it would be 150.
+    assert res.n_cohorts == 4, (
+        "an undeclared stride must sample at the default, not at the floor: "
+        "got %d cohorts" % res.n_cohorts)
+
+
+def test_where_the_DEFAULT_is_BELOW_the_floor_the_floor_is_used_and_says_so():
+    """The other half. A declared window large relative to the decision seconds
+    puts the floor above 97, and then the bound wins over the default."""
+    model = AvailabilityModel(aggregate_frames={"agg": "k"},
+                              decision_column="d",
+                              window=pd.Timedelta(seconds=200))
+    res = run_probe_a(_clean_frames(n=900), _clean_build, model,
+                      side="bigwindow", max_cohorts=10)
+    note = "\n".join(res.notes)
+    assert "does NOT clear the derived floor" in note, note
+    assert "default 97 was below it" in note or "(default 97" in note, note
+
+
+# --------------------------------------------------------------------------
+# R265 §3(b) -- the floor's own positive, on the case that would break a floor
+# one second too small.
+# --------------------------------------------------------------------------
+
+def test_THE_FLOOR_HOLDS_on_the_PER_COLUMN_WORST_CASE_at_exactly_the_floor():
+    """R265 §3(b). The plausible wrong floor is one that omits the second the
+    per-column selection throws away.
+
+    Selection there is `floor(a - window)`, so a cell's declared instant lands
+    anywhere in `[F + window, F + window + 1s)`. The worst case is the top of
+    that interval, and this fixture sits at `F + window + 0.99s`. The pipeline
+    is CLEAN -- every row reads a cell already available to it -- so a finding
+    here is false, and the floor is probed at EXACTLY its own value.
+
+    IF THIS FAILS THE FORMULA IS WRONG, and the floor is not to be widened by
+    hand to make it pass; that would be fitting the bound to the fixture.
+    """
+    n = 60
+    off = pd.Timedelta(milliseconds=990)
+    frames = {"agg": pd.DataFrame({"k": [T0 + i * SEC + off for i in range(n)],
+                                   "v": np.arange(n, dtype="float64")})}
+
+    def build(raw):
+        agg = raw["agg"]
+        v = agg["v"].to_numpy()
+        # Row m decides at T0 + m s and reads cell m-1, whose declared instant
+        # under the column mode is T0 + (m-1) s + 0.99 s -- BEFORE the decision,
+        # so available, so legitimate.
+        return pd.DataFrame({"d": [T0 + m * SEC for m in range(n)],
+                             "x": np.concatenate(([np.nan], v[:-1]))})
+
+    modes = {"v": ColumnMode("at_timestamp")}
+    floor = stride_floor(MODEL, modes)
+    assert floor == pd.Timedelta(seconds=3), (
+        "the per-column floor is `window + 2s`; if this moved, the test below "
+        "is no longer probing the floor: %s" % floor)
+    res = run_probe_a(frames, build, MODEL, side="worst",
+                      cohort_stride=3, max_cohorts=40, column_modes=modes)
+    a_span = {(c.a_max - c.second) for c in res.cohorts if c.a_max is not None}
+    assert a_span, "no cohort carried a batch; the fixture probed nothing"
+    assert max(a_span) >= pd.Timedelta(seconds=1, milliseconds=980), (
+        "the fixture is not at the per-column worst case: widest instant sits "
+        "%s past its cohort" % max(a_span))
+    assert sum(c.moved_in_second for c in res.cohorts) == 0, (
+        "a finding on a clean pipeline at exactly the floor means the floor's "
+        "formula is too small. Do not widen it here -- that is the finding.")
 
 
 def test_the_ADDED_findings_lie_only_in_the_named_interval():

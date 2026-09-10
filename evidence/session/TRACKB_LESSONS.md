@@ -1422,6 +1422,24 @@ exception type; the method is stated because it bounds the answer:
 needs a case that produces the condition, and inventing six such cases in the
 round that found the class is how a list becomes a rewrite.
 
+> **RESOLVED AT R265, and the resolution changed the lesson.** All six now have a
+> case, in `tests/phase1/test_refusals_that_never_fired.py`. **Three fire from a
+> real entry point. Two fire only as a function** — the every-call attribution
+> assertions guard the probe's own correctness, so no caller can reach them and
+> the positive calls the check directly, with a negative beside it so the pair
+> does not pass against a check that raises on everything. **One cannot be
+> reached at all:** `"no aggregate cells matched the corrupted seconds"` is
+> preempted by a per-frame guard one loop above it, and is classified unreachable
+> by construction rather than deleted. *(D-V30A-107.)*
+>
+> **What that adds to TB-25.** The lesson was that a check without a positive
+> passes while the property fails. Writing the six positives found that **a
+> third of them could not have had one** — not because nobody wrote it, but
+> because no input reaches the branch. So "has no positive" splits into three
+> states, and only the first is the defect this lesson names: *never exercised*,
+> *exercisable only below the public surface*, and *unreachable*. A list of
+> untested refusals is not a list of untested code until that split is made.
+
 ## F4 — A registration or instrument that cannot be run as written
 
 *It is internally consistent, it is signed, and it does not survive contact with

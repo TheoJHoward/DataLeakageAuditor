@@ -149,6 +149,45 @@ NOT_DECLARED = "<padding not declared>"
 STRIDE_NOT_DECLARED = "<cohort stride not declared>"
 
 
+#: THE SHIPPED SAMPLING DEFAULT. R265 §2. A cost choice and nothing else: it
+#: says how many seconds to look at, not what is safe. It has been 97 at both
+#: entry points since the probe existed, and it clears the floor at every
+#: registered window, which is why no default run was ever exposed to the
+#: interference D-V30A-106 records.
+DEFAULT_STRIDE = 97
+
+
+def stride_floor(model, column_modes=None):
+    """The separation below which cohorts interfere. R265 §3(a).
+
+    DERIVED FROM ONE QUANTITY: how far past a probed second that second's
+    corruption can still be observed, `max_B a(j) + 1s - F`. The `+ 1s` is the
+    liveness observation, exactly as wide as the bucket it replaced.
+
+      * frame rule -- every perturbed cell's instant is `floor(key) + window`
+        EXACTLY, so the span is `window + 1s`.
+      * per-column modes -- selection is `floor(a - window)`, so `a` lands
+        anywhere in `[F + window, F + window + 1s)` and the span is bounded by
+        `window + 2s`. The extra second is the floor's whole width, not a
+        margin: it is the resolution the floor of the selection throws away.
+
+    This is a bound computed BEFORE the batch is known, so it can pick a stride.
+    The measured requirement is checked again afterwards against the actual
+    instants, and that check refuses.
+    """
+    return model.window + (2 * SECOND if column_modes else SECOND)
+
+
+def _smallest_gap(seconds, k: int):
+    """The narrowest gap between consecutive probed seconds at stride `k`."""
+    seconds = list(seconds)
+    if len(seconds) < 2 or k >= len(seconds):
+        return pd.Timedelta.max
+    gaps = [seconds[i + k] - seconds[i]
+            for i in range(0, len(seconds) - k, k)]
+    return min(gaps) if gaps else pd.Timedelta.max
+
+
 def _stride_for(seconds, floor) -> int:
     """The smallest stride whose consecutive probed seconds clear `floor`.
 
@@ -387,6 +426,13 @@ class ProbeAResult:
     # moved row is inside two cohorts' windows and the run cannot say which
     # corrupted cell moved it. That is a could-not-run with its numbers named,
     # not a result to be reported with a caveat.
+    #: THE STRIDE THIS RUN ACTUALLY USED, after the sentinel and the floor have
+    #: been applied. R265 §2. It is carried out because `cli._run_availability`
+    #: re-derives the probed seconds for the eligibility table and would
+    #: otherwise resolve the sentinel a SECOND time -- two copies of one
+    #: decision, which is the hazard this package keeps closing. Zero only
+    #: before the probe reaches its selection.
+    resolved_stride: int = 0
     #: Cells actually written to, counted per column rather than per frame. The
     #: number a `none` verdict rests on: a silence with zero perturbed cells and
     #: one with thousands are different claims and were reported identically.
@@ -651,16 +697,37 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
     # is invalid rather than merely smaller, and clearing the floor is not
     # sufficiency because the builder's own lookback is not in the model.
     if isinstance(cohort_stride, str) and cohort_stride == STRIDE_NOT_DECLARED:
-        floor = model.window + (2 * SECOND if column_modes else SECOND)
-        cohort_stride = _stride_for(seconds, floor)
-        res.notes.append(
-            "cohort stride was NOT DECLARED, so it is DERIVED: %d, the smallest "
-            "stride whose probed seconds are at least %s apart. That floor is "
-            "`window + 1s` (%s), plus a second where per-column modes are "
-            "declared because a mode's instant can sit up to a second further "
-            "past its cohort. Declare `cohort_stride` to choose your own; below "
-            "the floor it is refused."
-            % (cohort_stride, _window_text(floor), _window_text(model.window)))
+        floor = stride_floor(model, column_modes)
+        # THE FLOOR IS A BOUND, NOT A VALUE. R265 §2, correcting R263 §2(b).
+        #
+        # R263 resolved an undeclared stride TO the floor, which confused two
+        # different things: 97 was a SAMPLING default -- a cost choice, above
+        # the floor at every registered window -- and the floor is a
+        # CORRECTNESS bound. Resolving to the bound made a stranger's default
+        # run roughly fifty times more expensive and bought no correctness,
+        # because 97 already cleared it. The default is restored and the floor
+        # is applied to it, which is what a bound is for.
+        if _smallest_gap(seconds, DEFAULT_STRIDE) >= floor:
+            cohort_stride = DEFAULT_STRIDE
+            res.notes.append(
+                "cohort stride was NOT DECLARED, so the shipped default is "
+                "used: default %d. It clears the derived floor of %s, which is "
+                "a correctness bound and not a schedule -- below it a cell "
+                "corrupted for one cohort can move a row the next counts as a "
+                "finding. Declare `cohort_stride` to probe more or fewer "
+                "seconds; below the floor it is refused."
+                % (DEFAULT_STRIDE, _window_text(floor)))
+        else:
+            cohort_stride = _stride_for(seconds, floor)
+            res.notes.append(
+                "cohort stride was NOT DECLARED and the shipped default of %d "
+                "does NOT clear the derived floor of %s on this data, so the "
+                "floor is used instead: floor %d (default %d was below it). "
+                "That happens where the declared window is large relative to "
+                "the spacing of your decision seconds."
+                % (DEFAULT_STRIDE, _window_text(floor), cohort_stride,
+                   DEFAULT_STRIDE))
+    res.resolved_stride = cohort_stride
     picked = seconds[::cohort_stride][:max_cohorts]
     res.n_cohorts = len(picked)
     if res.n_cohorts == 0:

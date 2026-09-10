@@ -5345,3 +5345,97 @@ script: stride below the floor refuses and names both numbers; stride at the
 floor runs and finds nothing, which is correct because there is nothing to find;
 an undeclared stride takes the floor and says so. The 39 cannot be reproduced
 now — the run refuses — so it is recorded in the test's own docstring.
+
+## D-V30A-107 — the floor is a bound and R263 spent it as a value; the floor's own positive; and six refusals reddened, two of them unreachable
+
+**THREE THINGS, and the first is a correction to a repair.**
+
+### 1. An undeclared stride resolves to the shipped default again, not to the floor
+
+R263 §2(b) made `cohort_stride` a sentinel and resolved an undeclared stride TO
+the derived floor. **That confused a bound with a value.** 97 was a SAMPLING
+default — a cost choice, tool-level, above the floor at every registered window —
+and the floor is a CORRECTNESS bound. Resolving to the bound made a stranger's
+default run about fifty times more expensive on second-spaced data and bought no
+correctness, because 97 already cleared it.
+
+**The rule now, at both entry points:**
+
+| state | resolves to | printed as |
+|---|---|---|
+| declared, at or above the floor | the declared value | as declared |
+| declared, below the floor | **REFUSED**, naming the floor | the refusal |
+| undeclared, default clears the floor | **97** | `default 97` |
+| undeclared, default below the floor | the floor | `floor N (default 97 was below it)` |
+
+The CLI's `--stride` default is now the sentinel rather than a second copy of
+97, so omitting the flag and typing `--stride 97` are distinguishable states and
+the run says which it was in. **One decision, one place**, which is also why
+`ProbeAResult` now carries `resolved_stride`: the CLI re-derives the probed
+seconds for its eligibility table and was resolving the sentinel a second time.
+
+**NO RECORDED FIGURE MOVED WHILE THE SENTINEL RESOLVED TO THE FLOOR, and that is
+measured rather than argued.** Parsed at `5c0ed72` — a search for `cohort_stride`
+finds the calls that pass it and the population here is the calls that do not —
+**16 call sites omit the stride.** Of those, the three in non-pytest scripts
+(`b6_probe_a_controls`, `b9_wrapped_controls`, and R263's own instrument) were
+never executed in the window; every collected one either drives L2a, which
+rebuilds per cohort and has no floor to clear, or asserts a refusal that fires
+before cohort selection is reached. **No figure was produced at the derived
+stride.**
+
+### 2. The floor's formula, and its own positive at the per-column worst case
+
+**Formula:** `stride_floor(model, column_modes)` returns `window + 1s`, and
+`window + 2s` where per-column modes are declared. **The quantity it is derived
+from is one thing:** how far past a probed second that second's corruption can
+still be observed, `max_B a(j) + 1s − F`. The `+ 1s` is the liveness
+observation, exactly as wide as the bucket it replaced. On the frame rule every
+instant is `floor(key) + window` exactly, so the span is `window + 1s`. Under
+per-column modes selection is `floor(a − window)`, so `a` lands anywhere in
+`[F + window, F + window + 1s)` and the extra second is **the resolution the
+floor of the selection throws away**, not a margin.
+
+**The positive is the case a floor one second too small would fail.** A clean
+pipeline whose declared instants sit at `F + window + 0.99 s` — the top of that
+interval — probed at EXACTLY the floor of 3 s: **zero findings.** The test
+asserts the fixture really is at the worst case (widest instant at least 1.98 s
+past its cohort) before it reads the result, and it states that a failure means
+the formula is wrong and the floor is not to be widened by hand to make it pass.
+
+### 3. Six refusals reddened; two of them cannot be reached
+
+TB-25 measured six refusals across the two probes that no test had ever caused to
+fire. Each now has a case, and the classification is the deliverable:
+
+| refusal | outcome |
+|---|---|
+| `eligible_cohorts`: "NO selected second is carried by any declared aggregate frame" | **fires** — selected seconds a year from the data |
+| `run_probe_a`: "declared aggregate frame(s) … were not supplied" | **fires** — the frame supplied under one name, declared under another; R210's misspelling |
+| both probes: "the corrupted build changed shape" | **fires** — a builder that drops rows carrying the perturbation |
+| `run_probe_l2a`: "an AVAILABLE label cell was perturbed" | **fires as a function; unreachable through the probe** |
+| `run_probe_l2a`: "column … of the label frame changed" | **fires as a function; unreachable through the probe** |
+| `run_probe_a`: "no aggregate cells matched the corrupted seconds" | **UNREACHABLE BY CONSTRUCTION** |
+
+**The two label assertions are `DESIGN.md` §2.7's every-call check.** They fire
+only where the probe wrote outside its own mask — they guard the
+probe's own correctness, not the caller's declaration, so no input reaches them
+and that is what they are for. The positives call the check directly with a
+hand-built corrupt frame, and a negative confirms it does not raise on a correct
+perturbation, so the pair does not pass against a check that raises on
+everything.
+
+**"No aggregate cells matched" is preempted and cannot be reached.** A present
+declared frame with no matching second raises one loop earlier, naming the frame
+(`"frame %r matched NO corrupted second"`); an absent one is skipped and makes
+the first branch fire instead. `touched == 0` with every declared frame present
+therefore requires a present frame whose mask is empty, which the guard above has
+already refused. **Classified unreachable by construction, not by defect**, and
+not deleted: R265 §4 forbids removing either kind this round. A test pins the
+PREEMPTION rather than the branch — if the per-frame guard is ever narrowed, it
+fails and the branch becomes live.
+
+**What is not claimed.** Reddening a refusal establishes that it fires on the
+case written for it. It does not establish that the case is the only one that
+reaches it, and for the two unreachable ones it establishes nothing about the
+probe beyond the check being correct in isolation.

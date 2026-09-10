@@ -175,10 +175,20 @@ def build_parser() -> argparse.ArgumentParser:
                           "before the model says they had arrived. Without it, "
                           "the run is the column dependency probe, which needs "
                           "no model. `leakaudit schema` prints the format")
-    run.add_argument("--stride", type=int, default=97, metavar="N",
+    # THE SENTINEL, NOT 97, SO BOTH ENTRY POINTS RESOLVE THROUGH ONE RULE.
+    # R265 §2. The value is still 97 when the flag is omitted -- the rule lives
+    # in `run_probe_a` and applies the floor to it -- but omitting the flag and
+    # typing `--stride 97` are now different states, and the run says which it
+    # was in. A default duplicated at the boundary is the shape R255 §5 and
+    # R238 §1 both closed for other keys.
+    run.add_argument("--stride", type=int, default=None, metavar="N",
                      help="probe every Nth second (availability runs only). "
                           "Corrupted seconds are kept far apart so a moved row "
-                          "is attributable to exactly one of them")
+                          "is attributable to exactly one of them. Omitted, the "
+                          "shipped default of 97 is used where it clears the "
+                          "derived floor, and the floor where it does not; "
+                          "either way the run says which. A stride below the "
+                          "floor is refused.")
     run.add_argument("--max-cohorts", type=int, default=400, metavar="N",
                      help="cap on probed seconds (availability runs only)")
     run.add_argument("--slice-from", default=None, metavar="TIMESTAMP",
@@ -293,6 +303,10 @@ def _run_availability(frames, build, model_path, stride, max_cohorts,
     # so the probe's refusal sees the state the user is actually in; passing
     # `None` through would trip the "not a declaration" branch with a message
     # about a value the user never typed.
+    # `None` from argparse means the flag was omitted; the sentinel carries that
+    # state into the one place the rule lives. R265 §2.
+    from .availability import DEFAULT_STRIDE, STRIDE_NOT_DECLARED
+    stride = STRIDE_NOT_DECLARED if stride is None else stride
     result = run_probe_a(frames, build, model, side="user",
                          cohort_stride=stride, max_cohorts=max_cohorts,
                          column_modes=config.column_modes or None,
@@ -309,7 +323,13 @@ def _run_availability(frames, build, model_path, stride, max_cohorts,
         frames, build, model, side="user",
         raw_label=config.raw_label,
         label_availability=config.label_availability,
-        cohort_stride=stride, max_cohorts=min(max_cohorts, 25))
+        # L2a rebuilds ONCE PER COHORT, so no two cohorts share a batch and the
+        # floor has nothing to protect here: its stride is a sampling choice
+        # only. An omitted flag takes the same shipped default the availability
+        # probe takes, so the two rows probe the same seconds by default.
+        cohort_stride=(DEFAULT_STRIDE if stride is STRIDE_NOT_DECLARED
+                       else stride),
+        max_cohorts=min(max_cohorts, 25))
     # Eligibility is derived, not assumed: a second no aggregate frame carries a
     # row in has nothing to corrupt, and scheduling it would report a dead
     # process where the truth is an empty probe surface.
@@ -334,7 +354,11 @@ def _run_availability(frames, build, model_path, stride, max_cohorts,
     _secs = sorted(pd.to_datetime(built[dcol]).dt.floor("s").unique())
     if result.slice_plan is not None:
         _secs = [s for s in _secs if s >= result.slice_plan.slice_from]
-    picked = _secs[::stride][:max_cohorts]
+    # THE STRIDE THE PROBE RESOLVED, not the one the caller typed. R265 §2.
+    # This line re-derives the probed seconds, so it needs the same stride the
+    # probe used; reading the raw argument would resolve the sentinel a second
+    # time and the two could disagree the moment the rule changes.
+    picked = _secs[::result.resolved_stride][:max_cohorts]
     elig = eligible_cohorts(frames, model, picked,
                             pd.to_datetime(built[dcol]))
     traces = traces_for(result, elig.eligible, case_id="user")

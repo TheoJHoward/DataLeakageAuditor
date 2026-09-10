@@ -111,6 +111,12 @@ CLASSIFICATION = {
     # `none` verdict rests on, so a zero here is a reported fact rather than a
     # default standing in for one.
     "availability.py::param::__init__(cells_perturbed=)": (NA, "result carrier field"),
+    # R265 §2. The stride the run actually used, after the sentinel and the
+    # floor. `0` is not a merged state: it holds only before the probe reaches
+    # its selection, and no completed run carries it. Carried out so the CLI's
+    # second cohort selection reads the resolved value instead of resolving the
+    # sentinel again -- one decision, one place.
+    "availability.py::param::__init__(resolved_stride=)": (NA, "result carrier field"),
     "availability.py::param::classify_cohorts(batch_n=)": (NA, "declared branch"),
     # L2a's result carrier, R261 §4. Same reading as the availability probe's
     # fields above: these are what a completed run reports, not questions a
