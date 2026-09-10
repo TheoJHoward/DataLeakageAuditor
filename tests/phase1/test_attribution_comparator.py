@@ -39,8 +39,10 @@ for p in (str(ROOT), str(ROOT / "src")):
     if p not in sys.path:
         sys.path.insert(0, p)
 
+import pytest                                                      # noqa: E402
+
 from leakaudit.availability import (                               # noqa: E402
-    AvailabilityModel, run_probe_a)
+    AvailabilityModel, ProbeError, run_probe_a)
 from leakaudit.modes import ColumnMode                             # noqa: E402
 
 T0 = pd.Timestamp("2026-01-01 00:00:00")
@@ -233,6 +235,64 @@ def test_the_WHOLE_FRAME_path_gains_and_loses_NOTHING():
     for c in res.cohorts:
         assert c.a_min == c.a_max == c.second + MODEL.window
         assert c.moved_in_band == 0, "no band exists where min == max"
+
+
+# --------------------------------------------------------------------------
+# R264 §2(d) -- the derived stride's discriminating positive. Three states, one
+# fixture, and the ground truth is that there is NOTHING TO FIND.
+# --------------------------------------------------------------------------
+
+def _clean_frames(n=40):
+    return {"agg": pd.DataFrame({"k": [T0 + i * SEC for i in range(n)],
+                                 "v": np.arange(n, dtype="float64")})}
+
+
+def _clean_build(raw):
+    """Reads the PREVIOUS second's cell, whose declared instant is at or before
+    the reading row's decision instant. AVAILABLE, so not a leak. Any finding
+    on this fixture is false by construction."""
+    agg = raw["agg"]
+    v = agg["v"].to_numpy()
+    return pd.DataFrame({"d": agg["k"].to_numpy(),
+                         "x": np.concatenate(([np.nan], v[:-1]))})
+
+
+def test_STRIDE_BELOW_THE_FLOOR_is_refused_and_the_floor_is_named():
+    """State one of three. Measured at R263 BEFORE the floor existed: this same
+    fixture at stride 1 reported **39 false findings across 40 cohorts** and a
+    verdict of `finding`, on a builder that leaks nothing. That number cannot
+    be reproduced now because the run refuses, which is the repair; it is
+    recorded here so the positive stays readable after it stops reproducing."""
+    with pytest.raises(ProbeError) as e:
+        run_probe_a(_clean_frames(), _clean_build, MODEL, side="s1",
+                    cohort_stride=1, max_cohorts=40)
+    msg = str(e.value)
+    assert "BELOW THE DERIVED FLOOR" in msg
+    assert "1s apart" in msg and "2s" in msg, (
+        "the refusal must name BOTH numbers -- what was probed and what is "
+        "required -- or a caller cannot act on it: %s" % msg)
+
+
+def test_STRIDE_AT_THE_FLOOR_runs_and_finds_NOTHING_which_is_correct():
+    """State two. The same fixture, one stride up, with no interference: the
+    pipeline has no leak and the probe says so."""
+    res = run_probe_a(_clean_frames(), _clean_build, MODEL, side="s2",
+                      cohort_stride=2, max_cohorts=40)
+    assert sum(c.moved_in_second for c in res.cohorts) == 0, (
+        "a finding here would be false: every cell this builder reads is "
+        "available to the row that reads it")
+    assert res.verdict() == "observed_silence"
+    assert res.liveness > 0, "and the silence is licensed -- rows did move"
+
+
+def test_an_UNDECLARED_stride_takes_the_floor_and_says_so():
+    """State three. The floor is used, not a number the tool kept to itself."""
+    res = run_probe_a(_clean_frames(), _clean_build, MODEL, side="derived",
+                      max_cohorts=40)
+    note = "\n".join(res.notes)
+    assert "NOT DECLARED" in note and "DERIVED" in note, note
+    assert sum(c.moved_in_second for c in res.cohorts) == 0
+    assert res.verdict() == "observed_silence"
 
 
 def test_the_ADDED_findings_lie_only_in_the_named_interval():

@@ -5258,3 +5258,90 @@ their "3 findings" was a fact about a default nobody had chosen; they now declar
 **The instrument is committed** at `evidence/session/r263_stride_interference.py`
 and carries the pre-repair numbers, because a repair's known positive has to stay
 readable after it stops reproducing.
+
+## D-V30A-106 — the stride defect invents findings where D-V30A-98 loses them, and what a stranger's default actually was
+
+**DIRECTION FIRST, because it is the opposite of the last one.** D-V30A-98
+recorded a geometry that could only LOSE findings — every row it misclassified
+was one the comparator called a leak. This defect INVENTS them: on a builder
+that reads the previous second's cell, which is available to the row that reads
+it and is therefore not a leak, the probe at stride 1 reported **39 findings
+across 40 cohorts and a verdict of `finding`.** At stride 2 and above, zero.
+
+**WHAT A STRANGER WHO DECLARED NO STRIDE ACTUALLY GOT, read from the tree and
+not recalled.** At `27582d9`, `run_probe_a`'s parameter was `cohort_stride: int
+= 97` and the CLI's flag was `run.add_argument("--stride", type=int,
+default=97)`. **Both entry points defaulted to 97, not to 1.** Over
+one-decision-row-per-second data a stride of 97 puts the probed seconds 97
+seconds apart, against a floor of 2 seconds at the registered one-second window.
+**So no default run was exposed, and the 39 false findings required a caller to
+declare a stride below the floor explicitly.** That sentence is the population of
+this defect and it is the reason it is not a recall of published results.
+
+**The one case where the shipped default was NOT above the floor, stated because
+"the default was safe" is otherwise an unbounded claim.** The floor is
+`window + 1s`. A declared `window_seconds` greater than 96 puts the floor above
+the 97 seconds a default stride gives, and such a run would have interfered
+silently before this change and is refused after it. No Phase 1 configuration is
+in that region: `window` is 1 s everywhere, measured at D-V30A-99 by parsing
+every model construction in the twelve-file population.
+
+**Recorded figures produced at stride 1 with BATCHED cohorts, re-measured under
+the floor.** The criterion for being in scope is mechanical: the run probed more
+than one cohort AND corrupted them in one rebuild. Old figures are kept, dated,
+and superseded; the new ones sit beside them.
+
+| figure, as recorded | recorded value (stride 1) | re-measured (stride 2) |
+|---|---|---|
+| D's pair, unpadded cut frame — R255, D-V30A-95, `FEATURE_BACKLOG.md` | `observed_silence`, 0 findings over 30 cohorts | `none(no perturbed cell reached the pipeline)`, 0 findings over 15 cohorts |
+| D's pair, padded — same sources | `finding`, **30** findings over 30 cohorts | `finding`, **15** findings over 15 cohorts |
+| the residual hole, 2 s padding — R255, D-V30A-95 | `observed_silence`, 0 findings over 30 cohorts | `none(…)`, 0 findings over 15 cohorts |
+
+**THE PAIR SURVIVES AND IS NOT INFLATED, which is the finding that matters
+here.** Halving the probed cohorts halved the findings exactly: one finding per
+probed cohort at stride 1 and one per probed cohort at stride 2. **Had the 30
+been interference, the count would not have tracked the cohort count** — the
+false findings at stride 1 on the clean fixture appear once per cohort too, so
+the shapes are the same and only a fixture with a known-clean ground truth
+separates them. D's fixture has a real leak in every probed second, so both
+readings agree that its findings are real. The verdict change on the two silent
+rows is R262's, already disclosed at D-V30A-104, and is not this defect.
+
+**OUT OF SCOPE, by the criterion rather than by inspection.** L2a's pair and
+D-V30A-101's nine-of-ten: L2a rebuilds ONCE PER COHORT, so no two cohorts share a
+batch and this interference cannot arise at any stride; its recorded runs used
+stride 7 regardless. R205's 25-against-0 (D-V30A-49, D-V30A-100): stride 13.
+The clock pair's 3-against-0 (R236): stride 97. All above the 2-second floor.
+
+**THE GUARD, at the floor: 8 of 8 SAME.** Contaminated `finding / 250 / 5220 /
+29`; corrected `observed_silence / 250 / 0 / 0`; both sides identical to the
+committed population run, the relation checked before the comparison, and the
+probe path set showing no drift. 421 s total, contaminated 190 s at 0.8× the
+last recorded time.
+
+**Phase 1's configuration sat far above the floor, and where that is recorded.**
+The stride is **997**, held in `evidence/phase1/criteria_12_population.json` under
+`scope.stride` — the committed population run's own record — and
+`tools/wholeframe_guard.py` checks its constant against that field on every run
+and prints `stride OK baseline=997 guard=997`. Against a 2-second floor, 997
+seconds.
+
+**AND THE CORRECTED SIDE IS THE NO-INTERFERENCE CONTROL, at real scale.** It is a
+clean pipeline probed over **250 eligible cohorts** at that stride and it reports
+**zero findings**. Interference does not hide in a large run: on the synthetic
+fixture it appears once per cohort, so at 250 cohorts it would be 250 findings
+and not none. **The argument that Phase 1's figures are untouched therefore does
+not rest on the stride arithmetic alone** — it rests on a clean side, at the
+recorded stride, on the acceptance fixture, staying silent.
+
+**The repair, and what it does not buy.** The derived value is a FLOOR: below it
+refuses naming both numbers, at or above is accepted, and undeclared derives it
+from the model and prints it. **Clearing the floor is not sufficiency** — the
+floor is the model's arithmetic and how far back the builder reaches is not in
+the model, which is D's residual in a second place and for the same reason.
+
+**The instrument is in the suite as three states on one fixture**, not only as a
+script: stride below the floor refuses and names both numbers; stride at the
+floor runs and finds nothing, which is correct because there is nothing to find;
+an undeclared stride takes the floor and says so. The 39 cannot be reproduced
+now — the run refuses — so it is recorded in the test's own docstring.

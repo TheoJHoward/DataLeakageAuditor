@@ -1371,6 +1371,57 @@ separates the instrument built from the instrument nearly built. TB-15 is the sa
 question turned on a prediction rather than a test: a prediction that comes true
 distinguishes nothing, and its value was entirely in being falsifiable.
 
+## TB-25 — a check shipped without a positive passes while the property it guards fails
+
+*A check that has never been run against a violation is an assertion about the
+condition, not a test of it — and it will keep passing.*
+
+**The instance.** R261 §1(b) derived a separation for the availability probe's
+cohorts and compared it to the smallest probed gap. The quantity it derived was
+the finding region's width, `min a(j) − F`, which at a one-second window is one
+second. At stride 1 the probed seconds are one second apart, so the comparison
+`smallest < needed` is `1s < 1s` — false — and the check passed. **Measured at
+R263 on a builder that reads the previous second's cell and therefore leaks
+nothing: 39 false findings across 40 cohorts, verdict `finding`.** The run
+printed *"needed 1s, smallest probed gap 1s"* on the same screen as the false
+findings.
+
+**What made it invisible.** The check was written and reasoned about; it was
+never run against a schedule that violated the property. Nothing in the suite
+probed a clean pipeline at a stride that interferes, so the only evidence the
+check worked was that it did not complain. **The reasoning was the error and the
+reasoning was also the only thing checking the reasoning.**
+
+**Why it belongs beside F3 rather than inside it.** F3's members are about a
+positive that fires and establishes too little. This is one step earlier: there
+was no positive at all. The failure mode is not a weak control, it is the
+absence of one, and the symptom is indistinguishable from success.
+
+**SIBLINGS — other checks in this package with no test that fires them.**
+Enumerated at R264 by searching the suite for each refusal's own message text,
+which finds a test that asserts the message and misses one that only catches the
+exception type; the method is stated because it bounds the answer:
+
+    for s in "<message>"; do grep -rl "$s" tests/ ; done
+
+- **`eligible_cohorts`: "NO selected second is carried by any declared aggregate
+  frame."** No test produces it. It is the note that distinguishes a run whose
+  every cohort is ineligible from one that probed.
+- **`run_probe_a`: "no aggregate cells matched the corrupted seconds."** No test
+  produces it. Its sibling one line above — *"matched NO corrupted second"* — is
+  fired by three test files, so the pair is half-covered.
+- **`run_probe_a`: "declared aggregate frame(s) … were not supplied."** No test
+  produces it, though the case it names is the one R210 found on the walk.
+- **`run_probe_l2a`: "an AVAILABLE label cell was perturbed"** and **"column …
+  of the label frame changed and only … should have."** Neither is produced by
+  any test. These are `DESIGN.md` §2.7's every-call assertion, and their whole
+  point is that a finding cannot be attributed without them.
+- **Both probes: "the corrupted build changed shape."** No test produces it.
+
+**Not repaired at R264, by direction.** Listing them is the round's work; each
+needs a case that produces the condition, and inventing six such cases in the
+round that found the class is how a list becomes a rewrite.
+
 ## F4 — A registration or instrument that cannot be run as written
 
 *It is internally consistent, it is signed, and it does not survive contact with
