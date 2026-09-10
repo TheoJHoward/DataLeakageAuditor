@@ -122,9 +122,21 @@ def _leaky_build(frames):
 MODEL = AvailabilityModel(aggregate_frames={"agg": "k"}, decision_column="d")
 
 
+#: STRIDE 2, NOT 1, AND IT IS NOT A TUNING. R263 §2. Every probed second is
+#: corrupted in one rebuild, so at stride 1 a cell corrupted for cohort F-1 can
+#: move a row inside cohort F's finding region -- a row that read that cell
+#: legitimately -- and it is counted as F's finding. Measured on a builder with
+#: no leak at all: 39 false findings across 40 cohorts at stride 1, none from
+#: stride 2. The probe now refuses a stride below the derived floor, so this
+#: fixture would not run at 1; it is set to the floor rather than moved past.
+#: The pair below still holds its cohorts fixed across both halves, which is
+#: what it exists to do.
+STRIDE = 2
+
+
 def _probe(frames, **kw):
     return run_probe_a(frames, _leaky_build, MODEL, side="test",
-                       cohort_stride=1, max_cohorts=400, **kw)
+                       cohort_stride=STRIDE, max_cohorts=400, **kw)
 
 
 # --------------------------------------------------------------------------

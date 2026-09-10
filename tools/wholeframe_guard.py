@@ -23,6 +23,7 @@ Written with the Write tool per D2.1.
 """
 import json
 import pathlib
+import subprocess
 import sys
 import time
 
@@ -166,15 +167,72 @@ from leakaudit.availability_trace import traces_for  # noqa: E402
 # invisible from the test.
 
 
-#: WALL TIMES LAST MEASURED, so the comparison the rule asks for is printed
-#: rather than recalled. R262 §1(c). Measured at R261 on `b975ca7`, CPython
-#: 3.12.10 / numpy 2.4.2 / pandas 3.0.1: capture 39 s, contaminated 217 s,
-#: corrected 231 s. **These are not a threshold and nothing fails on them.**
-#: They are the frame a figure carries (R228): a reader watching this run has
-#: the expected magnitude on screen and can tell a slow run from a stalled one
-#: without waiting for it to finish. Update them when they genuinely move, and
-#: say why in the round that moves them.
-LAST_RECORDED = {"capture": 39, "side": 231}
+#: WHERE "LAST RECORDED" LIVES, AND IT IS WRITTEN BY THE RUN. R263 §4.
+#:
+#: R262 shipped these as a hand-typed dict in this file, which is the
+#: count-in-prose defect wearing a constant's clothes: a number about a
+#: measurement, kept somewhere the measurement does not touch, drifting the
+#: moment the measurement moves. The same shape as the enumeration R262 deleted
+#: from `OPERATING_RULES.md` two hours earlier.
+#:
+#: NOT UNDER `evidence/`, deliberately. Every file there is manifest-attested,
+#: so a guard that rewrote one would dirty the tree on every run and the
+#: manifest update would have to follow the run that invalidated it. This is
+#: tracked, so it survives a cleaned scratch directory, and unattested, so a
+#: timing does not have a hash hanging off it.
+#:
+#: WRITTEN ONLY AFTER A COMPLETED COMPARISON. A stalled or refused run must not
+#: become the baseline the next run is lenient against -- which is the whole
+#: failure mode: at R261 this guard ran eighteen hours and would have recorded
+#: eighteen hours as normal.
+TIMES_FILE = REPO / "tools" / "wholeframe_guard_times.json"
+
+#: The fallback if the file is absent, and it is labelled as one. Measured at
+#: R261 on `b975ca7`, CPython 3.12.10 / numpy 2.4.2 / pandas 3.0.1.
+SEED_TIMES = {"capture": 39, "side": 231, "source": "R261 seed, no file yet"}
+
+
+def last_recorded() -> dict:
+    """The previous completed run's wall times, or the labelled seed."""
+    try:
+        runs = json.loads(TIMES_FILE.read_text(encoding="utf-8"))["runs"]
+    except Exception:                                        # noqa: BLE001
+        return dict(SEED_TIMES)
+    if not runs:
+        return dict(SEED_TIMES)
+    last = runs[-1]
+    return {"capture": last["capture"], "side": max(last["contaminated"],
+                                                    last["corrected"]),
+            "source": "%s at %s" % (last.get("commit", "?"),
+                                    last.get("when", "?"))}
+
+
+def record_times(capture, contaminated, corrected, total) -> None:
+    """Append this run's wall times. Ten kept, so drift is visible."""
+    import datetime
+    try:
+        doc = json.loads(TIMES_FILE.read_text(encoding="utf-8"))
+    except Exception:                                        # noqa: BLE001
+        doc = {"what": "Wall times of completed whole-frame guard runs. "
+                       "Written by tools/wholeframe_guard.py, never by hand "
+                       "(R263 section 4). The last entry is what the next run "
+                       "prints its comparison against.",
+               "runs": []}
+    commit = subprocess.run(["git", "-C", str(REPO), "rev-parse", "--short",
+                             "HEAD"], capture_output=True, text=True)
+    doc["runs"] = (doc.get("runs", []) + [{
+        "when": datetime.datetime.now().strftime("%Y-%m-%d %H:%M"),
+        "commit": commit.stdout.strip() or "?",
+        "capture": round(capture, 1),
+        "contaminated": round(contaminated, 1),
+        "corrected": round(corrected, 1),
+        "total": round(total, 1),
+    }])[-10:]
+    TIMES_FILE.write_text(json.dumps(doc, indent=1) + "\n", encoding="utf-8",
+                          newline="\n")
+
+
+LAST_RECORDED = last_recorded()
 
 
 def main() -> int:
@@ -209,8 +267,9 @@ def main() -> int:
 
     t0 = time.time()
     cap = fa.read_inputs(SYM, MONTH)
-    print("\ncapture %.0f s   (last recorded %d s)" % (time.time() - t0,
-                                                       LAST_RECORDED["capture"]))
+    capture_s = time.time() - t0
+    print("\ncapture %.0f s   (last recorded %d s, from %s)"
+          % (capture_s, LAST_RECORDED["capture"], LAST_RECORDED["source"]))
     print("EXPECTED WALL TIMES, printed so the comparison is on the screen "
           "rather than in somebody's memory: capture ~%d s, each side ~%d s. "
           "A phase running an ORDER OF MAGNITUDE past these is stopped and "
@@ -311,6 +370,11 @@ def main() -> int:
         print("HALT: the whole-frame path MOVED. This is a question about the Phase 1 "
               "numbers, not a Phase 2 bug.")
         return 2
+    # WRITTEN HERE AND NOWHERE EARLIER: the comparison above has completed, so
+    # this run is a run whose times mean something. A stalled or refused run
+    # never reaches this line and never becomes the next run's baseline.
+    record_times(capture_s, out["contaminated"]["seconds"],
+                 out["corrected"]["seconds"], time.time() - t0)
     print("\ntotal wall time %.0f s (capture + both sides + comparison)."
           % (time.time() - t0))
     print("UNCHANGED. The whole-frame path is byte-for-byte the result the committed "

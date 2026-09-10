@@ -102,9 +102,26 @@ NOT_A_CLOCK_USE = {
 # ---------------------------------------------------------------------------
 # the file axis
 # ---------------------------------------------------------------------------
+#: THE POPULATION FLAGS, one string so the three floors that use them cannot
+#: drift apart. R263 §3(b). `--cached` is the tracked set; `--others
+#: --exclude-standard` adds untracked files that are not ignored -- which is
+#: what makes a module the current round just wrote part of the population
+#: BEFORE it is committed.
+LS_FILES = ("ls-files", "--cached", "--others", "--exclude-standard")
+
+
 def tracked_files():
-    """THE OUTER POPULATION: every tracked file, unfiltered. R241 §1."""
-    r = subprocess.run(["git", "-C", str(ROOT), "ls-files"],
+    """THE OUTER POPULATION: every tracked file PLUS every untracked
+    non-ignored one, unfiltered. R241 §1, corrected at R263 §3.
+
+    IT READ `git ls-files` ALONE UNTIL R263, AND THAT MISSED THE ROUND'S OWN
+    WORK. R261 wrote `src/leakaudit/label_probe.py`, ran this suite green, and
+    committed; R262's first run of the same tests on the same code failed here,
+    because the module had become tracked in between. **A green suite over a
+    population that excludes the file the round just wrote is a green suite
+    about the previous round.** Disclosed at D-V30A-102.
+    """
+    r = subprocess.run(["git", "-C", str(ROOT)] + list(LS_FILES),
                        capture_output=True, text=True, encoding="utf-8")
     assert r.returncode == 0, (
         "`git ls-files` failed, so the population cannot be established and "
@@ -371,6 +388,73 @@ def test_the_PACKAGE_consumers_are_all_routed_through_the_refusal(scanned):
     assert all(s["through"] for s in pkg), (
         "a package consumer bypasses the shared refusal: %s"
         % [(s["file"], s["line"]) for s in pkg if not s["through"]])
+
+
+#: Every `git ls-files` floor in this repository, and what each one is. R263
+#: §3(b). ENUMERATED, because "every floor was corrected" is an absence claim
+#: and an absence claim needs its population written down. Found with
+#: `grep -rn "ls-files" --include=*.py tests/ tools/`.
+LS_FILES_FLOORS = {
+    "tests/phase1/test_decision_clock_consumers.py":
+        "this file's own `tracked_files()` -- the clock-consumer scan",
+    "tools/coverage_assertion_sweep.py":
+        "`tracked_python_files()` -- the sweep's `.py` floor",
+    "tools/portability_digest.py":
+        "the portability inputs' presence check",
+}
+
+#: The one floor NOT corrected, named with its reason rather than left out of
+#: the population. `tools/check_registration.py` is the frozen checker: its
+#: verdicts are pinned against the tagged instrument and differences are ruled
+#: against a ceiling of four, currently at two. Correcting its D16 floor is a
+#: change to a frozen file and costs a ruled-difference slot, which R263 did not
+#: authorise. Recorded so the exemption is a decision somebody can see.
+LS_FILES_FROZEN = {
+    "tools/check_registration.py":
+        "D16's tracked set; frozen instrument, correcting it spends a ruled "
+        "difference and was not authorised",
+}
+
+
+def test_EVERY_ls_files_FLOOR_sees_untracked_non_ignored_files():
+    """R263 §3(b). A floor that reads only the index cannot see the module the
+    round just wrote, so a run before the commit measures the previous round.
+
+    THE POPULATION IS ENUMERATED ABOVE AND CHECKED AGAINST THE TREE HERE, so a
+    new floor added later fails this rather than joining silently.
+    """
+    import re
+
+    found = {}
+    for rel in tracked_files():
+        if not rel.endswith(".py") or not (rel.startswith("tests/")
+                                           or rel.startswith("tools/")):
+            continue
+        text = _read_bytes(rel).decode("utf-8", "replace")
+        # A CALL, not a mention: `empty_population_probe` names the string to
+        # DETECT this pattern in other files and has no floor of its own.
+        if re.search(r'"ls-files"', text) or re.search(r"'ls-files'", text):
+            found[rel] = text
+
+    known = set(LS_FILES_FLOORS) | set(LS_FILES_FROZEN)
+    unknown = sorted(set(found) - known - {"tools/empty_population_probe.py"})
+    assert not unknown, (
+        "a `git ls-files` floor exists that this population does not name, so "
+        "'every floor was corrected' would be an absence claim over a set "
+        "somebody chose: %s" % unknown)
+
+    for rel in LS_FILES_FLOORS:
+        assert rel in found, (
+            "%s no longer calls `git ls-files`; the enumeration above is stale "
+            "and this test is asserting over a file that moved on" % rel)
+        text = found[rel]
+        assert "--others" in text and "--exclude-standard" in text, (
+            "%s reads the index alone, so a module written this round is "
+            "outside its population until it is committed. That is D-V30A-102: "
+            "R261's suite was green over a set excluding its own new file." % rel)
+
+    for rel in LS_FILES_FROZEN:
+        assert rel in found, "%s no longer calls `git ls-files`" % rel
 
 
 def test_the_FROZEN_protocol_file_is_clock_free_BY_SUBSTRING_ABSENCE():

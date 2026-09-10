@@ -116,7 +116,16 @@ ESTABLISHED = {
 
 
 def tracked_python_files() -> list:
-    r = subprocess.run(["git", "-C", str(REPO), "ls-files", "--", "*.py"],
+    """Tracked AND untracked-non-ignored `.py`. R263 §3(b).
+
+    `--others --exclude-standard` was added because a floor that reads only the
+    index cannot see the module the current round wrote, so a sweep run before
+    the commit sweeps the previous round's tree. D-V30A-102 records the
+    instance; this is one of its siblings, corrected at the same time so the
+    two do not answer the same question differently.
+    """
+    r = subprocess.run(["git", "-C", str(REPO), "ls-files", "--cached",
+                        "--others", "--exclude-standard", "--", "*.py"],
                        capture_output=True, text=True, encoding="utf-8")
     if r.returncode != 0:
         raise RuntimeError("git ls-files failed: %s" % r.stderr[:200])

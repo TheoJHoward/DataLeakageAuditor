@@ -88,7 +88,12 @@ CLASSIFICATION = {
     # against the smallest probed gap on every run that probes more than one
     # cohort, and sets this from that comparison. There is no input a caller can
     # supply it with, so there is nothing here to refuse.
-    "availability.py::param::__init__(attribution_overlap=)": (NA, "result carrier field"),
+    # `attribution_overlap` was here from R261 and is GONE at R263: the overlap
+    # is a refusal now, not a state a caller could read past, so nothing sets
+    # the field and a field nothing sets is the shape this register exists to
+    # catch. Removed rather than left classified -- a classification naming a
+    # site that does not exist is the same defect from the other side, and the
+    # test below is what caught it.
     # R261 §4. The registered row a result belongs to. `L3.1` is not a default
     # standing in for an unanswered question: this class IS the availability
     # probe's result and there is no other row it could carry. L2a's result type

@@ -141,6 +141,31 @@ NOT_SET = "<decision column not declared>"
 # definition, imported by `slicing`, so the two cannot drift apart. R255 §5.
 NOT_DECLARED = "<padding not declared>"
 
+#: The stride sentinel. R263 §2(b). A NUMBER here would be a default, and a
+#: default stride is a schedule the tool chose and the caller did not -- which
+#: is the shape R236 removed from `decision_column`. The three states are kept
+#: apart: declared, declared-below-the-floor (refused), and never chosen (the
+#: floor is derived from the model and printed).
+STRIDE_NOT_DECLARED = "<cohort stride not declared>"
+
+
+def _stride_for(seconds, floor) -> int:
+    """The smallest stride whose consecutive probed seconds clear `floor`.
+
+    Derived from the seconds the data actually carries rather than assumed
+    contiguous: a frame with gaps needs a smaller stride than one without, and
+    guessing `floor / 1s` would be wrong on both.
+    """
+    seconds = list(seconds)
+    if len(seconds) < 2:
+        return 1
+    for k in range(1, len(seconds)):
+        gaps = [seconds[i + k] - seconds[i]
+                for i in range(0, len(seconds) - k, k)]
+        if not gaps or min(gaps) >= floor:
+            return k
+    return len(seconds)
+
 
 def require_column_name(dcol, where: str) -> None:
     """A value that is not a non-empty string is not a column name.
@@ -362,7 +387,6 @@ class ProbeAResult:
     # moved row is inside two cohorts' windows and the run cannot say which
     # corrupted cell moved it. That is a could-not-run with its numbers named,
     # not a result to be reported with a caveat.
-    attribution_overlap: bool = False
     #: Cells actually written to, counted per column rather than per frame. The
     #: number a `none` verdict rests on: a silence with zero perturbed cells and
     #: one with thousands are different claims and were reported identically.
@@ -396,8 +420,6 @@ class ProbeAResult:
             return "could_not_run(determinism)"
         if not self.cohorts:
             return "could_not_run(no_cohorts)"
-        if self.attribution_overlap:
-            return "could_not_run(attribution_overlap)"
         if self.findings:
             return "finding"
         # A BAND ROW IS MOVEMENT, SO THE RUN IS NOT SILENT. R261 §1(a).
@@ -554,7 +576,7 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
                 model: AvailabilityModel,
                 side: str,
                 bar_duration=None,
-                cohort_stride: int = 97,
+                cohort_stride=STRIDE_NOT_DECLARED,
                 max_cohorts: int = 400,
                 seed: int = 20260828,
                 column_modes: Mapping[str, object] | None = None,
@@ -623,6 +645,22 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
             "the data before a slice's first probed cohort; with no slice "
             "there is no such boundary and nothing was excluded from probing.")
 
+    # THE STRIDE IS DERIVED WHERE IT IS NOT DECLARED, AND REFUSED WHERE IT IS
+    # DECLARED BELOW THE FLOOR. R263 §2(b), and it is D's padding rule applied
+    # to the other schedule: the model founds a FLOOR, a declared value below it
+    # is invalid rather than merely smaller, and clearing the floor is not
+    # sufficiency because the builder's own lookback is not in the model.
+    if isinstance(cohort_stride, str) and cohort_stride == STRIDE_NOT_DECLARED:
+        floor = model.window + (2 * SECOND if column_modes else SECOND)
+        cohort_stride = _stride_for(seconds, floor)
+        res.notes.append(
+            "cohort stride was NOT DECLARED, so it is DERIVED: %d, the smallest "
+            "stride whose probed seconds are at least %s apart. That floor is "
+            "`window + 1s` (%s), plus a second where per-column modes are "
+            "declared because a mode's instant can sit up to a second further "
+            "past its cohort. Declare `cohort_stride` to choose your own; below "
+            "the floor it is refused."
+            % (cohort_stride, _window_text(floor), _window_text(model.window)))
     picked = seconds[::cohort_stride][:max_cohorts]
     res.n_cohorts = len(picked)
     if res.n_cohorts == 0:
@@ -987,12 +1025,11 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
     # the comparator instead -- `a <= d` or `a < d`, per the declared branch --
     # so the tie row falls where the registration puts it with no extra
     # arithmetic. The two branches still disagree about exactly that one row.
-    cohorts, notes, overlap = classify_cohorts(
+    cohorts, notes = classify_cohorts(
         picked, d, moved, moved_col, batch_lo, batch_hi, model,
         batch_n=batch_n)
     res.cohorts.extend(cohorts)
     res.notes.extend(notes)
-    res.attribution_overlap = overlap
     if not res.findings and not res.band_cohorts and res.liveness == 0:
         res.notes.append(silence_note(res.cells_perturbed, batch_lo, batch_hi,
                                       picked))
@@ -1035,7 +1072,10 @@ def classify_cohorts(picked, d, moved, moved_col, batch_lo, batch_hi, model,
     one place so the two rows cannot drift into two rules -- which is exactly how
     `moved_in_second` came to be the comparator on one path and not on the other.
 
-    Returns `(cohorts, notes, attribution_overlap)`.
+    Returns `(cohorts, notes)`. It used to return an overlap FLAG as well, and
+    R263 §2(b) replaced that with a refusal: a run whose cohorts interfere
+    produces findings indistinguishable from real ones, so reporting it as a
+    state a caller might read past is the wrong shape. It raises instead.
 
     THE ATTRIBUTION WINDOW, AND WHY IT IS BOUNDED AT BOTH ENDS. The registered
     valid-finding rule (`PREREG.md` §2.6) has no lower bound: a change at any row
@@ -1051,7 +1091,6 @@ def classify_cohorts(picked, d, moved, moved_col, batch_lo, batch_hi, model,
     """
     cohorts: list = []
     notes: list = []
-    overlap = False
     d_np = d.to_numpy()
     observe = SECOND
     needed = pd.Timedelta(0)
@@ -1066,15 +1105,24 @@ def classify_cohorts(picked, d, moved, moved_col, batch_lo, batch_hi, model,
                                         moved_in_second=0,
                                         moved_next_second=0))
             continue
-        # WHAT THE SEPARATION HAS TO PROTECT IS THE FINDING REGION, NOT THE
-        # WHOLE WINDOW. Adjacent cohorts' windows OVERLAP BY DESIGN and always
-        # have: cohort F's liveness region `[F+window, F+window+1s)` is cohort
-        # `F+window`'s own finding region, and a run at stride 1 reads the same
-        # row as liveness for one cohort and as finding-eligible for the next.
-        # That is the existing convention and it is not what breaks attribution.
-        # What breaks it is two cohorts calling the SAME moved row a finding, so
-        # the quantity to protect is the width of `[F, min_B a(j))`.
-        needed = max(needed, lo - f_sec)
+        # THE SEPARATION HAS TO PROTECT THE WHOLE ATTRIBUTION WINDOW, AND R261
+        # PROTECTED THE FINDING REGION INSTEAD. R263 §2.
+        #
+        # R261 reasoned that adjacent cohorts' windows overlap by design -- true
+        # -- and concluded that only two cohorts calling the SAME row a finding
+        # breaks attribution, so it derived `min_B a(j) - F`, the finding
+        # region's width. At a one-second window that is one second, so stride 1
+        # gives a gap EQUAL to it and the check passed.
+        #
+        # **Stride 1 is exactly where the interference starts.** The failure is
+        # not two cohorts claiming one row; it is a cell corrupted FOR cohort
+        # F-1 moving a row inside cohort F's finding region -- a row that read
+        # that cell legitimately, because it was available to it. Measured at
+        # R263 on a builder with no leak at all: 39 false findings across 40
+        # cohorts at stride 1, zero from stride 2. The quantity that matches the
+        # measurement is the span a cohort's corruption can be observed over,
+        # `max_B a(j) + 1s - F`, which is 2s at a one-second window.
+        needed = max(needed, (hi + observe) - f_sec)
         # THE WINDOW IS THE CALLER'S WHERE THE MASK IS THE CALLER'S. R261 §4.
         #
         # `[F, max a(j) + 1s)` is right for a probe whose batch is selected by a
@@ -1146,20 +1194,31 @@ def classify_cohorts(picked, d, moved, moved_col, batch_lo, batch_hi, model,
         notes.append(
             "attribution separation: needed %s, smallest probed gap %s. The "
             "needed value is DERIVED from the batch instants -- the widest "
-            "`min a(j)` past a probed second, which is that cohort's finding "
-            "region -- and is not fixed at one second. `cohort_stride` chooses "
-            "which seconds are probed; this is what the arithmetic requires of "
-            "that choice."
+            "`max a(j) + 1s` past a probed second, which is the whole span a "
+            "cohort's corruption can be observed over -- and is not fixed at "
+            "one second. `cohort_stride` chooses which seconds are probed; "
+            "this is what the arithmetic requires of that choice. CLEARING IT "
+            "IS NOT SUFFICIENCY: the floor is the model's arithmetic, and how "
+            "far back your builder reaches is not in the model."
             % (_window_text(needed), _window_text(smallest)))
         if smallest < needed:
-            overlap = True
-            notes.append(
-                "ATTRIBUTION OVERLAP: the probed seconds are %s apart and a "
-                "cohort's finding region reaches %s. A moved row then sits in "
-                "two cohorts' finding regions and this run cannot say which "
-                "corrupted cell moved it, so no classification below is its "
-                "own. Widen `cohort_stride`, or probe fewer seconds."
-                % (_window_text(smallest), _window_text(needed)))
+            raise ProbeError(
+                "ATTRIBUTION SEPARATION BELOW THE DERIVED FLOOR: the probed "
+                "seconds are %s apart and a cohort's corruption can be observed "
+                "over %s.\n"
+                "WHY THIS IS REFUSED RATHER THAN REPORTED WITH A CAVEAT. A cell "
+                "one cohort corrupts can move a row the NEXT cohort counts as "
+                "its finding -- and that row read the cell legitimately, because "
+                "it was available to it. The false findings are "
+                "indistinguishable from real ones in the output. Measured at "
+                "R263 on a builder reading the previous second's cell, which "
+                "leaks nothing: at stride 1, 39 false findings across 40 "
+                "cohorts and a verdict of `finding`; at stride 2 and above, "
+                "zero and `observed_silence`.\n"
+                "Widen `cohort_stride` until the probed seconds are at least %s "
+                "apart, or omit it and the derived floor is used."
+                % (_window_text(smallest), _window_text(needed),
+                   _window_text(needed)))
     bands = sum(c.moved_in_band for c in cohorts)
     notes.append(
         "attribution: %d finding row(s), %d liveness row(s), %d band row(s) "
@@ -1170,4 +1229,4 @@ def classify_cohorts(picked, d, moved, moved_col, batch_lo, batch_hi, model,
         % (sum(c.moved_in_second for c in cohorts),
            sum(c.moved_next_second for c in cohorts),
            bands, len(cohorts)))
-    return cohorts, notes, overlap
+    return cohorts, notes

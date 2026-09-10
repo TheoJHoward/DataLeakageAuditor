@@ -20,10 +20,10 @@
   "candidate_fixed": 2,
   "candidate_legitimate": 1,
   "out_of_scope": 17,
-  "probed_healthy": 5,
+  "probed_healthy": 6,
   "unprobed_reachable": 51,
-  "functions_total": 92,
-  "assertions_total": 173
+  "functions_total": 93,
+  "assertions_total": 177
  },
  "functions": [
   {
@@ -151,6 +151,13 @@
    "assertions": 1,
    "status": "unprobed_reachable",
    "reason": "takes a fixture, so the probe cannot call it directly. A pytest-driven mechanism would reach it. takes fixture(s): scanned"
+  },
+  {
+   "file": "tests/phase1/test_decision_clock_consumers.py",
+   "function": "test_EVERY_ls_files_FLOOR_sees_untracked_non_ignored_files",
+   "assertions": 4,
+   "status": "probed_healthy",
+   "reason": "added R263 section 3(b). MEASURED, not judged: tools/empty_population_probe.py returns `reddens`, `asserted with 4 helper(s) emptied`. It takes no fixture, so the probe reaches it directly."
   },
   {
    "file": "tests/phase1/test_decision_clock_consumers.py",

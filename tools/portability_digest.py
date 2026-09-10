@@ -136,7 +136,12 @@ def inputs_are_in_the_repository() -> tuple[bool, list[str]]:
               "tests/phase1/portability_data/scans.csv",
               "tests/phase1/portability_data/pipeline.py"]
     try:
-        out = subprocess.run(["git", "ls-files", "--"] + wanted,
+        # `--others --exclude-standard` alongside `--cached`: R263 §3(b). A
+        # portability input written this round and not yet committed is present
+        # for the reader who runs the tool, and a floor that reads only the
+        # index would report it missing.
+        out = subprocess.run(["git", "ls-files", "--cached", "--others",
+                              "--exclude-standard", "--"] + wanted,
                              cwd=str(REPO), capture_output=True, text=True,
                              timeout=30)
         tracked = set(out.stdout.split())

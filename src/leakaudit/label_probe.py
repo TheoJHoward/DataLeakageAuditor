@@ -415,7 +415,7 @@ def run_probe_l2a(raw, build, model, *, raw_label=None, label_availability=None,
         # which is §2.6's `d(i) <= d` written as itself. The row AT `f_sec` is
         # the tie row and it belongs here under the default comparator.
         bounds = {f_sec: (d.min(), f_sec)}
-        cohorts, _notes, _ov = classify_cohorts(
+        cohorts, _notes = classify_cohorts(
             [f_sec], d, moved, moved_col, {f_sec: lo}, {f_sec: hi}, model,
             bounds=bounds, batch_n={f_sec: int(unavail.sum())})
         res.cohorts.extend(cohorts)

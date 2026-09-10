@@ -5127,3 +5127,134 @@ of the frame — and that row's feature is a one-row-lagged label whose predeces
 does not exist, so it is NaN and cannot move whatever is done to the labels. The
 cohort perturbed 90 cells; the row it speaks for reads none of them. It is not a
 detection failure and it is not a probe that did not happen.
+
+## D-V30A-104 — the four silences that became `none`, classified one by one, and the two headline cases restated
+
+**R262 §2 changed when `observed_silence` may be emitted, and four existing
+cases moved.** R263 §1 requires each on the record with its before, its after,
+and whether the move is an improvement or a regression. None of the four is a
+regression; the reason differs by case and is given for each.
+
+| # | case | before | after | reading |
+|---|---|---|---|---|
+| 1 | R205's per-column zero, `test_modes_wiring` under `at_source_timestamp` | `observed_silence` | `none` | **improvement.** No cell of the only column the builder reads was ever perturbed |
+| 2 | the truncated slice audited as a plain frame, `DESIGN.md` §5.3's masking | `observed_silence` | `none` | **improvement.** The head's window is incomplete, the feature is NaN, nothing moved |
+| 3 | the wrong decision clock declared, R236's hole 1 | `observed_silence` | `none` | **improvement.** Every corrupted cell's movement falls outside every bucket |
+| 4 | the residual hole — padding that clears the floor and still masks | `observed_silence` | `none` | **improvement.** Same mechanism as 2, at a padding the model founds but the builder outruns |
+
+**In all four, nothing moved anywhere.** That is the whole of the change: the
+tool had no way to distinguish *I perturbed cells and your pipeline did not
+react* from *my perturbation reached nothing*, and reported both as the
+affirmative.
+
+**Cases 2 and 3 are this project's two headline "a real leak reported as
+evidence of absence" defects, and the record of each gains one line.**
+
+> **R236, the undeclared decision clock.** Recorded as: the default `timestamp`
+> produced `observed_silence`, the tool's most confident state, on frames whose
+> declared clock finds three. **The tool's claim was wrong in a different way
+> than recorded — it had not looked, rather than looked and missed.** The wrong
+> clock puts every corrupted cell's movement outside every bucket, so no row
+> moves and nothing ever licensed the affirmative.
+>
+> **R255/R256, the truncated slice.** Recorded as: a plain-frame audit over the
+> head of a truncated slice reports `observed_silence` over a real leak. **Same
+> correction: it had not looked.** The head's rolling window is incomplete, the
+> feature is NaN there, and corrupting the second moves nothing.
+
+**Do the fixes made for those two at the time still address a real defect on
+their own?** Read from the code, not from memory:
+
+- **R236's sentinel does.** `AvailabilityModel.decision_column` defaults to
+  `NOT_SET` and `require_decision_column` refuses it, from five call sites —
+  four consumers and one early message at the file boundary — with a message
+  naming what the default did. That refusal fires before any probe
+  runs, so the undeclared case never reaches a verdict of any kind — `none`
+  included. **A `none` would still have been a wrong answer to a real leak**,
+  and the sentinel is what prevents the question being asked at all. Unaffected.
+- **R255's slice refusal does.** `plan_slice` refuses a slice with no declared
+  padding and refuses a padding below the model-founded floor, and both are
+  reachable through the library and the CLI. **The verdict change does not reach
+  the case the refusal covers**: a declared slice is refused before probing, and
+  the case that now reports `none` is the plain-frame path, which the refusal
+  deliberately does not cover because a caller who truncates before calling is
+  indistinguishable from one whose data starts late. That was stated at R255 and
+  is unchanged.
+
+**What is NOT claimed.** No published figure moves. The reclassification changes
+what the tool says about four silences and finds no new leak: cases 2, 3 and 4
+still miss the leak they always missed, and case 1 still probes a column it never
+perturbs. The improvement is in the honesty of the report, not in detection.
+
+## D-V30A-105 — batched cohorts at stride 1 manufacture findings on a pipeline with no leak, and the derived separation was measuring the wrong span
+
+**Found by building R262 §2's discriminating control.** That control needed a run
+with zero findings and non-zero liveness — a clean pipeline whose perturbation
+demonstrably reaches the builder. Written at stride 1 it produced findings, on a
+builder that leaks nothing.
+
+**The construction, and its ground truth.** Forty aggregate rows, one decision
+row per second, window 1 s. The builder reads the PREVIOUS second's cell, whose
+declared instant is `floor(k) + 1s` — at or before the reading row's decision
+instant, so **available under the registered comparator, and not a leak.** Every
+finding on this fixture is false by construction.
+
+| stride | cohorts | false findings | liveness | verdict |
+|---|---|---|---|---|
+| 1 | 40 | **39** | 39 | `finding` |
+| 2 | 20 | 0 | 20 | `observed_silence` |
+| 3 | 14 | 0 | 13 | `observed_silence` |
+| 4 | 10 | 0 | 10 | `observed_silence` |
+| 7 | 6 | 0 | 6 | `observed_silence` |
+
+**The mechanism.** `run_probe_a` corrupts every probed second in ONE rebuild.
+Cohort F's finding region is `[F, min_B a(j))`. A row inside it may legitimately
+read a cell belonging to an EARLIER cohort — legitimately precisely because that
+cell is available to it — and when that earlier cohort is also probed, the row
+moves and is counted as F's finding. Worked instance from the run: cohort
+`00:00:01` has batch instants `[00:00:02, 00:00:02]` and a finding region of
+`[00:00:01, 00:00:02)`; the one row in it decides at `00:00:01`, reads the cell
+keyed `00:00:00` whose instant is `00:00:01` — available — and that cell belongs
+to cohort `00:00:00`, also probed at stride 1.
+
+**R261 §1(b)'s derived separation did not catch it, and the reason is that it
+derived the wrong span.** It computed `min_B a(j) - F`, the finding region's
+width, which at a one-second window is one second; stride 1 gives a gap EQUAL to
+that, and the check compares with `<`, so it passed. The run even printed
+*"needed 1s, smallest probed gap 1s"* while producing 39 false findings. **The
+span that matches the measurement is `max_B a(j) + 1s - F`** — the whole span a
+cohort's corruption can be observed over — which is 2 s here and refuses stride 1.
+
+**Repaired at R263 §2(b), as D's padding rule.** The derived value is a FLOOR.
+A stride declared below it is **refused**, naming both numbers; at or above it is
+accepted; **undeclared, the floor is derived from the model and printed** — the
+stride parameter's default is now a sentinel rather than 97, so the three states
+are distinguishable and a schedule the tool chose is never mistaken for one the
+caller did. The overlap FLAG is gone: a run whose cohorts interfere produces
+findings indistinguishable from real ones, so a state a caller might read past is
+the wrong shape.
+
+**CLEARING THE FLOOR IS NOT SUFFICIENCY, and the run says so.** The floor is the
+model's arithmetic. How far back the builder reaches is not in the model — the
+same residual D's padding rule carries, and for the same reason: `build` is an
+opaque callable. A stride above the floor can still coincide with a real
+lookback.
+
+**Two test fixtures were probing at stride 1 and are moved to the floor**, not
+past it: `test_slicing`'s shared `_probe` and one whole-frame test in
+`test_attribution_comparator`. **No published figure moves, and the check is stated with what it does and does
+not cover.** Read from the code: `tools/wholeframe_guard.py` fixes 997, and
+`harness_criteria_12`, `harness_criteria_12_population` and
+`harness_identity_control` each read `int(os.environ.get("ACC_STRIDE", "997"))`
+— 997 seconds against a 2-second floor. **The four B-series scripts take their
+stride from the command line**, so the value each ran under is in its own run
+record rather than in the code, and it is not re-derived here; none of them
+produced a §6.2 figure. One recorded figure inside the
+suite did move and is stated: the clock-consumer tests omitted the stride and
+took the old default of 97, which over their 200 seconds picks three cohorts, so
+their "3 findings" was a fact about a default nobody had chosen; they now declare
+97 explicitly and the figure is unchanged.
+
+**The instrument is committed** at `evidence/session/r263_stride_interference.py`
+and carries the pre-repair numbers, because a repair's known positive has to stay
+readable after it stops reproducing.

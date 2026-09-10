@@ -223,8 +223,13 @@ def test_the_WHOLE_FRAME_path_gains_and_loses_NOTHING():
     unchanged.
     """
     raw = _lagged_frames()
+    # STRIDE 2: the derived floor. R263 §2. At stride 1 the probed seconds are
+    # one second apart and a cohort's corruption is observable over two, so a
+    # cell corrupted for one cohort moves rows the next counts as findings.
+    # This test is about `min == max` on the whole-frame path, not about the
+    # schedule, so it takes the floor rather than a value that is now refused.
     res = run_probe_a(raw, _lagged_build, MODEL, side="oneway",
-                      cohort_stride=1, max_cohorts=40)
+                      cohort_stride=2, max_cohorts=40)
     for c in res.cohorts:
         assert c.a_min == c.a_max == c.second + MODEL.window
         assert c.moved_in_band == 0, "no band exists where min == max"

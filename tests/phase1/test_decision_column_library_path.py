@@ -47,6 +47,16 @@ from leakaudit.identity_control import run_identity_control        # noqa: E402
 
 SECS = pd.date_range("2026-04-01 08:00:00", periods=200, freq="1s")
 
+#: DECLARED, BECAUSE THE FIGURES BELOW ARE ABOUT THE CLOCK AND NOT THE SCHEDULE.
+#: R263 §2(b). These calls used to omit `cohort_stride` and take the parameter's
+#: default of 97, which over 200 seconds picks three cohorts -- so the recorded
+#: "3 findings" was a fact about a default nobody in this file had chosen. The
+#: default is now a sentinel and an omitted stride is DERIVED from the model's
+#: floor, which here is 2 and picks a hundred cohorts. Declaring 97 keeps every
+#: figure in this file comparable with the rounds that recorded them, and makes
+#: the schedule a stated input rather than an inherited one.
+STRIDE = 97
+
 
 @pytest.fixture
 def frames():
@@ -95,7 +105,7 @@ def test_the_TRUE_clock_finds_leaks_through_the_LIBRARY_path(frames):
     have passed and asserted nothing.
     """
     res = run_probe_a(frames, build, _model(decision_column="decided_at"),
-                      "test")
+                      "test", cohort_stride=STRIDE)
     assert res.verdict() == "finding", res.notes
     assert sum(c.moved_in_second for c in res.cohorts) == 3
 
@@ -106,7 +116,7 @@ def test_an_UNDECLARED_clock_is_REFUSED_at_the_LIBRARY_entry_point(frames):
     Before the sentinel this returned `observed_silence` with 0 findings on the
     frames above — the tool's most confident state, on a real leak."""
     with pytest.raises(ProbeError) as e:
-        run_probe_a(frames, build, _model(), "test")
+        run_probe_a(frames, build, _model(), "test", cohort_stride=STRIDE)
     msg = str(e.value)
     assert "no decision column is declared" in msg
     assert "observed_silence" in msg, (
@@ -139,7 +149,8 @@ def test_the_WRONG_clock_DECLARED_still_runs_and_that_is_the_point(frames):
     here and produced an answer. An hour-apart clock would have been stopped by
     an unrelated guard, and the test would have passed against the defect.
     """
-    res = run_probe_a(frames, build, _model(decision_column="timestamp"), "test")
+    res = run_probe_a(frames, build, _model(decision_column="timestamp"), "test",
+                      cohort_stride=STRIDE)
     # R262 §2 CHANGED WHAT THE WRONG CLOCK CLAIMS, AND NOT WHAT IT MISSES. This
     # asserted `observed_silence`, which is what made R236's defect so bad: the
     # wrong clock produced the tool's most confident state on a frame set whose
@@ -172,7 +183,8 @@ def test_THE_PAIR_IS_THE_MEASUREMENT_hole_one_at_the_library_level(frames):
     the pair measures -- three findings against zero -- is unchanged.
     """
     def moved(clock):
-        r = run_probe_a(frames, build, _model(decision_column=clock), "test")
+        r = run_probe_a(frames, build, _model(decision_column=clock), "test",
+                        cohort_stride=STRIDE)
         return r.verdict(), sum(c.moved_in_second for c in r.cohorts)
 
     assert moved("decided_at") == ("finding", 3)
