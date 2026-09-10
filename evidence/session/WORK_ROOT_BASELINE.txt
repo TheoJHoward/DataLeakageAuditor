@@ -777,3 +777,4 @@ R264/d106.md
 R264/msg.txt
 R265/d107.md
 R265/msg.txt
+R266/msg.txt
