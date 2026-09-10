@@ -101,6 +101,12 @@ CLASSIFICATION = {
     # passes its window explicitly because its mask reaches to the end of the
     # frame, and a shared default would have to be wrong for one of them.
     "availability.py::param::classify_cohorts(bounds=)": (NA, "declared branch"),
+    # R262 §2/§3. Counters a completed run fills. `0` is the measured count of
+    # cells written to, not an unanswered question -- and it is the number the
+    # `none` verdict rests on, so a zero here is a reported fact rather than a
+    # default standing in for one.
+    "availability.py::param::__init__(cells_perturbed=)": (NA, "result carrier field"),
+    "availability.py::param::classify_cohorts(batch_n=)": (NA, "declared branch"),
     # L2a's result carrier, R261 §4. Same reading as the availability probe's
     # fields above: these are what a completed run reports, not questions a
     # caller left unanswered, and none is settable from a config file.

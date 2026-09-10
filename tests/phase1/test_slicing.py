@@ -145,12 +145,24 @@ def test_WITHOUT_padding_the_edge_leak_is_MASKED():
     res = _probe(_truncate(_full(), SLICE_AT))
     probed = {c.second for c in res.cohorts}
     assert probed, "the run must actually probe, or the silence proves nothing"
-    assert res.verdict() == "observed_silence", (
-        "a plain-frame audit ran over the head of a truncated slice and found "
-        "nothing -- this is the masking DESIGN.md section 5.3 describes, and if "
-        "this assertion fails the pair below no longer isolates padding as the "
-        "cause. Got %r with %d finding(s)."
+    # THE MISS IS UNCHANGED AND WHAT THE TOOL CLAIMS ABOUT IT IS NOT. R262 §2.
+    #
+    # This asserted `observed_silence` from R255 until now, and that assertion
+    # was pinning the WORST HALF of the defect: the truncated head's window is
+    # incomplete, the feature is NaN there, the corruption moves nothing at all,
+    # and the tool called that "I looked and found nothing, this is evidence."
+    # Nothing moved anywhere in this run, so nothing licensed that claim. The
+    # leak is still masked -- the defect DESIGN.md §5.3 describes is exactly as
+    # reachable as it was -- but the run now says `none`, which is the truthful
+    # report of a probe whose perturbation reached nothing.
+    assert res.verdict().startswith("none("), (
+        "a plain-frame audit over the head of a truncated slice moved no row "
+        "anywhere, so its quiet is about the harness. Got %r with %d finding(s)."
         % (res.verdict(), len(res.findings)))
+    assert res.findings == [], "the leak is still missed; that half is unchanged"
+    assert res.liveness == 0, (
+        "the `none` rests on this: nothing moved, so nothing showed the "
+        "perturbation reaching the builder")
 
 
 def test_WITH_padding_the_SAME_cohorts_find_the_leak():
@@ -187,8 +199,12 @@ def test_the_pair_IS_ONE_FRAME_cut_two_ways():
     padded = _probe(full, slice_from=SLICE_AT,
                     padding=pd.Timedelta(seconds=LOOKBACK))
     assert {c.second for c in bare.cohorts} == {c.second for c in padded.cohorts}
-    # And the halves genuinely disagree, or the pair shows nothing.
-    assert bare.verdict() == "observed_silence"
+    # And the halves genuinely disagree, or the pair shows nothing. The bare
+    # half reads `none` rather than `observed_silence` since R262 §2: nothing
+    # moved on it, so its quiet was never licensed. The disagreement the pair
+    # exists to show is unchanged and is now sharper -- one half found the leak,
+    # the other did not even reach it.
+    assert bare.verdict().startswith("none(")
     assert padded.verdict() == "finding"
 
 
@@ -480,10 +496,19 @@ def test_THE_RESIDUAL_HOLE_a_padding_that_clears_the_floor_can_still_mask():
     fr = _truncate(_full(), SLICE_AT - pd.Timedelta(seconds=2))
     res = _probe(fr, slice_from=SLICE_AT, padding=pd.Timedelta(seconds=2))
     assert res.cohorts, "the probe must reach the seconds it then says nothing about"
-    assert res.verdict() == "observed_silence", (
+    # REWRITTEN DELIBERATELY AT R262, WHICH IS WHAT THIS TEST ASKED FOR. The
+    # docstring says a future change closing the hole should fail this test and
+    # be rewritten rather than deleted. **The hole is NOT closed** -- the leak is
+    # still masked and the builder's lookback is still invisible to the model --
+    # but §2's verdict repair changed what the masked run CLAIMS. Nothing moved,
+    # so nothing licensed `observed_silence`, and it now reads `none`. The
+    # residual hole this test exists for is the miss, and the miss is asserted
+    # directly below rather than through the verdict that used to imply it.
+    assert res.findings == [], (
         "if this now finds the leak, the tool has gained a check it did not "
         "have at R255 and this test needs rewriting, not deleting")
-    assert res.findings == []
+    assert res.verdict().startswith("none("), res.verdict()
+    assert res.liveness == 0
     # And the run says so where a reader will see it: the number was theirs.
     note = "\n".join(res.notes)
     assert "DECLARED AND UNVERIFIABLE" in note

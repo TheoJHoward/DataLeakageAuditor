@@ -5012,3 +5012,118 @@ the margin printed. **It does not establish anything about the blind spots the
 registration already names:** a label proxy (registry 2) and a label built inside
 the pipeline from a past window (registry 5) are untested here and remain
 uncovered.
+
+## D-V30A-102 — a scan over tracked files cannot see the file the round just wrote, so a round's own new module is outside its own suite
+
+**Found by a test failing one round late, on a tree nobody had edited.** R261
+added `src/leakaudit/label_probe.py`, ran the full suite green, and committed.
+R262's first suite run — same tests, same code — failed
+`test_the_PACKAGE_consumers_are_all_routed_through_the_refusal`, which enumerates
+the modules that read the decision clock and asserts the set.
+
+**The cause is the scan's population, not the code.** That test builds its
+population from `tracked_files()`. R261's final suite ran BEFORE `git add`, so
+the module that round had just written was untracked, was not in the population,
+and could not be scanned. Committing put it in. Nothing about the module changed
+between the green run and the red one.
+
+**So the green suite was green over a set that excluded the round's own new
+file.** That is the shape R247 recorded — evidence measured at one state, artifact
+shipped at another — occurring in a scan's POPULATION rather than in a figure,
+and `tools/clean_tree.py` does not catch it: the tree was dirty in exactly the
+way that hid the file, and clean_tree runs during certification, after the suite.
+
+**The class, and it is wider than one test.** Every instrument that derives its
+population from tracked or committed state is blind to a round's own additions
+for the length of that round. **Enumerated rather than recalled**, at `b975ca7`:
+
+    grep -rln "tracked_files()" tests/ tools/
+    grep -rln "ls-files\|HEAD:" --include=*.py tests/ tools/
+
+give, excluding bytecode, **two callers of `tracked_files()`** —
+`tests/phase1/test_decision_clock_consumers.py` and
+`tests/phase1/test_empty_population_probe.py` — plus
+`tools/coverage_assertion_sweep.py`, and **six files reading the index or a
+committed revision directly**: `tests/phase1/test_coverage_assertion_sweep.py`,
+`tests/phase1/test_decision_clock_consumers.py`, `tools/check_registration.py`,
+`tools/coverage_assertion_sweep.py`, `tools/empty_population_probe.py`,
+`tools/portability_digest.py`. **Seven distinct files.** `round_reconciliation`
+inside `check_registration` is the one that has already produced a halt in this
+project from the same cause — the R260 measurement script reconciled only once it
+was committed — and it was read as the check working, which it was, one round
+after the file appeared.
+
+**What is NOT claimed.** No published figure moves. The scan's answer was wrong
+in one direction only — it under-reported the population — and the missing member
+was found by the next run rather than never. The cost was a round's delay, not a
+wrong result.
+
+**Not repaired here.** The obvious repair — run the suite after staging — is a
+change to how a round closes and belongs in `OPERATING_RULES.md` if anywhere,
+which is the author's. The alternative, making each scan read the working tree
+rather than the index, changes what several instruments measure and would need
+its own ruling. Recorded rather than chosen, with the population above so the
+choice can be made against a set rather than an impression.
+
+## D-V30A-103 — a silence now has to be licensed, on both rows, and asking what licensed L2a's found a tie row lost to a unit
+
+**D-V30A-100 recorded the defect and R262 §2 ruled the repair.** `observed_silence`
+is this tool's affirmative *I looked over a stated population and found nothing,
+and that is evidence*; `none` is *the probe did not happen*. A run in which
+NOTHING moved anywhere has not shown that its perturbation reaches the pipeline,
+so its quiet is about the harness. Both runtime rows now say so.
+
+**L3.1's licence is movement.** The verdict emits `observed_silence` only where
+some row moved — a corrupted cell changing a later row is proof the perturbation
+reached the builder. With zero findings, zero band rows and zero liveness the
+verdict is `none`, carrying a reason that names its population: how many cells
+were perturbed, where their declared instants sat, and which seconds were probed.
+**Phase 1 already rested on this licence without naming it**, which is why the
+repair is safe: the corrected side's silence was believed because 250 rows moved
+on it.
+
+**Run red first, as ruled.** The known positive is R205's per-column case, the
+one D-V30A-100 reclassified. It returned `observed_silence` before and returns
+`none` after. **The discriminating case is the Phase 1 corrected side**, which a
+repair that turned every zero-finding run into `none` would have moved: measured
+under the whole-frame guard on `zc 2025-01`, it stayed `observed_silence`, and
+the guard was **8 of 8 SAME** across both sides — contaminated `finding / 250 /
+5220 / 29`, corrected `observed_silence / 250 / 0 / 0` — in 486 s total.
+
+**Two long-standing cases were reclassified by the repair, and both are
+improvements the tests now record.** The truncated-slice masking of
+`DESIGN.md` §5.3 and the wrong-clock case of R236 each reported
+`observed_silence` over a real leak; in both, nothing moved anywhere, so neither
+claim was ever licensed. Both now report `none`. **The misses are unchanged** —
+the leak is still masked, the wrong clock still finds nothing — and what changed
+is that the tool no longer calls a miss evidence.
+
+**L2a's licence is a different fact, and saying so is the point.** R262 §3 asked
+what proves L2a's perturbation reached anything on a pipeline nobody has seen.
+The answer is not movement: **a pipeline that does not read the label as a
+feature moves no row at all, and that is the expected shape of a CORRECT
+pipeline**, not a dead probe. So L2a's silence rests on cells having been
+PERTURBED — the label values the declaration calls unrealized were written to and
+the build did not change. Zero perturbed is `none`. The counts are printed per
+cohort, the cohorts that perturbed nothing are named, and the run states which of
+the two licences its silence carries so a reader is not left to import L3.1's.
+
+**What asking §3(d)'s question found, which was not the question.** The delta
+asked why nine cohorts of ten carried a finding and one did not — *a stated
+reason beats a silent narrowing*. Answering it exposed that **every cohort was
+dropping the row deciding exactly at its own instant.** L2a's window was written
+as a strict comparison against `f_sec + 1ns`; these frames carry microsecond
+resolution, so `np.datetime64(f_sec + 1ns)` truncates back to `f_sec` and the
+comparison excluded it. That row is the tie row — the one the two registered
+comparator branches exist to disagree about — and §2.6 makes it a valid finding.
+**The verdict did not move: the run still found the leak, on one row fewer per
+cohort than it was entitled to.** Fixed by expressing the closed interval as
+closed, which no frame resolution can defeat. Pinned as row counts per cohort,
+because a count is what made it visible and a verdict is what hid it.
+
+**And the answer to the original question, now that it is a reason.** The silent
+cohort is the FIRST. It speaks for exactly one row — the one deciding at the head
+of the frame — and that row's feature is a one-row-lagged label whose predecessor
+does not exist, so it is NaN and cannot move whatever is done to the labels. The
+cohort perturbed 90 cells; the row it speaks for reads none of them. It is not a
+detection failure and it is not a probe that did not happen.

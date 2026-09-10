@@ -294,6 +294,11 @@ class CohortResult:
     # is a claim the evidence does not carry.
     moved_in_band: int = 0
     rows_in_band: int = 0
+    #: Cells this cohort's batch actually wrote to. R262 §3(b). A cohort that
+    #: perturbed nothing looked at nothing, and its quiet is `none` rather than
+    #: a silence -- the same sentence §2 enforces at the run level, one level
+    #: down, so a per-cohort zero is visible instead of averaged away.
+    cells_perturbed: int = 0
     # THE BATCH'S INSTANTS, CARRIED OUT WITH THE RESULT. A reader checking a
     # classification needs the interval it was made against, and recomputing it
     # from the frames is the second-copy hazard.
@@ -358,6 +363,10 @@ class ProbeAResult:
     # corrupted cell moved it. That is a could-not-run with its numbers named,
     # not a result to be reported with a caveat.
     attribution_overlap: bool = False
+    #: Cells actually written to, counted per column rather than per frame. The
+    #: number a `none` verdict rests on: a silence with zero perturbed cells and
+    #: one with thousands are different claims and were reported identically.
+    cells_perturbed: int = 0
 
     @property
     def findings(self):
@@ -370,6 +379,17 @@ class ProbeAResult:
     @property
     def band_cohorts(self):
         return [c for c in self.cohorts if c.moved_in_band]
+
+    @property
+    def liveness(self) -> int:
+        """Rows that moved and were available to every perturbed cell.
+
+        THE LICENCE FOR A SILENCE, and Phase 1 already rested on it without
+        naming it: the corrected side's `observed_silence` was believed because
+        250 rows moved on it, which is what proved the perturbation reached the
+        builder at all.
+        """
+        return sum(c.moved_next_second for c in self.cohorts)
 
     def verdict(self) -> str:
         if not self.determinism_ok:
@@ -388,6 +408,16 @@ class ProbeAResult:
         # exists to stop.
         if self.band_cohorts:
             return "attribution_ambiguous"
+        # THE SILENCE HAS TO BE LICENSED. R262 §2, repairing D-V30A-100.
+        #
+        # `observed_silence` is this tool's affirmative "I looked over a stated
+        # population and found nothing, and that is evidence." A run in which
+        # NOTHING moved anywhere has not demonstrated that its perturbation
+        # reaches the pipeline at all, so its quiet is about the harness. R205's
+        # per-column zero was exactly that -- a column no cell of which was ever
+        # perturbed -- and it read as evidence for two rounds.
+        if self.liveness == 0:
+            return "none(no perturbed cell reached the pipeline)"
         return "observed_silence"
 
 
@@ -646,6 +676,7 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
     # the two paths -- which is the defect being repaired, not a shape to repeat.
     batch_lo: dict = {}
     batch_hi: dict = {}
+    batch_n: dict = {}
 
     def _record_batch(seconds_of_cell, instants_of_cell, keep) -> None:
         """Fold one column's corrupted cells into the per-cohort [min, max].
@@ -676,6 +707,8 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
             cur = batch_hi.get(s)
             if cur is None or hi > cur:
                 batch_hi[s] = hi
+        for s, cnt in grouped.size().items():
+            batch_n[s] = batch_n.get(s, 0) + int(cnt)
     for fname, keycol in model.aggregate_frames.items():
         if fname not in corrupt or corrupt[fname] is None:
             res.notes.append("aggregate frame %r absent from raw; not corrupted" % fname)
@@ -825,6 +858,12 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
             # behaviour on a promoted column is a different question from whether
             # it reads the value. Integers get an integer offset.
             n = int(cell_mask.sum())
+            # PER COLUMN, NOT PER FRAME. `touched` below sums the frame-level
+            # mask once per frame and is what the "corrupted N aggregate row(s)"
+            # note has always reported; it is a row count, not a cell count, and
+            # under per-column modes the two differ. A `none` verdict rests on
+            # the cell count, so the cell count is what is carried out.
+            res.cells_perturbed += n
             if pd.api.types.is_integer_dtype(f[c]):
                 # THE PERTURBATION WRAPS INSIDE THE DTYPE'S RANGE.
                 #
@@ -949,15 +988,45 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
     # so the tie row falls where the registration puts it with no extra
     # arithmetic. The two branches still disagree about exactly that one row.
     cohorts, notes, overlap = classify_cohorts(
-        picked, d, moved, moved_col, batch_lo, batch_hi, model)
+        picked, d, moved, moved_col, batch_lo, batch_hi, model,
+        batch_n=batch_n)
     res.cohorts.extend(cohorts)
     res.notes.extend(notes)
     res.attribution_overlap = overlap
+    if not res.findings and not res.band_cohorts and res.liveness == 0:
+        res.notes.append(silence_note(res.cells_perturbed, batch_lo, batch_hi,
+                                      picked))
     return res
 
 
+def silence_note(cells_perturbed, batch_lo, batch_hi, picked, extra="") -> str:
+    """The population a `none` verdict rests on, in words. R262 §2(a), §3(b).
+
+    ONE FUNCTION FOR BOTH ROWS, because the sentence they are enforcing is the
+    same one and two copies of it would drift into two claims. A bare `none` is
+    a state; a `none` a reader can act on says how many cells were written to
+    and where their declared instants sat relative to what was probed -- which
+    is exactly the fact that separated R205's zero from a real silence, and it
+    was recoverable from the run's notes at the time and read by nobody.
+    """
+    instants = [v for v in batch_lo.values()] + [v for v in batch_hi.values()]
+    picked = list(picked)
+    span = ("no cell was assigned to any probed cohort" if not instants else
+            "their declared instants span %s to %s"
+            % (min(instants), max(instants)))
+    probed = ("no second was probed" if not picked else
+              "the probed seconds span %s to %s" % (picked[0], picked[-1]))
+    return ("no perturbed cell reached the pipeline: %d cell(s) perturbed, %s, "
+            "and %s. NOTHING MOVED ANYWHERE, so this run has not shown that its "
+            "perturbation reaches your pipeline at all -- the silence is about "
+            "the harness and not about your code, and it is reported as `none` "
+            "rather than as `observed_silence` for that reason.%s"
+            % (cells_perturbed, span, probed,
+               (" " + extra) if extra else ""))
+
+
 def classify_cohorts(picked, d, moved, moved_col, batch_lo, batch_hi, model,
-                     bounds=None):
+                     bounds=None, batch_n=None):
     """The registered comparator, applied per cohort. ONE RULE, BOTH PROBES.
 
     R261 §1(a). The availability probe and the label probe differ in WHICH cells
@@ -1018,9 +1087,23 @@ def classify_cohorts(picked, d, moved, moved_col, batch_lo, batch_hi, model,
         # WHAT IS SHARED IS THE COMPARATOR BELOW, which is what a moved row
         # MEANS; the window is which rows this cohort is entitled to speak for.
         if bounds is not None and f_sec in bounds:
+            # A CLOSED INTERVAL, AND IT IS CLOSED ON PURPOSE. R262 §3(d).
+            #
+            # The caller's window is `[start, end]` with BOTH ends included,
+            # while the default below is half-open. Two conventions in one
+            # function needs a reason, and this is it: L2a's window is "rows
+            # deciding AT OR BEFORE this cohort", which is §2.6's `d(i) <= d`
+            # verbatim, and the first attempt expressed it as `d < end` with
+            # `end = f_sec + 1ns`. **That silently dropped the row at exactly
+            # `f_sec` on every cohort**, because these frames carry microsecond
+            # resolution and `np.datetime64(f_sec + 1ns)` truncates back to
+            # `f_sec`. It is the tie row again -- the one the two comparator
+            # branches exist to disagree about -- lost to a unit, not to a rule.
+            # Expressing the closed interval as closed cannot be defeated by the
+            # frame's resolution.
             w_start, w_end = bounds[f_sec]
             window_rows = (d_np >= np.datetime64(w_start)) & \
-                          (d_np < np.datetime64(w_end))
+                          (d_np <= np.datetime64(w_end))
         else:
             window_rows = (d_np >= np.datetime64(f_sec)) & \
                           (d_np < np.datetime64(hi + observe))
@@ -1047,6 +1130,7 @@ def classify_cohorts(picked, d, moved, moved_col, batch_lo, batch_hi, model,
             rows_in_band=int(band.sum()),
             a_min=lo,
             a_max=hi,
+            cells_perturbed=0 if batch_n is None else int(batch_n.get(f_sec, 0)),
             features_in_second=feats,
         ))
 

@@ -350,9 +350,24 @@ def test_the_PACKAGE_consumers_are_all_routed_through_the_refusal(scanned):
     sites, _, _ = scanned
     pkg = [s for s in sites
            if s["file"].startswith("src/leakaudit/") and not s["compared"]]
+    # FOUR SINCE R261, and the fourth was invisible to this scan for a round.
+    #
+    # `label_probe.py` reads the clock for the same reason the others do: every
+    # availability instant it computes is compared against an output row's
+    # decision instant. It is routed through the shared refusal, which the
+    # second assertion below checks.
+    #
+    # WHY IT APPEARED A ROUND LATE, and it is not a fix that was forgotten. This
+    # scan reads TRACKED files. R261 ran its final suite before `git add`, so
+    # the module it had just written was untracked and outside the population --
+    # the suite was green over a set that excluded the round's own new file.
+    # Committing made it visible and this assertion failed on the next run.
+    # Recorded as D-V30A-102: it is R247's shape (evidence at one state, artifact
+    # at another) in a scan's population rather than in a figure.
     assert {s["file"] for s in pkg} == {
         "src/leakaudit/availability.py", "src/leakaudit/cli.py",
-        "src/leakaudit/identity_control.py"}, sorted({s["file"] for s in pkg})
+        "src/leakaudit/identity_control.py",
+        "src/leakaudit/label_probe.py"}, sorted({s["file"] for s in pkg})
     assert all(s["through"] for s in pkg), (
         "a package consumer bypasses the shared refusal: %s"
         % [(s["file"], s["line"]) for s in pkg if not s["through"]])

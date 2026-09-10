@@ -128,6 +128,57 @@ def test_B_THE_CLEAN_HALF_a_zero_horizon_is_silent_and_the_leak_half_still_fires
     assert clean.n_cohorts == leaking.n_cohorts
 
 
+def test_the_ROW_AT_THE_COHORTS_OWN_INSTANT_is_inside_the_cohort():
+    """R262 §3(d). The tie row, lost to a unit and recovered.
+
+    §2.6 makes a change at any row with `d(i) <= d` a valid finding, so the row
+    deciding EXACTLY at the cohort's instant is inside it. L2a's window was
+    first written as `d < f_sec + 1ns`, and on frames carrying microsecond
+    resolution `np.datetime64(f_sec + 1ns)` truncates back to `f_sec` -- so the
+    strict comparison dropped that row on every cohort. Asserted as row counts,
+    because the defect was invisible in the verdict: the run still found the
+    leak, on one row fewer per cohort than it should have.
+    """
+    res = _l2a(HORIZON)
+    seconds = sorted(c.second for c in res.cohorts)
+    for c in sorted(res.cohorts, key=lambda c: c.second):
+        # Rows deciding at or before this cohort's instant, on a fixture with
+        # one decision row per second starting at T0.
+        want = int((c.second - T0) / SEC) + 1
+        assert c.rows_in_second == want, (
+            "cohort %s speaks for %d row(s) and counted %d; the row at its own "
+            "instant is the one a strict comparison drops"
+            % (c.second, want, c.rows_in_second))
+    assert seconds[0] == T0
+
+
+def test_the_FIRST_COHORT_is_silent_and_the_reason_is_the_builders_lag():
+    """R262 §3(d): name the silent one. A stated reason beats a silent
+    narrowing.
+
+    Nine cohorts of ten carry a finding. The tenth is the FIRST, and it is not a
+    detection failure: it speaks for exactly one row -- the one deciding at the
+    start of the frame -- and that row's feature is the one-row-lagged label of a
+    predecessor that does not exist, so it is NaN and cannot move whatever is
+    done to the labels. The cohort probed 90 cells and the row it speaks for
+    reads none of them.
+    """
+    res = _l2a(HORIZON)
+    first = min(res.cohorts, key=lambda c: c.second)
+    assert first.second == T0
+    assert len(res.findings) == len(res.cohorts) - 1, (
+        "exactly one cohort is expected to be silent here")
+    assert not first.finding()
+    assert first.rows_in_second == 1, "it speaks for one row"
+    assert first.cells_perturbed > 0, (
+        "and it is not a probe that did not happen -- cells WERE perturbed, so "
+        "this cohort's quiet is about the row rather than about the harness")
+    built = _build(_frames())
+    assert pd.isna(built["x"].iloc[0]), (
+        "the reason, stated as data: the first row's feature is NaN because a "
+        "one-row lag has no predecessor at the head of the frame")
+
+
 def test_the_pair_varies_ONLY_the_horizon_and_the_frames_are_one_object():
     """R257: the specification names what is held constant, and a test that
     asserts it is the only thing that keeps it true."""

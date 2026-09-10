@@ -140,7 +140,14 @@ def test_the_WRONG_clock_DECLARED_still_runs_and_that_is_the_point(frames):
     an unrelated guard, and the test would have passed against the defect.
     """
     res = run_probe_a(frames, build, _model(decision_column="timestamp"), "test")
-    assert res.verdict() == "observed_silence", res.notes
+    # R262 §2 CHANGED WHAT THE WRONG CLOCK CLAIMS, AND NOT WHAT IT MISSES. This
+    # asserted `observed_silence`, which is what made R236's defect so bad: the
+    # wrong clock produced the tool's most confident state on a frame set whose
+    # true clock finds three. The wrong clock puts every corrupted cell's
+    # movement outside every bucket, so NOTHING moves anywhere, and there was
+    # never a licence for that claim. The miss is identical; the report is not.
+    assert res.verdict().startswith("none("), res.notes
+    assert res.liveness == 0
     assert res.n_cohorts > 0, (
         "no cohort was built, so some guard refused for an unrelated reason and "
         "this construction is not discriminating after all")
@@ -153,17 +160,25 @@ def test_THE_PAIR_IS_THE_MEASUREMENT_hole_one_at_the_library_level(frames):
     """R236 §3's hole 1, stated as the two-sided figure it actually is.
 
     Same frames, same builder, same model but for the clock. The wrong clock is
-    the one the library used to pick SILENTLY, so before the sentinel the middle
+    the one the library used to pick SILENTLY, so before the sentinel the second
     row below was what a library caller got with no `decision_column` at all:
-    `observed_silence` -- the tool's affirmative "I looked and found nothing" --
-    on data whose true clock finds three.
+    a quiet answer on data whose true clock finds three.
+
+    **THE QUIET ANSWER USED TO BE `observed_silence` AND IS NOW `none`.** R262
+    §2. The wrong clock puts every corrupted cell's movement outside every
+    bucket, so no row moves anywhere and nothing ever licensed the affirmative
+    claim. Two things were wrong here and only one of them was the clock: the
+    tool also had no way to say "my perturbation reached nothing." The figure
+    the pair measures -- three findings against zero -- is unchanged.
     """
     def moved(clock):
         r = run_probe_a(frames, build, _model(decision_column=clock), "test")
         return r.verdict(), sum(c.moved_in_second for c in r.cohorts)
 
     assert moved("decided_at") == ("finding", 3)
-    assert moved("timestamp") == ("observed_silence", 0)
+    wrong_verdict, wrong_findings = moved("timestamp")
+    assert wrong_verdict.startswith("none(")
+    assert wrong_findings == 0
 
 
 def test_a_clock_that_is_not_a_column_is_refused_by_the_PROBE_not_by_pandas(frames):

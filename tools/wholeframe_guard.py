@@ -166,6 +166,17 @@ from leakaudit.availability_trace import traces_for  # noqa: E402
 # invisible from the test.
 
 
+#: WALL TIMES LAST MEASURED, so the comparison the rule asks for is printed
+#: rather than recalled. R262 §1(c). Measured at R261 on `b975ca7`, CPython
+#: 3.12.10 / numpy 2.4.2 / pandas 3.0.1: capture 39 s, contaminated 217 s,
+#: corrected 231 s. **These are not a threshold and nothing fails on them.**
+#: They are the frame a figure carries (R228): a reader watching this run has
+#: the expected magnitude on screen and can tell a slow run from a stalled one
+#: without waiting for it to finish. Update them when they genuinely move, and
+#: say why in the round that moves them.
+LAST_RECORDED = {"capture": 39, "side": 231}
+
+
 def main() -> int:
     PRIOR = REPO / "evidence" / "phase1" / "criteria_12_population.json"
     SYM, MONTH, STRIDE, SEED, MAXC = "zc", "2025-01", 997, 20260828, 300
@@ -198,7 +209,17 @@ def main() -> int:
 
     t0 = time.time()
     cap = fa.read_inputs(SYM, MONTH)
-    print("\ncapture %.0f s" % (time.time() - t0))
+    print("\ncapture %.0f s   (last recorded %d s)" % (time.time() - t0,
+                                                       LAST_RECORDED["capture"]))
+    print("EXPECTED WALL TIMES, printed so the comparison is on the screen "
+          "rather than in somebody's memory: capture ~%d s, each side ~%d s. "
+          "A phase running an ORDER OF MAGNITUDE past these is stopped and "
+          "looked at, not waited out (OPERATING_RULES.md section 7, R262). It "
+          "is the only complexity instrument this project has: R261 shipped a "
+          "correct per-cell Python loop that every twelve-row unit test passed "
+          "in under a second, and this guard was still running eighteen hours "
+          "later on 365 seconds of CPU."
+          % (LAST_RECORDED["capture"], LAST_RECORDED["side"]))
 
     # THE POPULATION IS READ, NOT CARRIED. R212 §2(b). This harness holds no copy of
     # the module list; it reads `evidence/session/PROBE_PATH_SET.json` through
@@ -247,9 +268,17 @@ def main() -> int:
         out[side] = {"verdict": res.verdict(), "eligible": len(eligible),
                      "records": recs, "features": feats,
                      "seconds": round(time.time() - t, 1)}
-        print("  %-13s verdict=%-17s eligible=%-4d records=%-5d features=%d  (%.0f s)"
+        ratio = out[side]["seconds"] / max(1, LAST_RECORDED["side"])
+        print("  %-13s verdict=%-17s eligible=%-4d records=%-5d features=%d  "
+              "(%.0f s, %.1fx the last recorded %d s)"
               % (side, res.verdict(), len(eligible), recs, len(feats),
-                 out[side]["seconds"]))
+                 out[side]["seconds"], ratio, LAST_RECORDED["side"]))
+        if ratio >= 10:
+            print("  ORDER OF MAGNITUDE SLOWER THAN THE LAST RECORDED RUN. That "
+                  "is the shape a complexity regression makes here, and no test "
+                  "in the suite can see it: they run on twelve-row frames. Stop "
+                  "and look at the change rather than waiting for the other "
+                  "side (OPERATING_RULES.md section 7, R262).")
 
     _watch.__exit__(None, None, None)
 
@@ -282,6 +311,8 @@ def main() -> int:
         print("HALT: the whole-frame path MOVED. This is a question about the Phase 1 "
               "numbers, not a Phase 2 bug.")
         return 2
+    print("\ntotal wall time %.0f s (capture + both sides + comparison)."
+          % (time.time() - t0))
     print("UNCHANGED. The whole-frame path is byte-for-byte the result the committed "
           "population run recorded, so the wiring did not alter the probe that "
           "produced Phase 1's evidence.")

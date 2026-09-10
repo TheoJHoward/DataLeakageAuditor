@@ -52,7 +52,8 @@ import numpy as np
 import pandas as pd
 
 from .availability import (CohortResult, ProbeError, align_key,
-                           classify_cohorts, require_decision_column)
+                           classify_cohorts, require_decision_column,
+                           silence_note)
 
 #: The registered row this module implements. Every finding carries it, so a
 #: reader holding two runtime findings can tell which row produced which --
@@ -149,6 +150,10 @@ class LabelProbeResult:
     def band_cohorts(self):
         return [c for c in self.cohorts if c.moved_in_band]
 
+    @property
+    def cells_perturbed(self) -> int:
+        return sum(c.cells_perturbed for c in self.cohorts)
+
     def verdict(self) -> str:
         if self.unsupported:
             return "unsupported(%s)" % self.unsupported
@@ -160,6 +165,18 @@ class LabelProbeResult:
             return "finding"
         if self.band_cohorts:
             return "attribution_ambiguous"
+        # THE SILENCE HAS TO BE LICENSED HERE TOO, AND BY A DIFFERENT FACT.
+        # R262 §3(b). L3.1 licenses a silence with moved rows: a corrupted cell
+        # that changes a later row proves the perturbation reaches the builder.
+        # **That class is not available to L2a**, because a clean pipeline need
+        # not read labels as features AT ALL -- a run in which no row moves is
+        # the expected shape of a correct pipeline, not evidence of a dead
+        # probe. So what licenses this row's silence is that cells were
+        # PERTURBED: the probe wrote to the label cells the declaration says
+        # were unrealized, and the build did not change. With zero perturbed
+        # there is nothing to be silent about and the verdict says `none`.
+        if self.cells_perturbed == 0:
+            return "none(no perturbed cell reached the pipeline)"
         return "observed_silence"
 
 
@@ -394,18 +411,52 @@ def run_probe_l2a(raw, build, model, *, raw_label=None, label_availability=None,
         # has no claim about them either way -- they are counted below as
         # evidence the perturbation was READ, which is a fact about the probe
         # and not about availability.
-        bounds = {f_sec: (d.min(), f_sec + pd.Timedelta(1, "ns"))}
+        # CLOSED AT BOTH ENDS: rows deciding AT OR BEFORE this cohort's instant,
+        # which is §2.6's `d(i) <= d` written as itself. The row AT `f_sec` is
+        # the tie row and it belongs here under the default comparator.
+        bounds = {f_sec: (d.min(), f_sec)}
         cohorts, _notes, _ov = classify_cohorts(
             [f_sec], d, moved, moved_col, {f_sec: lo}, {f_sec: hi}, model,
-            bounds=bounds)
+            bounds=bounds, batch_n={f_sec: int(unavail.sum())})
         res.cohorts.extend(cohorts)
         read_beyond += int((moved & (d.to_numpy() > np.datetime64(f_sec))).sum())
 
+    # THE PER-COHORT CELL COUNTS, PRINTED. R262 §3(b). The silence rests on
+    # them, so they are in the output rather than inferable from it, and a
+    # cohort that perturbed nothing is named rather than averaged into a total.
+    empty = [str(c.second) for c in res.cohorts if c.cells_perturbed == 0]
+    res.notes.append(
+        "cells perturbed per cohort: %s. Total %d cell(s) perturbed across %d "
+        "cohort(s)%s."
+        % (", ".join("%s=%d" % (c.second, c.cells_perturbed)
+                     for c in res.cohorts) or "none",
+           res.cells_perturbed, len(res.cohorts),
+           "" if not empty else
+           "; %d cohort(s) had NO unavailable label to corrupt and are `none` "
+           "rather than silent: %s" % (len(empty), ", ".join(empty))))
+    # WHICH LICENCE THIS ROW'S SILENCE CARRIES, said in the run rather than left
+    # to be inferred from L3.1's. R262 §3(b).
+    res.notes.append(
+        "WHAT LICENSES A SILENCE HERE, and it is not what licenses L3.1's. That "
+        "probe can point at rows that MOVED and were available -- proof its "
+        "perturbation reaches the builder. L2a has no such class: a pipeline "
+        "that does not read the label as a feature moves no row at all, and "
+        "that is the expected shape of a CORRECT pipeline rather than a dead "
+        "probe. So this row's silence rests on cells having been PERTURBED -- "
+        "the label values the declaration calls unrealized were written to, and "
+        "the build did not change. With zero perturbed the verdict is `none`.")
     if not probed_any:
         res.notes.append(
             "no label cell was unavailable at any probed second, so nothing was "
             "perturbed. This row's silence is `none` -- a probe that did not "
             "happen -- rather than `observed_silence`.")
+        res.notes.append(silence_note(
+            res.cells_perturbed, {}, {}, list(picked),
+            extra="For this row that means the declared label availability puts "
+                  "every label value at or before every probed decision "
+                  "instant, so there was never an unrealized label to corrupt. "
+                  "Check the horizon and the base column against what your "
+                  "labels actually are."))
     res.read_beyond = read_beyond
     res.notes.append(
         "attribution: %d finding row(s) across %d cohort(s), detector %s. "
