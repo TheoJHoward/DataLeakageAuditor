@@ -69,9 +69,23 @@ def head() -> str:
 
 
 def dirty_paths() -> list:
-    """Working-tree paths that count as dirt, in porcelain order."""
+    """Working-tree paths that count as dirt, in porcelain order.
+
+    THE OUTPUT IS NOT STRIPPED, and that is the whole of this function's
+    history. `_git` returns `stdout.strip()`, which is right for a hash and
+    wrong here: porcelain lines begin with a two-character status followed by a
+    space, so stripping the whole blob removes the leading space **of the first
+    line only**. `line[3:]` then cuts one character too many and `DESIGN.md` is
+    recorded as `ESIGN.md` -- once per run, always the first entry, never the
+    others. `clean_tree.entries` never had this because it splits the raw
+    stdout; this one borrowed a helper built for a different shape.
+    """
+    r = subprocess.run(["git", "-C", str(REPO), "status", "--porcelain"],
+                       capture_output=True, text=True, encoding="utf-8")
     out = []
-    for line in _git("status", "--porcelain").splitlines():
+    for line in r.stdout.splitlines():
+        if not line.strip():
+            continue
         path = line[3:].strip().strip('"')
         if any(path.startswith(p) for p in _NOT_DIRT):
             continue

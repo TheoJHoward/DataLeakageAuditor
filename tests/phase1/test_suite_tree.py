@@ -110,6 +110,22 @@ def test_the_record_file_is_NOT_dirt_to_clean_tree():
     assert not any(p.startswith("tools/") for p in clean_tree.IGNORED_PREFIXES)
 
 
+def test_the_FIRST_dirty_path_is_not_truncated(monkeypatch):
+    """R267 found this in its own output: `DESIGN.md` recorded as `ESIGN.md`.
+
+    `_git` strips its stdout, which is right for a hash. Porcelain lines open
+    with a two-character status and a space, so stripping the whole blob removes
+    the leading space of the FIRST LINE ONLY -- then `line[3:]` cuts one
+    character too many, once per run, always the first entry. Every other path
+    is correct, which is why it survived being looked at.
+    """
+    class _R:
+        stdout = " M DESIGN.md\n M src/leakaudit/cli.py\n?? new.py\n"
+
+    monkeypatch.setattr(st.subprocess, "run", lambda *a, **k: _R())
+    assert st.dirty_paths() == ["DESIGN.md", "new.py", "src/leakaudit/cli.py"]
+
+
 def test_the_records_own_dirt_is_not_counted_as_the_rounds():
     assert "tools/suite_tree_record.json" in st._NOT_DIRT
     assert ".claude/" in st._NOT_DIRT
