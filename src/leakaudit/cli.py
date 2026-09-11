@@ -30,6 +30,12 @@ EXIT_OK_SILENT = 0          # probes ran, nothing moved
 EXIT_FINDINGS = 1           # something moved
 EXIT_NOTHING_PROBED = 3     # `none` -- not evidence of absence
 EXIT_USAGE = 2
+# R267 §3(d). A subsample was probed and nothing moved in it. NOT the clean
+# exit: "nothing moved in the part I looked at" is a different claim from
+# "nothing moved", and collapsing them is the `none`-as-`observed_silence`
+# mistake one level up. It maps to EXIT_OK_SILENT only when the user has
+# DECLARED that partial coverage is acceptable, and the acceptance is printed.
+EXIT_INCOMPLETE_SILENT = 4
 
 
 def _expected_errors() -> tuple:
@@ -202,6 +208,20 @@ def build_parser() -> argparse.ArgumentParser:
                           "This tool cannot derive it: the availability model "
                           "says when a cell became knowable, not how far back "
                           "your build function reaches")
+    run.add_argument("--label-cohorts", type=int, default=None, metavar="N",
+                     help="L2a cohort budget. L2a rebuilds ONCE PER COHORT, so "
+                          "this is the run's cost. Defaults to a number derived "
+                          "from a measured build time against a ten-minute "
+                          "target, printed with its arithmetic. L3.1 has no "
+                          "such budget: its cohorts are near-free and it always "
+                          "probes every eligible one")
+    run.add_argument("--accept-partial-coverage", action="store_true",
+                     help="treat an INCOMPLETE-and-silent run as clean. Without "
+                          "this, a run that probed a subsample and found "
+                          "nothing exits %d rather than 0, because that is a "
+                          "silence about the subsample and not about the "
+                          "pipeline. The acceptance is printed beside the "
+                          "verdict" % EXIT_INCOMPLETE_SILENT)
     run.add_argument("--quiet", action="store_true",
                      help="print the findings only, without the explanation")
 
@@ -260,8 +280,11 @@ def _run_checks(frames, build, model_path):
 
 
 def _run_availability(frames, build, model_path, stride, max_cohorts,
-                      slice_from=None, padding=None):
+                      slice_from=None, padding=None, label_cohorts=None):
     """The availability probe, end to end, from a declared model file."""
+    from .coverage import DEFAULT_L2A_COHORTS, budget_arithmetic
+    label_cohorts = (DEFAULT_L2A_COHORTS if label_cohorts is None
+                     else int(label_cohorts))
     from .availability import (NOT_DECLARED, eligible_cohorts, run_probe_a,
                                require_decision_column)
     from .availability_trace import traces_for
@@ -329,7 +352,7 @@ def _run_availability(frames, build, model_path, stride, max_cohorts,
         # probe takes, so the two rows probe the same seconds by default.
         cohort_stride=(DEFAULT_STRIDE if stride is STRIDE_NOT_DECLARED
                        else stride),
-        max_cohorts=min(max_cohorts, 25))
+        max_cohorts=label_cohorts)
     # Eligibility is derived, not assumed: a second no aggregate frame carries a
     # row in has nothing to corrupt, and scheduling it would report a dead
     # process where the truth is an empty probe surface.
@@ -361,6 +384,30 @@ def _run_availability(frames, build, model_path, stride, max_cohorts,
     picked = _secs[::result.resolved_stride][:max_cohorts]
     elig = eligible_cohorts(frames, model, picked,
                             pd.to_datetime(built[dcol]))
+
+    # THE TWO COVERAGE NUMBERS. R267 §3(c). Reported, never thresholded -- they
+    # are the POPULATION of every silence this run prints, which is why they are
+    # computed from the same `_secs`/`picked` the probe used rather than from a
+    # count carried along beside them.
+    # THE DENOMINATOR IS THE SEPARATION-ELIGIBLE SET, NOT EVERY SECOND, and
+    # getting that wrong made every run incomplete on the first attempt.
+    # `cohort_stride` is not a budget: it is the attribution requirement, the
+    # separation below which one cohort's corruption contaminates its
+    # neighbour's finding region. Seconds the stride excludes were never
+    # probeable, so counting them as unprobed coverage would report a shortfall
+    # no budget could ever close and make the incomplete class meaningless.
+    # What CAN fall short is `max_cohorts`, which is the budget, so the gap
+    # between these two numbers is exactly the budget's effect.
+    from .coverage import Coverage
+    _floors = pd.to_datetime(built[dcol]).dt.floor("s")
+    _separable = _secs[::result.resolved_stride]
+    coverage = Coverage(
+        cohorts_probed=len(picked),
+        cohorts_eligible=len(_separable),
+        rows_in_probed=int(_floors.isin(set(picked)).sum()),
+        rows_total=int(len(built)),
+        l2a_probed=label_result.n_cohorts,
+        l2a_eligible=label_result.n_eligible)
     traces = traces_for(result, elig.eligible, case_id="user")
     for note in elig.notes:
         result.notes.append(note)
@@ -402,7 +449,13 @@ def _run_availability(frames, build, model_path, stride, max_cohorts,
            len(label_result.findings), label_result.n_cohorts))
     for note in label_result.notes:
         result.notes.append("[%s] %s" % (label_result.detector, note))
-    return AuditResult(traces, source=result)
+    result.notes.append(budget_arithmetic(label_cohorts))
+    result.notes.append(coverage.table())
+    out = AuditResult(traces, source=result)
+    # Carried on the result so the exit-class decision reads the same numbers
+    # the run printed, rather than recomputing them and being free to disagree.
+    out.coverage = coverage
+    return out
 
 
 def main(argv=None) -> int:
@@ -513,7 +566,8 @@ def _main(argv=None) -> int:
         result = _run_availability(frames, build, args.model,
                                    args.stride, args.max_cohorts,
                                    slice_from=args.slice_from,
-                                   padding=args.padding)
+                                   padding=args.padding,
+                                   label_cohorts=args.label_cohorts)
     else:
         result = audit(frames, build)
 
@@ -525,9 +579,27 @@ def _main(argv=None) -> int:
 
     if result.findings:
         return EXIT_FINDINGS
-    if result.outcome == "observed_silence":
+    if result.outcome != "observed_silence":
+        return EXIT_NOTHING_PROBED
+
+    # FOUR CLASSES, NOT THREE. R267 §3(d). The run was silent; the question left
+    # is whether it was silent over EVERYTHING eligible or over a subsample.
+    cov = getattr(result, "coverage", None)
+    if cov is None or cov.complete:
         return EXIT_OK_SILENT
-    return EXIT_NOTHING_PROBED
+    if getattr(args, "accept_partial_coverage", False):
+        print("ACCEPTED: partial coverage was declared on the command line, so "
+              "this INCOMPLETE run exits clean. The silence above is about the "
+              "%d of %d cohorts probed, and the acceptance is yours."
+              % (cov.cohorts_probed, cov.cohorts_eligible))
+        return EXIT_OK_SILENT
+    print("INCOMPLETE AND SILENT: nothing moved in the %d of %d eligible "
+          "cohorts this run probed, which is not the same claim as nothing "
+          "moving. Raise the cohort budget until the run is complete, or pass "
+          "--accept-partial-coverage to declare that a subsample is enough for "
+          "your purpose." % (cov.cohorts_probed, cov.cohorts_eligible),
+          file=sys.stderr)
+    return EXIT_INCOMPLETE_SILENT
 
 
 if __name__ == "__main__":                                   # pragma: no cover

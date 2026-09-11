@@ -266,6 +266,30 @@ its total.
 
 ---
 
+## D16's untracked blind spot — named, and RULED to need no slot
+
+*Recorded at R267 §1.2. Not repaired, and this entry is the reason rather than a
+deferral.*
+
+`D16` asks that every manifest-attested path be tracked or staged. It reads
+tracked files, so an untracked file is outside what it can see — the same
+direction §173 of `DEFERRED_ITEMS.md` calls the fourth. The obvious reading is
+that the frozen checker carries a blind spot and a slot is owed.
+
+**It is not owed, and the reason is ordering rather than tolerance.** The gate
+is step 3 of the enumerated certification and `clean_tree.py` is step 1. A tree
+with an untracked file does not reach the gate: `clean_tree` refuses first, by
+name and path. So **inside the checker's own domain the blind spot has no
+reachable instance** — every tree D16 ever reads has already been shown to carry
+no untracked file at all.
+
+**What that does and does not settle.** It settles the slot: nothing is spent,
+and the ruled-difference count stays at **two of four**. It does not settle
+§173, which is about the repository tree in general and not about what D16 sees;
+that item stands where it is, post-tag. And it depends on an ordering that is
+now itself mechanical rather than remembered — `tools/suite_tree.py` and the
+enumerated `STEPS` are what hold `clean_tree` ahead of the gate.
+
 ## A frozen check whose PASS prints "this is not a pass"
 
 *Recorded at R248 §2. Not repaired here, deliberately.*

@@ -420,6 +420,12 @@ class ProbeAResult:
     # report: not-run states are never displayed as passed.
     slice_plan: object = None
     context_seconds: tuple = ()
+    #: The measured propagation of a one-second corruption through this
+    #: builder, and the smallest gap this run actually corrupted. R267 §2.
+    #: Carried so a reader can see the number the refusals were checked
+    #: against rather than being told a check happened.
+    reach: object = None
+    min_separation: object = None
     # ATTRIBUTION WINDOWS OVERLAPPED, SO NO COHORT'S CLASSIFICATION IS ITS OWN.
     # R261 §1(b). The separation a run needs is derived from the batch instants,
     # not fixed at a second; where the probed cohorts sit closer than that, a
@@ -617,6 +623,63 @@ def _fast_fingerprint(df: pd.DataFrame) -> pd.Series:
     return joined
 
 
+def perturb_cells(f, c, cell_mask, n, rng) -> None:
+    """The dtype-aware perturbation, applied in place to one column's cells.
+
+    EXTRACTED AT R267 SO IT HAS ONE DEFINITION, and the reason is not tidiness.
+    `reach.py` measures how far a corruption propagates through the builder, and
+    a reach measured under a WEAKER perturbation than the probe applies is a
+    number about a different experiment -- it would under-report on exactly the
+    integer and boolean columns these branches exist for. A second copy of this
+    logic would have drifted from the original within a round.
+
+    THE RNG CALL ORDER IS UNCHANGED BY THE EXTRACTION. The perturbation values
+    depend on it, every Phase 1 figure was produced through it, and the
+    whole-frame guard is what confirms the move altered nothing.
+
+    Nothing below is new code; the comments are the originals.
+    """
+    if pd.api.types.is_integer_dtype(f[c]):
+        # THE PERTURBATION WRAPS INSIDE THE DTYPE'S RANGE.
+        #
+        # A flat +1_000_000 overflowed `uint8` and pandas refused --
+        # after the same offset had already been rejected on int64 as a
+        # float. Widening the column would be a SECOND perturbation
+        # (R152 §2.2), so the offset is made to fit instead: modular
+        # within [iinfo.min, iinfo.max], with a non-zero offset so the
+        # new value is GUARANTEED to differ from the original. A
+        # perturbation that could coincide produces a false silence.
+        info = np.iinfo(f[c].dtype)
+        lo, hi = int(info.min), int(info.max)
+        headroom = min(1000, max(1, hi - lo))
+        off = 1 + rng.integers(0, headroom, n)
+        # `cell_mask`, NOT `mask`. R224. When per-column modes are
+        # declared these differ, and this line read the frame-level mask
+        # while `off` was sized from `cell_mask` and the write below
+        # targets `cell_mask` -- so an integer column under a per-column
+        # mode raised a broadcast error. A partial conversion left from
+        # R205, invisible because that round's discriminating positive
+        # used a FLOAT column and never entered this branch.
+        #
+        # No published figure moves, and that was checked: with no
+        # column_modes `cell_mask is mask`, which is every Phase 1 run,
+        # and the whole-frame guard re-measures it.
+        vals = f.loc[cell_mask, c].to_numpy()
+        # ADD, OR SUBTRACT WHERE ADDING WOULD LEAVE THE RANGE. A modular
+        # wrap was tried and overflowed: int64's span is 2**64 and does
+        # not fit in int64. Choosing the DIRECTION per element needs no
+        # arithmetic wider than the column itself, works at every width,
+        # and still guarantees new != old because the offset is >= 1.
+        up = vals <= (hi - headroom)
+        new = np.where(up, vals + off, vals - off)
+        f.loc[cell_mask, c] = new.astype(f[c].dtype)
+    elif pd.api.types.is_bool_dtype(f[c]):
+        f.loc[cell_mask, c] = ~f.loc[cell_mask, c].to_numpy()
+    else:
+        vals = f.loc[cell_mask, c].to_numpy(dtype=float, copy=True)
+        f.loc[cell_mask, c] = vals + 1.0e6 + rng.standard_normal(n)
+
+
 def run_probe_a(raw: Mapping[str, pd.DataFrame],
                 build: Callable[[Mapping[str, pd.DataFrame]], pd.DataFrame],
                 model: AvailabilityModel,
@@ -627,7 +690,8 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
                 seed: int = 20260828,
                 column_modes: Mapping[str, object] | None = None,
                 slice_from=None,
-                padding=NOT_DECLARED) -> ProbeAResult:
+                padding=NOT_DECLARED,
+                reach_samples=None) -> ProbeAResult:
     """Corrupt a sparse set of seconds, rebuild once, and read WHICH rows moved.
 
     `cohort_stride` keeps corrupted seconds far apart so a moved row can be
@@ -653,6 +717,30 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
     d = pd.to_datetime(base[dcol])
     base_floor = d.dt.floor("s")
 
+    # THE REACH CONTROL RUNS BEFORE THE PROBES. R267 §2(d).
+    #
+    # Two features carried the same sentence -- clearing the floor is not
+    # sufficiency, because the builder's lookback is not in the model. It is not
+    # in the model and it IS in the behaviour, which is the one thing this tool
+    # is built to read. So it is measured here, once, and both the stride and
+    # the padding are checked against the measurement rather than against a
+    # bound derived from availability arithmetic.
+    #
+    # BEFORE, not after: a stride that cannot separate cohorts makes every
+    # attribution below unsafe, so spending the probe first would produce
+    # findings whose provenance the refusal then invalidates.
+    from .reach import (DEFAULT_SAMPLES, check_padding,
+                        check_stride_separation, measure_reach)
+    k = DEFAULT_SAMPLES if reach_samples is None else int(reach_samples)
+    if k > 0:
+        res.reach = measure_reach(raw, build, model, base, dcol, k=k, seed=seed)
+        res.notes.append(res.reach.note())
+    else:
+        res.notes.append(
+            "REACH NOT MEASURED: `reach_samples=0` was declared, so this run "
+            "makes no measurement of how far a corruption propagates through "
+            "the builder. The stride and any padding rest on declaration alone.")
+
     # The corrupted seconds: sparse, deterministic, derived from the data's own
     # range rather than chosen.
     seconds = pd.Index(sorted(base_floor.unique()))
@@ -677,6 +765,12 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
         plan = slicing.plan_slice(raw=raw, model=model, slice_from=slice_from,
                                   padding=padding,
                                   declared_bar_duration=bar_duration)
+        # THE PADDING MEETS THE SAME MEASUREMENT THE STRIDE DOES. R267 §2(b).
+        # `plan_slice` has already checked the declaration against the model's
+        # floor; that floor is availability arithmetic and was never
+        # sufficiency. This is the other half of the sentence both features
+        # carried, and it is now one number rather than two apologies.
+        check_padding(plan.padding, getattr(res, "reach", None))
         probed, context = slicing.split_seconds(seconds, plan)
         res.slice_plan = plan
         res.context_seconds = tuple(context)
@@ -732,6 +826,10 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
     res.n_cohorts = len(picked)
     if res.n_cohorts == 0:
         return res
+
+    if len(picked) > 1:
+        res.min_separation = pd.Timedelta(
+            np.diff(pd.DatetimeIndex(picked).to_numpy()).min())
 
     # THE COMPARATOR TRAVELS WITH THE RESULT. R216 §2(b).
     #
@@ -969,45 +1067,7 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
             # under per-column modes the two differ. A `none` verdict rests on
             # the cell count, so the cell count is what is carried out.
             res.cells_perturbed += n
-            if pd.api.types.is_integer_dtype(f[c]):
-                # THE PERTURBATION WRAPS INSIDE THE DTYPE'S RANGE.
-                #
-                # A flat +1_000_000 overflowed `uint8` and pandas refused --
-                # after the same offset had already been rejected on int64 as a
-                # float. Widening the column would be a SECOND perturbation
-                # (R152 §2.2), so the offset is made to fit instead: modular
-                # within [iinfo.min, iinfo.max], with a non-zero offset so the
-                # new value is GUARANTEED to differ from the original. A
-                # perturbation that could coincide produces a false silence.
-                info = np.iinfo(f[c].dtype)
-                lo, hi = int(info.min), int(info.max)
-                headroom = min(1000, max(1, hi - lo))
-                off = 1 + rng.integers(0, headroom, n)
-                # `cell_mask`, NOT `mask`. R224. When per-column modes are
-                # declared these differ, and this line read the frame-level mask
-                # while `off` was sized from `cell_mask` and the write below
-                # targets `cell_mask` -- so an integer column under a per-column
-                # mode raised a broadcast error. A partial conversion left from
-                # R205, invisible because that round's discriminating positive
-                # used a FLOAT column and never entered this branch.
-                #
-                # No published figure moves, and that was checked: with no
-                # column_modes `cell_mask is mask`, which is every Phase 1 run,
-                # and the whole-frame guard re-measures it.
-                vals = f.loc[cell_mask, c].to_numpy()
-                # ADD, OR SUBTRACT WHERE ADDING WOULD LEAVE THE RANGE. A modular
-                # wrap was tried and overflowed: int64's span is 2**64 and does
-                # not fit in int64. Choosing the DIRECTION per element needs no
-                # arithmetic wider than the column itself, works at every width,
-                # and still guarantees new != old because the offset is >= 1.
-                up = vals <= (hi - headroom)
-                new = np.where(up, vals + off, vals - off)
-                f.loc[cell_mask, c] = new.astype(f[c].dtype)
-            elif pd.api.types.is_bool_dtype(f[c]):
-                f.loc[cell_mask, c] = ~f.loc[cell_mask, c].to_numpy()
-            else:
-                vals = f.loc[cell_mask, c].to_numpy(dtype=float, copy=True)
-                f.loc[cell_mask, c] = vals + 1.0e6 + rng.standard_normal(n)
+            perturb_cells(f, c, cell_mask, n, rng)
         touched += int(mask.sum())
         corrupt[fname] = f
     if touched == 0:
@@ -1097,6 +1157,15 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
         batch_n=batch_n)
     res.cohorts.extend(cohorts)
     res.notes.extend(notes)
+
+    # THE MEASURED SEPARATION CHECK, AND IT RUNS AFTER THE DERIVED ONE.
+    # R267 §2(d). `classify_cohorts` above refuses a separation below the floor
+    # the MODEL derives; that refusal is the more specific of the two and keeps
+    # precedence, so a caller whose stride fails both hears about the arithmetic
+    # rather than about a sampled measurement. This catches what the model
+    # cannot see: a builder whose own reach exceeds a separation the model was
+    # content with.
+    check_stride_separation(res.min_separation, res.reach)
     if not res.findings and not res.band_cohorts and res.liveness == 0:
         res.notes.append(silence_note(res.cells_perturbed, batch_lo, batch_hi,
                                       picked))
@@ -1265,8 +1334,10 @@ def classify_cohorts(picked, d, moved, moved_col, batch_lo, batch_hi, model,
             "cohort's corruption can be observed over -- and is not fixed at "
             "one second. `cohort_stride` chooses which seconds are probed; "
             "this is what the arithmetic requires of that choice. CLEARING IT "
-            "IS NOT SUFFICIENCY: the floor is the model's arithmetic, and how "
-            "far back your builder reaches is not in the model."
+            "IS NOT SUFFICIENCY ON ITS OWN: this floor is the model's "
+            "arithmetic. Since R267 the builder's own reach is MEASURED beside "
+            "it and checked separately, so what remains open is only a "
+            "propagation path no sampled second exercised."
             % (_window_text(needed), _window_text(smallest)))
         if smallest < needed:
             raise ProbeError(

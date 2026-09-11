@@ -697,3 +697,30 @@ behaviour is held by `tests/phase1/test_guard_idempotency.py`, which is named
 here because the guarantee is carried by that test and not by any data structure:
 a second guard written by copying the first, keeping its key, fails identically
 to the defect the first one had. Extend that test when a second guard is written.
+
+### 10.7 §2.10's refinement opt-in, and what actually governs it
+
+**PLACED HERE RATHER THAN BESIDE §2.10, for §10's own reason.** A registered
+line-pinned citation resolves to line 546 of this file; inserting a paragraph at
+§2.10 would move it and raise the citation check. The content moves instead, as
+it did for §10 itself.
+
+**§2.10 ends "Opt-in: on for `full`, off for `quick`."** That sentence presumes
+a **mode** called `quick` which configures several things at once. R267 §3 ruled
+that `quick` is not a mode: L3.1's cohorts cost ~0.02 s each because one rebuild
+serves the whole batch, L2a rebuilds once per cohort, so the only thing worth
+budgeting is L2a's cohort count. There is no `quick` mode for a refinement
+policy to hang off.
+
+**AND THE REGISTRATION ALREADY GOVERNS THIS POINT.** §2.10 says so two sentences
+earlier — *which procedure runs is decided by `PREREG.md` §8.5 against the frozen
+cap and `reach_refinement_policy`, not here.* The opt-in sentence and that
+sentence disagree about who decides, and **`PREREG.md` wins**: this file is
+revisable and the registration is not. So `reach_refinement_policy` governs, and
+the opt-in clause is a description of a configuration that a later ruling
+removed.
+
+**Not deleted, and that is deliberate.** The sentence is part of what was
+written when the cost model was drawn, and striking it would leave a reader of
+the old text with no account of why it is gone. It stands with this note against
+it, which is the same treatment §10's own placement note gets.

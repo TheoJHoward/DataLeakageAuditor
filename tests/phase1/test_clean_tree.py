@@ -38,6 +38,12 @@ def _entries_from(porcelain: str) -> list:
         path = line[3:].strip().strip('"')
         if any(path.startswith(p) for p in ct.IGNORED_PREFIXES):
             continue
+        # EXACT paths as well as prefixes, since R267 §1.1. The suite writes
+        # `tools/suite_tree_record.json` as it runs, so leaving it out here made
+        # this restatement disagree with the shipped filter the moment the suite
+        # had ever run -- which is what the assertion below caught.
+        if path in ct.IGNORED_EXACT:
+            continue
         out.append(line.rstrip())
     return out
 

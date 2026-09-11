@@ -19,11 +19,11 @@
   "candidate_artifact": 16,
   "candidate_fixed": 2,
   "candidate_legitimate": 1,
-  "out_of_scope": 17,
+  "out_of_scope": 21,
   "probed_healthy": 6,
-  "unprobed_reachable": 51,
-  "functions_total": 93,
-  "assertions_total": 177
+  "unprobed_reachable": 54,
+  "functions_total": 100,
+  "assertions_total": 194
  },
  "functions": [
   {
@@ -669,6 +669,55 @@
    "assertions": 2,
    "status": "out_of_scope",
    "reason": "R255. Asserts an exit code and a substring of one subprocess's stderr. One artifact's content, no derived collection; `makes_a_coverage_claim` returns False."
+  },
+  {
+   "file": "tests/phase1/test_coverage_budget.py",
+   "function": "test_NO_LEVEL_is_defined_anywhere",
+   "assertions": 1,
+   "status": "unprobed_reachable",
+   "reason": "R267. Asserts inside a loop over a MODULE-LEVEL LITERAL tuple of forbidden words, so the criterion sees a coverage claim and the emptying probe cannot reach the population -- a literal cannot be emptied by a fixture. It could be emptied by an edit, which a reader would see in the diff. UNVERIFIED by mechanism, not clean."
+  },
+  {
+   "file": "tests/phase1/test_coverage_budget.py",
+   "function": "test_acceptance_is_NOT_the_default_at_either_door",
+   "assertions": 2,
+   "status": "out_of_scope",
+   "reason": "R267. A signature default and one substring of one file's text. No derived collection; `makes_a_coverage_claim` returns False."
+  },
+  {
+   "file": "tests/phase1/test_epsilon_siblings.py",
+   "function": "test_the_scan_REACHES_the_files_it_claims_to",
+   "assertions": 4,
+   "status": "unprobed_reachable",
+   "reason": "R267. This IS the anti-vacuity guard for its file's absence claim -- it asserts the sweep walked more than twenty files and that the pattern can match. It cannot pass over an empty population because non-emptiness is what it asserts; it is filed UNVERIFIED rather than healthy because the emptying probe cannot reach it to demonstrate that, and self-evidence is what this population exists to distrust."
+  },
+  {
+   "file": "tests/phase1/test_epsilon_siblings.py",
+   "function": "test_the_REPAIRED_window_is_a_closed_comparison",
+   "assertions": 2,
+   "status": "out_of_scope",
+   "reason": "R267. Two substring checks against one file's text, pinning the 27582d9 repair. No derived collection."
+  },
+  {
+   "file": "tests/phase1/test_lessons_classification.py",
+   "function": "test_THE_MUTANTS_ACTUALLY_MUTATE",
+   "assertions": 2,
+   "status": "out_of_scope",
+   "reason": "R267. Checks that the file's own mutation helper changes the text it is given -- one artifact's content, and a guard on a guard. No derived collection."
+  },
+  {
+   "file": "tests/phase1/test_suite_tree.py",
+   "function": "test_the_record_ROUND_TRIPS_through_the_checker",
+   "assertions": 4,
+   "status": "out_of_scope",
+   "reason": "R267. Writes one record and reads it back, asserting fields of one document. No derived collection; `makes_a_coverage_claim` returns False."
+  },
+  {
+   "file": "tests/phase1/test_trackb_numbering.py",
+   "function": "test_the_RESOLVED_collision_is_recorded_where_both_readers_arrive",
+   "assertions": 2,
+   "status": "unprobed_reachable",
+   "reason": "R267. Asserts inside a loop over the two collided headings, so the criterion sees a coverage claim. The population is a two-element literal built in the function; the emptying probe cannot reach it. UNVERIFIED, not clean."
   },
   {
    "file": "tests/phase1/test_slicing.py",

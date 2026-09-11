@@ -62,6 +62,7 @@ py -3.12 tools/clean_tree.py
 LEAKAUDIT_WORK_ROOT="<this session's working directory -- the directory itself, not a subdirectory of it>" py -3.12 tools/check_registration.py --stage prereg
 py -3.12 tools/manifest_verify.py
 py -3.12 -m pytest tests
+py -3.12 tools/suite_tree.py
 ```
 
 **`clean_tree.py` RUNS FIRST, and the order is the point.** R247 §1. Every

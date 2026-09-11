@@ -1,0 +1,45 @@
+{
+ "what": "Which tree the last `pytest tests` run measured. Written by tests/conftest.py at session finish, never by hand (R267 section 1.1). `tools/suite_tree.py` refuses certification when this does not describe HEAD and a clean tree.",
+ "last": {
+  "when": "2026-09-10 17:28",
+  "commit": "3232931",
+  "clean": false,
+  "dirty_paths": [
+   "ESIGN.md",
+   "NEXT_REGISTRATION_REQUIREMENTS.md",
+   "evidence/MANIFEST.sha256",
+   "evidence/session/COVERAGE_ASSERTION_POPULATION.json",
+   "evidence/session/PROBE_PATH_SET.json",
+   "evidence/session/ROUND_STATE.md",
+   "evidence/session/TRACKB_LESSONS.md",
+   "src/leakaudit/availability.py",
+   "src/leakaudit/cli.py",
+   "src/leakaudit/coverage.py",
+   "src/leakaudit/label_probe.py",
+   "src/leakaudit/reach.py",
+   "tests/conftest.py",
+   "tests/phase1/test_clean_tree.py",
+   "tests/phase1/test_coverage_budget.py",
+   "tests/phase1/test_default_sites.py",
+   "tests/phase1/test_epsilon_siblings.py",
+   "tests/phase1/test_lessons_classification.py",
+   "tests/phase1/test_slicing.py",
+   "tests/phase1/test_suite_tree.py",
+   "tests/phase1/test_tools_floor_coverage.py",
+   "tests/phase1/test_trackb_numbering.py",
+   "tools/certify_preconditions.py",
+   "tools/clean_tree.py",
+   "tools/suite_tree.py"
+  ],
+  "args": [
+   "tests"
+  ],
+  "full_suite": true,
+  "exitstatus": 1,
+  "counts": {
+   "failed": 1,
+   "passed": 1179,
+   "skipped": 4
+  }
+ }
+}

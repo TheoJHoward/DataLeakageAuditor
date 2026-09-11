@@ -127,6 +127,8 @@ class RawLabel:
 class LabelProbeResult:
     side: str
     n_cohorts: int
+    #: Cohorts the budget could have reached, post-stride. R267 §3(c).
+    n_eligible: int = 0
     detector: str = DETECTOR_ID
     cohorts: list = field(default_factory=list)
     determinism_ok: bool = True
@@ -346,6 +348,11 @@ def run_probe_l2a(raw, build, model, *, raw_label=None, label_availability=None,
     seconds = pd.Index(sorted(d.dt.floor("s").unique()))
     picked = seconds[::cohort_stride][:max_cohorts]
     res.n_cohorts = len(picked)
+    # R267 §3(c). How many cohorts the budget could have reached, so a reader
+    # can see what the budget cost. The stride's exclusions are not a shortfall
+    # -- they are the sampling this row was always going to do -- so the
+    # denominator is the post-stride set, before `max_cohorts` truncates it.
+    res.n_eligible = len(seconds[::cohort_stride])
     res.notes.append(
         "label availability: a(y) = %r + horizon %s + publication delay %s. "
         "All three are declared; none is inferred (PREREG.md section 2.4)."

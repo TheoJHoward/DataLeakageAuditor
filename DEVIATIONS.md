@@ -5439,3 +5439,126 @@ fails and the branch becomes live.
 case written for it. It does not establish that the case is the only one that
 reaches it, and for the two unreachable ones it establishes nothing about the
 probe beyond the check being correct in isolation.
+
+## D-V30A-108 — the builder's reach is measurable, and the project's own fixture sat thirty times under it
+
+**THE RESIDUAL TWO FEATURES SHARED WAS NOT A RESIDUAL.** D's padding and the
+stride floor both ended on the same sentence: *clearing the floor is not
+sufficiency, because the builder's lookback is not in the model.* It is not in
+the model and it **is in the behaviour**, which is the one thing this tool
+exists to read. Perturb one probed second `F` in a clean build, rebuild once,
+take the largest `d(i) - F` over every row that moved: that is how far a
+corruption propagates through this builder, and it needs no model at all.
+
+**ESTABLISHED AGAINST A KNOWN ANSWER BEFORE IT WAS BUILT.** Run on the slice
+fixture, whose rolling window is sixty seconds by construction, the measurement
+returns **59.5 s** — one rebuild per sampled second, the existing whole-output
+fingerprint, nothing band-limited. A measurement that could not recover a known
+lookback would not be a measurement whatever it printed.
+
+**CENSORING WAS FOUND BY THE MEASUREMENT RATHER THAN ANTICIPATED BY IT.** Three
+samples at quartiles returned 59.5 s, 44.5 s and 22.5 s, and the last two
+exactly equalled their distance to the final decision row: what stopped the
+propagation was the data running out, not the builder. Each sample is now marked
+censored on that test. Censoring only ever UNDER-reports, which is why the
+maximum stays a sound lower bound — and a run whose samples are *all* censored
+reports no reach at all rather than its largest censored number.
+
+**AND THEN IT FIRED ON THIS PROJECT.** The slice fixture probed at
+`cohort_stride=2`. That stride was not careless: R263 set it deliberately,
+reasoning from the DERIVED floor of `window + 1s` = 2 s, and documented why 1
+was wrong. **The builder it probes reaches 59.5 s.** The fixture cleared the
+model's floor by construction and sat thirty times under the quantity that
+actually binds, so its per-cohort attributions were interfering — the
+D-V30A-106 shape — and the pair's "30 findings" were thirty overlapping claims
+rather than thirty independent ones. The conclusion survives; the arithmetic
+behind it did not. The stride is the registered default now, and the pair
+carries ONE cohort, because a masked head is `LOOKBACK` wide and the reach is
+about `LOOKBACK`, so two cohorts can never both sit inside it and clear the
+separation.
+
+**Twenty-one tests across five files went red on the new control, and the first
+reading of that was wrong.** Most were not fixtures with bad strides: the reach
+measurement was perturbing **every** column including datetimes, which the probe
+does not, and it crashed on the first `released_at` it met. With the column set
+corrected to the probe's own — numeric, excluding the key — a per-row-map fixture
+measures **0.4 s** and its stride of 13 clears it comfortably. A control that
+measures a wider perturbation than the probe applies reports propagation the
+probe cannot cause.
+
+**ON THE ACCEPTANCE FIXTURE, MEASURED BEFORE THE GUARD RATHER THAN INSIDE IT:**
+reach **14 s**, three samples, none censored, all three agreeing exactly. The
+guard's stride of 997 gives a separation of 16 m 37 s and clears it by 16 m 23 s,
+so the control refuses nothing there. **§2(c)'s cost estimate was low**: a reach
+rebuild costs **83.9 s**, not the 34.6 s the delta assumed — that figure is the
+clean build, and a reach rebuild adds corruption and a fingerprint over 338,159
+rows. k=3 is **251.8 s**, four minutes rather than two.
+
+**C IS A BUDGET ON THE ROW THAT COSTS.** L3.1's cohorts are near-free; L2a
+rebuilds once per cohort. So the budget is L2a's cohort count, and its default
+is derived rather than picked: `(N + 1) x 34.9 s <= 600 s` gives `N <= 16`.
+**The shipped default was 25**, about 14.5 minutes — over the ten-minute target
+by half again, and nobody had written the arithmetic down to notice. The sum
+travels with the number so the next reader redoes it against their own build
+time instead of inheriting mine.
+
+**THE COVERAGE DENOMINATOR WAS WRONG ON THE FIRST ATTEMPT, AND THE WRONG VERSION
+WOULD HAVE BEEN INVISIBLE.** Counting every second as eligible made every run
+incomplete, because `cohort_stride` excludes most seconds — and the stride is the
+attribution requirement, not a budget. Seconds it excludes were never probeable,
+so counting them reported a shortfall no budget could close, and an incomplete
+class that fires on every run distinguishes nothing. The denominator is the
+separation-eligible set; the gap between the two numbers is exactly the budget's
+effect.
+
+**FOUR ANSWERS, EACH SHOWN.** Complete-and-silent `0`, finding `1`, refused `2`,
+nothing-probed `3`, and **INCOMPLETE-and-silent `4`**. A subsample that found
+nothing has said "nothing in the part I looked at", and collapsing that into the
+clean exit is the `none`-as-`observed_silence` mistake one level up. It maps to
+`0` only with `--accept-partial-coverage`, and the acceptance is printed beside
+the verdict. The same rule sits at the library door as `assert_audit_complete`,
+because a rule enforced at one of two entry points is a rule with a bypass.
+
+**THE SUITE NOW RECORDS WHICH TREE IT RAN ON.** D-V30A-102's remaining half: the
+step set said "on the committed tree" and nothing made that so. The suite writes
+HEAD and the clean status as it runs, and an enumerated step refuses when that
+is not HEAD now, or the tree was dirty, or the run was narrower than `tests`.
+
+**D16 NEEDS NO SLOT, AND THE REASON IS ORDERING.** `clean_tree` is step 1 and the
+gate is step 3, so a tree carrying an untracked file never reaches D16 — inside
+the checker's own domain the blind spot has no reachable instance. The count
+stays at **two of four**. §173 is untouched: it is about the repository tree in
+general, not about what D16 sees.
+
+**TB-25 WAS USED TWICE.** Two `## TB-25` headings stood in the lessons ledger,
+and **that is the count-in-prose defect inside the ledger of defect classes** —
+TB-25's own subject, and the second time this file has exhibited the class it
+documents. The later entry takes **TB-28**, nothing is renumbered, and no
+citation is rewritten: seven of the eight external citations mean the earlier
+entry and `DEVIATIONS.md` line 5408 means the later one, so reading by number
+alone would have gone wrong once and looked right seven times. A check now
+requires the headings to be unique and deliberately does NOT require contiguity,
+since a gap closed by renumbering is the outcome to prevent.
+
+**AND THREE MUTATION TESTS COULD NOT FAIL.** The lessons file's three
+total-declaration mutants held the literal `All **27** entries`. Adding TB-28
+made every one of them replace nothing, so they mutated a pristine file, watched
+it stay green, and reported that the assertion had stopped reddening. **Three
+can't-fail mutants, produced by a hard-coded count inside the tests that guard
+against hard-coded counts.** The swap is derived from the text now and asserts
+it changed something.
+
+**The +1 ns siblings: zero.** The class is a closed bound written as `< instant +
+one tick`, which a microsecond-resolution frame truncates back. Swept across
+every `.py` under `src`, `protocol` and `tools`: two hits, neither a member — a
+unit-formatting table, and a tick subtracted from a **duration** to pin a
+boundary from both sides. A test keeps the count at zero and requires any new hit
+to be read rather than pattern-matched.
+
+**R163 §1's exemption test.** *Would this change have been made if the triggering
+question had not been asked?* **The reach control, no** — both features had a
+sentence excusing the gap and the sentence read as a limit rather than a
+question. **The fixture's stride, no**: it was set deliberately one round
+earlier against the wrong bound, and nothing short of measuring would have
+disturbed it. **The TB collision and the three dead mutants, no** — both were
+found only because §4 asked whether the numbering was unique.

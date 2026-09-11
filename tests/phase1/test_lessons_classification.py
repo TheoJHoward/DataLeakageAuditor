@@ -187,12 +187,32 @@ def _mutate(fn, check):
         return True
 
 
+def _stated(t: str) -> str:
+    """The declaration as it currently reads, found rather than assumed.
+
+    R267: these mutants held the literal `All **27** entries`. Adding TB-28 made
+    every one of them replace nothing, so they mutated a pristine file, saw it
+    stay green, and reported that the assertion had stopped reddening. **Three
+    can't-fail mutation tests, produced by a hard-coded count inside the tests
+    that guard against hard-coded counts.** The number is read off the text now,
+    so the ledger can grow without disarming its own guard.
+    """
+    m = TOTAL_DECLARATION.search(t)
+    assert m, "no total declaration to mutate; the format changed"
+    return m.group(0)
+
+
+def _swap_total(t: str, new) -> str:
+    out = t.replace(_stated(t), "All **%s** entries" % new, 1)
+    assert out != t, "the mutation replaced nothing, so it mutates nothing"
+    return out
+
+
 def test_the_total_assertion_REDDENS_on_a_wrong_total_that_matches_an_ID():
     """**THE IMMUNE POSITIVE.** The stated total is wrong AND the wrong number
     is an existing entry label, so a bare-digit search finds it either way. This
     is the case both earlier repairs passed."""
-    assert _mutate(lambda t: t.replace("All **27** entries",
-                                       "All **25** entries", 1),
+    assert _mutate(lambda t: _swap_total(t, 25),
                    check_the_section_states_the_TOTAL), (
         "a wrong stated total coinciding with an entry id did NOT redden the "
         "assertion, which is the exact vacuity R246 was opened on")
@@ -202,19 +222,39 @@ def test_the_total_assertion_REDDENS_on_a_wrong_total_with_prose_digits():
     """Defeats the strip-the-labels repair: the true total appears in prose for
     an unrelated reason, so stripping labels does not save a search."""
     def mut(t):
-        t = t.replace("All **27** entries", "All **25** entries", 1)
+        true_total = declared_total(t.split(MARKER)[-1])
+        t = _swap_total(t, 25)
         return t.replace("**The rule for membership.**",
-                         "**The rule for membership.** (27 rounds sit behind "
-                         "this list.)", 1)
+                         "**The rule for membership.** (%d rounds sit behind "
+                         "this list.)" % true_total, 1)
     assert _mutate(mut, check_the_section_states_the_TOTAL)
 
 
 def test_the_total_assertion_REDDENS_when_the_declaration_is_MISSING():
-    assert _mutate(lambda t: t.replace("All **27** entries",
-                                       "All ** ** entries", 1),
+    assert _mutate(lambda t: _swap_total(t, " "),
                    check_the_section_states_the_TOTAL), (
         "with no declaration at all the assertion stayed green, so it is not "
         "checking that a total is stated")
+
+
+def test_THE_MUTANTS_ACTUALLY_MUTATE():
+    """The guard on the guard. R267.
+
+    `_swap_total` asserts it changed something, so a mutant that silently
+    replaced nothing now fails loudly instead of reporting a green check as a
+    broken one. This pins that the helper is wired to the live text.
+    """
+    real = _text()
+    assert _stated(real) != "All **25** entries"
+    assert "All **25** entries" in _swap_total(real, 25)
+    try:
+        _swap_total("no declaration here", 25)
+    except AssertionError:
+        pass
+    else:                                                    # pragma: no cover
+        raise AssertionError("a mutation that replaces nothing must not pass "
+                             "silently -- that is what produced three "
+                             "can't-fail mutants at R267")
 
 
 def test_the_total_assertion_REDDENS_on_a_DUPLICATED_declaration():

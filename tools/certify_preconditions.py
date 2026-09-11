@@ -74,6 +74,12 @@ STEPS = (
     ("py -3.12 -m pytest tests",
      "always",
      "the suite, on the committed tree"),
+    ("py -3.12 tools/suite_tree.py",
+     "always",
+     "the suite ran on THIS tree. It records HEAD and the clean status as it "
+     "runs; this refuses when that is not HEAD now, or the tree was dirty, or "
+     "the run was narrower than `tests`. Without it, `on the committed tree` "
+     "above was an ordering somebody remembered (R267 §1.1, D-V30A-102)"),
     ("LEAKAUDIT_FIXTURE=1 py -3.12 tools/wholeframe_guard.py",
      "when a probe-path file moved",
      "the whole-frame path is byte-for-byte the committed population run. "

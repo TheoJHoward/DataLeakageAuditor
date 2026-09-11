@@ -82,6 +82,34 @@ CLASSIFICATION = {
     # padding declared -- is carried by `NOT_DECLARED` on the INPUT side, where
     # a caller can be in it.
     "availability.py::param::__init__(slice_plan=)": (NA, "result carrier field"),
+    # R267 §2. Result carrier fields for the reach control, and the input that
+    # chooses how many samples it takes.
+    "availability.py::param::__init__(reach=)": (NA, "result carrier field"),
+    "availability.py::param::__init__(min_separation=)": (NA, "result carrier field"),
+    # `reach_samples=None` resolves to DEFAULT_SAMPLES, which is a COST choice
+    # and is printed as one in the run's note -- the same shape as the stride's
+    # printed default. It is legitimate because the alternative, refusing until
+    # a caller names a sample count, would make every audit carry a number
+    # nobody has a basis to choose; and `0` is accepted as an explicit
+    # declaration that no measurement was made, which the note then says.
+    "availability.py::param::run_probe_a(reach_samples=)":
+        (L, "resolves to a printed default sample count; 0 is a declared "
+            "refusal to measure and the run says so"),
+    "reach.py::param::__init__(reach=)": (NA, "result carrier field"),
+    "reach.py::param::__init__(samples=)": (NA, "result carrier field"),
+    "reach.py::param::__init__(censored=)": (NA, "result carrier field"),
+    "reach.py::param::__init__(note=)": (NA, "result carrier field"),
+    "reach.py::param::__init__(to_frame_end=)": (NA, "result carrier field"),
+    "reach.py::param::__init__(seed=)": (NA, "result carrier field"),
+    # R267 §3(b). The build time the L2a budget's default is derived from. It
+    # is a MEASURED constant (34.9 s on the acceptance fixture) and the function
+    # prints the arithmetic it feeds, so a caller with a different build time
+    # can pass theirs and see the sum redone rather than inheriting the number.
+    "coverage.py::param::budget_arithmetic(build_seconds=)":
+        (L, "a measured constant, printed inside the arithmetic it produces"),
+    "coverage.py::param::budget_arithmetic(n=)":
+        (L, "the budget in force, defaulting to the derived default"),
+    "label_probe.py::param::__init__(n_eligible=)": (NA, "result carrier field"),
     "availability.py::param::__init__(context_seconds=)": (NA, "result carrier field"),
     # R261 §1(b). Result carrier field, and `False` is a MEASURED state rather
     # than an unanswered question: the run compares the derived separation

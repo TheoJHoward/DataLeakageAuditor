@@ -1050,6 +1050,13 @@ exemption is recorded rather than left as silence.
 
 ## TB-25 — *(5 September 2026)* The document about a defect class is where the class appears
 
+> **NUMBERING NOTE (R267 §4).** A second entry was later published under this
+> same number and has been given **TB-28**; the disambiguation, including which
+> existing citations mean which entry, is recorded there. **This entry keeps
+> `TB-25` and none of its citations move.** Noted here as well as there because
+> a reader arriving at this heading is exactly the reader who needs to know a
+> collision existed.
+
 **Four instances this cycle, one mechanism, and the population is enumerable —
 which makes this the first Track B entry whose siblings line can be a list of
 places to look rather than a list of things already found.**
@@ -1238,7 +1245,7 @@ share are the vocabulary the whole project is written in — *population*, *sile
 separated TB-19 from TB-12, which are the same lesson one layer apart. Grouping by
 shared vocabulary in a corpus with one vocabulary is grouping by nothing.
 
-**The rule for membership.** All **27** entries are in **exactly
+**The rule for membership.** All **28** entries are in **exactly
 one** family, and the families **jointly cover** every one of them — the same
 totality shape the probe path set and the config-key complement use, and for the
 same reason: a classification with an unassigned entry has not classified
@@ -1347,7 +1354,7 @@ which fails during an investigation.
 
 *The positive fires, and the firing establishes less than it appears to.*
 
-**Members: TB-12, TB-15, TB-19, TB-24.**
+**Members: TB-12, TB-15, TB-19, TB-24, TB-28.**
 
 - **TB-12** — a known positive tests the premise, not only the code.
 - **TB-15** — the wrong prediction is the one that pays; a correct one would have
@@ -1356,6 +1363,17 @@ which fails during an investigation.
   the discriminating case is often a negative.
 - **TB-24** — a benchmark whose baseline does not move is measuring nothing,
   and it will still return a number.
+- **TB-28** — a check shipped without a positive passes while the property it
+  guards fails.
+
+**TB-28 is the family's limiting case**, and it belongs here rather than in F4:
+an instrument that cannot be run as written fails loudly, while a check with no
+positive runs, returns, and returns *pass*. TB-19 says a positive every wrong
+instrument fires on establishes nothing; TB-24 says a measurement whose baseline
+never moves reports nothing; TB-28 says a check that has **never been run against
+a violation** is an assertion about the condition rather than a test of it — the
+degenerate end of the same axis, where the number of discriminating cases is
+zero.
 
 **TB-24 extends F3 from controls to MEASUREMENTS**, and the extension is what
 makes the family's name too narrow rather than wrong. TB-12, TB-15 and TB-19 ask
@@ -1371,7 +1389,29 @@ separates the instrument built from the instrument nearly built. TB-15 is the sa
 question turned on a prediction rather than a test: a prediction that comes true
 distinguishes nothing, and its value was entirely in being falsifiable.
 
-## TB-25 — a check shipped without a positive passes while the property it guards fails
+## TB-28 — a check shipped without a positive passes while the property it guards fails
+
+> **NUMBERING NOTE — this entry was published as `TB-25`, and `TB-25` was
+> already taken.** R267 §4 asked whether the numbering is unique. It was not:
+> two `## TB-25` headings stood in this file — the 5 September entry above
+> (*the document about a defect class is where the class appears*) and this one.
+> **That is the count-in-prose defect, in the ledger that records defect
+> classes**, which is TB-25's own subject and the second time this file has
+> exhibited the class it documents (the first is recorded at TB-21).
+>
+> **The fix is the next free number with a note, never a renumbering.** TB-01
+> through TB-27 are otherwise contiguous with no gaps, so this entry takes
+> **TB-28**. Nothing above is renumbered and no existing citation is rewritten —
+> in particular `DEVIATIONS.md` is append-only, so its lines stand as written.
+>
+> **How to read a pre-R267 "TB-25", by subject rather than by number:** a
+> citation about *where a defect class is documented* means the 5 September
+> entry; one about *checks that never fired* means this one. Enumerated:
+> `DEVIATIONS.md` lines 2786, 3866, 3906 and all of
+> `DEFECT_CLASS_DOCUMENT_SWEEP.md` mean the earlier entry;
+> **`DEVIATIONS.md` line 5408 — "TB-25 measured six refusals across the two
+> probes" — means THIS one.** One citation of eight, which is why reading by
+> number alone would have gone wrong once and looked fine seven times.
 
 *A check that has never been run against a violation is an assertion about the
 condition, not a test of it — and it will keep passing.*

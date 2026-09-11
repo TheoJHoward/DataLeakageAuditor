@@ -19,11 +19,13 @@
     "src/leakaudit/availability_trace.py",
     "src/leakaudit/fixture_adapter.py",
     "src/leakaudit/modes.py",
+    "src/leakaudit/reach.py",
     "src/leakaudit/slicing.py"
   ],
   "path_set_reasons": {
     "src/leakaudit/availability.py": "both probe paths, and the reported-figures path",
     "src/leakaudit/modes.py": "the per-column path only",
+    "src/leakaudit/reach.py": "ADDED R267, and UNLIKE slicing.py this one the trace can confirm. `run_probe_a` calls `measure_reach` on EVERY run -- the control runs before the probes by default, k=3 -- so it executes on runs A-D and the staleness trigger sees it. It also REFUSES: a separation or padding at or below the measured reach halts the run, so an edit here can turn a passing audit into a refusal without touching a comparator.",
     "src/leakaudit/slicing.py": "ADDED R255, BY JUDGMENT AND NOT BY THE TRACE. `run_probe_a` imports and calls it when `slice_from` is given, so an edit here CAN move a probe result through `run_probe_a` -- which is the definition `not_on_the_path` denies, so it cannot go there. It is reached on the SLICE path only: runs A-D pass no slice, the import is lazy inside the branch, and no reported Phase 1 figure was produced under a slice. So a re-measurement with the existing runs would not list it, and listing it is the conservative call rather than a measured one.",
     "src/leakaudit/availability_trace.py": "the reported-figures path",
     "protocol/runtime_reference.py": "the frozen reducer, on the reported-figures path",
@@ -36,6 +38,7 @@
     "RESOLVED 2026-09-03": "This block listed `src/leakaudit/fixture_adapter.py` as belonging to the rule by reasoning, with the stated reason that the measuring runs supplied frames directly so the instrument was never going to see it. The staleness trigger's FIRST FIRING, on the R216 guard run against the real fixture, executed it and the fixture's two producing modules and named all three. The judgment was right and is now a measurement. Kept rather than deleted because it records that the trigger CONFIRMED a prediction rather than finding something nobody had considered -- which is the difference between a check that works and a check that got lucky."
   },
   "not_on_the_path": [
+    "src/leakaudit/coverage.py",
     "src/leakaudit/__init__.py",
     "src/leakaudit/checks.py",
     "src/leakaudit/cli.py",

@@ -131,12 +131,36 @@ MODEL = AvailabilityModel(aggregate_frames={"agg": "k"}, decision_column="d")
 #: fixture would not run at 1; it is set to the floor rather than moved past.
 #: The pair below still holds its cohorts fixed across both halves, which is
 #: what it exists to do.
-STRIDE = 2
+#: **AND STRIDE 2 WAS STILL THIRTY TIMES TOO SMALL.** R267 §2. The reasoning
+#: above is sound and its input was the DERIVED floor — `window + 1s` = 2s, the
+#: span over which a perturbed cell's availability instant can be observed. The
+#: measured reach of this builder is **59.5 seconds**: a corruption of one second
+#: moves rows up to sixty seconds later, because the rolling window is sixty
+#: wide. The model's arithmetic knew nothing about that, and could not.
+#:
+#: This fixture is therefore the project's own instance of the sentence two
+#: features carried: clearing the floor is not sufficiency. It cleared the floor
+#: by construction and sat thirty times under the quantity that actually binds.
+#: The stride is now the registered default, which exceeds the measurement.
+STRIDE = 97
 
 
-def _probe(frames, **kw):
+def _probe(frames, max_cohorts=400, **kw):
     return run_probe_a(frames, _leaky_build, MODEL, side="test",
-                       cohort_stride=STRIDE, max_cohorts=400, **kw)
+                       cohort_stride=STRIDE, max_cohorts=max_cohorts, **kw)
+
+
+def _probe_one(frames, **kw):
+    """One cohort, at the head of the probed range.
+
+    THE PAIR CANNOT CARRY MORE THAN ONE, and that is arithmetic rather than
+    convenience: the masked head is exactly `LOOKBACK` wide and the reach is
+    about `LOOKBACK`, so two cohorts cannot both sit inside the masked region
+    AND be separated by more than the reach. One cohort makes the attribution
+    unambiguous, which is what a pair needs in any case — the old thirty were
+    thirty overlapping claims, not thirty independent ones.
+    """
+    return _probe(frames, max_cohorts=1, **kw)
 
 
 # --------------------------------------------------------------------------
@@ -154,7 +178,7 @@ def test_WITHOUT_padding_the_edge_leak_is_MASKED():
     a caller who truncates before calling is indistinguishable from one whose
     data starts late.
     """
-    res = _probe(_truncate(_full(), SLICE_AT))
+    res = _probe_one(_truncate(_full(), SLICE_AT))
     probed = {c.second for c in res.cohorts}
     assert probed, "the run must actually probe, or the silence proves nothing"
     # THE MISS IS UNCHANGED AND WHAT THE TOOL CLAIMS ABOUT IT IS NOT. R262 §2.
@@ -179,7 +203,7 @@ def test_WITHOUT_padding_the_edge_leak_is_MASKED():
 
 def test_WITH_padding_the_SAME_cohorts_find_the_leak():
     """The same frame uncut, the same builder, padding declared. Found."""
-    res = _probe(_full(), slice_from=SLICE_AT,
+    res = _probe_one(_full(), slice_from=SLICE_AT,
                  padding=pd.Timedelta(seconds=LOOKBACK))
     assert res.findings, (
         "the leak at the head of the slice is present in the data and the "
@@ -207,8 +231,8 @@ def test_the_pair_IS_ONE_FRAME_cut_two_ways():
         "the cut frame must be a SUFFIX of the full one, not a rebuild")
     assert cut["agg"]["k"].tolist() == tail["k"].tolist()
 
-    bare = _probe(cut)
-    padded = _probe(full, slice_from=SLICE_AT,
+    bare = _probe_one(cut)
+    padded = _probe_one(full, slice_from=SLICE_AT,
                     padding=pd.Timedelta(seconds=LOOKBACK))
     assert {c.second for c in bare.cohorts} == {c.second for c in padded.cohorts}
     # And the halves genuinely disagree, or the pair shows nothing. The bare

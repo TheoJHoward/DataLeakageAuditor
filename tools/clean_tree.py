@@ -50,6 +50,16 @@ REPO = pathlib.Path(__file__).resolve().parents[1]
 #: Paths whose presence is not uncommitted work.
 IGNORED_PREFIXES = (".claude/",)
 
+#: EXACT PATHS, not prefixes, and the difference is deliberate: a prefix hides
+#: whatever grows under it, and this list exists for files a certification step
+#: writes as it runs. `tools/suite_tree_record.json` is written by the suite
+#: (R267 §1.1) to record which tree it measured; the suite is step 5, so by the
+#: time it writes, this tool has already passed. Left un-ignored it would make
+#: every round's tree dirty after its own suite and there would be no clean
+#: tree to certify against ever again. The file is still TRACKED -- the point of
+#: it is that a reader can see which tree the shipped suite result came from.
+IGNORED_EXACT = ("tools/suite_tree_record.json",)
+
 
 class TreeUnreadable(Exception):
     """git could not be asked, so nothing here is a result."""
@@ -71,6 +81,8 @@ def entries(repo: pathlib.Path = None) -> list:
             continue
         path = line[3:].strip().strip('"')
         if any(path.startswith(p) for p in IGNORED_PREFIXES):
+            continue
+        if path in IGNORED_EXACT:
             continue
         out.append(line.rstrip())
     return out
