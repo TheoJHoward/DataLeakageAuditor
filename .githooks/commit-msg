@@ -1,0 +1,17 @@
+#!/bin/sh
+# commit-msg -- R268 section 1. Refuses a commit message that did not come through
+# tools/safe_edit.commit. The rule and the trailer live in Python, in ONE place;
+# this file only finds them.
+#
+# It locates the tool from its OWN path, not from the repository root, so any
+# checkout whose core.hooksPath points here runs the same check.
+#
+# It FAILS CLOSED. If no Python can be run, or the tool cannot be found, the
+# final exec fails and git sees a non-zero exit, so the commit is refused rather
+# than waved through. A hook that cannot see is not a hook that passes.
+hookdir=$(cd "$(dirname "$0")" && pwd) || exit 1
+tool="$hookdir/../tools/commit_msg_hook.py"
+if command -v py >/dev/null 2>&1; then
+    exec py -3.12 "$tool" "$1"
+fi
+exec python3 "$tool" "$1"

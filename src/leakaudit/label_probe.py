@@ -51,6 +51,7 @@ from dataclasses import dataclass, field
 import numpy as np
 import pandas as pd
 
+from .coverage import DEFAULT_L2A_COHORTS
 from .availability import (CohortResult, ProbeError, align_key,
                            classify_cohorts, require_decision_column,
                            silence_note)
@@ -298,7 +299,7 @@ def resolve_label_declaration(raw_label, label_availability, *, where: str,
 
 def run_probe_l2a(raw, build, model, *, raw_label=None, label_availability=None,
                   side: str = "user", cohort_stride: int = 97,
-                  max_cohorts: int = 25, seed: int = 20260828,
+                  max_cohorts: int = DEFAULT_L2A_COHORTS, seed: int = 20260828,
                   has_timestamp: bool = True) -> LabelProbeResult:
     """Corrupt the label cells unavailable at each probed cohort, one at a time.
 
@@ -348,11 +349,12 @@ def run_probe_l2a(raw, build, model, *, raw_label=None, label_availability=None,
     seconds = pd.Index(sorted(d.dt.floor("s").unique()))
     picked = seconds[::cohort_stride][:max_cohorts]
     res.n_cohorts = len(picked)
-    # R267 §3(c). How many cohorts the budget could have reached, so a reader
-    # can see what the budget cost. The stride's exclusions are not a shortfall
-    # -- they are the sampling this row was always going to do -- so the
-    # denominator is the post-stride set, before `max_cohorts` truncates it.
-    res.n_eligible = len(seconds[::cohort_stride])
+    # R268 §3(a). EVERY decision second this row could probe, independent of
+    # stride and budget. R267 used the post-stride set and called the stride's
+    # exclusions "the sampling this row was always going to do"; that made a
+    # sampled run read as complete. Complete for L2a is every eligible cohort at
+    # a build each, so that is the denominator.
+    res.n_eligible = len(seconds)
     res.notes.append(
         "label availability: a(y) = %r + horizon %s + publication delay %s. "
         "All three are declared; none is inferred (PREREG.md section 2.4)."

@@ -19,6 +19,10 @@ moved or they did not.
   * THE SAME PERTURBATION THE PROBE APPLIES. `perturb_cells` is imported rather
     than reimplemented; a weaker perturbation would under-report on exactly the
     integer and boolean columns its branches exist for.
+  * THE SAME COLUMN SET THE PROBE PERTURBS: numeric, excluding the key. The first
+    version took every column, handed a datetime to the float branch and crashed;
+    and a control perturbing a WIDER set than the probe reports propagation the
+    probe cannot cause, so it would refuse strides that are safe.
 
 WHAT k SAMPLES ESTABLISH, AND WHAT THEY DO NOT. The result is a **lower bound**
 on reach and is reported as one. A path through the builder that no sampled

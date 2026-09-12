@@ -724,3 +724,37 @@ removed.
 written when the cost model was drawn, and striking it would leave a reader of
 the old text with no account of why it is gone. It stands with this note against
 it, which is the same treatment §10's own placement note gets.
+
+### 10.8 §5.2's "`quick` run treated as complete", overridden
+
+**PLACED HERE FOR §10's REASON AGAIN.** §5.2 sits above the registered line-pinned
+citation at line 546, so a note beside it would move that line.
+
+**§5.2 says a `quick` run is the CI default, "not a degraded option", and that
+`assert_audit_complete()` treats it as complete** — cohort coverage not being
+detector coverage. The second half still holds. The first half is overridden by
+two rulings, and they are recorded here so a reader of §5.2 is not misled:
+
+* **R267 §3: `quick` is a budget, not a mode.** L2a rebuilds once per cohort, so
+  its budget is a cohort count; L3.1 batches, so a mode dialling both was trading
+  coverage for nothing.
+* **R268 §3: a subsampled run is INCOMPLETE and says so.** The coverage
+  denominator is every cohort the declared model makes probe-able, independent of
+  stride and budget. A default L3.1 run at stride 97 probes one second in
+  ninety-seven, so its silence is about that subsample, and it exits in its own
+  class — `EXIT_INCOMPLETE_SILENT` — rather than the clean exit.
+  `assert_audit_complete` raises on it. The only routes to a clean exit are a
+  **declared** acceptance of partial coverage, printed beside the verdict, or a
+  **complete** run: for L3.1, `stride` passes at different offsets (§3(d)); for
+  L2a, every eligible cohort. Whether the L3.1 complete run was built at R268 is
+  recorded in D-V30A-109 with its measured cost.
+
+**The coverage table §5.2 describes as two numbers is three states** — probed,
+eligible but unprobed, ineligible under the model — for cohorts and for rows, so a
+run complete over thirteen probed cohorts cannot read as covering every row.
+
+**Why "treated as complete" was the wrong half.** A note beside a clean exit is
+one shade from a pass (R220 §4); an exit code is not. §5.2's sentence made the
+CI default and a complete audit indistinguishable to the thing a CI system reads.
+This file is revisable and the ruling governs; the sentence stands with this note
+against it, as §10.7's does.

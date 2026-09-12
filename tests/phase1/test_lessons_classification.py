@@ -260,9 +260,14 @@ def test_THE_MUTANTS_ACTUALLY_MUTATE():
 def test_the_total_assertion_REDDENS_on_a_DUPLICATED_declaration():
     """Ambiguity is a failure, not something to resolve by taking the first.
     R245 created exactly this by quoting the declaration in prose."""
+    # The restated declaration is READ OFF THE TEXT, not typed. R268 §5: this
+    # was the fourth mutant holding `All **27** entries` and R267 fixed the other
+    # three. It still reddened -- two declarations raise whatever they say -- so
+    # it was not dead, but a count typed into a count guard is the defect this
+    # file exists to catch, and it would have gone stale on the next entry.
     assert _mutate(lambda t: t.replace(
         "**The rule for membership.**",
-        "**The rule for membership.** (Restated: All **27** entries.)", 1),
+        "**The rule for membership.** (Restated: %s.)" % _stated(t), 1),
         check_the_section_states_the_TOTAL)
 
 

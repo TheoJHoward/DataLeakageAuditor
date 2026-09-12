@@ -1,35 +1,34 @@
 {
  "what": "Which tree the last `pytest tests` run measured. Written by tests/conftest.py at session finish, never by hand (R267 section 1.1). `tools/suite_tree.py` refuses certification when this does not describe HEAD and a clean tree.",
  "last": {
-  "when": "2026-09-10 17:28",
-  "commit": "3232931",
+  "when": "2026-09-12 13:18",
+  "commit": "1a16f53",
   "clean": false,
   "dirty_paths": [
-   "ESIGN.md",
-   "NEXT_REGISTRATION_REQUIREMENTS.md",
-   "evidence/MANIFEST.sha256",
+   ".githooks/commit-msg",
+   "DESIGN.md",
+   "OPERATING_RULES.md",
    "evidence/session/COVERAGE_ASSERTION_POPULATION.json",
-   "evidence/session/PROBE_PATH_SET.json",
-   "evidence/session/ROUND_STATE.md",
-   "evidence/session/TRACKB_LESSONS.md",
+   "evidence/session/FEATURE_BACKLOG.md",
    "src/leakaudit/availability.py",
    "src/leakaudit/cli.py",
    "src/leakaudit/coverage.py",
    "src/leakaudit/label_probe.py",
    "src/leakaudit/reach.py",
-   "tests/conftest.py",
-   "tests/phase1/test_clean_tree.py",
+   "tests/phase1/test_certify_preconditions.py",
+   "tests/phase1/test_commit_msg_hook.py",
+   "tests/phase1/test_complete_run.py",
    "tests/phase1/test_coverage_budget.py",
+   "tests/phase1/test_decision_clock_consumers.py",
+   "tests/phase1/test_decision_column_required.py",
    "tests/phase1/test_default_sites.py",
-   "tests/phase1/test_epsilon_siblings.py",
+   "tests/phase1/test_guard_reach_reported.py",
    "tests/phase1/test_lessons_classification.py",
-   "tests/phase1/test_slicing.py",
-   "tests/phase1/test_suite_tree.py",
    "tests/phase1/test_tools_floor_coverage.py",
-   "tests/phase1/test_trackb_numbering.py",
    "tools/certify_preconditions.py",
-   "tools/clean_tree.py",
-   "tools/suite_tree.py"
+   "tools/commit_msg_hook.py",
+   "tools/safe_edit.py",
+   "tools/wholeframe_guard.py"
   ],
   "args": [
    "tests"
@@ -37,8 +36,8 @@
   "full_suite": true,
   "exitstatus": 1,
   "counts": {
-   "failed": 1,
-   "passed": 1179,
+   "failed": 3,
+   "passed": 1217,
    "skipped": 4
   }
  }

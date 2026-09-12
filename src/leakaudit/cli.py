@@ -215,6 +215,17 @@ def build_parser() -> argparse.ArgumentParser:
                           "target, printed with its arithmetic. L3.1 has no "
                           "such budget: its cohorts are near-free and it always "
                           "probes every eligible one")
+    run.add_argument("--complete", action="store_true",
+                     help="probe EVERY eligible cohort. L3.1 batches, so one "
+                          "pass can only probe seconds further apart than the "
+                          "builder's measured reach; a complete run is that "
+                          "many passes at different offsets, each its own "
+                          "rebuild, and L2a probes every eligible cohort at a "
+                          "build each. The pass count and its cost are printed "
+                          "before the verdict. Named --complete rather than "
+                          "DESIGN.md's `full`, because `full` was a MODE that "
+                          "also switched reach refinement on, and R267 ruled "
+                          "there are no modes")
     run.add_argument("--accept-partial-coverage", action="store_true",
                      help="treat an INCOMPLETE-and-silent run as clean. Without "
                           "this, a run that probed a subsample and found "
@@ -279,8 +290,94 @@ def _run_checks(frames, build, model_path):
     return EXIT_OK_SILENT
 
 
+def _probe_complete(frames, build, model, config, stride, slice_from, padding):
+    """A COMPLETE L3.1 run: every eligible cohort, in passes. R268 §3(d).
+
+    WHY PASSES. L3.1 is cheap per cohort because one rebuild serves a whole
+    batch -- and a batch can only hold seconds further apart than the builder's
+    reach, or one cohort's corruption contaminates the next one's finding
+    region. So one pass probes one second in `stride`, and probing every second
+    takes `stride` passes at offsets 0..stride-1, each its own rebuild.
+
+    THE STRIDE COMES FROM THE MEASUREMENT when none is declared: the measured
+    reach plus the one second the selection floors away, and never below the
+    derived floor. On the acceptance fixture that is 14 s -> stride 15 -> 15
+    passes, measured at R268 as 202.0 s a pass and 54.7 min for the run.
+
+    ONE REACH MEASUREMENT. The first call corrupts nothing -- `max_cohorts=0`
+    returns after the baseline, the determinism check and the reach control,
+    which is exactly what a stride needs -- and every pass then shares that
+    measurement, so the separation refusal still checks each pass against it.
+
+    Returns (combined result, the pass-budget note). The combined result is pass
+    0 with every later pass's cohorts appended: `verdict()`, `findings` and
+    `liveness` all read the cohort list, so aggregation needs no second
+    implementation of any of them.
+    """
+    from .availability import (DEFAULT_STRIDE, NOT_DECLARED,
+                               STRIDE_NOT_DECLARED, run_probe_a, stride_floor)
+    import math
+
+    common = dict(column_modes=config.column_modes or None,
+                  bar_duration=config.bar_duration, slice_from=slice_from,
+                  padding=NOT_DECLARED if padding is None else padding)
+    probe0 = run_probe_a(frames, build, model, side="user",
+                         cohort_stride=(STRIDE_NOT_DECLARED if stride is None
+                                        else stride),
+                         max_cohorts=0, **common)
+    if not probe0.determinism_ok:
+        return probe0, ("COMPLETE RUN NOT MADE: the builder is not "
+                        "deterministic across two clean builds, so no pass "
+                        "could attribute anything.")
+
+    floor_s = int(math.ceil(
+        stride_floor(model, config.column_modes or None).total_seconds()))
+    measured = getattr(probe0.reach, "measured", None)
+    if stride is not None:
+        S = int(stride)
+        basis = "the DECLARED stride %d" % S
+    elif measured is not None:
+        from_reach = int(measured.total_seconds()) + 1
+        S = max(from_reach, floor_s)
+        basis = ("the MEASURED reach %s plus the one second the selection "
+                 "floors away (%d), not below the derived floor of %d s"
+                 % (measured, from_reach, floor_s))
+    else:
+        S = DEFAULT_STRIDE
+        basis = ("the DEFAULT stride %d, because the reach could not be "
+                 "measured on this data (see its note) -- so completeness costs "
+                 "%d passes rather than a number derived from this builder"
+                 % (DEFAULT_STRIDE, DEFAULT_STRIDE))
+
+    combined = None
+    for offset in range(S):
+        r = run_probe_a(frames, build, model, side="user", cohort_stride=S,
+                        max_cohorts=10 ** 9, cohort_offset=offset,
+                        reach=probe0.reach, **common)
+        if combined is None:
+            combined = r
+            continue
+        combined.cohorts.extend(r.cohorts)
+        combined.n_cohorts += r.n_cohorts
+        combined.cells_perturbed += r.cells_perturbed
+        combined.determinism_ok = combined.determinism_ok and r.determinism_ok
+        # Nothing a later pass says is dropped. Notes identical to pass 0's are
+        # not repeated; the rest carry their pass, so a band row or an
+        # attribution note from pass 9 is still on the page.
+        for note in r.notes:
+            if note not in combined.notes:
+                combined.notes.append("[pass %d of %d] %s" % (offset + 1, S, note))
+
+    note = ("COMPLETE RUN (R268 section 3(d)): %d pass(es) at stride %d, offsets "
+            "0..%d, each its own rebuild; stride from %s. One reach measurement "
+            "shared by every pass. L3.1 PASS BUDGET: %d of %d."
+            % (S, S, S - 1, basis, S, S))
+    return combined, note
+
+
 def _run_availability(frames, build, model_path, stride, max_cohorts,
-                      slice_from=None, padding=None, label_cohorts=None):
+                      slice_from=None, padding=None, label_cohorts=None,
+                      complete=False):
     """The availability probe, end to end, from a declared model file."""
     from .coverage import DEFAULT_L2A_COHORTS, budget_arithmetic
     label_cohorts = (DEFAULT_L2A_COHORTS if label_cohorts is None
@@ -329,13 +426,19 @@ def _run_availability(frames, build, model_path, stride, max_cohorts,
     # `None` from argparse means the flag was omitted; the sentinel carries that
     # state into the one place the rule lives. R265 §2.
     from .availability import DEFAULT_STRIDE, STRIDE_NOT_DECLARED
-    stride = STRIDE_NOT_DECLARED if stride is None else stride
-    result = run_probe_a(frames, build, model, side="user",
-                         cohort_stride=stride, max_cohorts=max_cohorts,
-                         column_modes=config.column_modes or None,
-                         bar_duration=config.bar_duration,
-                         slice_from=slice_from,
-                         padding=NOT_DECLARED if padding is None else padding)
+    pass_note = None
+    if complete:
+        # R268 §3(d). Every eligible cohort, in passes. See `_probe_complete`.
+        result, pass_note = _probe_complete(frames, build, model, config,
+                                            stride, slice_from, padding)
+    else:
+        stride = STRIDE_NOT_DECLARED if stride is None else stride
+        result = run_probe_a(frames, build, model, side="user",
+                             cohort_stride=stride, max_cohorts=max_cohorts,
+                             column_modes=config.column_modes or None,
+                             bar_duration=config.bar_duration,
+                             slice_from=slice_from,
+                             padding=NOT_DECLARED if padding is None else padding)
     # L2a RUNS ON THIS PATH TOO, AND IT JOINS THE LIBRARY ENTRY AT
     # `run_probe_l2a`. R261 §4. The refusal for a partial or malformed
     # declaration lives in `resolve_label_declaration`, which both entries
@@ -350,9 +453,14 @@ def _run_availability(frames, build, model_path, stride, max_cohorts,
         # floor has nothing to protect here: its stride is a sampling choice
         # only. An omitted flag takes the same shipped default the availability
         # probe takes, so the two rows probe the same seconds by default.
-        cohort_stride=(DEFAULT_STRIDE if stride is STRIDE_NOT_DECLARED
+        # COMPLETE FOR L2a is every eligible cohort at a build each, R268
+        # §3(d): stride 1 and no cap. Otherwise the shipped default stride and
+        # the budgeted cohort count. `stride` is still None on the complete path,
+        # which never resolved it to the sentinel, so both are handled.
+        cohort_stride=(1 if complete else
+                       DEFAULT_STRIDE if stride in (None, STRIDE_NOT_DECLARED)
                        else stride),
-        max_cohorts=label_cohorts)
+        max_cohorts=(10 ** 9 if complete else label_cohorts))
     # Eligibility is derived, not assumed: a second no aggregate frame carries a
     # row in has nothing to corrupt, and scheduling it would report a dead
     # process where the truth is an empty probe surface.
@@ -381,7 +489,14 @@ def _run_availability(frames, build, model_path, stride, max_cohorts,
     # This line re-derives the probed seconds, so it needs the same stride the
     # probe used; reading the raw argument would resolve the sentinel a second
     # time and the two could disagree the moment the rule changes.
-    picked = _secs[::result.resolved_stride][:max_cohorts]
+    # A COMPLETE RUN PROBED EVERY SECOND, across its passes. R268 §3(d). Offsets
+    # 0..S-1 at stride S cover `_secs` exactly once by construction, and
+    # `test_the_OFFSETS_between_them_probe_EVERY_second_EXACTLY_ONCE` pins it,
+    # so the set is taken whole rather than re-derived pass by pass.
+    if complete:
+        picked = list(_secs)
+    else:
+        picked = _secs[::result.resolved_stride][:max_cohorts]
     elig = eligible_cohorts(frames, model, picked,
                             pd.to_datetime(built[dcol]))
 
@@ -389,25 +504,36 @@ def _run_availability(frames, build, model_path, stride, max_cohorts,
     # are the POPULATION of every silence this run prints, which is why they are
     # computed from the same `_secs`/`picked` the probe used rather than from a
     # count carried along beside them.
-    # THE DENOMINATOR IS THE SEPARATION-ELIGIBLE SET, NOT EVERY SECOND, and
-    # getting that wrong made every run incomplete on the first attempt.
-    # `cohort_stride` is not a budget: it is the attribution requirement, the
-    # separation below which one cohort's corruption contaminates its
-    # neighbour's finding region. Seconds the stride excludes were never
-    # probeable, so counting them as unprobed coverage would report a shortfall
-    # no budget could ever close and make the incomplete class meaningless.
-    # What CAN fall short is `max_cohorts`, which is the budget, so the gap
-    # between these two numbers is exactly the budget's effect.
+    # THE DENOMINATOR, WHICH HAS NOW BEEN SET TWICE. R267 made it the
+    # separation-eligible set, `_secs[::stride]`, so a default run read as
+    # complete over its thirteen probed cohorts. R268 §3 ruled that wrong: at
+    # stride 97 a default run probes one second in ninety-seven, its silence is
+    # incomplete, and saying so in the exit code is the distinction the class
+    # exists to draw. So the denominator is every cohort the DECLARED MODEL makes
+    # probe-able, independent of stride and budget, and each decision second is
+    # placed in exactly one of three states (see `Coverage`). Eligibility is
+    # the same `eligible_cohorts` the table below already uses, run over every
+    # second rather than the picked ones.
     from .coverage import Coverage
     _floors = pd.to_datetime(built[dcol]).dt.floor("s")
-    _separable = _secs[::result.resolved_stride]
+    _universe = set(_secs)
+    _E = set(eligible_cohorts(frames, model, _secs,
+                              pd.to_datetime(built[dcol])).eligible)
+    _P = set(picked) & _E
+    _U = _E - _P
+    _I = _universe - _E
+    _in_universe = _floors.isin(_universe)
     coverage = Coverage(
-        cohorts_probed=len(picked),
-        cohorts_eligible=len(_separable),
-        rows_in_probed=int(_floors.isin(set(picked)).sum()),
-        rows_total=int(len(built)),
+        cohorts_probed=len(_P),
+        cohorts_unprobed=len(_U),
+        cohorts_ineligible=len(_I),
+        rows_probed=int(_floors.isin(_P).sum()),
+        rows_unprobed=int(_floors.isin(_U).sum()),
+        rows_ineligible=int((_in_universe & _floors.isin(_I)).sum()),
+        context_rows=int((~_in_universe).sum()),
         l2a_probed=label_result.n_cohorts,
         l2a_eligible=label_result.n_eligible)
+    coverage.verify(len(_universe), len(built))
     traces = traces_for(result, elig.eligible, case_id="user")
     for note in elig.notes:
         result.notes.append(note)
@@ -449,7 +575,26 @@ def _run_availability(frames, build, model_path, stride, max_cohorts,
            len(label_result.findings), label_result.n_cohorts))
     for note in label_result.notes:
         result.notes.append("[%s] %s" % (label_result.detector, note))
-    result.notes.append(budget_arithmetic(label_cohorts))
+    # BOTH BUDGETS, PRINTED. R268 §3(d): L3.1's in passes, L2a's in cohorts. A
+    # default run says what completeness would cost, so the gap between this
+    # run and a complete one is a number on the page rather than an inference.
+    if complete:
+        result.notes.append(pass_note)
+        if label_result.n_eligible > 0:
+            result.notes.append(
+                "L2a COHORT BUDGET: complete -- every eligible cohort (%d) at a "
+                "build each, which is the complete run's own cost."
+                % label_result.n_eligible)
+    else:
+        if result.resolved_stride:
+            result.notes.append(
+                "L3.1 PASS BUDGET: 1 of %d (default). One pass at stride %d "
+                "probes one second in %d, so its silence is about that "
+                "subsample. At this stride a complete run would take %d passes; "
+                "`--complete` instead uses the smallest stride the measured "
+                "reach allows, which is usually far fewer."
+                % ((result.resolved_stride,) * 4))
+        result.notes.append(budget_arithmetic(label_cohorts))
     result.notes.append(coverage.table())
     out = AuditResult(traces, source=result)
     # Carried on the result so the exit-class decision reads the same numbers
@@ -511,6 +656,17 @@ def _main(argv=None) -> int:
               "excluded from probing, so the padding describes no boundary.",
               file=sys.stderr)
         return EXIT_USAGE
+    # R268 §3(d). `--complete` probes every eligible cohort of the AVAILABILITY
+    # probe, in passes. Without --model there is no availability probe to make
+    # complete, and ignoring the flag would let a user believe they had run a
+    # complete audit when they had run the column dependency probe. Refused on
+    # the same terms as the slice flags above.
+    if getattr(args, "complete", False) and not getattr(args, "model", None):
+        print("leakaudit: --complete needs --model. A complete run probes every "
+              "eligible cohort of the availability probe, in passes at "
+              "different offsets, and without an availability model there are "
+              "no cohorts to complete.", file=sys.stderr)
+        return EXIT_USAGE
 
     if args.command == "schema":
         from .model_file import SCHEMA_DOC
@@ -567,7 +723,8 @@ def _main(argv=None) -> int:
                                    args.stride, args.max_cohorts,
                                    slice_from=args.slice_from,
                                    padding=args.padding,
-                                   label_cohorts=args.label_cohorts)
+                                   label_cohorts=args.label_cohorts,
+                                   complete=args.complete)
     else:
         result = audit(frames, build)
 
@@ -595,9 +752,11 @@ def _main(argv=None) -> int:
         return EXIT_OK_SILENT
     print("INCOMPLETE AND SILENT: nothing moved in the %d of %d eligible "
           "cohorts this run probed, which is not the same claim as nothing "
-          "moving. Raise the cohort budget until the run is complete, or pass "
-          "--accept-partial-coverage to declare that a subsample is enough for "
-          "your purpose." % (cov.cohorts_probed, cov.cohorts_eligible),
+          "moving. Run it with --complete to probe every eligible cohort -- for "
+          "L3.1 that is passes at different offsets, and a larger budget alone "
+          "cannot do it, since one pass covers one second in the stride -- or "
+          "pass --accept-partial-coverage to declare that a subsample is enough "
+          "for your purpose." % (cov.cohorts_probed, cov.cohorts_eligible),
           file=sys.stderr)
     return EXIT_INCOMPLETE_SILENT
 

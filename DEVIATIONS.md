@@ -5562,3 +5562,173 @@ question. **The fixture's stride, no**: it was set deliberately one round
 earlier against the wrong bound, and nothing short of measuring would have
 disturbed it. **The TB collision and the three dead mutants, no** — both were
 found only because §4 asked whether the numbering was unique.
+
+## D-V30A-109 — two rules become a hook, the denominator is restored, and the reach forces a retraction
+
+**THE RETRACTION, IN THE WORDS RULED.** R264 §2(b), accepted at R265, read the
+slice pair's result as confirmation: *"one finding per probed cohort at both
+strides is what a real leak in every second looks like."* It is also exactly what
+interference looks like when the lookback spans every cohort. The discriminating
+measurement was the reach, and neither layer had it. The pair ran at strides 1
+and 2 against a builder that reaches 59.5 s; each finding overlapped the next, so
+the reading that called it confirmed was reading overlap as agreement.
+
+**Two claims of R267's are corrected with it, because this repository shipped
+them.** `coverage.py`'s docstring said *"L3.1 always runs every eligible cohort —
+there is nothing to save"*: cheap per cohort is not able to probe every cohort,
+since one pass at stride 97 covers one second in ninety-seven. And R267 quoted
+34.6 s per reach rebuild, which was the clean build; a reach rebuild is 83.9 s.
+Both are replaced in the files that carried them.
+
+**THE COMMIT-MESSAGE RULES ARE A HOOK NOW, AND THE HOOK'S KEY HAD TO BE BUILT
+FIRST.** R268 §1 ruled a commit-msg hook refusing any message that lacks *the
+trailer `safe_edit`'s commit path writes*. Read on disk, `safe_edit.commit` wrote
+no trailer at all — it ran `git commit -F <path>` and nothing more. So the route
+now asks git to append `Committed-Via: tools/safe_edit.commit` with `--trailer`,
+leaving the message file untouched, and `.githooks/commit-msg` refuses any
+message whose final trailer block lacks it. The trailer string has one
+definition; the hook imports it. The hook fails closed: if no Python can be run
+or the tool cannot be found, the exec fails and git refuses the commit.
+
+**Shown refused, twice.** Through git's own runner, `git hook run commit-msg` on a
+trailer-less message exits 1. Then the ordered positive itself — `git commit
+--allow-empty -m "x"` — is refused with exit 1 and HEAD unchanged at `1a16f53`.
+That command is the one R268 §1(c) names, run to be refused; no message landed.
+The R267 commit made with `-m` stays in history as it is.
+
+**What the hook does not do, stated beside it rather than implied by it.** Git
+does not tell a hook whether `-m` or `-F` was used, so a trailer typed by hand
+after `-m` passes: this is a tripwire against the accidental route, which is the
+one that broke. And it sees commit messages only. Backticks in every other shell
+argument remain operator discipline with no mechanism, and `OPERATING_RULES.md`
+now says so in the rule's own row.
+
+**The per-clone setting is made to stick by certification.** `certify_preconditions`
+gains a precondition: `core.hooksPath` set locally and resolving to the tracked
+`.githooks`, and the hook tracked at mode 100755. A clone without it does not
+certify. **One constraint shaped where that check lives:** the preconditions tool
+is pinned to contain no subprocess call, because it gates and does not execute.
+Whether the hook is installed is a read of git's state, not a step, so the read
+lives in `commit_msg_hook.installed` behind an allow-list of two read-only
+subcommands, `config` and `ls-files`, and a test pins the allow-list. The pin is
+textual; routing around it silently would have been the loophole it denies.
+
+**THE SLICE PAIR, AFTER THE REACH.** One cohort per side, verdicts as they stand:
+the padded side is `finding`, one finding, liveness 1, reach **59.5 s** measured
+(one usable sample, two censored by the frame's end). The cut side is
+`none(no perturbed cell reached the pipeline)`, and **it does not show the leak
+even in one cohort.** The reason is total rather than edge-shaped: the cut frame
+carries 30 rows and the builder's window needs 60, so the builder emits zero
+non-NaN features from it. One cell is perturbed and no output value exists that
+could move, so the reach on that side is not measured — all three samples moved
+nothing — which the run states is not a reach of zero.
+
+**The superseded figures stay, dated, in D's record.** 30/30 (R255) and 15/15
+(R263–R265), with the sentence ruled for them: both were produced at a stride
+thirty times under the builder's measured reach, and each finding overlapped the
+next. The tree makes one of those exact and the other conservative — 15/15 ran
+at stride 2, about thirty times under; 30/30 ran at stride 1, about sixty — and
+the record gives both ratios after the sentence.
+
+**THE COVERAGE DENOMINATOR, SET TWICE.** As it stood at R267: the
+separation-eligible set, `_secs[::stride]` for L3.1 and `seconds[::cohort_stride]`
+for L2a, on the argument that counting stride-excluded seconds made every run
+incomplete. R268 §3 ruled the other way and the ruling holds: a default run
+probes one second in ninety-seven, its silence is incomplete, and the exit code
+saying so is the distinction the class exists to draw. As it stands: every cohort
+the declared model makes probe-able, independent of stride and budget.
+
+**Three states, for cohorts and for rows,** each decision second in exactly one:
+probed; eligible but unprobed; ineligible under the model, where no declared
+frame carries a row. Rows in a slice's padding are context and counted apart.
+A totality check raises when the states do not add up to the population, so the
+table cannot describe seconds nobody counted. A default run now exits
+`EXIT_INCOMPLETE_SILENT`; `DESIGN.md` §5.2's sentence that a `quick` run is
+treated as complete is overridden, with a note placed at §10.8 because §5.2 sits
+above the line-pinned citation.
+
+**And 25 was not gone.** R267 moved the CLI's L2a budget to the derived 16 and
+left `run_probe_l2a`'s own signature defaulting to 25 — two defaults for one
+quantity, differing by the door a user came in through. The library default is
+the derived constant now, and a test holds both entry points to it.
+
+**THE GUARD CARRIES THE REACH AND DOES NOT COMPARE IT.** The reach control runs in
+the guard, as it runs for a user. Its measurement is printed per side and again
+immediately before the comparison, so a halted relation check cannot hide it. It
+is held in a dictionary apart from the one the comparison reads, and tests pin
+that the compared keys are exactly the frozen four per side, that the reach is not
+among them, and that the guard does not pass `reach_samples=0`.
+
+**A FOURTH HARD-CODED COUNT.** R267 fixed three total-declaration mutants holding
+`All **27** entries`. A fourth, in the duplicated-declaration test, still held it.
+It was not dead — two declarations raise whatever number they state — but a count
+typed into a count guard is the defect that file exists to catch, and it would
+have gone stale at the next entry. It reads the declaration off the text now.
+And `reach.py`'s header records that its column set is the probe's own, and why:
+a control perturbing a wider set than the probe reports propagation the probe
+cannot cause.
+
+**A COMPLETE L3.1 RUN, MEASURED FIRST AND THEN BUILT.** Complete, as ruled, is
+passes at different offsets: the minimum safe stride is the measured reach plus
+the one second the selection floors away, and a complete run is that many passes,
+each its own rebuild. On the acceptance fixture the reach is 14 s, so stride 15
+and 15 passes, over 338,159 decision seconds — one row per second — of which
+265,766 are eligible and 72,393 are not.
+
+**The establish did not decide on its first two numbers, and the reason is the
+last round's error.** Its first run crashed: it called `eligible_cohorts`, which
+refuses this fixture's timezone-aware keys against naive decision stamps, and the
+guard replicates its own eligibility rule for exactly that reason; the establish
+now does too. The fit over 50, 400 and 1,600 cohorts — 174.4 s, 171.7 s, 177.1 s,
+so 174.3 s fixed and 0.0017 s a cohort — extrapolated a complete run of 57.6
+minutes: two and a half minutes under the line, fourteen times beyond the largest
+measured point. That is the borrowed-figure shape that put R267's cost off by
+2.4 times, so one full pass was timed directly instead: **22,544 cohorts in
+202.0 s, and the complete run 54.7 minutes** — fifteen passes plus one reach
+measurement of 251.8 s. Under the hour by 5.3 minutes, so it was built. Sharing
+the baseline across passes would make it 40.7 minutes and was not needed.
+
+**Built as `--complete`, not `DESIGN.md`'s `full`,** because `full` was a mode
+that also switched reach refinement on, and there are no modes now.
+`run_probe_a` gains `cohort_offset`, whose default of 0 selects exactly the
+seconds every caller selected before — the whole-frame guard included — and
+`reach=`, a shared measurement, so a pass neither re-measures nor prints that
+its stride rests on declaration alone. The CLI measures the reach once: a call
+with `max_cohorts=0` returns after the baseline, the determinism check and the
+reach control, which is what a stride needs. It then runs the passes and appends
+each one's cohorts to pass 0's result; `verdict()`, `findings` and `liveness` all
+read the cohort list, so aggregation needed no second implementation of any of
+them. Both budgets are printed, L3.1's in passes and L2a's in cohorts, and
+`--complete` without `--model` is refused rather than ignored.
+
+**The pair, with what it holds.** HELD: the frame, the builder, the model.
+VARIED: `--complete` alone. The default run exits `EXIT_INCOMPLETE_SILENT` with
+`COMPLETE: NO`; the same run made complete exits `EXIT_OK_SILENT` with `COMPLETE:
+yes`; a leaky builder made complete still exits `EXIT_FINDINGS`. Beside it, the
+library properties the run rests on: offset 0 selects the default's seconds; the
+offsets between them cover every second exactly once; a pass handed a shared
+reach does not call `measure_reach`, which the test replaces with one that
+raises.
+
+**The guard does not run `--complete`,** so that cost is not paid on every
+probe-path change. It runs the default path, which offset 0 leaves unchanged.
+
+**And the guard measured the side the establish did not.** The complete-run cost
+was established on the contaminated builder, whose reach is 14 s. The guard's run
+this round printed both sides' reach beside its eight terms: contaminated **14 s**,
+corrected **15 s**. `--complete` derives the stride from each run's own
+measurement, so the corrected side takes stride 16 and 16 passes — about 58
+minutes at the contaminated side's pass cost, and that figure is an estimate,
+because the corrected side's pass was not timed. Under the hour on both sides: by
+5.3 minutes on the measured one, by roughly two on the estimated one. The second
+side went unmeasured for the same reason as at R267, where only the contaminated
+reach was taken before the guard; the guard is what measured it, and the reach it
+printed was compared against nothing, as ruled.
+
+**R163 §1's exemption test.** *Would this change have been made if the triggering
+question had not been asked?* **The hook, no** — both rules had been discipline
+alone for over a hundred rounds, and R267 broke the pair in one command. **The
+restored denominator, no** — R267 argued the opposite on purpose and the argument
+read as sound. **The complete run, no** — the retracted sentence said L3.1 needed
+none. **The 25 left in the library signature, no** — the CLI's 16 read as the
+fix, and only reading the signature showed it was half of one.

@@ -282,9 +282,40 @@ def test_NO_TRACKED_FILE_OUTSIDE_py_CARRIES_RUNNABLE_PYTHON():
     execs = [ln.split("\t", 1)[1] for ln in r.stdout.splitlines()
              if ln.startswith("100755") and "\t" in ln
              and not ln.split("\t", 1)[1].endswith(".py")]
-    assert not execs, (
+
+    # ONE NAMED EXCEPTION, CARRYING ITS PROOF RATHER THAN A REASON ALONE. R268
+    # §1 added a commit-msg hook, which must be tracked 100755 or git skips it on
+    # a checkout that honours the bit. It is a non-.py executable, so this scan
+    # fired, correctly. The claim the scan protects is that no runnable PYTHON
+    # outside `.py` could read the clock -- and each property that keeps the
+    # claim true for this file is checked below, not asserted by the list:
+    #   * its interpreter is `sh`, not Python;
+    #   * what it runs is `tools/commit_msg_hook.py`, a `.py` inside the scan;
+    #   * the clock's name does not occur in it -- R241 §3's sound direction:
+    #     substring absence proves absence of use.
+    exempt = {
+        ".githooks/commit-msg":
+            "the commit-msg shim; `sh`, execs tools/commit_msg_hook.py",
+    }
+    for rel in exempt:
+        assert rel in execs, (
+            "%s is exempted as an executable and is not tracked 100755, so the "
+            "exemption is stale" % rel)
+        data = _read_bytes(rel) or b""
+        first = data.split(b"\n", 1)[0].decode("utf-8", "replace")
+        assert first.startswith("#!") and "python" not in first.lower(), (
+            "%s now declares a python interpreter, so it is runnable Python "
+            "outside .py and its exemption no longer holds" % rel)
+        assert b"decision_column" not in data, (
+            "%s names the clock, so the substring-absence proof that it reads "
+            "none has failed" % rel)
+        assert b"tools/commit_msg_hook.py" in data, (
+            "%s no longer delegates to the scanned .py" % rel)
+
+    unexplained = [f for f in execs if f not in exempt]
+    assert not unexplained, (
         "tracked non-.py files are marked executable, so they may run: %s"
-        % execs)
+        % unexplained)
 
 
 def test_every_file_CONTAINING_the_string_is_parsed_or_proved_non_runnable(
@@ -415,6 +446,21 @@ LS_FILES_FROZEN = {
         "difference and was not authorised",
 }
 
+#: Files that name `ls-files` and are NOT floors, each with what makes it not
+#: one. R268 §1(b). A floor enumerates a POPULATION and must see untracked files;
+#: these read the tracked MODE of one named path, where index-only is the right
+#: answer rather than the D-V30A-102 defect -- an untracked hook does not travel
+#: to a clone, so reporting it as UNTRACKED is exactly what the precondition is
+#: for. Listed so the population stays an enumeration somebody can read.
+LS_FILES_NOT_FLOORS = {
+    "tools/commit_msg_hook.py":
+        "`installed()` reads the tracked mode of .githooks/commit-msg by "
+        "pathspec; index-only is the intended semantics",
+    "tests/phase1/test_certify_preconditions.py":
+        "asserts the hook module's read-only allow-list names `ls-files`; runs "
+        "no git itself",
+}
+
 
 def test_EVERY_ls_files_FLOOR_sees_untracked_non_ignored_files():
     """R263 §3(b). A floor that reads only the index cannot see the module the
@@ -436,7 +482,15 @@ def test_EVERY_ls_files_FLOOR_sees_untracked_non_ignored_files():
         if re.search(r'"ls-files"', text) or re.search(r"'ls-files'", text):
             found[rel] = text
 
-    known = set(LS_FILES_FLOORS) | set(LS_FILES_FROZEN)
+    known = (set(LS_FILES_FLOORS) | set(LS_FILES_FROZEN)
+             | set(LS_FILES_NOT_FLOORS))
+    for rel in LS_FILES_NOT_FLOORS:
+        assert rel in found, (
+            "%s is listed as naming `ls-files` without being a floor and no "
+            "longer names it, so the list is stale" % rel)
+    assert '"ls-files", "-s", "--"' in found.get("tools/commit_msg_hook.py", ""), (
+        "commit_msg_hook's `ls-files` is no longer a pathspec lookup of one "
+        "path, so the reason it is not a floor has stopped being true")
     unknown = sorted(set(found) - known - {"tools/empty_population_probe.py"})
     assert not unknown, (
         "a `git ls-files` floor exists that this population does not name, so "

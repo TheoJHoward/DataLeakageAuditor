@@ -124,8 +124,12 @@ def test_the_WRONG_clock_declared_EXPLICITLY_still_runs(work, capsys):
     not the user's freedom to be mistaken."""
     rc, _ = _run(work, _model(work, "wrong.json",
                               dict(BASE, decision_column="timestamp")))
-    assert rc in (cli.EXIT_OK_SILENT, cli.EXIT_FINDINGS, cli.EXIT_USAGE)
-    if rc == cli.EXIT_OK_SILENT:
+    # EXIT_INCOMPLETE_SILENT is a way of running, not a failure of it: since
+    # R268 §3 a default-stride run that finds nothing exits incomplete, and that
+    # is the declared clock producing whatever that clock produces.
+    assert rc in (cli.EXIT_OK_SILENT, cli.EXIT_INCOMPLETE_SILENT,
+                  cli.EXIT_FINDINGS, cli.EXIT_USAGE)
+    if rc in (cli.EXIT_OK_SILENT, cli.EXIT_INCOMPLETE_SILENT):
         text = capsys.readouterr().out
         assert "observed_silence" in text, (
             "declaring the wrong clock should still produce whatever that clock "

@@ -19,11 +19,11 @@
   "candidate_artifact": 16,
   "candidate_fixed": 2,
   "candidate_legitimate": 1,
-  "out_of_scope": 21,
+  "out_of_scope": 27,
   "probed_healthy": 6,
-  "unprobed_reachable": 54,
-  "functions_total": 100,
-  "assertions_total": 194
+  "unprobed_reachable": 55,
+  "functions_total": 107,
+  "assertions_total": 210
  },
  "functions": [
   {
@@ -718,6 +718,55 @@
    "assertions": 2,
    "status": "unprobed_reachable",
    "reason": "R267. Asserts inside a loop over the two collided headings, so the criterion sees a coverage claim. The population is a two-element literal built in the function; the emptying probe cannot reach it. UNVERIFIED, not clean."
+  },
+  {
+   "file": "tests/phase1/test_certify_preconditions.py",
+   "function": "test_the_hook_helper_may_run_ONLY_read_only_git",
+   "assertions": 2,
+   "status": "out_of_scope",
+   "reason": "R268. Asserts one tuple's value and counts one call site in one file's text. The forbidden subcommands are tried in a loop that RAISES rather than asserts, and are a literal. No derived collection; `makes_a_coverage_claim` returns False."
+  },
+  {
+   "file": "tests/phase1/test_commit_msg_hook.py",
+   "function": "test_safe_edit_commit_ASKS_git_for_the_trailer",
+   "assertions": 1,
+   "status": "out_of_scope",
+   "reason": "R268. One substring of one file's text. It is the test that caught `safe_edit.commit` not passing `--trailer` at all after its docstring had been updated, but its shape is a content check."
+  },
+  {
+   "file": "tests/phase1/test_commit_msg_hook.py",
+   "function": "test_the_shell_hook_FAILS_CLOSED_and_finds_the_tool_by_its_own_path",
+   "assertions": 5,
+   "status": "out_of_scope",
+   "reason": "R268. Five properties of one file's text: shebang, no CR, locates by its own path, execs, no backticks. No derived collection."
+  },
+  {
+   "file": "tests/phase1/test_commit_msg_hook.py",
+   "function": "test_the_trailer_has_ONE_definition",
+   "assertions": 2,
+   "status": "out_of_scope",
+   "reason": "R268. Substring presence and absence in one file's text. No derived collection."
+  },
+  {
+   "file": "tests/phase1/test_coverage_budget.py",
+   "function": "test_25_IS_GONE_from_both_entry_points",
+   "assertions": 3,
+   "status": "unprobed_reachable",
+   "reason": "R268. Asserts inside a loop over a TWO-ELEMENT LITERAL tuple of source paths, so the criterion sees a coverage claim. A literal cannot be emptied by a fixture and the emptying probe cannot reach it; an edit could empty it, which a reader would see. UNVERIFIED by mechanism, not clean."
+  },
+  {
+   "file": "tests/phase1/test_coverage_budget.py",
+   "function": "test_L2a_eligible_is_NOT_divided_by_its_stride",
+   "assertions": 2,
+   "status": "out_of_scope",
+   "reason": "R268. Substring presence and absence in one file's text. No derived collection."
+  },
+  {
+   "file": "tests/phase1/test_coverage_budget.py",
+   "function": "test_padding_rows_are_CONTEXT_counted_apart",
+   "assertions": 1,
+   "status": "out_of_scope",
+   "reason": "R268. One object's totality call and one substring of its rendered table. No derived collection."
   },
   {
    "file": "tests/phase1/test_slicing.py",

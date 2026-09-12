@@ -117,7 +117,70 @@ def test_main_REFUSES_with_a_nonzero_exit(monkeypatch):
 
 def test_main_PERMITS_with_a_zero_exit(monkeypatch, tmp_path):
     monkeypatch.setenv(cp.WORK_ROOT_ENV, str(tmp_path))
+    # The hook precondition is its own test below; here it is held satisfied so
+    # this stays the work root's negative control and not a test of the clone.
+    monkeypatch.setattr(cp, "check_commit_hook", lambda: (True, "held"))
     assert cp.main([]) == 0
+
+
+# ---------------------------------------------------------------------------
+# the commit-msg hook precondition. R268 §1(b).
+# ---------------------------------------------------------------------------
+def _hook_git(config_rc, config_out, ls_out):
+    import commit_msg_hook as h
+
+    def fake(root, *args):
+        if args[0] == "config":
+            return config_rc, config_out
+        return 0, ls_out
+    return h, fake
+
+
+def test_an_UNSET_hooksPath_REFUSES_certification(monkeypatch, tmp_path):
+    h, fake = _hook_git(1, "", "")
+    monkeypatch.setattr(h, "_git_read", fake)
+    monkeypatch.setenv(cp.WORK_ROOT_ENV, str(tmp_path))
+    ok, msg = cp.check_commit_hook()
+    assert not ok and "not set in this clone" in msg
+    assert cp.main([]) == 1, "a clone without the hook must not certify"
+
+
+def test_a_hooksPath_pointing_ELSEWHERE_is_REFUSED(monkeypatch):
+    h, fake = _hook_git(0, "some/other/dir", "100755 x 0\t.githooks/commit-msg")
+    monkeypatch.setattr(h, "_git_read", fake)
+    ok, msg = cp.check_commit_hook()
+    assert not ok and "not the tracked" in msg
+
+
+def test_a_hook_tracked_NON_EXECUTABLE_is_REFUSED(monkeypatch):
+    h, fake = _hook_git(0, ".githooks", "100644 x 0\t.githooks/commit-msg")
+    monkeypatch.setattr(h, "_git_read", fake)
+    ok, msg = cp.check_commit_hook()
+    assert not ok and "100644" in msg
+
+
+def test_the_NEGATIVE_a_live_hook_is_ACCEPTED(monkeypatch):
+    """Without this, a precondition refusing everything looks identical."""
+    h, fake = _hook_git(0, ".githooks", "100755 x 0\t.githooks/commit-msg")
+    monkeypatch.setattr(h, "_git_read", fake)
+    ok, msg = cp.check_commit_hook()
+    assert ok, msg
+
+
+def test_the_hook_helper_may_run_ONLY_read_only_git():
+    """The no-subprocess pin above is textual. The hook's read lives in another
+    module, so this pins what that module may run: two read-only subcommands,
+    through one call site, and nothing that could execute a step."""
+    import commit_msg_hook as h
+    assert h.READ_ONLY_GIT == ("config", "ls-files")
+    for forbidden in (("commit", "-m", "x"), ("push",), ("add", ".")):
+        try:
+            h._git_read(ROOT, *forbidden)
+        except ValueError:
+            continue
+        raise AssertionError("_git_read ran %r" % (forbidden,))
+    src = (ROOT / "tools" / "commit_msg_hook.py").read_text(encoding="utf-8")
+    assert src.count("subprocess.run(") == 1, "one call site, behind the allow-list"
 
 
 def test_it_does_NOT_run_the_steps():

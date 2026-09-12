@@ -114,10 +114,33 @@ def check_work_root() -> tuple:
     return True, "%s -> %s" % (WORK_ROOT_ENV, p)
 
 
+def check_commit_hook() -> tuple:
+    """The commit-msg hook is live for this clone. R268 §1(b).
+
+    A per-clone git setting does not travel with the repository, so without a
+    precondition a fresh clone would carry the hook file and never run it. This
+    is what makes the setting stick: a clone without it cannot certify.
+
+    The read happens in `commit_msg_hook.installed`, not here, and this file
+    still runs nothing -- see that module's `READ_ONLY_GIT` for why the query
+    lives there and what bounds it.
+    """
+    try:
+        tools = str(REPO / "tools")
+        if tools not in sys.path:
+            sys.path.insert(0, tools)
+        import commit_msg_hook
+    except Exception as e:                                   # noqa: BLE001
+        return False, ("the commit-msg hook's tool cannot be imported (%s), so "
+                       "whether the hook is live cannot be known" % e)
+    return commit_msg_hook.installed(REPO)
+
+
 def preconditions() -> list:
     """[(name, ok, message)] for every precondition certification depends on."""
     ok, msg = check_work_root()
-    return [("work root", ok, msg)]
+    hook_ok, hook_msg = check_commit_hook()
+    return [("work root", ok, msg), ("commit hook", hook_ok, hook_msg)]
 
 
 def main(argv=None) -> int:

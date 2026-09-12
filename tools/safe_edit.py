@@ -100,12 +100,24 @@ def edit(path, transform) -> bool:
 # Rule 1 — `-F` takes a path
 # ---------------------------------------------------------------------------
 
+#: The trailer this route asks git to append. R268 §1. `.githooks/commit-msg`
+#: refuses any message whose final trailer block lacks it, so a message typed
+#: with `git commit -m` -- which passed through the shell -- is refused before it
+#: lands. ONE definition: the hook imports it from here rather than restating it.
+#: A TRIPWIRE, NOT A PROOF -- see tools/commit_msg_hook.py for what it does not do.
+COMMIT_TRAILER = "Committed-Via: tools/safe_edit.commit"
+
+
 def commit(message_file, repo=None, extra=()) -> int:
     """`git commit -F <path>`, refusing every way of not doing that.
 
     Refuses `-`, refuses a path that does not exist, refuses an empty file, and
     refuses a message that looks like a shell command — the specific thing that
     landed when a heredoc leaked into `-F -`.
+
+    Appends `COMMIT_TRAILER` with `--trailer`, so git adds it and the message
+    file on disk is never modified. Since R268 the commit-msg hook refuses any
+    message without it.
     """
     if str(message_file).strip() == "-":
         raise EditRuleError(
@@ -126,5 +138,9 @@ def commit(message_file, repo=None, extra=()) -> int:
             "the first line of %s reads like a shell command (%r). That is what "
             "landed when a heredoc leaked into `-F -`, and it is refused rather "
             "than committed." % (p, first[:70]))
-    cmd = ["git", "commit", "-F", str(p), *extra]
+    # THE TRAILER, ADDED BY GIT RATHER THAN WRITTEN INTO THE FILE. R268 §1. The
+    # first edit for this round changed the docstring above and left this line
+    # as it was, so the route would have been refused by its own hook; the test
+    # asking for `--trailer` here is what caught it.
+    cmd = ["git", "commit", "-F", str(p), "--trailer", COMMIT_TRAILER, *extra]
     return subprocess.run(cmd, cwd=str(repo) if repo else None).returncode

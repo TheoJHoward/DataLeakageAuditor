@@ -691,7 +691,9 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
                 column_modes: Mapping[str, object] | None = None,
                 slice_from=None,
                 padding=NOT_DECLARED,
-                reach_samples=None) -> ProbeAResult:
+                reach_samples=None,
+                cohort_offset: int = 0,
+                reach=None) -> ProbeAResult:
     """Corrupt a sparse set of seconds, rebuild once, and read WHICH rows moved.
 
     `cohort_stride` keeps corrupted seconds far apart so a moved row can be
@@ -732,7 +734,18 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
     from .reach import (DEFAULT_SAMPLES, check_padding,
                         check_stride_separation, measure_reach)
     k = DEFAULT_SAMPLES if reach_samples is None else int(reach_samples)
-    if k > 0:
+    if reach is not None:
+        # ONE MEASUREMENT FOR A COMPLETE RUN. R268 §3(d). A complete L3.1 run is
+        # `stride` passes whose stride was derived FROM this measurement, so
+        # re-measuring per pass would spend the reach control's cost once per
+        # pass to learn a number the run already holds. And `reach_samples=0`
+        # instead would print "rests on declaration alone" beside a stride that
+        # was measured, which is false. The shared result still feeds the
+        # separation refusal below, so every pass is checked against it.
+        res.reach = reach
+        res.notes.append("[shared across a complete run's passes] "
+                         + reach.note())
+    elif k > 0:
         res.reach = measure_reach(raw, build, model, base, dcol, k=k, seed=seed)
         res.notes.append(res.reach.note())
     else:
@@ -822,7 +835,12 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
                 % (DEFAULT_STRIDE, _window_text(floor), cohort_stride,
                    DEFAULT_STRIDE))
     res.resolved_stride = cohort_stride
-    picked = seconds[::cohort_stride][:max_cohorts]
+    # `cohort_offset` shifts the selection within the stride. R268 §3(d): a
+    # complete run is `stride` passes at offsets 0..stride-1, which between them
+    # probe every second. At the default 0, `seconds[0::s]` is `seconds[::s]`,
+    # so every existing caller -- the whole-frame guard included -- selects
+    # exactly the seconds it selected before.
+    picked = seconds[cohort_offset::cohort_stride][:max_cohorts]
     res.n_cohorts = len(picked)
     if res.n_cohorts == 0:
         return res

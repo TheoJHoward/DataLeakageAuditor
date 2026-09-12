@@ -1,15 +1,18 @@
 """Coverage is reported, and incomplete-and-silent is its own answer. R267 §3.
 
-`DESIGN.md` §5.2's "quick mode" is ruled here as a BUDGET rather than a mode,
-and the ruling rests on a measurement: L3.1's cohorts cost ~0.02 s each because
-one rebuild serves the whole batch, while **L2a rebuilds once per cohort**. So
-there is nothing to save on L3.1 and everything to save on L2a, and a "mode"
-that dialled both would be trading away coverage it was not buying anything for.
+`DESIGN.md` §5.2's "quick mode" is ruled here as a BUDGET rather than a mode.
 
-  (a) L3.1 ALWAYS RUNS EVERY ELIGIBLE COHORT. Not a default -- there is no
-      parameter, because there is no saving to make.
-  (b) THE BUDGET IS L2a's COHORT COUNT, declared by the user, defaulting to a
-      number chosen from cost and PRINTED AS A DEFAULT, the way stride 97 is.
+  (a) L3.1 IS CHEAP PER COHORT BECAUSE IT BATCHES -- AND BATCHING IS WHAT LIMITS
+      IT. One rebuild serves every cohort in a pass, but the cohorts in one pass
+      must sit further apart than the builder's measured reach, so a pass at
+      stride 97 probes one second in ninety-seven. **R267 wrote "L3.1 always
+      runs every eligible cohort -- there is nothing to save", and it was wrong,
+      retracted at R268 §0:** cheap per cohort is not the same as able to probe
+      every cohort. A COMPLETE L3.1 run is `stride` passes at different offsets,
+      each its own rebuild (R268 §3(d)), so L3.1's budget is PASSES.
+  (b) L2a rebuilds once per cohort, so its budget is its COHORT COUNT, declared
+      by the user, defaulting to a number chosen from cost and PRINTED AS A
+      DEFAULT, the way stride 97 is. Complete for L2a is every eligible cohort.
 
 THE DEFAULT'S ARITHMETIC, MEASURED RATHER THAN PICKED. On the acceptance fixture
 a build is **34.9 s** (R267, `zc` 2025-01, 338,159 rows), and L2a spends one
@@ -20,11 +23,14 @@ nobody had written the arithmetic down to notice. It is 16 here, and the number
 travels with the sum that produced it so the next person can redo it against
 their own build time instead of inheriting mine.
 
-COVERAGE IS REPORTED, NEVER THRESHOLDED. Two numbers: cohorts probed of
-eligible, and output rows in probed cohorts of all rows. **They are the
-population of every silence the run reports**, which is the whole reason they
-are printed. No level is required and none is offered: a level is a threshold,
-and a threshold is a number people adjust toward until it passes.
+COVERAGE IS REPORTED, NEVER THRESHOLDED, IN THREE STATES (R268 §3(b)). Every
+decision second is probed, eligible-but-unprobed, or ineligible under the declared
+model, and rows take the state of the second they fall in. The denominator is
+every cohort the model makes probe-able, independent of stride and budget -- so a
+default run is INCOMPLETE and exits as such. **These counts are the population of
+every silence the run reports**, which is the whole reason they are printed. No
+level is required and none is offered: a level is a threshold, and a threshold is
+a number people adjust toward until it passes.
 
 INCOMPLETE-AND-SILENT IS A FOURTH ANSWER. A run that probed a subsample and
 found nothing has not said "clean" -- it has said "nothing in the part I
@@ -73,62 +79,114 @@ def budget_arithmetic(n=DEFAULT_L2A_COHORTS, build_seconds=FIXTURE_BUILD_SECONDS
 
 @dataclass
 class Coverage:
-    """The two numbers. Reported; never compared against a level."""
+    """Three states, for cohorts and for rows. Reported; never thresholded.
+
+    R268 §3(b). Every decision second is in exactly ONE state:
+
+      probed               selected, and a declared frame carries a row in it
+      eligible, unprobed   a declared frame carries a row; not selected
+      ineligible           no declared frame carries a row -- nothing to corrupt
+                           under THIS model, whatever the stride or the budget
+
+    Rows take the state of the second they fall in. Rows in a slice's padding
+    are CONTEXT -- present in the data, never a subject -- and are counted apart,
+    so the three states still cover the subjects exactly. `verify` refuses a
+    table whose states do not add up to the population it claims to describe.
+    """
 
     cohorts_probed: int = 0
-    cohorts_eligible: int = 0
-    rows_in_probed: int = 0
-    rows_total: int = 0
-    #: L2a's own two numbers. It is the row with a BUDGET -- one rebuild per
-    #: cohort -- so it is the row that can fall short, and a run's completeness
-    #: is both rows or neither. L3.1 has no budget and is complete by
-    #: construction; carrying its numbers anyway means a reader never has to
-    #: know which row was the cheap one to read the coverage.
+    cohorts_unprobed: int = 0
+    cohorts_ineligible: int = 0
+    rows_probed: int = 0
+    rows_unprobed: int = 0
+    rows_ineligible: int = 0
+    context_rows: int = 0
+    #: L2a's two numbers. Its eligible set is every decision second it could
+    #: probe, independent of stride and budget -- the same rule as L3.1's.
     l2a_probed: int = 0
     l2a_eligible: int = 0
 
     @property
+    def cohorts_eligible(self) -> int:
+        return self.cohorts_probed + self.cohorts_unprobed
+
+    @property
+    def rows_total(self) -> int:
+        return (self.rows_probed + self.rows_unprobed + self.rows_ineligible
+                + self.context_rows)
+
+    @property
     def complete(self) -> bool:
-        """Every SEPARATION-ELIGIBLE cohort was probed.
+        """Every cohort the DECLARED MODEL makes probe-able was probed.
 
-        The denominator is not every second in the frame. `cohort_stride` is the
-        attribution requirement rather than a budget -- seconds it excludes were
-        never probeable at all -- so counting them here would report a shortfall
-        no budget could close and would make the incomplete class fire on every
-        run, which is the same as it firing on none.
+        THE DENOMINATOR IS INDEPENDENT OF STRIDE AND BUDGET, and it has been
+        otherwise. R267 set it to the separation-eligible set, `secs[::stride]`,
+        arguing that counting stride-excluded seconds made every run incomplete
+        and "a class that fires always distinguishes nothing". R268 §3 ruled
+        the other way, correctly: a default run at stride 97 probes one second
+        in ninety-seven, so its silence IS incomplete, and the exit code that
+        says so distinguishes the default run from a complete one -- which is
+        the whole distinction. A note beside a clean exit is one shade from a
+        pass (R220 §4); an exit code is not.
 
-        Note the direction: completeness is about COHORT coverage, not detector
-        coverage. A complete run can still carry `unsupported` rows, and this
-        says nothing about them.
+        Completeness is about COHORT coverage, not detector coverage: a complete
+        run can still carry `unsupported` rows, and this says nothing about them.
         """
-        l31_ok = (self.cohorts_eligible > 0
-                  and self.cohorts_probed >= self.cohorts_eligible)
-        # L2a is `unsupported` on most runs -- no label declaration -- and an
-        # eligible count of zero means it did not run rather than that it ran
-        # short. A row that never ran does not make the audit incomplete; it
-        # makes it silent about that row, which its own verdict already says.
+        l31_ok = self.cohorts_eligible > 0 and self.cohorts_unprobed == 0
+        # An L2a eligible count of zero means the row did not run, not that it
+        # ran short; its own verdict already says so.
         l2a_ok = (self.l2a_eligible <= 0
                   or self.l2a_probed >= self.l2a_eligible)
         return l31_ok and l2a_ok
 
+    def verify(self, n_seconds: int, n_rows: int) -> None:
+        """The states COVER their population, or the table describes nothing.
+
+        Raised rather than asserted: `python -O` strips asserts, and this is a
+        claim the run prints, not a debugging aid.
+        """
+        placed = (self.cohorts_probed + self.cohorts_unprobed
+                  + self.cohorts_ineligible)
+        if placed != n_seconds or self.rows_total != n_rows:
+            raise ValueError(
+                "coverage does not cover its population: %d cohort(s) placed "
+                "of %d decision seconds, %d row(s) placed of %d"
+                % (placed, n_seconds, self.rows_total, n_rows))
+
     def table(self) -> str:
-        def pct(a, b):
-            return "%.1f%%" % (100.0 * a / b) if b else "n/a"
-        return (
-            "COVERAGE (reported, not thresholded -- these two numbers are the "
-            "POPULATION of every silence above):\n"
-            "  L3.1 cohorts probed   %d of %d eligible (%s)\n"
-            "  rows in those cohorts %d of %d (%s)\n"
-            "  L2a  cohorts probed   %s"
-            % (self.cohorts_probed, self.cohorts_eligible,
-               pct(self.cohorts_probed, self.cohorts_eligible),
-               self.rows_in_probed, self.rows_total,
-               pct(self.rows_in_probed, self.rows_total),
-               ("%d of %d eligible (%s) -- this is the budgeted row"
-                % (self.l2a_probed, self.l2a_eligible,
-                   pct(self.l2a_probed, self.l2a_eligible))
-                if self.l2a_eligible > 0 else
-                "not run (see its own verdict above)")))
+        def cell(n, of):
+            return "%d (%s)" % (n, ("%.1f%%" % (100.0 * n / of)) if of else "n/a")
+        c_all = self.cohorts_eligible + self.cohorts_ineligible
+        r_all = self.rows_probed + self.rows_unprobed + self.rows_ineligible
+        fmt = "  %-13s %18s %22s %28s"
+        lines = [
+            "COVERAGE (reported, not thresholded -- the POPULATION of every "
+            "silence above). Three states; together they cover every subject:",
+            fmt % ("", "probed", "eligible, unprobed",
+                   "ineligible under the model"),
+            fmt % ("L3.1 cohorts", cell(self.cohorts_probed, c_all),
+                   cell(self.cohorts_unprobed, c_all),
+                   cell(self.cohorts_ineligible, c_all)),
+            fmt % ("L3.1 rows", cell(self.rows_probed, r_all),
+                   cell(self.rows_unprobed, r_all),
+                   cell(self.rows_ineligible, r_all)),
+        ]
+        if self.context_rows:
+            lines.append(
+                "  %d row(s) sit in a slice's padding: context the builder "
+                "reads, never a subject, outcome `not_applicable` -- counted "
+                "apart from the three states." % self.context_rows)
+        if self.l2a_eligible > 0:
+            lines.append("  L2a cohorts   %d probed of %d eligible -- the "
+                         "budgeted row" % (self.l2a_probed, self.l2a_eligible))
+        else:
+            lines.append("  L2a cohorts   not run (see its own verdict above)")
+        lines.append(
+            "  COMPLETE: yes" if self.complete else
+            "  COMPLETE: NO -- a silence here is about the probed cohorts only "
+            "(L3.1: %d eligible unprobed; L2a: %d of %d probed)"
+            % (self.cohorts_unprobed, self.l2a_probed, self.l2a_eligible))
+        return "\n".join(lines)
 
 
 class AuditIncomplete(AssertionError):
@@ -166,5 +224,8 @@ def assert_audit_complete(coverage, *, accept_partial_coverage=False) -> None:
         "THAT SUBSAMPLE and not about the pipeline. Pass "
         "`accept_partial_coverage=True` to assert over the subsample "
         "deliberately -- the acceptance is then yours and is recorded -- or "
-        "raise the cohort budget until the run is complete."
+        "make the run COMPLETE: every eligible cohort probed, which for L3.1 "
+        "is `stride` passes at different offsets (`--complete`) and for L2a is "
+        "every eligible cohort at a build each. A larger budget alone does not "
+        "complete L3.1, since one pass covers one second in `stride`."
         % "; ".join(short))

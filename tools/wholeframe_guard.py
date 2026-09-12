@@ -234,6 +234,10 @@ def record_times(capture, contaminated, corrected, total) -> None:
 
 LAST_RECORDED = last_recorded()
 
+#: The measured reach per side, R268 §4. Held OUTSIDE `out`, the dict the
+#: comparison reads, so nothing that iterates the compared terms can reach it.
+REACH_SEEN = {}
+
 
 def main() -> int:
     PRIOR = REPO / "evidence" / "phase1" / "criteria_12_population.json"
@@ -338,6 +342,22 @@ def main() -> int:
                   "in the suite can see it: they run on twelve-row frames. Stop "
                   "and look at the change rather than waiting for the other "
                   "side (OPERATING_RULES.md section 7, R262).")
+        # R268 §4. THE REACH RIDES ALONG, AND IT IS NOT A TERM. The guard runs
+        # what a user runs, and the reach control now runs on every probe, so it
+        # runs here too and costs what it costs. It is printed and it is NOT
+        # added to `out[side]` -- the comparison stays the frozen eight, and
+        # keeping it out of that dict is what keeps a future loop over `out`
+        # from comparing it by accident. A reach that moves is a finding about
+        # the fixture's builder and a ruling, not a red guard.
+        REACH_SEEN[side] = res.reach
+        _r = res.reach
+        print("  %-13s reach=%s  (k=%d, %d usable, %d censored) -- REPORTED, "
+              "not a compared term"
+              % (side,
+                 getattr(_r, "measured", None) if _r is not None else "not measured",
+                 getattr(_r, "k", 0) if _r is not None else 0,
+                 len(_r.uncensored) if _r is not None else 0,
+                 (len(_r.samples) - len(_r.uncensored)) if _r is not None else 0))
 
     _watch.__exit__(None, None, None)
 
@@ -349,6 +369,14 @@ def main() -> int:
               "its SAME mean anything. Do not read the comparison below.")
         return 3
 
+    print("\nREACH, REPORTED AND NOT COMPARED (R268 section 4) -- printed beside "
+          "the eight terms and never one of them. A reach that moves is a "
+          "finding about the fixture's builder and a ruling, not a red guard:")
+    for _side in ("contaminated", "corrected"):
+        _r = REACH_SEEN.get(_side)
+        print("  %-13s measured reach %s"
+              % (_side, getattr(_r, "measured", None) if _r is not None
+                 else "not measured"))
     print("\nCOMPARISON, term by term:")
     moved = False
     for side in ("contaminated", "corrected"):

@@ -59,12 +59,25 @@ confirm the split-specific claim. Reuses the split the checks already parse.
 argument `checks.py` was built on.
 
 ### C. `DESIGN.md` §5.2 — `quick` mode as a first-class CI default
-**Status: NOT STARTED.** No module mentions it. `--stride`/`--max-cohorts`
-exist, so the mechanism is there and the *framing* is not: a coverage table
-stating probed-cohort count and row coverage, and completeness treating a quick
-run as complete.
-**What it would take:** the coverage table, and a completeness predicate that
-distinguishes cohort coverage from detector coverage.
+**Status: BUILT (R267, R268) — and ruled other than §5.2 wrote it.** `quick`
+is not a mode. L2a rebuilds once per cohort, so its budget is a COHORT COUNT,
+derived from a measured build time and printed as a default: 16, where the
+shipped 25 was over the ten-minute target with no arithmetic written down. L3.1
+batches, so its budget is PASSES, printed as `L3.1 PASS BUDGET`.
+**Coverage is three states** — probed, eligible but unprobed, ineligible under
+the model — for cohorts and for rows, never thresholded, and checked to cover
+its population. **A subsampled run is not treated as complete**, the reverse of
+§5.2's sentence (overridden at `DESIGN.md` §10.8): a default run exits
+`EXIT_INCOMPLETE_SILENT`, 4. The two routes to a clean exit are a declared
+`--accept-partial-coverage`, printed beside the verdict, or `--complete` —
+`stride` passes at different offsets for L3.1, every eligible cohort for L2a.
+`assert_audit_complete` holds the same rule at the library door.
+**What complete costs, measured on the acceptance fixture (R268):** reach 14 s,
+so stride 15 and 15 passes; one pass 202.0 s; the run 54.7 min with the reach
+measured once. **That is the contaminated side.** The guard's run measured the
+corrected side's reach at 15 s, so its complete run takes stride 16 and 16 passes
+— about 58 min at the same pass cost, an estimate, since that side's pass was not
+timed.
 **Value:** medium-high for adoption — it is the difference between a tool run
 once and a tool run in CI.
 
@@ -82,11 +95,30 @@ per-row and contributes nothing. So the primary refusal is a **presence test**
 (padding not declared), which needs no threshold and cannot rest on an invented
 one. That is `DESIGN.md` §5.3's own answer, not a gap.
 
-**The known positive is an edge positive, both halves measured.** Same builder,
-same 30 probed cohorts: unpadded → `observed_silence`, 0 findings; padded →
-`finding`, 30. A fixture control (`min_periods=1`) removes the masking and the
-unpadded run then finds all 30, so the silence is the truncated window and not
-a coverage gap.
+**The known positive is an edge positive, both halves measured — and its figures
+were superseded twice.**
+
+| when | unpadded cut | padded | stride |
+|---|---|---|---|
+| R255 (2026-09-07) | `observed_silence`, 0 over 30 cohorts | `finding`, **30/30** | 1 |
+| R263–R265 | `none(…)`, 0 over 15 cohorts | `finding`, **15/15** | 2 |
+| **R268, standing** | `none(no perturbed cell reached the pipeline)`, 0 findings, 1 cohort | `finding`, **1** finding, 1 cohort | 97 |
+
+**30/30 and 15/15 are kept as dated figures and are SUPERSEDED: both were
+produced at a stride thirty times under the builder's measured reach, and each
+finding overlapped the next.** (Exactly: the reach is 59.5 s, so 15/15 at stride 2
+was ~30× under and 30/30 at stride 1 was ~60× under.) The R255 fixture control
+(`min_periods=1` "finds all 30") belongs to the same superseded run.
+
+**What the standing pair shows, with the reach printed.** The padded side finds
+the leak in its one cohort (liveness 1) with reach measured at **59.5 s** (one
+usable sample, two censored by the frame's end). **The cut side does NOT show it
+even in one cohort**, and the reason is total rather than edge-shaped: the cut
+frame carries 30 rows and the builder's window needs 60, so the builder emits
+**zero** non-NaN features from it. One cell is perturbed and no output value
+exists that could move — so the verdict is `none`, not `observed_silence`, and
+the reach on that side is **not measured** (all three samples: nothing moved),
+which the run states is not a reach of zero.
 
 **Known limit, pinned as a test.** A padding that clears the model-founded floor
 can still be far below the builder's lookback: 2s of padding clears the 1s floor

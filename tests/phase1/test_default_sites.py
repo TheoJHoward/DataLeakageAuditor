@@ -109,6 +109,15 @@ CLASSIFICATION = {
         (L, "a measured constant, printed inside the arithmetic it produces"),
     "coverage.py::param::budget_arithmetic(n=)":
         (L, "the budget in force, defaulting to the derived default"),
+    # R268 §3(d). Both defaults are the pre-R268 behaviour exactly: offset 0
+    # selects `seconds[::stride]`, and `reach=None` measures the reach here. A
+    # complete run passes each explicitly, so a default taken is a caller that
+    # is not running passes.
+    "availability.py::param::run_probe_a(cohort_offset=)":
+        (L, "0 selects exactly the seconds every caller selected before R268"),
+    "availability.py::param::run_probe_a(reach=)":
+        (L, "None means measure the reach in this call; a complete run passes "
+            "its one shared measurement explicitly"),
     "label_probe.py::param::__init__(n_eligible=)": (NA, "result carrier field"),
     "availability.py::param::__init__(context_seconds=)": (NA, "result carrier field"),
     # R261 §1(b). Result carrier field, and `False` is a MEASURED state rather
