@@ -5990,3 +5990,102 @@ and the CLI renders notes behind a `- ` bullet. The instrument had printed all
 
 **R163 §1's exemption test.** *Would this have surfaced if the triggering question
 had not been asked?* **Not applicable** — a build, not a defect.
+
+## D-V30A-114 — the corrected side's complete-run finding is interference from earlier cohorts, so complete mode reports false findings on a builder with no leak
+
+**Nothing here is a `PREREG.md` §6.2 result, and no Phase 1 figure moves.** The
+Phase 1 corrected-side silence is a stride-997 measurement over 250 cohorts and
+is untouched by everything below. This entry resolves the question D-V30A-111
+left open.
+
+**THE COMPLETE RUN, RECORDS KEPT.** Run at `6f0eb35` through the CLI's own
+`_probe_complete`. Reach at k = 10, spread across the frame: nine usable samples
+at 15 s to 15.9997 s, one second with no modelled cell. Stride 16, 16 passes.
+Setup 568.9 s, pass one 187.1 s; the printed prediction was ~59.4 min in total
+and the run took **3,803 s = 63.4 min**. Verdict `finding`, 338,159 cohorts, 16 of
+them head.
+
+**WHERE THE FINDINGS SIT, R270 §1(d).** Kept in
+`r270_corrected_complete_record.json` in the work root.
+
+| measure | value |
+|---|---|
+| finding cohorts | **163,143 of 338,159** (48%) |
+| finding rows | 163,143 — exactly one per cohort |
+| features, by cohorts | `net_delta_60s` 163,142 · `net_delta_30s` 77,238 · `vwap` 1,160 · `vwap_distance` 385 |
+| every trading date | 21 of 21, from 4,994 to 11,004 cohorts a day |
+| hour of day (UTC) | 14h 26,482 · 15h 39,981 · 16h 33,806 · 17h 33,473 · 18h 29,401 |
+| gap between consecutive findings | median 1 s; 162,922 gaps at or under the stride |
+| a same-pass neighbour is also a finding | 148,232 of 163,143 |
+| runs with gaps of at most 32 s | 36; the largest is 11,004 cohorts, 2025-01-10 14:30:16 to 18:59:59 |
+
+They are not clustered around events. They fill whole sessions.
+
+**ISOLATION, R270 §1(c).** Twenty chosen by rank, `round(i * (n - 1) / 19)` over
+the sorted finding seconds, spanning 2025-01-02 14:30:16 to 2025-01-31 18:59:59.
+Each was batched with one finding row. **All twenty vanished alone**: nineteen
+read `observed_silence` with liveness 1, and the frame's last second reads
+`none(no perturbed cell reached the pipeline)`. 2,156 s. **Branch two fired.**
+
+**The branch's consequence could not be shown as it was written.** R270 asked
+for the reach at those cohorts, to show it exceeds 15 s. Measured at all twenty:
+15 s at eighteen, 15.9997 s at one, nothing moved at the last; the maximum is
+**15.9997 s, equal to the run's own k = 10 reach**, which the 16 s stride already
+used. It exceeds R269's printed 15 s and does not exceed what the stride was
+derived from. So interference occurred at a separation above every
+single-second reach this run measured: 30 samples across the two measurements,
+28 of them usable.
+
+**WHICH NEIGHBOUR, measured rather than assumed.** That left two readings with
+opposite consequences. Interference from EARLIER cohorts, whose cells are
+available to the row, is no leak. A row reading a LATER cohort's cells, which are
+unavailable to it, would be a real leak attributed to the wrong cohort and
+removed by isolation; the reach control measures forward only and could not see
+it. Five of the twenty, by `round(i * (n - 1) / 4)`, were re-probed with their
+same-pass neighbours on one side only, each one rebuild on a shared clean base:
+
+| cohort F | earlier: 1 | earlier: 8 | later: 1 | later: 8 |
+|---|---|---|---|---|
+| 2025-01-02 14:30:16 | finding | finding | not | not |
+| 2025-01-10 15:01:58 | finding | finding | not | not |
+| 2025-01-17 14:46:17 | **not** | finding | not | not |
+| 2025-01-23 17:53:09 | finding | finding | not | not |
+| 2025-01-31 18:59:59 | finding | finding | no later neighbour | no later neighbour |
+
+**Earlier neighbours bring the finding back in every case; later neighbours in
+none.** The corrected builder is not shown to read later cells. The finding is
+interference, and reading one did not fire, so the Phase 1 record gains no
+caveat line. 2,256 s including the default run below.
+
+**WHAT IS NOT SEPARATED.** With one earlier neighbour, the selection corrupts F
+and that neighbour together, so whether the neighbour ALONE moves row F — a
+single-second reach of at least 16 s from it — or the two corruptions combine,
+was not measured. At 2025-01-17 one earlier neighbour did not suffice and eight
+did, so there the effect needs a neighbour further back, or several together.
+One reading fits the figures and is not established: the stride is
+`int(reach) + 1` = 16 s against a reach of 15.9997 s, a clearance of 0.3 ms, and a
+lookback that includes its 16 s boundary would move a row stamped exactly 16 s
+after a corrupted second while no sample happened to show it.
+
+**WHAT THIS MEANS FOR THE SHIPPED TOOL.** `leakaudit run --complete` on this
+builder, which has no leak, reports 163,143 finding cohorts and exits
+`EXIT_FINDINGS`. `--confirm` was not run on it. By its rank rule over the same
+163,143 findings at the default cap of 20 it would re-probe the same twenty
+cohorts isolated above, print twenty BATCHED ONLY lines, leave 163,123 not
+re-probed, and still exit 1. **Complete mode as shipped since R268 is not safe to
+read as evidence of a leak.** The shipped default is a different run: stride 97,
+400 cohorts on the same side read `observed_silence`, 0 findings, liveness 328,
+reach 15 s, 359 s.
+
+**"§2's margin rule", which R270's branch cited, does not resolve on disk.** R270
+§2 as delivered holds k = 10 and `--confirm`; no document in the repository
+carries a margin rule. Nothing was built against it.
+
+**THE GUARD TIMES FILE.** The guard ran on `cdca024`, and `6f0eb35` was committed
+while it ran; it stamped its timings with `6f0eb35`. That commit touched
+`cli.py` and a test, neither in `PROBE_PATH_SET.json`'s path set, so the eight
+SAME terms cover both commits.
+
+**R163 §1's exemption test.** *Would this have surfaced if the triggering question
+had not been asked?* **No.** Nobody runs the acceptance fixture complete, and the
+guard samples it.

@@ -95,6 +95,23 @@ measurement script recorded the verdict and not the count or location of the
 findings, so the establish that would tell these apart has not been run. **This
 is a Phase 2 instrument observation, not a `PREREG.md` §6.2 result, and it is not
 comparable to the Phase 1 corrected-side silence without a ruling.**
+
+**R270: THE FINDING IS INTERFERENCE, AND COMPLETE MODE AS SHIPPED PRODUCES IT.**
+Re-run with its records kept (reach at k = 10: 15.9997 s, stride 16, 3,803 s =
+63.4 min), the corrected side reported **163,143 finding cohorts of 338,159**,
+one row each, almost all on `net_delta_60s`, filling whole sessions (median gap
+1 s). Twenty chosen by rank were re-probed alone and **all twenty vanished**; the
+reach measured at them is 15.9997 s, the run's own. Re-probed beside only their
+EARLIER same-pass neighbours the findings return (four of five with one
+neighbour, five of five with eight); beside only their LATER neighbours they
+never do. Earlier cells are available to the row, so this is interference and
+not a leak in the corrected builder. **So `--complete` on a builder with no leak
+reports tens of thousands of findings and exits 1.** Its stride is
+`int(reach) + 1` = 16 s against a reach of 15.9997 s, a clearance of 0.3 ms; that
+this boundary is the cause is one reading and not established. The shipped
+default (stride 97, 400 cohorts) on the same side reads `observed_silence`, 0
+findings, liveness 328. D-V30A-114. **Phase 2 instrument observations; no
+`PREREG.md` §6.2 result and no Phase 1 figure moves.**
 **R270 §0 rulings, recorded.** *"Under an hour" is retired:* it was a
 build-or-stop line and never a specification — the cost is measured, printed
 and predicted, and nothing is held to a figure. *The prediction prints both

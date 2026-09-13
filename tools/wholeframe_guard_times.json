@@ -48,6 +48,14 @@
    "contaminated": 401.5,
    "corrected": 408.0,
    "total": 842.6
+  },
+  {
+   "when": "2026-09-13 10:27",
+   "commit": "6f0eb35",
+   "capture": 30.3,
+   "contaminated": 379.3,
+   "corrected": 374.0,
+   "total": 783.6
   }
  ]
 }
