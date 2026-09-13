@@ -226,6 +226,19 @@ def build_parser() -> argparse.ArgumentParser:
                           "DESIGN.md's `full`, because `full` was a MODE that "
                           "also switched reach refinement on, and R267 ruled "
                           "there are no modes")
+    run.add_argument("--confirm", action="store_true",
+                     help="re-probe every batched finding ALONE -- that "
+                          "cohort's cells corrupted and nothing else, one "
+                          "rebuild each -- and class it CONFIRMED or BATCHED "
+                          "ONLY -- NOT CONFIRMED. A batched pass's stride sits "
+                          "one second above a reach that is a lower bound, so a "
+                          "finding there may be a neighbour's; alone, it "
+                          "cannot be. Nothing is dropped. Needs --model")
+    run.add_argument("--confirm-cap", type=int, default=None, metavar="N",
+                     help="how many finding cohorts --confirm re-probes; above "
+                          "it they are chosen by rank and the rest are printed "
+                          "as not re-probed. Each costs a rebuild. Default %d, "
+                          "a cost choice" % DEFAULT_CONFIRM_CAP)
     run.add_argument("--accept-partial-coverage", action="store_true",
                      help="treat an INCOMPLETE-and-silent run as clean. Without "
                           "this, a run that probed a subsample and found "
@@ -419,9 +432,98 @@ def _probe_complete(frames, build, model, config, stride, slice_from, padding):
     return combined, note
 
 
+#: How many batched finding cohorts `--confirm` re-probes alone. R270 §2(b).
+#: A COST CHOICE, printed as one: each is a rebuild and a classification over
+#: the whole output, measured at R270 on the acceptance fixture as 574 s for the
+#: two clean builds and five isolations together.
+DEFAULT_CONFIRM_CAP = 20
+
+
+def _confirm_findings(frames, build, model, config, result, cap):
+    """Re-probe batched findings ALONE and class each one. R270 §2(b).
+
+    WHY. A batched pass corrupts many seconds in one rebuild, and its stride is
+    one second above a reach that is only a lower bound, so a finding it reports
+    may depend on a NEIGHBOUR's corruption. `isolate_cohorts` corrupts one
+    cohort and nothing else, so a finding that persists there is the cohort's
+    own by construction and carries no stride residual.
+
+    THE CLASSES. CONFIRMED -- persisted alone. BATCHED ONLY -- NOT CONFIRMED --
+    did not; it is printed and counted, never dropped, because failing isolation
+    shows the finding was not this cohort's own, not that the row is clean.
+    NOT RE-PROBED -- above the cap, and neither confirmed nor disconfirmed.
+
+    Above the cap the re-probed cohorts are chosen by rank over the findings in
+    time order, `round(i * (n - 1) / (cap - 1))`, so the first and last are
+    always among them and the choice is reproducible.
+
+    Returns (lines, summary).
+    """
+    from .availability import isolate_cohorts
+    batched = sorted(result.findings, key=lambda c: c.second)
+    n = len(batched)
+    summary = {"batched": n, "confirmed": 0, "batched_only": 0,
+               "not_reprobed": 0, "cap": cap}
+    if n == 0:
+        return (["CONFIRM (R270 section 2(b)): no batched finding to confirm. "
+                 "A silence keeps its residual -- a propagation path the reach "
+                 "samples did not exercise."], summary)
+    if n <= cap:
+        ranks = list(range(n))
+        how = "all %d batched finding cohort(s), within the cap of %d" % (n, cap)
+    else:
+        ranks = ([0] if cap == 1 else
+                 sorted({int(round(i * (n - 1) / float(cap - 1)))
+                         for i in range(cap)}))
+        how = ("%d of %d batched finding cohort(s), over the cap of %d, chosen "
+               "by rank round(i*(n-1)/(cap-1)) over the findings in time order"
+               % (len(ranks), n, cap))
+    chosen = [batched[r] for r in ranks]
+    iso = isolate_cohorts(frames, build, model, [c.second for c in chosen],
+                          reach=result.reach,
+                          batched={c.second: c for c in batched},
+                          column_modes=config.column_modes or None,
+                          bar_duration=config.bar_duration)
+    lines = ["CONFIRM (R270 section 2(b)): %s, each re-probed ALONE -- that "
+             "cohort's cells corrupted and nothing else, one rebuild each, the "
+             "same classification rule. The cap is a cost choice "
+             "(--confirm-cap)." % how]
+    for r in iso:
+        if r.persisted:
+            summary["confirmed"] += 1
+            lines.append(
+                "  CONFIRMED  %s: a finding with nothing else corrupted -- %d "
+                "row(s), feature(s) %s. No other cohort was in its rebuild, so "
+                "no stride residual applies to it."
+                % (r.second, r.moved, ", ".join(r.features) or "-"))
+        else:
+            summary["batched_only"] += 1
+            lines.append(
+                "  BATCHED ONLY -- NOT CONFIRMED  %s: %d finding row(s) batched "
+                "(feature(s) %s); probed alone: %s. The batched finding depended "
+                "on another cohort's corruption in the same rebuild. It is kept "
+                "and counted: failing isolation shows it was not this cohort's "
+                "own, not that the row is clean."
+                % (r.second, r.batched_moved,
+                   ", ".join(r.batched_features) or "-", r.verdict))
+    summary["not_reprobed"] = n - len(iso)
+    if summary["not_reprobed"]:
+        lines.append(
+            "  NOT RE-PROBED: %d batched finding cohort(s) above the cap stay "
+            "batched findings, neither confirmed nor disconfirmed."
+            % summary["not_reprobed"])
+    lines.append(
+        "CONFIRM SUMMARY: %d confirmed, %d batched only, %d not re-probed, of %d "
+        "batched finding cohort(s). The exit class counts all %d."
+        % (summary["confirmed"], summary["batched_only"],
+           summary["not_reprobed"], n, n))
+    return lines, summary
+
+
 def _run_availability(frames, build, model_path, stride, max_cohorts,
                       slice_from=None, padding=None, label_cohorts=None,
-                      complete=False):
+                      complete=False, confirm=False,
+                      confirm_cap=DEFAULT_CONFIRM_CAP):
     """The availability probe, end to end, from a declared model file."""
     from .coverage import DEFAULT_L2A_COHORTS, budget_arithmetic
     label_cohorts = (DEFAULT_L2A_COHORTS if label_cohorts is None
@@ -596,6 +698,12 @@ def _run_availability(frames, build, model_path, stride, max_cohorts,
     traces = traces_for(result, elig.eligible, case_id="user")
     for note in elig.notes:
         result.notes.append(note)
+    # R270 §2(b). After the traces, so every batched finding is already in the
+    # output and the classes below annotate it rather than replace it.
+    if confirm:
+        confirm_lines, _summary = _confirm_findings(frames, build, model,
+                                                    config, result, confirm_cap)
+        result.notes.extend(confirm_lines)
 
     # A FINDING PRODUCED UNDER DRAFTED STRUCTURE CARRIES THAT FACT. R233 §1(d).
     #
@@ -726,6 +834,26 @@ def _main(argv=None) -> int:
               "different offsets, and without an availability model there are "
               "no cohorts to complete.", file=sys.stderr)
         return EXIT_USAGE
+    # R270 §2(b). `--confirm` re-probes the availability probe's findings, so
+    # it needs the model for the same reason `--complete` does; a cap with
+    # nothing to cap, or a cap that would re-probe nothing, is a declaration the
+    # run could only ignore.
+    if getattr(args, "confirm", False) and not getattr(args, "model", None):
+        print("leakaudit: --confirm needs --model. It re-probes the availability "
+              "probe's findings one cohort at a time, and without an "
+              "availability model there are no findings of that probe to "
+              "confirm.", file=sys.stderr)
+        return EXIT_USAGE
+    _cap = getattr(args, "confirm_cap", None)
+    if _cap is not None and not getattr(args, "confirm", False):
+        print("leakaudit: --confirm-cap without --confirm caps nothing. Add "
+              "--confirm, or drop the cap.", file=sys.stderr)
+        return EXIT_USAGE
+    if _cap is not None and _cap < 1:
+        print("leakaudit: --confirm-cap must be at least 1; a cap of %d would "
+              "re-probe no finding while the run said it confirmed them."
+              % _cap, file=sys.stderr)
+        return EXIT_USAGE
 
     if args.command == "schema":
         from .model_file import SCHEMA_DOC
@@ -783,7 +911,11 @@ def _main(argv=None) -> int:
                                    slice_from=args.slice_from,
                                    padding=args.padding,
                                    label_cohorts=args.label_cohorts,
-                                   complete=args.complete)
+                                   complete=args.complete,
+                                   confirm=args.confirm,
+                                   confirm_cap=(DEFAULT_CONFIRM_CAP
+                                                if args.confirm_cap is None
+                                                else args.confirm_cap))
     else:
         result = audit(frames, build)
 

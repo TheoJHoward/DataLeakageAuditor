@@ -5944,3 +5944,49 @@ passes remaining, and a total.
 **R163 §1's exemption test.** *Would this have surfaced if the triggering question
 had not been asked?* **Not applicable** — this entry records a build and its
 positive, not a defect.
+
+## D-V30A-113 — `--confirm` classes every batched finding by whether it survives being probed alone
+
+**BUILT BECAUSE D-V30A-112'S POSITIVE HELD**, which R270 §2(b) made the condition.
+A batched pass's stride sits one second above a measured reach, and the reach is
+a lower bound, so a finding it reports may depend on a neighbour's corruption.
+The isolation re-probe answers that per cohort; `--confirm` is that instrument
+on the command line.
+
+**WHAT IT DOES.** After the traces are built — so every batched finding is
+already in the output — each batched finding cohort is re-probed through
+`isolate_cohorts` and printed in one of three classes:
+
+* **CONFIRMED** — still a finding with nothing else corrupted in its rebuild. No
+  stride residual applies to it, because no other cohort was there.
+* **BATCHED ONLY — NOT CONFIRMED** — not a finding alone. Printed with its batched
+  rows and features and its isolated verdict, and **counted in the exit class**:
+  failing isolation shows the finding was not that cohort's own, which is not a
+  showing that the row is clean.
+* **NOT RE-PROBED** — above `--confirm-cap`, neither confirmed nor disconfirmed.
+
+Above the cap the re-probed cohorts are chosen by rank over the findings in time
+order, `round(i * (n - 1) / (cap - 1))`, so the first and last are always
+included. The default cap is 20, a cost choice printed in the help: each
+re-probe is a rebuild and a classification over the whole output, and five cost
+574 s on the acceptance fixture together with the two clean builds. A silence
+keeps the reach residual sentence; a confirmed finding does not carry it.
+
+**REFUSED:** `--confirm` without `--model`; `--confirm-cap` without `--confirm`;
+a cap below 1. `cli.py` is outside `PROBE_PATH_SET.json`'s path set, so this
+batch voids no guard result.
+
+**THE PAIR IN THE SUITE** (`tests/phase1/test_confirm.py`). HELD: frames, model,
+`--stride 3`, `--confirm`. VARIED: the builder. One reading its own second's
+cell gives 20 batched findings, all 20 CONFIRMED. One reading the previous
+second's cell except on decision seconds 50–58, where it reads three seconds
+back — both available, so nothing to find — is measured by the default reach
+control at seconds 15, 30 and 45, which see only the one-second lookback, so
+stride 3 is accepted; the batch then reports findings at 51, 54 and 57, and all
+three are BATCHED ONLY, printed and counted. The first test run reported zero
+CONFIRMED lines on the first builder: the count regex anchored on whitespace
+and the CLI renders notes behind a `- ` bullet. The instrument had printed all
+20; the regex was corrected.
+
+**R163 §1's exemption test.** *Would this have surfaced if the triggering question
+had not been asked?* **Not applicable** — a build, not a defect.

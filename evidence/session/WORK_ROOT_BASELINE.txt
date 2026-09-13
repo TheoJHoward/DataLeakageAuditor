@@ -931,6 +931,7 @@ d109.md
 d110.md
 d111.md
 d112.md
+d113.md
 d12_negative_test.py
 d14_tests.py
 d15_test.py
@@ -1172,6 +1173,7 @@ msg29.txt
 msg3.txt
 msg30.txt
 msg31.txt
+msg32.txt
 msg4.txt
 msg5.txt
 msg6.txt
