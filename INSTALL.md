@@ -20,6 +20,10 @@ python -m pip install -e ".[dev]"
 
 Requires **Python ≥ 3.11**.
 
+## Contributing
+
+Commits pass through a commit-msg hook — enable it with `git config core.hooksPath .githooks` — which needs `py` or `python3` on the clone, and a clone without it live does not certify.
+
 ## What was actually verified, and what "verified" means here
 
 **Building is not installing, and installing is not importing.** All three were run:

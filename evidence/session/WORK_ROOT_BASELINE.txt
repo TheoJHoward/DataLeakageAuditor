@@ -928,6 +928,7 @@ clidemo/mypipe.py
 column_measurement.json
 d108.md
 d109.md
+d110.md
 d12_negative_test.py
 d14_tests.py
 d15_test.py
@@ -1165,6 +1166,7 @@ msg25.txt
 msg26.txt
 msg27.txt
 msg28.txt
+msg29.txt
 msg3.txt
 msg4.txt
 msg5.txt
@@ -1451,6 +1453,11 @@ r267_fixture_reach.py
 r267_reach.py
 r268_complete_cost.py
 r268_full_pass.py
+r269_corrected_complete.py
+r269_head_red.py
+r269_l2a_cost_and_head.py
+r269_manifest.py
+r269_population_counts.py
 r89.py
 r95_pointer.py
 r95a.py

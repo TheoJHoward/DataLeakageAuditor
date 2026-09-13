@@ -244,3 +244,56 @@ def check_padding(padding, result) -> None:
     declared = pd.Timedelta(padding)
     if declared <= result.measured:
         raise ReachError(_too_short("the declared padding", declared, result))
+
+
+def head_cutoff(raw, model, decision, result) -> tuple:
+    """(cutoff, frame_start, reason) -- where a frame's head ends. R269 §2(b).
+
+    THE REACH WAS FOR THIS. Reach is the builder's lookback measured from
+    behaviour: a row at `d` reads back to `d - reach`. So a row deciding before
+    `frame_start + reach` reads cells from before the frame begins -- cells that
+    are not in the data handed to the probe and so can never be perturbed. Its
+    silence is about cells nobody touched, and it is reported as INELIGIBLE, not
+    as observed_silence. No declaration is needed to know this, which is the
+    point: a plain frame carries no record of what it was cut from, and a
+    measurement does not need one.
+
+    `frame_start` is the LATEST start among the modelled aggregate frames, on the
+    decision clock, because a row reads every frame and the frame that starts
+    last is the one whose head it reaches past first. Frames the model does not
+    describe are not consulted, the same rule `slicing.frame_starts` follows.
+
+    Returns (None, None, reason) when there is nothing to measure against, and
+    the reason says the residual is then total rather than implying a head of
+    zero.
+    """
+    from .availability import to_decision_clock
+
+    measured = getattr(result, "measured", None)
+    k = getattr(result, "k", 0)
+    if measured is None:
+        return None, None, (
+            "HEAD OF FRAME NOT ASSESSED: the reach was not measured, so how far "
+            "a row's lookback reaches past the frame's first row is unknown, and "
+            "every silence near the start of the frame carries that residual in "
+            "full.")
+    starts = []
+    for fname, keycol in sorted(model.aggregate_frames.items()):
+        f = raw.get(fname)
+        if f is None or keycol not in getattr(f, "columns", ()):
+            continue
+        keys = pd.to_datetime(f[keycol], errors="coerce").dropna()
+        if len(keys):
+            starts.append(to_decision_clock(keys, decision).min())
+    if not starts:
+        return None, None, ("HEAD OF FRAME NOT ASSESSED: no modelled frame has a "
+                            "readable key to take its first row from.")
+    frame_start = max(starts)
+    cutoff = frame_start + measured
+    return cutoff, frame_start, (
+        "lookback exceeds the frame's head; cells before the frame cannot be "
+        "probed. Rows deciding before %s -- the frame's first row at %s plus the "
+        "measured reach of %s -- read back past it, so no silence is claimed for "
+        "them. The reach is a LOWER BOUND from %d sample(s): a lookback that "
+        "showed in none of %d samples is the residual that remains."
+        % (cutoff, frame_start, measured, k, k))

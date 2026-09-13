@@ -61,8 +61,10 @@ argument `checks.py` was built on.
 ### C. `DESIGN.md` §5.2 — `quick` mode as a first-class CI default
 **Status: BUILT (R267, R268) — and ruled other than §5.2 wrote it.** `quick`
 is not a mode. L2a rebuilds once per cohort, so its budget is a COHORT COUNT,
-derived from a measured build time and printed as a default: 16, where the
-shipped 25 was over the ten-minute target with no arithmetic written down. L3.1
+derived from measured cost and printed as a default: **13** (R269), from 67.0 s
+fixed + 40.5 s per L2a cohort against a 600 s target. R267's 16 had priced an L2a
+cohort at a clean build's 34.9 s, and the shipped 25 was over the target with no
+arithmetic written down; both exceed 600 s at the measured cost. L3.1
 batches, so its budget is PASSES, printed as `L3.1 PASS BUDGET`.
 **Coverage is three states** — probed, eligible but unprobed, ineligible under
 the model — for cohorts and for rows, never thresholded, and checked to cover
@@ -128,13 +130,20 @@ declaration can. `test_THE_RESIDUAL_HOLE_...` fails if a future change closes it
 tool cannot distinguish that from data that starts late.
 
 ### E. `DESIGN.md` §1.2 — domain profiles
-**Status: NOT STARTED.** A table of profiles (`generic` and others) supplying
-default `column_roles`, `label_availability` and `ties`.
-**What it would take, and the tension to resolve first:** profiles are defaults,
-and R236 removed a default that turned a real leak into `observed_silence`. A
-profile that silently supplies `column_roles` is that defect with a nicer name.
-**Value:** high for §139's adoption surface, **conditional on** the defaults
-being declared-and-visible rather than assumed.
+**Status: NOT STARTED — and its tension is RULED (R269 §3), recorded here with
+its substance so the next establish needs no ask.** A profile is a **named
+declaration, not a default**. The user names it — `--profile <name>` — and every
+value it supplies is printed in ABOUT THIS RUN as `from profile <name>`, **per
+key**. Nothing fills silently: the user's act is naming the profile, and the
+per-key print makes each filled value theirs to see. **A profile never supplies a
+decision column or a decision frame**; those stay required. Built next round,
+establish first.
+**Why that resolves the tension this item carried:** R236 removed a default that
+turned a real leak into `observed_silence`, and a profile silently supplying
+`column_roles` would have been that defect with a nicer name. A profile the user
+names, whose every filled value is printed, is not silent — and the two values
+that decide what a silence even refers to cannot come from one.
+**Value:** high for §139's adoption surface, on the terms above.
 
 ### F. `align_key`'s timezone cases, enumerated
 **Status: PARTIALLY BUILT.** The function ships and refuses the aware/naive

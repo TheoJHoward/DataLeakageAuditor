@@ -14,14 +14,17 @@
       by the user, defaulting to a number chosen from cost and PRINTED AS A
       DEFAULT, the way stride 97 is. Complete for L2a is every eligible cohort.
 
-THE DEFAULT'S ARITHMETIC, MEASURED RATHER THAN PICKED. On the acceptance fixture
-a build is **34.9 s** (R267, `zc` 2025-01, 338,159 rows), and L2a spends one
-rebuild per cohort plus one for the baseline, so a run costs about
-`(N + 1) x 34.9 s`. Ten minutes is 600 s, which gives `N <= 16`. **The shipped
-default was 25**, or about 14.5 minutes -- over the target by half again, and
-nobody had written the arithmetic down to notice. It is 16 here, and the number
-travels with the sum that produced it so the next person can redo it against
-their own build time instead of inheriting mine.
+THE DEFAULT'S ARITHMETIC, MEASURED RATHER THAN PICKED -- AND PRICED TWICE. An L2a
+run on the acceptance fixture (`zc` 2025-01, 338,159 rows) was timed at 1, 2 and
+4 cohorts at R269 and fits **67.0 s fixed + 40.5 s per cohort**, so a run costs
+`67.0 + N x 40.5`. The 600 s target is a cost choice, which gives **N = 13**
+(594 s; 14 would be 634 s). **R267 got 16** by charging each cohort at a clean
+build's 34.9 s -- a real measurement of a different quantity, the cheapest of
+three -- and **the shipped default was 25**, over the target by far with nobody's
+arithmetic beside it. At the measured cost both exceed 600 s. R262's ~48 s per
+cohort, taken on an earlier tree, is superseded by the R269 figure. The number
+travels with the sum that produced it, so the next person redoes it against their
+own build instead of inheriting mine.
 
 COVERAGE IS REPORTED, NEVER THRESHOLDED, IN THREE STATES (R268 §3(b)). Every
 decision second is probed, eligible-but-unprobed, or ineligible under the declared
@@ -54,27 +57,42 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-#: Seconds per build on the acceptance fixture, measured at R267. Carried so the
-#: default below can be re-derived rather than trusted.
-FIXTURE_BUILD_SECONDS = 34.9
+#: WHAT AN L2a RUN COSTS, MEASURED AT R269 on the acceptance fixture (`zc`
+#: 2025-01, CPython 3.12.10) at 1, 2 and 4 cohorts: 107.9 s, 147.5 s, 229.3 s.
+#: A least-squares fit gives a FIXED part -- the baseline build, the determinism
+#: build, setup -- and a PER-COHORT part -- one rebuild plus its corruption and
+#: comparison. Marginals 39.6 s and 40.9 s.
+#:
+#: THE DEFAULT WAS PRICED WRONG UNTIL R269. R267 computed `(N + 1) x 34.9 s`,
+#: which charged an L2a cohort at a CLEAN BUILD's cost -- the cheapest of three
+#: different quantities (a clean build 34.9 s, an L2a cohort ~40.5 s, a reach
+#: rebuild 83.9 s). R262 had measured an L2a cohort at ~48 s on an earlier tree;
+#: that figure is superseded by this one, taken on this tree the same way.
+FIXTURE_L2A_FIXED_SECONDS = 67.0
+FIXTURE_L2A_PER_COHORT_SECONDS = 40.5
 
-#: The ten-minute target §5.2 is written against.
+#: The target a default run is held under. A COST CHOICE, and printed as one.
 BUDGET_TARGET_SECONDS = 600
 
-#: `(N + 1) * 34.9 <= 600` -> `N <= 16`. A COST CHOICE, printed as one.
-DEFAULT_L2A_COHORTS = 16
+#: `floor((600 - 67.0) / 40.5)` = 13: 594 s, where 14 would be 634 s.
+DEFAULT_L2A_COHORTS = 13
 
 
-def budget_arithmetic(n=DEFAULT_L2A_COHORTS, build_seconds=FIXTURE_BUILD_SECONDS):
+def budget_arithmetic(n=DEFAULT_L2A_COHORTS,
+                      fixed_seconds=FIXTURE_L2A_FIXED_SECONDS,
+                      per_cohort_seconds=FIXTURE_L2A_PER_COHORT_SECONDS):
     """The sum behind the default, so the number is never bare."""
     return ("L2a cohort budget: %d (default %d). L2a rebuilds ONCE PER COHORT, "
-            "so the cost is about (N + 1) x %.1f s = %.0f s on the acceptance "
-            "fixture, against a %d s target. The default is derived from that "
-            "sum, not chosen: (%d + 1) x %.1f = %.0f s."
-            % (n, DEFAULT_L2A_COHORTS, build_seconds,
-               (n + 1) * build_seconds, BUDGET_TARGET_SECONDS,
-               DEFAULT_L2A_COHORTS, build_seconds,
-               (DEFAULT_L2A_COHORTS + 1) * build_seconds))
+            "so a run costs about %.1f s fixed + N x %.1f s per cohort = %.0f s "
+            "on the acceptance fixture, against a %d s target, which is a cost "
+            "choice. The default is derived, not picked: floor((%d - %.1f) / "
+            "%.1f) = %d, i.e. %.0f s. Priced at the measured L2a cohort, not at "
+            "a clean build."
+            % (n, DEFAULT_L2A_COHORTS, fixed_seconds, per_cohort_seconds,
+               fixed_seconds + n * per_cohort_seconds, BUDGET_TARGET_SECONDS,
+               BUDGET_TARGET_SECONDS, fixed_seconds, per_cohort_seconds,
+               DEFAULT_L2A_COHORTS,
+               fixed_seconds + DEFAULT_L2A_COHORTS * per_cohort_seconds))
 
 
 @dataclass
@@ -101,6 +119,16 @@ class Coverage:
     rows_unprobed: int = 0
     rows_ineligible: int = 0
     context_rows: int = 0
+    #: THE HEAD OF THE FRAME, a SUBSET of the ineligible counts above. R269 §2(b).
+    #: Seconds a declared frame carries a row in, but whose rows decide within the
+    #: measured reach of the frame's first row -- their lookback reads cells
+    #: before the frame, which cannot be perturbed. Counted in the ineligible
+    #: column, because no silence is claimed for them, and broken out with their
+    #: own reason, because "no declared frame carries a row" and "the lookback
+    #: runs off the front of the data" are different facts about a second.
+    cohorts_head: int = 0
+    rows_head: int = 0
+    head_reason: str = ""
     #: L2a's two numbers. Its eligible set is every decision second it could
     #: probe, independent of stride and budget -- the same rule as L3.1's.
     l2a_probed: int = 0
@@ -171,6 +199,16 @@ class Coverage:
                    cell(self.rows_unprobed, r_all),
                    cell(self.rows_ineligible, r_all)),
         ]
+        if self.cohorts_head:
+            lines.append(
+                "  of the ineligible: %d cohort(s) / %d row(s) are the HEAD OF THE "
+                "FRAME -- %s The other %d cohort(s) / %d row(s) are ineligible "
+                "because no declared frame carries a row in them."
+                % (self.cohorts_head, self.rows_head, self.head_reason,
+                   self.cohorts_ineligible - self.cohorts_head,
+                   self.rows_ineligible - self.rows_head))
+        elif self.head_reason:
+            lines.append("  " + self.head_reason)
         if self.context_rows:
             lines.append(
                 "  %d row(s) sit in a slice's padding: context the builder "

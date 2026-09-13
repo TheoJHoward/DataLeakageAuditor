@@ -171,3 +171,16 @@ def test_the_DEFAULT_run_prints_its_pass_budget_too(work, capsys):
     _run(work, "clean")
     out = capsys.readouterr().out
     assert "L3.1 PASS BUDGET: 1 of" in out
+
+
+def test_a_complete_run_PREDICTS_its_remaining_time_after_pass_one(work, capsys):
+    """R269 §0(a). The plan prints before any pass, and after pass one the time
+    left prints as that pass's cost times the passes remaining. Both have to
+    precede the verdict, or the warning arrives after the wait it warns of."""
+    _run(work, "clean", "--complete")
+    out = capsys.readouterr().out
+    assert "COMPLETE RUN PLANNED" in out
+    assert "pass(es) remaining" in out and "at this pass's cost" in out
+    assert out.index("COMPLETE RUN PLANNED") < out.index("pass(es) remaining")
+    assert out.index("pass(es) remaining") < out.index("COMPLETE: yes"), (
+        "the prediction printed after the result, which is no prediction")

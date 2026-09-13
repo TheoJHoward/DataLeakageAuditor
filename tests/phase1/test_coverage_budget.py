@@ -1,13 +1,15 @@
-"""C: the budget, the three coverage states, and the exit classes. R267 §3, R268 §3.
+"""C: the budget, the three coverage states, and the exit classes. R267-R269 §3.
 
 R268 restored the denominator to every cohort the declared model makes
 probe-able, independent of stride and budget, so a default run at stride 97 is
-INCOMPLETE and says so. Each pair below holds everything but one quantity fixed
-and says what is held -- R257's rule for a controlled comparison.
+INCOMPLETE and says so. R269 repriced the L2a default at the measured cost of an
+L2a cohort rather than a clean build. Each pair below holds everything but one
+quantity fixed and says what is held -- R257's rule for a controlled comparison.
 """
 from __future__ import annotations
 
 import inspect
+import math
 import sys
 from pathlib import Path
 
@@ -20,9 +22,14 @@ for p in (str(ROOT), str(ROOT / "src")):
 
 from leakaudit import cli                                     # noqa: E402
 from leakaudit.coverage import (                              # noqa: E402
-    BUDGET_TARGET_SECONDS, DEFAULT_L2A_COHORTS, FIXTURE_BUILD_SECONDS,
-    AuditIncomplete, Coverage, assert_audit_complete, budget_arithmetic)
+    BUDGET_TARGET_SECONDS, DEFAULT_L2A_COHORTS, FIXTURE_L2A_FIXED_SECONDS,
+    FIXTURE_L2A_PER_COHORT_SECONDS, AuditIncomplete, Coverage,
+    assert_audit_complete, budget_arithmetic)
 from leakaudit.label_probe import run_probe_l2a              # noqa: E402
+
+#: A clean build of the fixture, R267. Named here only so a test can say the
+#: default is NOT priced at it.
+CLEAN_BUILD_SECONDS = 34.9
 
 
 def _cov(probed, unprobed, ineligible=0, l2a_p=0, l2a_e=0, context=0):
@@ -35,25 +42,40 @@ def _cov(probed, unprobed, ineligible=0, l2a_p=0, l2a_e=0, context=0):
                     l2a_probed=l2a_p, l2a_eligible=l2a_e)
 
 
+def _cost(n):
+    return FIXTURE_L2A_FIXED_SECONDS + n * FIXTURE_L2A_PER_COHORT_SECONDS
+
+
 # --------------------------------------------------------------------------
-# §3(b)/(e) -- the default is derived, printed, and has ONE definition
+# §1 of R269 -- the default is derived from the MEASURED L2a cost
 # --------------------------------------------------------------------------
 
-def test_the_default_is_DERIVED_from_the_measured_build_time():
-    """`(N + 1) * build <= target`, and N is the LARGEST such value."""
-    assert (DEFAULT_L2A_COHORTS + 1) * FIXTURE_BUILD_SECONDS <= BUDGET_TARGET_SECONDS
-    assert (DEFAULT_L2A_COHORTS + 2) * FIXTURE_BUILD_SECONDS > BUDGET_TARGET_SECONDS
+def test_the_default_is_DERIVED_from_the_measured_L2a_cost():
+    """`fixed + N x per_cohort <= target`, and N is the LARGEST such value."""
+    assert _cost(DEFAULT_L2A_COHORTS) <= BUDGET_TARGET_SECONDS
+    assert _cost(DEFAULT_L2A_COHORTS + 1) > BUDGET_TARGET_SECONDS
+    assert DEFAULT_L2A_COHORTS == math.floor(
+        (BUDGET_TARGET_SECONDS - FIXTURE_L2A_FIXED_SECONDS)
+        / FIXTURE_L2A_PER_COHORT_SECONDS)
 
 
-def test_the_SHIPPED_default_it_replaced_was_over_the_target():
-    """25 cohorts is ~15 minutes against a ten-minute target."""
-    assert (25 + 1) * FIXTURE_BUILD_SECONDS > BUDGET_TARGET_SECONDS
+def test_the_default_is_NOT_priced_at_a_clean_build():
+    """R269 §1. R267 charged an L2a cohort at a clean build's 34.9 s -- the
+    cheapest of three different quantities. The measured cohort costs more, and
+    a default computed at the build cost comes out too large."""
+    assert FIXTURE_L2A_PER_COHORT_SECONDS > CLEAN_BUILD_SECONDS
+    priced_at_build = math.floor(BUDGET_TARGET_SECONDS / CLEAN_BUILD_SECONDS) - 1
+    assert priced_at_build > DEFAULT_L2A_COHORTS
+
+
+def test_BOTH_defaults_it_replaced_are_over_the_target_at_the_measured_cost():
+    """25 (shipped) and 16 (R267, priced at the build) each exceed 600 s."""
+    for replaced in (25, 16):
+        assert _cost(replaced) > BUDGET_TARGET_SECONDS, replaced
 
 
 def test_25_IS_GONE_from_both_entry_points():
-    """R268 §3(e). At R267 the CLI defaulted to 16 while `run_probe_l2a`'s own
-    signature still said 25 -- two defaults for one quantity, differing by the
-    door a user came in through. The library default is the derived constant."""
+    """R268 §3(e): one default for one quantity, at both doors."""
     assert (inspect.signature(run_probe_l2a).parameters["max_cohorts"].default
             == DEFAULT_L2A_COHORTS)
     for rel in ("src/leakaudit/label_probe.py", "src/leakaudit/cli.py"):
@@ -62,12 +84,14 @@ def test_25_IS_GONE_from_both_entry_points():
         assert "min(max_cohorts, 25)" not in src
 
 
-def test_the_budget_note_PRINTS_the_default_and_the_sum():
+def test_the_budget_note_PRINTS_both_measured_figures_and_the_target_as_a_choice():
     note = budget_arithmetic(DEFAULT_L2A_COHORTS)
     assert "default %d" % DEFAULT_L2A_COHORTS in note
     assert "ONCE PER COHORT" in note
-    assert "%.1f" % FIXTURE_BUILD_SECONDS in note
-    assert str(BUDGET_TARGET_SECONDS) in note
+    assert "%.1f s fixed" % FIXTURE_L2A_FIXED_SECONDS in note
+    assert "%.1f s per cohort" % FIXTURE_L2A_PER_COHORT_SECONDS in note
+    assert "cost choice" in note
+    assert "not at a clean build" in note
 
 
 def test_a_NON_default_budget_still_prints_the_default_beside_it():
@@ -77,13 +101,11 @@ def test_a_NON_default_budget_still_prints_the_default_beside_it():
 
 
 # --------------------------------------------------------------------------
-# §3(a)(b) -- the denominator, and the three states
+# §3(a)(b) of R268 -- the denominator, and the three states
 # --------------------------------------------------------------------------
 
 def test_STRIDE_EXCLUDED_seconds_ARE_counted_unprobed():
-    """R268 §3(a), reversing R267. The default run's shape: 13 probed, 1,187
-    eligible and not probed. That run is INCOMPLETE, and the class saying so is
-    the point."""
+    """The default run's shape: 13 probed, 1,187 eligible and not probed."""
     default_run = _cov(13, 1187)
     assert not default_run.complete
     assert default_run.cohorts_eligible == 1200
@@ -98,8 +120,6 @@ def test_the_table_has_THREE_columns_for_cohorts_AND_rows():
 
 
 def test_a_run_complete_over_its_PROBED_cohorts_does_not_read_as_covering_ALL_rows():
-    """R268 §3(b): "a run that is complete over 13 cohorts must not read as
-    covering 1,200 rows". The unprobed rows are a column, not an omission."""
     t = _cov(13, 1187).table()
     assert "11870" in t, "the unprobed rows are shown"
     assert "130 (1.1%)" in t, "the probed rows are a share of all subjects"
@@ -120,8 +140,23 @@ def test_padding_rows_are_CONTEXT_counted_apart():
     assert "context the builder reads" in cov.table()
 
 
+def test_the_HEAD_is_a_SUBSET_of_ineligible_broken_out_with_its_reason():
+    """R269 §2(b). Counted IN the ineligible column, and distinguished from a
+    second no declared frame carries a row in."""
+    cov = Coverage(cohorts_probed=10, cohorts_unprobed=0, cohorts_ineligible=5,
+                   rows_probed=100, rows_unprobed=0, rows_ineligible=50,
+                   cohorts_head=2, rows_head=20,
+                   head_reason="lookback exceeds the frame's head; cells before "
+                               "the frame cannot be probed.")
+    cov.verify(15, 150)
+    t = cov.table()
+    assert "HEAD OF THE FRAME" in t
+    assert "2 cohort(s) / 20 row(s)" in t
+    assert "3 cohort(s) / 30 row(s) are ineligible because no declared frame" in t
+
+
 def test_NO_LEVEL_is_defined_anywhere():
-    """A level is a threshold, and thresholds get adjusted toward. §3(c)."""
+    """A level is a threshold, and thresholds get adjusted toward."""
     src = (ROOT / "src" / "leakaudit" / "coverage.py").read_text(encoding="utf-8")
     for word in ("MIN_COVERAGE", "COVERAGE_LEVEL", "REQUIRED_COVERAGE",
                  "threshold ="):
@@ -129,7 +164,6 @@ def test_NO_LEVEL_is_defined_anywhere():
 
 
 def test_L2a_NOT_RUN_does_not_make_the_audit_incomplete():
-    """`unsupported` is a verdict about that row, not a coverage shortfall."""
     assert _cov(72, 0).complete
 
 
@@ -140,7 +174,7 @@ def test_L2a_eligible_is_NOT_divided_by_its_stride():
 
 
 # --------------------------------------------------------------------------
-# §3(d) -- the exit classes, and the pair around the L2a boundary
+# the exit classes, and the pair around the L2a boundary
 # --------------------------------------------------------------------------
 
 def test_the_exit_codes_are_DISTINCT():
@@ -151,12 +185,11 @@ def test_the_exit_codes_are_DISTINCT():
 
 
 def test_BELOW_the_boundary_the_audit_is_INCOMPLETE():
-    """§3's positive: L2a budget 5 of 72. HELD: L3.1 complete (72, 0)."""
+    """L2a budget 5 of 72. HELD: L3.1 complete (72, 0)."""
     assert not _cov(72, 0, l2a_p=5, l2a_e=72).complete
 
 
 def test_AT_the_boundary_the_audit_is_COMPLETE():
-    """Budget >= 72. HELD: L3.1 complete, L2a eligible 72."""
     assert _cov(72, 0, l2a_p=72, l2a_e=72).complete
     assert _cov(72, 0, l2a_p=99, l2a_e=72).complete
 
@@ -174,7 +207,7 @@ def test_the_L31_boundary_is_pinned_ONE_COHORT_APART():
 
 
 # --------------------------------------------------------------------------
-# §3(e) of R267 -- the same rule at the library door
+# the same rule at the library door
 # --------------------------------------------------------------------------
 
 def test_the_library_assertion_RAISES_on_an_incomplete_audit():

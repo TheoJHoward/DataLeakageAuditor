@@ -19,11 +19,11 @@
   "candidate_artifact": 16,
   "candidate_fixed": 2,
   "candidate_legitimate": 1,
-  "out_of_scope": 27,
+  "out_of_scope": 28,
   "probed_healthy": 6,
   "unprobed_reachable": 55,
-  "functions_total": 107,
-  "assertions_total": 210
+  "functions_total": 108,
+  "assertions_total": 219
  },
  "functions": [
   {
@@ -155,9 +155,9 @@
   {
    "file": "tests/phase1/test_decision_clock_consumers.py",
    "function": "test_EVERY_ls_files_FLOOR_sees_untracked_non_ignored_files",
-   "assertions": 4,
+   "assertions": 6,
    "status": "probed_healthy",
-   "reason": "added R263 section 3(b). MEASURED, not judged: tools/empty_population_probe.py returns `reddens`, `asserted with 4 helper(s) emptied`. It takes no fixture, so the probe reaches it directly."
+   "reason": "added R263 section 3(b). MEASURED, not judged: tools/empty_population_probe.py returns `reddens`, `asserted with 4 helper(s) emptied`. It takes no fixture, so the probe reaches it directly. R268 added two assertions -- the not-floors staleness check and the pathspec proof -- and R269 recorded the count; the probe measurement above was of the four before them and was not re-run."
   },
   {
    "file": "tests/phase1/test_decision_clock_consumers.py",
@@ -176,9 +176,9 @@
   {
    "file": "tests/phase1/test_decision_clock_consumers.py",
    "function": "test_NO_TRACKED_FILE_OUTSIDE_py_CARRIES_RUNNABLE_PYTHON",
-   "assertions": 5,
+   "assertions": 9,
    "status": "candidate_fixed",
-   "reason": "Empty is not legitimate: the repository tracks ~956 files. Passed with tracked_files() emptied -- no tail, so no notebook, no shebang and no executable bit, all three vacuous. R250: the population is asserted non-empty before anything is concluded from it."
+   "reason": "Empty is not legitimate: the repository tracks ~956 files. Passed with tracked_files() emptied -- no tail, so no notebook, no shebang and no executable bit, all three vacuous. R250: the population is asserted non-empty before anything is concluded from it. R268 added four assertions proving its one executable exemption, and R269 recorded the count; the emptying judgment above predates them."
   },
   {
    "file": "tests/phase1/test_decision_clock_consumers.py",
@@ -767,6 +767,13 @@
    "assertions": 1,
    "status": "out_of_scope",
    "reason": "R268. One object's totality call and one substring of its rendered table. No derived collection."
+  },
+  {
+   "file": "tests/phase1/test_coverage_budget.py",
+   "function": "test_the_HEAD_is_a_SUBSET_of_ineligible_broken_out_with_its_reason",
+   "assertions": 3,
+   "status": "out_of_scope",
+   "reason": "R269. One constructed object's totality call and substrings of its rendered table. No derived collection; `makes_a_coverage_claim` returns False."
   },
   {
    "file": "tests/phase1/test_slicing.py",

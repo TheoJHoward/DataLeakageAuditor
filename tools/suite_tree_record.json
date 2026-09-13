@@ -1,44 +1,32 @@
 {
  "what": "Which tree the last `pytest tests` run measured. Written by tests/conftest.py at session finish, never by hand (R267 section 1.1). `tools/suite_tree.py` refuses certification when this does not describe HEAD and a clean tree.",
  "last": {
-  "when": "2026-09-12 13:18",
-  "commit": "1a16f53",
+  "when": "2026-09-12 19:33",
+  "commit": "d3d297d",
   "clean": false,
   "dirty_paths": [
-   ".githooks/commit-msg",
-   "DESIGN.md",
+   "INSTALL.md",
    "OPERATING_RULES.md",
    "evidence/session/COVERAGE_ASSERTION_POPULATION.json",
    "evidence/session/FEATURE_BACKLOG.md",
+   "evidence/session/WORK_ROOT_BASELINE.txt",
    "src/leakaudit/availability.py",
    "src/leakaudit/cli.py",
    "src/leakaudit/coverage.py",
-   "src/leakaudit/label_probe.py",
    "src/leakaudit/reach.py",
-   "tests/phase1/test_certify_preconditions.py",
-   "tests/phase1/test_commit_msg_hook.py",
    "tests/phase1/test_complete_run.py",
    "tests/phase1/test_coverage_budget.py",
-   "tests/phase1/test_decision_clock_consumers.py",
-   "tests/phase1/test_decision_column_required.py",
    "tests/phase1/test_default_sites.py",
-   "tests/phase1/test_guard_reach_reported.py",
-   "tests/phase1/test_lessons_classification.py",
-   "tests/phase1/test_tools_floor_coverage.py",
-   "tools/certify_preconditions.py",
-   "tools/commit_msg_hook.py",
-   "tools/safe_edit.py",
-   "tools/wholeframe_guard.py"
+   "tests/phase1/test_frame_head.py",
+   "tests/phase1/test_padding_vs_reach.py"
   ],
   "args": [
-   "tests"
+   "tests/phase1/test_coverage_assertion_sweep.py"
   ],
-  "full_suite": true,
-  "exitstatus": 1,
+  "full_suite": false,
+  "exitstatus": 0,
   "counts": {
-   "failed": 3,
-   "passed": 1217,
-   "skipped": 4
+   "passed": 15
   }
  }
 }

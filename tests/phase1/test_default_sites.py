@@ -105,7 +105,12 @@ CLASSIFICATION = {
     # is a MEASURED constant (34.9 s on the acceptance fixture) and the function
     # prints the arithmetic it feeds, so a caller with a different build time
     # can pass theirs and see the sum redone rather than inheriting the number.
-    "coverage.py::param::budget_arithmetic(build_seconds=)":
+    # R269 §1: the L2a budget is priced at a measured FIXED part and a measured
+    # PER-COHORT part, no longer at a clean build. Both are measured constants,
+    # printed inside the arithmetic they produce.
+    "coverage.py::param::budget_arithmetic(fixed_seconds=)":
+        (L, "a measured constant, printed inside the arithmetic it produces"),
+    "coverage.py::param::budget_arithmetic(per_cohort_seconds=)":
         (L, "a measured constant, printed inside the arithmetic it produces"),
     "coverage.py::param::budget_arithmetic(n=)":
         (L, "the budget in force, defaulting to the derived default"),
@@ -118,6 +123,10 @@ CLASSIFICATION = {
     "availability.py::param::run_probe_a(reach=)":
         (L, "None means measure the reach in this call; a complete run passes "
             "its one shared measurement explicitly"),
+    # R269 §2(b). Result carriers for the head of the frame.
+    "availability.py::param::__init__(head_cutoff=)": (NA, "result carrier field"),
+    "availability.py::param::__init__(head_seconds=)": (NA, "result carrier field"),
+    "availability.py::param::__init__(head_reason=)": (NA, "result carrier field"),
     "label_probe.py::param::__init__(n_eligible=)": (NA, "result carrier field"),
     "availability.py::param::__init__(context_seconds=)": (NA, "result carrier field"),
     # R261 §1(b). Result carrier field, and `False` is a MEASURED state rather

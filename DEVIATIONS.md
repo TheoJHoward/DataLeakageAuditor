@@ -5732,3 +5732,98 @@ restored denominator, no** — R267 argued the opposite on purpose and the argum
 read as sound. **The complete run, no** — the retracted sentence said L3.1 needed
 none. **The 25 left in the library signature, no** — the CLI's 16 read as the
 fix, and only reading the signature showed it was half of one.
+
+## D-V30A-110 — the reach catches the plain-frame slice that masked a leak as silence, and C's default is repriced at the cost it has
+
+**THE CASE NO DECLARATION COULD REACH.** A frame cut from something longer carries
+no record of what it was cut from, so no slice rule can refuse it; R255 said so
+when it scoped the padding refusal to declared slices. When the builder emits
+values from a partial window, the head rows still move when in-frame cells are
+perturbed — liveness, the licence for a silence — while the cells their
+production lookback leaks on lie before the frame and were never perturbed. The
+probe then says `observed_silence` over a real leak.
+
+**IT WAS SHOWN RED BEFORE A LINE OF THE RULE EXISTED.** The data: cells before a
+cut point were revised late (`released_at = key + 21 s`), cells from the cut on
+are available at the end of their own bucket, and the builder is the mean of the
+previous ten buckets with `min_periods=1`. On the pre-R269 code the uncut frame
+gives `finding` — 4 findings, liveness 8 — and the same frame cut at that point
+gives **`observed_silence`**, 0 findings, liveness 5; its head cohort probed
+alone gives **`observed_silence`** on liveness 1. Reach 10.5 s in both. The pair
+holds the builder, the stride and every row from the cut on byte-for-byte, and
+varies only whether the earlier rows are present.
+
+**The first attempt at the red did not produce it, and the reason is kept.** With
+on-time cells released AT their key, the per-column selection placed their
+cohort a second early, the lag-one movement fell outside the liveness window,
+and the cut frame read `none` instead of silence. Releasing on-time cells at the
+end of their bucket — the instant the frame rule already gives — produced the
+silence the case is about. A red that does not reproduce the defect is not a red.
+
+**THE RULE.** Reach is the builder's lookback measured from behaviour, so a row
+deciding before `frame_start + reach` reads cells from before the frame.
+`frame_start` is the latest start among the modelled aggregate frames, on the
+decision clock, read through `to_decision_clock` — the probe's own clock rule,
+lifted unchanged out of the corruption loop so the cutoff and the perturbation
+cannot disagree. Probed cohorts before the cutoff are named as the head. **They
+stay in `cohorts` and leave only the silence claim**: a finding among them is
+still a finding, band movement is still ambiguity, and a probe whose every cohort
+is head returns `none(lookback exceeds the frame's head; cells before the frame
+cannot be probed)`. The reason states that the reach is a lower bound from its
+samples, and that a lookback which showed in none of them is the residual that
+remains. An unmeasured reach leaves the head NOT ASSESSED, and says so.
+
+**Green, on the same case.** The head cohort alone is now `none` with that reason;
+in the pair, the uncut frame still finds and the cut frame holds its head cohort
+out and reads `observed_silence` over the rest; a head cohort that carries a real
+in-frame finding still returns `finding`; and the coverage table counts head
+seconds inside the ineligible column, broken out with their own reason, apart
+from seconds no declared frame carries a row in.
+
+**WHY THE GUARD'S TERMS COULD STAY WHERE THEY WERE, ESTABLISHED BEFORE THE GUARD.**
+On the acceptance fixture the latest-starting modelled frame begins at
+14:30:00, which is also the first decision. At a reach of 14 or 15 s, 14 or 15 of
+338,159 decision seconds are head, and **exactly one of the guard's probed
+cohorts is** — its first, on both sides. Head cohorts staying in `cohorts` leaves
+every count and trace the guard reads unchanged; the contaminated side's findings
+lie elsewhere, and the corrected side's silence is licensed by its other 249
+cohorts.
+
+**THE PADDING REFUSAL WAS WIRED AND HAD NEVER FIRED.** R269 §2(a) asked to confirm
+that a declared padding is compared against the measured reach and not only the
+model's floor. On disk it was: `check_padding` has sat in the slice branch of
+`run_probe_a` since R267. **No test had ever caused it to fire.** It has a known
+positive now — 10 s of padding clears the 1 s floor and the data check, sits below
+the builder's 59.5 s reach, and is refused naming the measurement — with the
+negative beside it, 60 s accepted and the leak found.
+
+**C's DEFAULT, REPRICED.** R267 derived 16 from `(N + 1) x 34.9 s`, charging an L2a
+cohort at a clean build's cost — a measurement, of the wrong quantity, and the
+cheapest of three. Measured on this tree the way R262 measured it, at 1, 2 and 4
+cohorts: 107.9 s, 147.5 s, 229.3 s, which fits **67.0 s fixed + 40.5 s per
+cohort**, marginals 39.6 s and 40.9 s. Against a 600 s target, a cost choice
+printed as one, `floor((600 − 67.0) / 40.5)` gives **13**: 594 s, where 14 would
+be 634 s. R262's ~48 s per cohort, taken on an earlier tree, is superseded by
+40.5 s. Both replaced defaults, 25 and 16, exceed the target at the measured
+cost. The default is pinned at both entry points with its arithmetic beside it.
+
+**THE COMPLETE RUN PREDICTS ITS OWN LENGTH.** `--complete` prints its plan before
+the first pass and, after that pass, the passes remaining and the time they will
+take at that pass's measured cost — before the verdict, where a warning is still
+a warning.
+
+**THE RULINGS RECORDED, AND ONE DOCUMENT THAT DID NOT HAVE THE SECTION NAMED.** The
+hook's row now says there is no merge path, single-author linear history being
+the practice, and that one is built when first needed. The line that clones need
+`py` or `python3` was ruled for INSTALL.md's contributor section; **INSTALL.md
+had no contributor section**, so a minimal one was added to hold the line. And
+item E carries R269 §3's ruling with its substance — a profile is a named
+declaration, printed per key, never supplying a decision column or frame — so
+the next round's establish needs no ask.
+
+**THE GUARD RAN ONCE, AFTER EVERY PROBE-PATH EDIT, AND ALL EIGHT TERMS ARE SAME**
+— 843 s in total, sides 402 s and 408 s, both at 1.0 times the last recorded run.
+It printed the reach beside the terms and compared nothing against it:
+contaminated 14 s, corrected 15 s, both from three uncensored samples. The one
+head cohort each side carries changed no count and no verdict, which is what the
+establish before the guard said it would do.

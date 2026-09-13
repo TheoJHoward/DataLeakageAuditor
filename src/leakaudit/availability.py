@@ -426,6 +426,17 @@ class ProbeAResult:
     #: against rather than being told a check happened.
     reach: object = None
     min_separation: object = None
+    #: THE HEAD OF THE FRAME. R269 §2(b). `head_cutoff` is the frame's first row
+    #: plus the measured reach; probed cohorts whose second falls before it read
+    #: cells from before the frame, and are listed in `head_seconds`. They STAY
+    #: in `cohorts` -- a finding among them is still a finding, since a moved row
+    #: with an unavailable in-frame cell is evidence wherever it sits -- and they
+    #: are excluded from the SILENCE claim in `verdict()`, which is the one
+    #: claim the missing cells make unearnable. `head_reason` says why, and that
+    #: the reach is a lower bound.
+    head_cutoff: object = None
+    head_seconds: tuple = ()
+    head_reason: str = ""
     # ATTRIBUTION WINDOWS OVERLAPPED, SO NO COHORT'S CLASSIFICATION IS ITS OWN.
     # R261 §1(b). The separation a run needs is derived from the batch instants,
     # not fixed at a second; where the probed cohorts sit closer than that, a
@@ -490,7 +501,22 @@ class ProbeAResult:
         # reaches the pipeline at all, so its quiet is about the harness. R205's
         # per-column zero was exactly that -- a column no cell of which was ever
         # perturbed -- and it read as evidence for two rounds.
-        if self.liveness == 0:
+        # THE HEAD OF THE FRAME IS HELD OUT OF THE SILENCE. R269 §2(b).
+        #
+        # A head cohort's rows read cells from before the frame, which were never
+        # in the data and were never perturbed -- so their in-frame movement
+        # proves the perturbation reaches the builder while saying nothing about
+        # the cells their lookback leaks on. That movement cannot license a
+        # silence, and it did: the plain-frame slice read `observed_silence` over
+        # a real leak on liveness alone. Findings and band movement above are
+        # left exactly as they were, because a moved row with an unavailable
+        # IN-frame cell is evidence wherever it sits.
+        head = set(self.head_seconds)
+        rest = [c for c in self.cohorts if c.second not in head]
+        if not rest:
+            return ("none(lookback exceeds the frame's head; cells before the "
+                    "frame cannot be probed)")
+        if sum(c.moved_next_second for c in rest) == 0:
             return "none(no perturbed cell reached the pipeline)"
         return "observed_silence"
 
@@ -502,6 +528,30 @@ class EligibleCohorts:
     ineligible: tuple = ()
     per_frame: dict = field(default_factory=dict)
     notes: list = field(default_factory=list)
+
+
+def to_decision_clock(key: pd.Series, decision: pd.Series) -> pd.Series:
+    """An aggregate key expressed on the decision stamps' clock -- the PROBE's rule.
+
+    The decision stamps are the frame of reference. An aware key is converted
+    into it: to UTC and then naive when the decisions are naive, or into their
+    zone when they are aware. A naive key meeting aware decisions is localised to
+    their zone.
+
+    EXTRACTED AT R269 FROM `run_probe_a`'S CORRUPTION LOOP, unchanged, so the
+    head-of-frame cutoff reads a frame's start on the same clock the perturbation
+    already selects cells on, rather than a second copy of the rule free to
+    drift. It is NOT `align_key`, which refuses aware-against-naive for a caller
+    who has not said which side is right: this is the stance the probe has
+    published since R201, every figure the guard compares was produced under it,
+    and changing it is a separate decision from reusing it.
+    """
+    if getattr(key.dt, "tz", None) is not None:
+        return (key.dt.tz_convert("UTC").dt.tz_localize(None)
+                if decision.dt.tz is None else key.dt.tz_convert(decision.dt.tz))
+    if decision.dt.tz is not None:
+        return key.dt.tz_localize(decision.dt.tz)
+    return key
 
 
 def align_key(key: pd.Series, decision: pd.Series, *, frame: str,
@@ -849,6 +899,28 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
         res.min_separation = pd.Timedelta(
             np.diff(pd.DatetimeIndex(picked).to_numpy()).min())
 
+    # THE HEAD OF THE FRAME. R269 §2(b). The plain-frame slice that masks a leak
+    # as silence carries no declaration of what it was cut from, so no slice
+    # rule could ever reach it. It carries a measurement now: a row deciding
+    # within the measured reach of the frame's first row reads cells from before
+    # the frame, which were never in the data and cannot be perturbed. Those
+    # cohorts are named here and kept OUT OF THE SILENCE CLAIM in `verdict()`.
+    # They stay in `cohorts`, so every count and trace built from them is
+    # unchanged -- which is what keeps the whole-frame guard's eight terms where
+    # they were, since its first probed second is a head cohort on both sides.
+    from .reach import head_cutoff
+    res.head_cutoff, _frame_start, res.head_reason = head_cutoff(
+        raw, model, d, res.reach)
+    if res.head_cutoff is not None:
+        res.head_seconds = tuple(s for s in picked if s < res.head_cutoff)
+        if res.head_seconds:
+            res.notes.append(
+                "HEAD OF FRAME: %d probed cohort(s) decide within the measured "
+                "reach of the frame's first row and count toward no silence -- %s"
+                % (len(res.head_seconds), res.head_reason))
+    elif res.head_reason:
+        res.notes.append(res.head_reason)
+
     # THE COMPARATOR TRAVELS WITH THE RESULT. R216 §2(b).
     #
     # Two runs under different tie branches must not be distinguishable only by
@@ -945,12 +1017,9 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
         # all-False mask that looks exactly like "no cells were unavailable".
         # The decision stamps define the frame of reference; a key in another
         # frame is converted into it, never compared across.
-        key = pd.to_datetime(f[keycol])
-        if getattr(key.dt, "tz", None) is not None:
-            key = key.dt.tz_convert("UTC").dt.tz_localize(None) if d.dt.tz is None \
-                else key.dt.tz_convert(d.dt.tz)
-        elif d.dt.tz is not None:
-            key = key.dt.tz_localize(d.dt.tz)
+        # The rule lives in `to_decision_clock` since R269, unchanged, so the
+        # head-of-frame cutoff reads frame starts on this same clock.
+        key = to_decision_clock(pd.to_datetime(f[keycol]), d)
         key_floor = key.dt.floor("s")
         # FLOORING IS APPLIED AND REPORTED, NEVER APPLIED SILENTLY. R207 Q1.
         #

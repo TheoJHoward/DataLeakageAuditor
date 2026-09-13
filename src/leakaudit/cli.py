@@ -349,18 +349,43 @@ def _probe_complete(frames, build, model, config, stride, slice_from, padding):
                  "%d passes rather than a number derived from this builder"
                  % (DEFAULT_STRIDE, DEFAULT_STRIDE))
 
+    # THE PREDICTION, PRINTED BEFORE THE WAIT. R269 §0(a). A complete run on the
+    # acceptance fixture is most of an hour, and nobody should learn that at
+    # minute forty. The plan prints before pass one; after pass one the time
+    # left is printed as a MEASURED extrapolation -- that pass's own cost times
+    # the passes remaining -- rather than a figure carried from another machine
+    # or another builder. Printed straight to the terminal, not held for the
+    # notes, because the notes arrive after the wait they would have warned of.
+    import time
+    print("COMPLETE RUN PLANNED: %d pass(es) at stride %d, from %s. The time it "
+          "will take is printed after the first pass, measured from that pass."
+          % (S, S, basis))
+    sys.stdout.flush()
     combined = None
+    first_pass_s = None
     for offset in range(S):
+        t_pass = time.time()
         r = run_probe_a(frames, build, model, side="user", cohort_stride=S,
                         max_cohorts=10 ** 9, cohort_offset=offset,
                         reach=probe0.reach, **common)
         if combined is None:
             combined = r
+            first_pass_s = time.time() - t_pass
+            print("COMPLETE RUN: pass 1 of %d took %.1f s; %d pass(es) remaining, "
+                  "~%.1f min at this pass's cost -- a measured extrapolation, "
+                  "not a promise."
+                  % (S, first_pass_s, S - 1, (S - 1) * first_pass_s / 60.0))
+            sys.stdout.flush()
             continue
         combined.cohorts.extend(r.cohorts)
         combined.n_cohorts += r.n_cohorts
         combined.cells_perturbed += r.cells_perturbed
         combined.determinism_ok = combined.determinism_ok and r.determinism_ok
+        # Each pass names its own head cohorts. The complete run's head is the
+        # UNION -- keeping pass 0's alone would let a later pass's head cohort
+        # count toward the silence the head rule exists to withhold. R269 §2(b).
+        combined.head_seconds = (tuple(combined.head_seconds)
+                                 + tuple(r.head_seconds))
         # Nothing a later pass says is dropped. Notes identical to pass 0's are
         # not repeated; the rest carry their pass, so a band row or an
         # attribution note from pass 9 is still on the page.
@@ -519,6 +544,15 @@ def _run_availability(frames, build, model_path, stride, max_cohorts,
     _universe = set(_secs)
     _E = set(eligible_cohorts(frames, model, _secs,
                               pd.to_datetime(built[dcol])).eligible)
+    # THE HEAD OF THE FRAME LEAVES THE ELIGIBLE SET. R269 §2(b). A second a
+    # declared frame carries a row in, whose rows decide within the measured
+    # reach of the frame's first row, is not probe-able either: its lookback
+    # reads cells before the frame. The cutoff is the probe's own, carried on
+    # the result, so the table and the verdict cannot disagree about where the
+    # head ends.
+    _cutoff = getattr(result, "head_cutoff", None)
+    _H = {s for s in _E if _cutoff is not None and s < _cutoff}
+    _E = _E - _H
     _P = set(picked) & _E
     _U = _E - _P
     _I = _universe - _E
@@ -531,6 +565,12 @@ def _run_availability(frames, build, model_path, stride, max_cohorts,
         rows_unprobed=int(_floors.isin(_U).sum()),
         rows_ineligible=int((_in_universe & _floors.isin(_I)).sum()),
         context_rows=int((~_in_universe).sum()),
+        cohorts_head=len(_H),
+        rows_head=int(_floors.isin(_H).sum()),
+        # The reason prints when there IS a head, or when the head could not
+        # be assessed at all; an assessed head of zero needs no sentence.
+        head_reason=(getattr(result, "head_reason", "")
+                     if (_cutoff is None or _H) else ""),
         l2a_probed=label_result.n_cohorts,
         l2a_eligible=label_result.n_eligible)
     coverage.verify(len(_universe), len(built))

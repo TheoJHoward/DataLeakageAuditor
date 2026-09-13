@@ -40,6 +40,14 @@
    "contaminated": 389.8,
    "corrected": 399.7,
    "total": 822.8
+  },
+  {
+   "when": "2026-09-12 19:45",
+   "commit": "d3d297d",
+   "capture": 33.2,
+   "contaminated": 401.5,
+   "corrected": 408.0,
+   "total": 842.6
   }
  ]
 }
