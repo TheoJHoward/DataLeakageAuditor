@@ -929,6 +929,7 @@ column_measurement.json
 d108.md
 d109.md
 d110.md
+d111.md
 d12_negative_test.py
 d14_tests.py
 d15_test.py
@@ -1168,6 +1169,7 @@ msg27.txt
 msg28.txt
 msg29.txt
 msg3.txt
+msg30.txt
 msg4.txt
 msg5.txt
 msg6.txt
@@ -1458,6 +1460,7 @@ r269_head_red.py
 r269_l2a_cost_and_head.py
 r269_manifest.py
 r269_population_counts.py
+r269b_manifest.py
 r89.py
 r95_pointer.py
 r95a.py

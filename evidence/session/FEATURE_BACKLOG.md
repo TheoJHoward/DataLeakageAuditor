@@ -76,10 +76,25 @@ its population. **A subsampled run is not treated as complete**, the reverse of
 `assert_audit_complete` holds the same rule at the library door.
 **What complete costs, measured on the acceptance fixture (R268):** reach 14 s,
 so stride 15 and 15 passes; one pass 202.0 s; the run 54.7 min with the reach
-measured once. **That is the contaminated side.** The guard's run measured the
-corrected side's reach at 15 s, so its complete run takes stride 16 and 16 passes
-— about 58 min at the same pass cost, an estimate, since that side's pass was not
-timed.
+measured once. **That is the contaminated side.** **The corrected side was run
+complete end to end at R269, after the round's commit:** reach 15 s, stride 16,
+16 passes, **3,671 s = 61.2 min**. Pass one took 209.1 s and printed about 52.3 min
+for the 15 passes left, so sixteen passes at pass one's cost are 3,346 s; the 325 s
+between that and the whole run holds the baseline, determinism check and reach
+measurement made before pass one, plus any drift in the later passes — **not timed
+apart, so not split here.** The prediction covers only the passes.
+
+**AND ITS VERDICT WAS `finding`.** The corrected side is the fixture with its leak
+removed, and its stride-997 sample reads `observed_silence`. Probed over every
+cohort (338,159, 15 of them head), it reports a finding. **That is not explained
+here, and nothing is claimed from it.** Either the corrected builder carries a
+leak the sampled cohorts never touched, or the complete run produces findings the
+builder does not: its stride of 16 comes from a reach that is a lower bound from
+three samples, and interference below the true reach is the D-V30A-106 shape. The
+measurement script recorded the verdict and not the count or location of the
+findings, so the establish that would tell these apart has not been run. **This
+is a Phase 2 instrument observation, not a `PREREG.md` §6.2 result, and it is not
+comparable to the Phase 1 corrected-side silence without a ruling.**
 **Value:** medium-high for adoption — it is the difference between a tool run
 once and a tool run in CI.
 

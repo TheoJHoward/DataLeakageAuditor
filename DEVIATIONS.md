@@ -5827,3 +5827,55 @@ It printed the reach beside the terms and compared nothing against it:
 contaminated 14 s, corrected 15 s, both from three uncensored samples. The one
 head cohort each side carries changed no count and no verdict, which is what the
 establish before the guard said it would do.
+
+## D-V30A-111 — the corrected side's complete run takes 61.2 minutes, and it reports a finding nobody expected
+
+**THE FIGURE R269 §0(a) ASKED FOR.** The corrected side's complete run was measured
+once, end to end, after the round's commit, through the same `_probe_complete`
+the CLI uses: reach 15 s, so stride 16 and 16 passes, **3,671 s = 61.2 minutes**.
+Both sides of the acceptance fixture now carry a complete-run cost on the record
+— the contaminated side from one timed pass at R268, the corrected side run in
+full.
+
+**The prediction printed as ruled, and covers only the passes.** Before the first
+pass the run printed its plan; after it, "pass 1 of 16 took 209.1 s; 15 pass(es)
+remaining, ~52.3 min at this pass's cost". Sixteen passes at pass one's cost are
+3,346 s. The whole run was 3,671 s, and the 325 s between them holds two things
+that were not timed apart: the baseline, determinism build and reach measurement
+made before pass one, which the printed figure cannot include because they precede
+it, and any drift in the fifteen later passes. **So this does not say the
+prediction was accurate to within some figure** — only that the run exceeded the
+printed extrapolation plus pass one by 325 s.
+
+**THE VERDICT WAS `finding`, AND IT IS NOT EXPLAINED.** The corrected side is the
+fixture with its leak removed. Sampled at stride 997 over 250 eligible cohorts, as
+the guard runs it, it reads `observed_silence`, and did again this round. Probed
+over every one of its 338,159 cohorts, it reports a finding.
+
+Two readings fit what was measured, and nothing measured separates them. **One:**
+the corrected builder carries a leak in cohorts the 250-cohort sample never
+touched. **Two:** the complete run reports findings the builder does not have. Its
+stride of 16 was derived from a reach of 15 s, and that reach is a lower bound from
+three samples; a builder whose propagation runs longer somewhere in 338,159
+seconds would put cohorts 16 s apart inside each other's finding regions, which is
+exactly the interference D-V30A-106 measured at low strides on a builder with no
+leak at all.
+
+**What this entry does not claim.** That the corrected fixture leaks. That the
+complete run is broken. That R269's head rule caused it — the rule withholds a
+silence and cannot create a finding, since the verdict reads findings before
+anything else and neither `findings` nor `cohorts` changed. **And it does not place
+this beside the Phase 1 figures:** it is a Phase 2 instrument observation, not a
+`PREREG.md` §6.2 result, and the Phase 1 corrected-side silence stands as the
+sampled measurement it always was.
+
+**Why it stops here.** The measurement script printed the verdict and not the
+number or the seconds of the findings, so the establish that would separate the
+two readings — where the findings sit, and whether their seconds are closer
+together than any reach the builder shows there — has not been run, and costs
+another hour of the fixture. It is recorded for ruling rather than chased inside a
+round whose boundary was the figure.
+
+**R163 §1's exemption test.** *Would this have surfaced if the triggering question
+had not been asked?* **No.** Nobody had run the corrected side complete; the
+guard samples it, and the sample is silent.
