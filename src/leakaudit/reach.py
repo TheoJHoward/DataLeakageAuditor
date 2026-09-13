@@ -62,6 +62,15 @@ from .availability import ProbeError, _fast_fingerprint, perturb_cells
 #: to exercise a longer path. It is a cost choice, printed as one.
 DEFAULT_SAMPLES = 3
 
+#: What a COMPLETE run measures at. R270 §2(a). k scales with what it protects:
+#: a complete run's stride is this measurement plus one second, and it guards
+#: an hour of passes on the acceptance fixture, so three rebuilds of evidence
+#: for an hour of machine time was the wrong ratio. Ten rebuilds at ~35 s is
+#: about six minutes there. The samples are spread across the frame by
+#: `sample_seconds`, and `ReachResult.spread()` prints where they fell and what
+#: each one saw. Still a lower bound; a larger k only makes it a better one.
+COMPLETE_SAMPLES = 10
+
 
 class ReachError(ProbeError):
     """The reach control cannot answer, and says so rather than guessing."""
@@ -117,6 +126,36 @@ class ReachResult:
                 "exercised would not appear here, and %d samples do not become "
                 "all of them." % self.k)
 
+    def spread(self) -> str:
+        """Where the samples fell and what each saw. R270 §2(a).
+
+        A maximum alone hides whether ten samples agreed or one outlier set it,
+        and whether they covered the frame or bunched at one end. So every
+        sample is listed with its second and its reach, and the usable ones'
+        smallest and largest are printed beside the maximum the stride uses.
+        """
+        if not self.samples:
+            return "REACH SPREAD: no samples were taken."
+        secs = [s.second for s in self.samples]
+        good = [s.reach for s in self.uncensored]
+        rows = []
+        for s in self.samples:
+            if s.reach is None:
+                what = s.note or "nothing moved"
+            elif s.censored:
+                what = "%s, CENSORED by the frame's end" % s.reach
+            else:
+                what = str(s.reach)
+            rows.append("%s -> %s" % (s.second, what))
+        summary = ("usable reach min %s, max %s" % (min(good), max(good))
+                   if good else "no usable sample")
+        return ("REACH SPREAD over %d sample(s), from %s to %s: %s. %d usable, "
+                "%d censored, %d with no movement. Samples: %s."
+                % (len(self.samples), min(secs), max(secs), summary, len(good),
+                   sum(1 for s in self.samples if s.censored),
+                   sum(1 for s in self.samples if s.reach is None),
+                   "; ".join(rows)))
+
 
 def _corrupt_one(raw, model, second, seed) -> tuple:
     """Perturb every modelled aggregate cell whose key floors to `second`."""
@@ -166,8 +205,18 @@ def sample_seconds(seconds, k) -> list:
 
 
 def measure_reach(raw, build, model, base, dcol, *, k=DEFAULT_SAMPLES,
-                  seed=20260828) -> ReachResult:
-    """Measure the builder's forward reach. One rebuild per sampled second."""
+                  seed=20260828, at_seconds=None) -> ReachResult:
+    """Measure the builder's forward reach. One rebuild per sampled second.
+
+    `at_seconds` measures at NAMED seconds instead of spreading `k` across the
+    frame, and `k` becomes their count. R270 §1(c): where a complete run's
+    findings sit is where a reach longer than the sampled one would show, so
+    that is where the reading of them as interference is tested.
+    """
+    chosen = (None if at_seconds is None
+              else sorted({pd.Timestamp(s) for s in at_seconds}))
+    if chosen is not None:
+        k = len(chosen)
     res = ReachResult(k=k, seed=seed)
     if k <= 0:
         return res
@@ -177,8 +226,10 @@ def measure_reach(raw, build, model, base, dcol, *, k=DEFAULT_SAMPLES,
         return res
     last = pd.Timestamp(d_np.max())
     fb = _fast_fingerprint(base).to_numpy()
+    if chosen is None:
+        chosen = sample_seconds(sorted(d.dt.floor("s").unique()), k)
 
-    for i, F in enumerate(sample_seconds(sorted(d.dt.floor("s").unique()), k)):
+    for i, F in enumerate(chosen):
         corrupt, cells = _corrupt_one(raw, model, F, seed + i)
         s = ReachSample(second=F, cells=cells, to_frame_end=last - F)
         if cells == 0:

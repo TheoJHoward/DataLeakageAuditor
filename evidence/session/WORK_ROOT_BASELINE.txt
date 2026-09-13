@@ -930,6 +930,7 @@ d108.md
 d109.md
 d110.md
 d111.md
+d112.md
 d12_negative_test.py
 d14_tests.py
 d15_test.py
@@ -1170,6 +1171,7 @@ msg28.txt
 msg29.txt
 msg3.txt
 msg30.txt
+msg31.txt
 msg4.txt
 msg5.txt
 msg6.txt
@@ -1461,6 +1463,10 @@ r269_l2a_cost_and_head.py
 r269_manifest.py
 r269_population_counts.py
 r269b_manifest.py
+r270_corrected_isolation.py
+r270_manifest.py
+r270_positive.py
+r270_positive_record.json
 r89.py
 r95_pointer.py
 r95a.py

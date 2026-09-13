@@ -743,24 +743,40 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
                 padding=NOT_DECLARED,
                 reach_samples=None,
                 cohort_offset: int = 0,
-                reach=None) -> ProbeAResult:
+                reach=None,
+                cohort_seconds=None,
+                clean_base=None) -> ProbeAResult:
     """Corrupt a sparse set of seconds, rebuild once, and read WHICH rows moved.
 
     `cohort_stride` keeps corrupted seconds far apart so a moved row can be
     attributed to exactly one corrupted second. A stride of 1 would corrupt
     adjacent seconds and make "own second" and "previous second"
     indistinguishable -- which is the entire discrimination.
+
+    `cohort_seconds` and `clean_base` exist for `isolate_cohorts` and nothing
+    else (R270 §1(a)). Neither changes a run that does not pass them.
     """
     res = ProbeAResult(side=side, n_cohorts=0)
 
-    base = build(dict(raw))
-    res.base_columns = tuple(base.columns)
-    base2 = build(dict(raw))
-    if not base.equals(base2):
-        res.determinism_ok = False
-        res.notes.append("the builder is not deterministic across two clean runs; "
-                         "no corruption result from it could be attributed")
-        return res
+    if clean_base is not None:
+        # ONE REBUILD PER ISOLATED COHORT. R270 §1(a). `isolate_cohorts` builds
+        # the clean baseline twice ONCE, checks determinism on that pair, and
+        # hands the base to every cohort's call -- otherwise each isolation
+        # would pay two clean builds to relearn a fact the caller holds.
+        base = clean_base
+        res.base_columns = tuple(base.columns)
+        res.notes.append(
+            "clean baseline supplied by the caller, whose own two clean builds "
+            "established determinism; this call made no clean build of its own")
+    else:
+        base = build(dict(raw))
+        res.base_columns = tuple(base.columns)
+        base2 = build(dict(raw))
+        if not base.equals(base2):
+            res.determinism_ok = False
+            res.notes.append("the builder is not deterministic across two clean runs; "
+                             "no corruption result from it could be attributed")
+            return res
 
     dcol = require_decision_column(model.decision_column,
                                    "the availability probe")
@@ -853,7 +869,9 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
     # to the other schedule: the model founds a FLOOR, a declared value below it
     # is invalid rather than merely smaller, and clearing the floor is not
     # sufficiency because the builder's own lookback is not in the model.
-    if isinstance(cohort_stride, str) and cohort_stride == STRIDE_NOT_DECLARED:
+    # An explicit selection has no stride to derive; see `cohort_seconds` below.
+    if (cohort_seconds is None and isinstance(cohort_stride, str)
+            and cohort_stride == STRIDE_NOT_DECLARED):
         floor = stride_floor(model, column_modes)
         # THE FLOOR IS A BOUND, NOT A VALUE. R265 §2, correcting R263 §2(b).
         #
@@ -884,13 +902,33 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
                 "the spacing of your decision seconds."
                 % (DEFAULT_STRIDE, _window_text(floor), cohort_stride,
                    DEFAULT_STRIDE))
-    res.resolved_stride = cohort_stride
+    # Zero under an explicit selection, which used no stride; the CLI's coverage
+    # table reads this and must not see the sentinel string as one.
+    res.resolved_stride = 0 if cohort_seconds is not None else cohort_stride
     # `cohort_offset` shifts the selection within the stride. R268 §3(d): a
     # complete run is `stride` passes at offsets 0..stride-1, which between them
     # probe every second. At the default 0, `seconds[0::s]` is `seconds[::s]`,
     # so every existing caller -- the whole-frame guard included -- selects
     # exactly the seconds it selected before.
-    picked = seconds[cohort_offset::cohort_stride][:max_cohorts]
+    if cohort_seconds is not None:
+        # AN EXPLICIT SELECTION, FOR ISOLATION. R270 §1(a). The seconds are the
+        # caller's -- a batched run's finding cohorts -- and each must be a
+        # decision second of THIS build, or the isolation would probe a second
+        # the batch never probed and call the answer a re-probe.
+        wanted = pd.DatetimeIndex(sorted(pd.Timestamp(s) for s in cohort_seconds))
+        absent = [s for s in wanted if s not in seconds]
+        if absent:
+            raise ProbeError(
+                "cohort_seconds names %d second(s) that are not decision seconds "
+                "of this build (first: %s), so they cannot be re-probes of a "
+                "cohort any run probed." % (len(absent), absent[0]))
+        picked = wanted
+        res.notes.append(
+            "ISOLATION: %d cohort(s) named explicitly and corrupted in this one "
+            "rebuild, with no stride and no other cohort in the batch."
+            % len(picked))
+    else:
+        picked = seconds[cohort_offset::cohort_stride][:max_cohorts]
     res.n_cohorts = len(picked)
     if res.n_cohorts == 0:
         return res
@@ -1049,6 +1087,17 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
         # frames and raised only if EVERY frame matched nothing -- so magg's 250
         # masked trades' zero. An aggregate guard hides a per-member failure.
         if not mask.any():
+            if cohort_seconds is not None:
+                # ONE SECOND NEED NOT TOUCH EVERY FRAME. R270 §1(a). The refusal
+                # below catches a timezone or resolution mismatch, and a batch
+                # of many seconds matches every frame somewhere if the keys are
+                # sound. An isolated second is one second of one frame's data,
+                # and a trade-less second is ordinary. A key mismatch would
+                # still leave NO frame matched, which `touched == 0` refuses.
+                res.notes.append(
+                    "frame %r has no cell in the isolated second(s), so nothing "
+                    "of it was perturbed for this re-probe." % fname)
+                continue
             raise ProbeError(
                 "frame %r matched NO corrupted second. Its key %r may be in a "
                 "different timezone or resolution from the decision stamps; a "
@@ -1257,6 +1306,95 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
         res.notes.append(silence_note(res.cells_perturbed, batch_lo, batch_hi,
                                       picked))
     return res
+
+
+@dataclass
+class IsolationResult:
+    """One cohort re-probed ALONE, beside what its batch said. R270 §1(a)."""
+    second: pd.Timestamp
+    result: ProbeAResult
+    #: What the batched run reported for this cohort, when the caller handed it
+    #: in. Carried so the two can be read side by side without a second lookup.
+    batched_features: tuple = ()
+    batched_moved: int = 0
+
+    @property
+    def cohort(self):
+        return self.result.cohorts[0] if self.result.cohorts else None
+
+    @property
+    def persisted(self) -> bool:
+        """The cohort is still a finding with nothing else in its batch."""
+        c = self.cohort
+        return bool(c is not None and c.finding())
+
+    @property
+    def verdict(self) -> str:
+        return self.result.verdict()
+
+    @property
+    def features(self) -> tuple:
+        c = self.cohort
+        return () if c is None else tuple(c.features_in_second)
+
+    @property
+    def moved(self) -> int:
+        c = self.cohort
+        return 0 if c is None else int(c.moved_in_second)
+
+
+def isolate_cohorts(raw, build, model, seconds, *, reach, batched=None,
+                    seed: int = 20260828, column_modes=None,
+                    bar_duration=None) -> list:
+    """Re-probe each named cohort ALONE. One rebuild per cohort. R270 §1(a).
+
+    WHAT IT SEPARATES. A batched run corrupts many seconds in one rebuild, and a
+    cell corrupted for one cohort can move a row inside another's finding
+    region whenever the builder reaches further than the cohorts are apart --
+    D-V30A-105 measured 39 such false findings on a builder with no leak. A
+    finding produced that way depends on its NEIGHBOUR being corrupted. So each
+    cohort here is corrupted with nothing else in its batch, rebuilt once, and
+    classified by `classify_cohorts`, the same rule every probe uses. No
+    neighbour is corrupted, so no interference is possible by construction, and
+    a cohort that is still a finding is a finding about its own cells.
+
+    WHAT IT DOES NOT SEPARATE. A finding that vanishes here was not the cohort's
+    own under the batched perturbation -- it does not say which neighbour caused
+    it, and it does not say the builder is clean. The perturbation values also
+    differ from the batch's: `seed` fixes the generator, and a batch draws for
+    every corrupted cell before this cohort's, so the offsets land differently.
+    Both are large and cannot coincide with the original, which is the property
+    the probe rests on; they are not the same numbers.
+
+    COST. Two clean builds, once, to establish determinism and serve as the
+    shared baseline; then ONE rebuild per cohort. `reach` is the batched run's
+    measurement, used for the head-of-frame rule and not re-measured; `None`
+    declares that none is available and each result says the head was not
+    assessed.
+
+    Returns one `IsolationResult` per distinct second, in time order.
+    `batched` optionally maps a second to its batched `CohortResult`.
+    """
+    base = build(dict(raw))
+    base2 = build(dict(raw))
+    if not base.equals(base2):
+        raise ProbeError(
+            "the builder is not deterministic across two clean runs, so no "
+            "isolated re-probe of it could attribute a moved row to the cohort "
+            "it corrupted. Nothing was isolated.")
+    batched = batched or {}
+    out = []
+    for s in sorted({pd.Timestamp(x) for x in seconds}):
+        r = run_probe_a(raw, build, model, side="isolation", seed=seed,
+                        column_modes=column_modes, bar_duration=bar_duration,
+                        cohort_seconds=[s], clean_base=base, reach=reach,
+                        reach_samples=0)
+        b = batched.get(s)
+        out.append(IsolationResult(
+            second=s, result=r,
+            batched_features=() if b is None else tuple(b.features_in_second),
+            batched_moved=0 if b is None else int(b.moved_in_second)))
+    return out
 
 
 def silence_note(cells_perturbed, batch_lo, batch_hi, picked, extra="") -> str:

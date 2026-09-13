@@ -180,7 +180,37 @@ def test_a_complete_run_PREDICTS_its_remaining_time_after_pass_one(work, capsys)
     _run(work, "clean", "--complete")
     out = capsys.readouterr().out
     assert "COMPLETE RUN PLANNED" in out
-    assert "pass(es) remaining" in out and "at this pass's cost" in out
+    assert "pass(es) remaining" in out and "at pass one's cost" in out
     assert out.index("COMPLETE RUN PLANNED") < out.index("pass(es) remaining")
     assert out.index("pass(es) remaining") < out.index("COMPLETE: yes"), (
         "the prediction printed after the result, which is no prediction")
+
+
+def test_the_prediction_prints_BOTH_the_elapsed_AND_the_remaining(work, capsys):
+    """R270 §0(c). R269's line left out the setup, and the corrected side's run
+    exceeded it by 325 s. The line now carries the time already spent -- setup,
+    reach, pass one -- beside the passes left, and a total."""
+    _run(work, "clean", "--complete")
+    out = capsys.readouterr().out
+    line = next(l for l in out.splitlines() if "pass(es) remaining" in l)
+    assert "elapsed so far" in line and "setup and reach" in line, line
+    assert "in total" in line, line
+    assert "Setup -- two clean builds and the reach measurement -- took" in out
+
+
+def test_a_complete_run_measures_reach_at_TEN_samples_and_prints_the_spread(
+        work, capsys):
+    """R270 §2(a). k scales with what it protects."""
+    from leakaudit.reach import COMPLETE_SAMPLES
+    assert COMPLETE_SAMPLES == 10
+    _run(work, "clean", "--complete")
+    out = capsys.readouterr().out
+    assert "REACH SPREAD over 10 sample(s)" in out, out[:2000]
+    assert out.index("REACH SPREAD") < out.index("COMPLETE RUN PLANNED")
+
+
+def test_the_DEFAULT_run_still_measures_at_THREE(work, capsys):
+    """The change is scoped to --complete: a default run's reach, and so the
+    whole-frame guard's printed reach, is measured as before."""
+    first = run_probe_a(_frames(), _clean, MODEL, side="t", max_cohorts=0)
+    assert first.reach.k == 3

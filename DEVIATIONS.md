@@ -5879,3 +5879,68 @@ round whose boundary was the figure.
 **R163 §1's exemption test.** *Would this have surfaced if the triggering question
 had not been asked?* **No.** Nobody had run the corrected side complete; the
 guard samples it, and the sample is silent.
+
+## D-V30A-112 — an isolation re-probe separates a cohort's own finding from its neighbour's, and its positive held on five of five
+
+**WHY IT WAS BUILT.** D-V30A-111 left the corrected side's complete run reporting
+`finding` where its 250-cohort sample is silent, with two readings and nothing
+measured to separate them: a leak the sample never touched, or interference at a
+stride one second above a reach that is a lower bound. A batched finding and an
+interference finding differ in one way. An interference finding exists because a
+NEIGHBOUR was corrupted in the same rebuild, so it does not survive being probed
+alone, and a real one does.
+
+**THE INSTRUMENT.** `availability.isolate_cohorts` makes two clean builds once,
+checks determinism on that pair, and then for each named cohort corrupts that
+cohort's cells and nothing else, rebuilds once, and classifies with
+`classify_cohorts` — the rule every probe uses. It reaches `run_probe_a` through
+two new parameters, `cohort_seconds` and `clean_base`, whose `None` defaults are
+the pre-R270 behaviour exactly, so no existing caller selects or builds
+differently. Under an explicit selection the stride is not derived and a frame
+with no cell in the one isolated second is noted instead of refused; a key
+mismatch still leaves no frame matched, which `touched == 0` refuses.
+
+**THE SYNTHETIC PAIR, both halves in the suite.** HELD: frames, model, seed.
+VARIED: batched against isolated. A builder reading the cell three seconds back —
+available, so nothing to find — batched at stride 3 with the reach control
+declared off gives `finding`; isolated, none of those cohorts is a finding. A
+builder reading its own second's cell gives `finding` batched and every one
+persists isolated, with the same feature.
+
+**THE FIXTURE POSITIVE, R270 §1(b).** The contaminated side, run exactly as the
+whole-frame guard runs it, reproduced the guard's figures: `finding`, 250
+eligible, 5,220 records, 432 s. Every one of the 250 eligible cohorts is a
+finding. Five were chosen by rank — `round(i * (n - 1) / 4)` over the sorted
+seconds, ranks 0, 62, 124, 187 and 249 — and isolated:
+
+| cohort | batched | isolated |
+|---|---|---|
+| 2025-01-02 14:30:00 (head) | 1 row, 27 features | `finding`, 1 row, 27 features |
+| 2025-01-08 16:09:46 | 1 row, 16 features | `finding`, 1 row, 16 features |
+| 2025-01-15 14:43:26 | 1 row, 16 features | `finding`, 1 row, 16 features |
+| 2025-01-22 16:39:50 | 1 row, 28 features | `finding`, 1 row, 28 features |
+| 2025-01-29 16:52:24 | 1 row, 16 features | `finding`, 1 row, 16 features |
+
+Five of five persisted with identical row and feature counts. The two clean
+builds and five isolations took 574 s.
+
+**WHAT THE POSITIVE DOES AND DOES NOT SHOW.** At stride 997 against a reach of
+14 s no batched cohort on this side could have interfered with another, so these
+findings were never at risk of being interference. The fixture half shows the
+instrument does not LOSE a real finding at fixture scale; the half that shows it
+removes interference is the synthetic pair. Both were required before the
+corrected side's findings are put through it.
+
+**TWO SMALLER CHANGES IN THE SAME BATCH.** A complete run measures reach at
+k = 10 (`reach.COMPLETE_SAMPLES`) and prints every sample with its second and its
+reach; a default run stays at 3, so the whole-frame guard's printed reach is
+measured as before. The sampling was found already spread evenly across the
+frame's decision seconds with the head skipped — R267's `sample_seconds` — and
+not taken from its first seconds, so what changed is k. `measure_reach` also
+measures at named seconds, for R270 §1(c)'s second branch. The complete run's
+prediction prints the time already spent — setup, reach, pass one — beside the
+passes remaining, and a total.
+
+**R163 §1's exemption test.** *Would this have surfaced if the triggering question
+had not been asked?* **Not applicable** — this entry records a build and its
+positive, not a defect.

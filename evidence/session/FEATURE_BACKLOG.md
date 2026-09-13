@@ -95,6 +95,15 @@ measurement script recorded the verdict and not the count or location of the
 findings, so the establish that would tell these apart has not been run. **This
 is a Phase 2 instrument observation, not a `PREREG.md` §6.2 result, and it is not
 comparable to the Phase 1 corrected-side silence without a ruling.**
+**R270 §0 rulings, recorded.** *"Under an hour" is retired:* it was a
+build-or-stop line and never a specification — the cost is measured, printed
+and predicted, and nothing is held to a figure. *The prediction prints both
+numbers:* time elapsed so far (setup, reach, pass one) beside the passes
+remaining at pass one's cost, and a total; "not a promise" covers drift in later
+passes and not time already spent. *A complete run measures reach at k = 10*
+(`reach.COMPLETE_SAMPLES`), spread across the frame, with every sample printed;
+a default run stays at 3. INSTALL's `## Contributing` section is ratified as it
+stands: one measured requirement.
 **Value:** medium-high for adoption — it is the difference between a tool run
 once and a tool run in CI.
 

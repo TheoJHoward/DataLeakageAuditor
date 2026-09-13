@@ -123,6 +123,25 @@ CLASSIFICATION = {
     "availability.py::param::run_probe_a(reach=)":
         (L, "None means measure the reach in this call; a complete run passes "
             "its one shared measurement explicitly"),
+    # R270 §1(a). The isolation re-probe's two inputs to `run_probe_a`. Both
+    # defaults are the pre-R270 behaviour exactly: `None` selects by stride and
+    # builds the baseline in this call. Only `isolate_cohorts` passes either.
+    "availability.py::param::run_probe_a(cohort_seconds=)":
+        (L, "None selects by stride, exactly as every caller did before R270"),
+    "availability.py::param::run_probe_a(clean_base=)":
+        (L, "None builds and checks the baseline in this call, as before R270"),
+    "availability.py::param::isolate_cohorts(batched=)":
+        (L, "None carries no batched figures; the isolated verdict does not "
+            "depend on it"),
+    "availability.py::param::isolate_cohorts(seed=)": (NA, "reproducibility seed"),
+    "availability.py::param::isolate_cohorts(column_modes=)":
+        (L, "None is the whole-frame path, the same default run_probe_a takes"),
+    "availability.py::param::isolate_cohorts(bar_duration=)":
+        (L, "None is undeclared, the same default run_probe_a takes"),
+    "reach.py::param::measure_reach(at_seconds=)":
+        (L, "None spreads k samples across the frame, exactly as before R270"),
+    "availability.py::param::__init__(batched_features=)": (NA, "result carrier field"),
+    "availability.py::param::__init__(batched_moved=)": (NA, "result carrier field"),
     # R269 §2(b). Result carriers for the head of the frame.
     "availability.py::param::__init__(head_cutoff=)": (NA, "result carrier field"),
     "availability.py::param::__init__(head_seconds=)": (NA, "result carrier field"),

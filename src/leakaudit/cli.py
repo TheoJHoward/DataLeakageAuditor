@@ -318,13 +318,22 @@ def _probe_complete(frames, build, model, config, stride, slice_from, padding):
                                STRIDE_NOT_DECLARED, run_probe_a, stride_floor)
     import math
 
+    from .reach import COMPLETE_SAMPLES
+    import time
+    t_start = time.time()
     common = dict(column_modes=config.column_modes or None,
                   bar_duration=config.bar_duration, slice_from=slice_from,
                   padding=NOT_DECLARED if padding is None else padding)
+    # k SCALES WITH WHAT IT PROTECTS. R270 §2(a). The stride below is this
+    # measurement plus one second, and the passes it schedules are the most
+    # expensive thing this tool does -- so a complete run measures at
+    # COMPLETE_SAMPLES rather than the default three, and prints the spread.
     probe0 = run_probe_a(frames, build, model, side="user",
                          cohort_stride=(STRIDE_NOT_DECLARED if stride is None
                                         else stride),
-                         max_cohorts=0, **common)
+                         max_cohorts=0, reach_samples=COMPLETE_SAMPLES,
+                         **common)
+    setup_s = time.time() - t_start
     if not probe0.determinism_ok:
         return probe0, ("COMPLETE RUN NOT MADE: the builder is not "
                         "deterministic across two clean builds, so no pass "
@@ -356,10 +365,12 @@ def _probe_complete(frames, build, model, config, stride, slice_from, padding):
     # the passes remaining -- rather than a figure carried from another machine
     # or another builder. Printed straight to the terminal, not held for the
     # notes, because the notes arrive after the wait they would have warned of.
-    import time
-    print("COMPLETE RUN PLANNED: %d pass(es) at stride %d, from %s. The time it "
-          "will take is printed after the first pass, measured from that pass."
-          % (S, S, basis))
+    if probe0.reach is not None:
+        print(probe0.reach.spread())
+    print("COMPLETE RUN PLANNED: %d pass(es) at stride %d, from %s. Setup -- two "
+          "clean builds and the reach measurement -- took %.1f s. The time the "
+          "passes will take is printed after the first pass, measured from that "
+          "pass." % (S, S, basis, setup_s))
     sys.stdout.flush()
     combined = None
     first_pass_s = None
@@ -371,10 +382,18 @@ def _probe_complete(frames, build, model, config, stride, slice_from, padding):
         if combined is None:
             combined = r
             first_pass_s = time.time() - t_pass
-            print("COMPLETE RUN: pass 1 of %d took %.1f s; %d pass(es) remaining, "
-                  "~%.1f min at this pass's cost -- a measured extrapolation, "
-                  "not a promise."
-                  % (S, first_pass_s, S - 1, (S - 1) * first_pass_s / 60.0))
+            # BOTH NUMBERS. R270 §0(c). R269's line printed only the passes left,
+            # and the corrected side's run exceeded it by 325 s: the setup it
+            # could not include. "Not a promise" covers drift in later passes;
+            # it does not cover leaving out time already spent.
+            elapsed = time.time() - t_start
+            left = (S - 1) * first_pass_s
+            print("COMPLETE RUN: %.1f s elapsed so far (setup and reach %.1f s, "
+                  "pass 1 of %d %.1f s); %d pass(es) remaining, ~%.1f min at "
+                  "pass one's cost; ~%.1f min in total. Later passes may drift "
+                  "from pass one's cost, and that drift is not predicted."
+                  % (elapsed, setup_s, S, first_pass_s, S - 1, left / 60.0,
+                     (elapsed + left) / 60.0))
             sys.stdout.flush()
             continue
         combined.cohorts.extend(r.cohorts)
