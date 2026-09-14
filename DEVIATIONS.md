@@ -6233,3 +6233,45 @@ so none is reported.
 had not been asked?* **No.** It surfaced because R271 asked which neighbour moved
 the row, and counting cells per frame to answer it showed one frame was never
 selected.
+
+## D-V30A-116 — at the floor the block reach gives, a pass on the corrected fixture is silent where stride 16 made 163,143 findings
+
+**Nothing here is a `PREREG.md` §6.2 result, and no Phase 1 figure moves.** These
+are Phase 2 instrument measurements on the acceptance fixture's corrected side,
+made after `1926900` as R271 §4 ordered, each its own step.
+
+**THE PAIR, R271 §2(f).** HELD: the corrected side, its model, the seed, and one
+shared single-second and block-reach measurement. VARIED: the stride. Run once as
+the opt-in test `test_block_reach_fixture.py`, recorded in
+`tests/phase1/block_reach_fixture_record.json`, and covered by an always-on test
+that fails if the record does not name it.
+
+| stride | what the run did |
+|---|---|
+| 16 | **REFUSED** against the block reach, 58 s in, before a cell was corrupted. R270's complete run at this stride reported 163,143 finding cohorts (D-V30A-114); that figure cannot be reproduced through the probe now and is carried in the record. |
+| 61 | pass 1 of 61: 5,544 cohorts, **0 findings**, liveness 4,355 — silent, with rows moving |
+
+**THE STRIDE AND WHAT SET IT.** Ten single-second samples, clock-aligned: 15 s
+to 60 s, nine usable; the 60 s samples are the seconds that hold trades. Ten
+block positions: 53 s to 60 s, all usable, none censored. The model's floor is
+2 s; the single-second reach plus one second and the block reach plus one second
+are **both 61 s**. They tie, and the plan line names the single-second one only
+because it is listed first.
+
+**WHAT --complete COSTS HERE, R271 §2(d), from the run's own print.** Setup —
+two clean builds, ten single-second samples and ten block positions — took
+1,241.9 s. Pass one took 175.1 s. After pass one the run printed 1,417.0 s
+elapsed, 60 passes remaining at ~175.1 min, and **~198.7 min in total**, against
+R271's ~3.5 h. It was not run to completion; that figure is the prediction, not a
+measurement of the whole run.
+
+**THE FLOOR A DEFAULT RUN RESOLVES ON THE FIXTURE.** `run_probe_a` with no stride
+declared and no cohorts probed, 415 s: single-second reach 60 s at k = 3, block
+reach 60 s at its one default position (2025-01-16 17:02:01), so the floor is
+61 s; the shipped default of 97 clears it and is the stride, and the run's notes
+say both. So on this fixture a default run is unchanged in stride and pays one
+extra rebuild, and a complete run moves from 16 passes to 61.
+
+**R163 §1's exemption test.** *Would this have surfaced if the triggering question
+had not been asked?* **Not applicable** — a measurement the ruling ordered, not a
+defect.

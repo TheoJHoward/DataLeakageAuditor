@@ -127,6 +127,13 @@ complete run takes the largest measured floor rounded up, and refuses where no
 stride the frame can hold would clear it. `--confirm` splits a vanished finding
 by later and earlier cohorts, and an INTERFERENCE class refuses the run.
 D-V30A-115.
+
+**R271 §2(d)(f), measured after that commit.** On the corrected side both
+measured floors are 61 s, so `--complete` is 61 passes: setup 1,241.9 s, pass one
+175.1 s, **~198.7 min predicted** and not run to completion. Pass one at stride 61
+probed 5,544 cohorts and found nothing, liveness 4,355; stride 16, R270's, is
+refused against the block reach. A default run there resolves a 61 s floor and
+keeps stride 97. The pair is an opt-in test with its record. D-V30A-116.
 **R270 §0 rulings, recorded.** *"Under an hour" is retired:* it was a
 build-or-stop line and never a specification — the cost is measured, printed
 and predicted, and nothing is held to a figure. *The prediction prints both

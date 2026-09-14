@@ -1,0 +1,36 @@
+{
+  "what_this_is": "The last recorded run of the opt-in fixture-scale block-reach pair in test_block_reach_fixture.py (R271 section 2(d)(f)). It is opt-in because it costs about twenty-five minutes on one machine's inputs; 'it was run' is not checkable from a clone, so this file records when, on what, and with what figures. Nothing here is a PREREG.md section 6.2 result or a Phase 1 figure.",
+  "date": "2026-09-14",
+  "commit": "1926900",
+  "fixture": "zc 2025-01, corrected side",
+  "command": "LEAKAUDIT_FIXTURE=1 py -3.12 -m pytest -s tests/phase1/test_block_reach_fixture.py::test_FIXTURE_stride_16_is_REFUSED_and_the_floors_stride_is_SILENT",
+  "result": "1 passed in 1509.93s",
+  "results": [
+    {"test": "test_FIXTURE_stride_16_is_REFUSED_and_the_floors_stride_is_SILENT", "result": "PASS"}
+  ],
+  "reach_k10": {
+    "usable_min": "0 days 00:00:15",
+    "max": "0 days 00:01:00",
+    "usable": 9,
+    "no_movement": 1,
+    "note": "Clock-aligned since R271. The 60 s samples are the seconds that hold trades; the 15 s ones hold only MBO cells."
+  },
+  "block_reach_k10": {
+    "usable_min": "0 days 00:00:52.999682923",
+    "max": "0 days 00:01:00",
+    "usable": 10,
+    "censored": 0
+  },
+  "stride": 61,
+  "stride_basis": "the largest of the model's floor 2 s, the single-second reach plus one second 61 s, and the block reach plus one second 61 s, rounded up. The two measured floors TIE at 61 s; the plan line names the single-second one only because it is listed first.",
+  "setup_seconds": 1241.9,
+  "pass_1_seconds": 175.1,
+  "pass_1_cohorts": 5544,
+  "pass_1_findings": 0,
+  "pass_1_liveness": 4355,
+  "predicted_complete_minutes": 198.7,
+  "prediction_basis": "1,417.0 s elapsed after pass one, plus 60 passes at pass one's 175.1 s, as the run printed it. Not run to completion.",
+  "stride_16_refused_after_seconds": 58,
+  "r270_stride_16_findings": 163143,
+  "r270_source": "D-V30A-114: R270's complete run of this side at stride 16 reported 163,143 finding cohorts on a builder with no leak. It cannot be reproduced through the probe now, because stride 16 is refused against the block reach, and it is carried here as the other half of the pair."
+}
