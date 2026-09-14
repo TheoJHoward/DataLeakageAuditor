@@ -142,6 +142,9 @@ def test_an_ORDINARY_message_is_NOT_refused(tmp_path, monkeypatch):
     p.write_text("A real subject line\n\nAnd a body explaining it.\n",
                  encoding="utf-8")
     calls = []
+    # The commit gate (R272 §2(g)) is its own subject, tested in
+    # test_commit_gate.py; this negative is about the message rules alone.
+    monkeypatch.setattr(se, "commit_gate", lambda repo=None: [])
     monkeypatch.setattr(se.subprocess, "run",
                         lambda cmd, **kw: calls.append(cmd) or type(
                             "R", (), {"returncode": 0})())

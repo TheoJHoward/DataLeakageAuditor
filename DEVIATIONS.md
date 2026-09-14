@@ -6307,3 +6307,55 @@ completed.
 **R163 §1's exemption test.** *Would this have surfaced if the triggering question
 had not been asked?* **Yes** — the closing sequence's suite surfaced it with no
 question asked, which is the step working.
+
+## D-V30A-118 — the commit route refuses a tree no suite measured, and a probe-path change no guard measured
+
+**WHY.** D-V30A-117 was a commit of a tree no full suite had run on. The suite
+record named the HEAD it ran on, and HEAD cannot say whether anything changed
+between the run and the commit. The closing sequence caught that one; nothing on
+the commit route could have.
+
+**THE FINGERPRINT.** `tools/tree_fingerprint.py` hashes HEAD together with the
+content of every modified, staged, deleted and untracked non-ignored file, read
+from `git status --porcelain=v1 -z --untracked-files=all`, so no path is quoted or
+trimmed. Two things are left out, each for a stated reason: `.claude/`, which is
+never committed, and the two RUN RECORDS — `tools/suite_tree_record.json` and
+`tools/wholeframe_guard_times.json` — which the runs they record write, so
+including them would make every run invalidate its own record. It hashes content,
+not porcelain status, so `git add` after the suite leaves the fingerprint where
+the suite saw it.
+
+**THE SUITE RECORD** now carries that fingerprint and the runner's own wall time,
+taken by `tests/conftest.py` from session start to finish.
+
+**THE GATE**, `safe_edit.commit_gate`, called by `safe_edit.commit` before git is
+asked to commit anything, with every reason printed at once:
+
+* no readable suite record, or a record whose fingerprint is not this tree's, or
+  a matching record that was not the whole suite — refused. Records-only commits
+  included, since the suite reads the records.
+* a staged file in `PROBE_PATH_SET.json`'s path set with no completed guard run
+  in the times file whose `path_set_fingerprint` equals the path set's current
+  content — refused.
+
+**THE GUARD'S FINGERPRINT IS NARROWER, AND THAT IS DELIBERATE.** It covers the
+path-set files' content alone, taken when the run STARTS, so an edit made during
+the run cannot match it, and written only after the eight terms held — the times
+file was already written only then. A whole-tree fingerprint there would make
+every record appended after a guard run demand a second guard run, which a round
+is not allowed.
+
+**KNOWN POSITIVES**, in a throwaway repository with files staged and no commit
+made, so no test commits or signs anything: a commit with no matching suite run
+is refused by `safe_edit.commit` itself; so is one with no record at all, an edit
+after the suite, an untracked file added after it, and a subset run. A probe-path
+commit with no guard run is refused, and so is one whose guard run recorded other
+content. The negatives beside them pass: a matching whole-suite record, `git add`
+after the suite, a guard run on the current content, and a change off the probe
+path needing no guard. The run records are shown not to move the fingerprint.
+
+**THE COST, ACCEPTED AS RULED.** A full suite, about a minute here, before every
+commit, and a guard run before every probe-path commit.
+
+**R163 §1's exemption test.** *Would this have surfaced if the triggering question
+had not been asked?* **Not applicable** — a mechanism built for D-V30A-117.

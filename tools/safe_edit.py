@@ -108,7 +108,75 @@ def edit(path, transform) -> bool:
 COMMIT_TRAILER = "Committed-Via: tools/safe_edit.commit"
 
 
-def commit(message_file, repo=None, extra=()) -> int:
+def commit_gate(repo=None) -> list:
+    """Reasons a commit of this working tree is refused. Empty: it may land.
+
+    R272 §2(g), the mechanism for D-V30A-117.
+
+    A SUITE RUN MATCHING THIS TREE. `tools/suite_tree_record.json` carries the
+    fingerprint of the working tree the last `pytest tests` run measured, and it
+    has to equal the tree's fingerprint now and be a whole-suite run. A suite,
+    then an edit, then a commit is refused; so is a commit with no suite at all.
+    Records-only commits get the same rule, because the suite reads the records.
+
+    A GUARD RUN MATCHING THE PROBE PATH. When the staged change touches a file in
+    `PROBE_PATH_SET.json`'s path set, a completed run in
+    `tools/wholeframe_guard_times.json` has to have recorded the path set's
+    current content. The guard writes that file only after its eight terms held.
+    """
+    import json
+
+    import probe_path_guard as ppg
+    import tree_fingerprint as tf
+
+    root = pathlib.Path(repo) if repo else pathlib.Path(__file__).resolve().parents[1]
+    problems = []
+    fp = tf.fingerprint(root)
+    try:
+        last = json.loads((root / "tools" / "suite_tree_record.json")
+                          .read_text(encoding="utf-8")).get("last") or {}
+    except Exception as e:                                   # noqa: BLE001
+        last = None
+        problems.append("NO SUITE RECORD could be read at "
+                        "tools/suite_tree_record.json (%s). Run `py -3.12 -m "
+                        "pytest tests` as the last step before committing." % e)
+    if last is not None:
+        if last.get("tree_fingerprint") != fp["digest"]:
+            problems.append(
+                "NO SUITE RUN MATCHES THIS WORKING TREE: the suite record's "
+                "fingerprint is %s and this tree's is %s (HEAD %s, %d changed "
+                "file(s)). Something changed after the suite ran, or it never "
+                "ran on this tree. Run `py -3.12 -m pytest tests` as the last "
+                "step before committing."
+                % (str(last.get("tree_fingerprint"))[:12], fp["digest"][:12],
+                   fp["head"][:7], len(fp["files"])))
+        elif not last.get("full_suite"):
+            problems.append(
+                "the suite run matching this tree was not the whole suite; its "
+                "arguments were %r." % (last.get("args"),))
+    staged = subprocess.run(["git", "-C", str(root), "diff", "--cached",
+                             "--name-only"], capture_output=True, text=True,
+                            encoding="utf-8").stdout.splitlines()
+    pset = ppg.path_set()
+    touched = sorted({s.strip() for s in staged if s.strip()} & pset)
+    if touched:
+        want = tf.path_set_fingerprint(pset, root)
+        try:
+            runs = json.loads((root / "tools" / "wholeframe_guard_times.json")
+                              .read_text(encoding="utf-8")).get("runs", [])
+        except Exception:                                    # noqa: BLE001
+            runs = []
+        if not any(r.get("path_set_fingerprint") == want for r in runs):
+            problems.append(
+                "PROBE-PATH COMMIT WITHOUT A MATCHING GUARD RUN: this commit "
+                "touches %s, and no completed run in "
+                "tools/wholeframe_guard_times.json recorded the path set's "
+                "current content (%s). Run the whole-frame guard on this content "
+                "first." % (", ".join(touched), want[:12]))
+    return problems
+
+
+def commit(message_file, repo=None, extra=(), gate=True) -> int:
     """`git commit -F <path>`, refusing every way of not doing that.
 
     Refuses `-`, refuses a path that does not exist, refuses an empty file, and
@@ -118,6 +186,9 @@ def commit(message_file, repo=None, extra=()) -> int:
     Appends `COMMIT_TRAILER` with `--trailer`, so git adds it and the message
     file on disk is never modified. Since R268 the commit-msg hook refuses any
     message without it.
+
+    Since R272 it also refuses a tree no suite run matches, and a probe-path
+    change no guard run matches -- see `commit_gate`.
     """
     if str(message_file).strip() == "-":
         raise EditRuleError(
@@ -142,5 +213,13 @@ def commit(message_file, repo=None, extra=()) -> int:
     # first edit for this round changed the docstring above and left this line
     # as it was, so the route would have been refused by its own hook; the test
     # asking for `--trailer` here is what caught it.
+    # THE TREE HAS TO BE ONE A SUITE MEASURED. R272 §2(g). Refused before git
+    # is asked to commit anything, with every reason at once.
+    if gate:
+        problems = commit_gate(repo)
+        if problems:
+            raise EditRuleError(
+                "COMMIT REFUSED (R272 section 2(g)):\n  - "
+                + "\n  - ".join(problems))
     cmd = ["git", "commit", "-F", str(p), "--trailer", COMMIT_TRAILER, *extra]
     return subprocess.run(cmd, cwd=str(repo) if repo else None).returncode

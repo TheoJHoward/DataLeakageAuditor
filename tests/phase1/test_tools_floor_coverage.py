@@ -56,6 +56,7 @@ COVERED = {
     "suite_tree": "tests/phase1/test_suite_tree.py",
     "commit_msg_hook": "tests/phase1/test_commit_msg_hook.py",
     "wholeframe_guard": "tests/phase1/test_wholeframe_relation.py",
+    "tree_fingerprint": "tests/phase1/test_commit_gate.py",
 }
 
 # module -> why nothing reaches it. Not an excuse; a statement of the gap.

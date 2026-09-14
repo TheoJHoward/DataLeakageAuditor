@@ -111,11 +111,24 @@ def is_full_suite(args) -> bool:
     return True
 
 
-def record(args, exitstatus, counts=None) -> dict:
+def record(args, exitstatus, counts=None, wall_seconds=None) -> dict:
     """Write the record. Never raises into the suite -- a broken write is a
-    missing record, which the check refuses; it is not a test failure."""
+    missing record, which the check refuses; it is not a test failure.
+
+    THE WORKING TREE'S FINGERPRINT, NOT HEAD ALONE. R272 §2(g). HEAD cannot say
+    whether an edit landed between this run and a commit, which is what
+    D-V30A-117 shipped. `safe_edit.commit` computes the same fingerprint and
+    refuses a commit no whole-suite record matches. The runner's own wall time
+    is kept beside it: R271's 600 s against 52 s was a pipe, and the record now
+    says what the run itself took.
+    """
     import datetime
     dirt = dirty_paths()
+    try:
+        import tree_fingerprint as tf
+        tree = tf.fingerprint(REPO)["digest"]
+    except Exception:                                        # noqa: BLE001
+        tree = None
     doc = {
         "what": _WHAT,
         "last": {
@@ -127,6 +140,8 @@ def record(args, exitstatus, counts=None) -> dict:
             "full_suite": is_full_suite(args),
             "exitstatus": int(exitstatus),
             "counts": counts or {},
+            "tree_fingerprint": tree,
+            "wall_seconds": wall_seconds,
         },
     }
     RECORD.write_text(json.dumps(doc, indent=1) + "\n", encoding="utf-8",

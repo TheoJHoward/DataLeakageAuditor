@@ -207,8 +207,14 @@ def last_recorded() -> dict:
                                     last.get("when", "?"))}
 
 
-def record_times(capture, contaminated, corrected, total) -> None:
-    """Append this run's wall times. Ten kept, so drift is visible."""
+def record_times(capture, contaminated, corrected, total,
+                 path_set_fingerprint=None) -> None:
+    """Append this run's wall times. Ten kept, so drift is visible.
+
+    R272 §2(g): each entry carries the fingerprint of the path set's content the
+    run STARTED on, which `safe_edit.commit_gate` requires before a probe-path
+    commit lands. Taken at the start, so an edit during the run cannot match.
+    """
     import datetime
     try:
         doc = json.loads(TIMES_FILE.read_text(encoding="utf-8"))
@@ -227,6 +233,7 @@ def record_times(capture, contaminated, corrected, total) -> None:
         "contaminated": round(contaminated, 1),
         "corrected": round(corrected, 1),
         "total": round(total, 1),
+        "path_set_fingerprint": path_set_fingerprint,
     }])[-10:]
     TIMES_FILE.write_text(json.dumps(doc, indent=1) + "\n", encoding="utf-8",
                           newline="\n")
@@ -295,6 +302,13 @@ def main() -> int:
 
     print("guard population: %d modules, measured at commit %s"
           % (len(ppg.path_set()), ppg.measured_at()))
+    # WHAT THIS RUN VOUCHES FOR, TAKEN BEFORE IT RUNS. R272 §2(g). The commit
+    # route requires this exact content's fingerprint in the times file before a
+    # probe-path change lands; taken at the start, an edit made during the run
+    # cannot match it.
+    import tree_fingerprint as tf
+    path_set_fp = tf.path_set_fingerprint(ppg.path_set(), REPO)
+    print("path set content fingerprint at start: %s" % path_set_fp[:12])
 
     out = {}
     _watch = ppg.watch()
@@ -402,7 +416,8 @@ def main() -> int:
     # this run is a run whose times mean something. A stalled or refused run
     # never reaches this line and never becomes the next run's baseline.
     record_times(capture_s, out["contaminated"]["seconds"],
-                 out["corrected"]["seconds"], time.time() - t0)
+                 out["corrected"]["seconds"], time.time() - t0,
+                 path_set_fingerprint=path_set_fp)
     print("\ntotal wall time %.0f s (capture + both sides + comparison)."
           % (time.time() - t0))
     print("UNCHANGED. The whole-frame path is byte-for-byte the result the committed "
