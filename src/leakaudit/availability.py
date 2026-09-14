@@ -426,6 +426,14 @@ class ProbeAResult:
     #: against rather than being told a check happened.
     reach: object = None
     min_separation: object = None
+    #: THE BLOCK REACH. R271 §2. Every modelled cell at or before a sampled
+    #: second corrupted in one rebuild, and how far forward the output moved:
+    #: the longest lookback any feature has, from behaviour. It governs the
+    #: stride floor. `decision_seconds` is how many decision seconds the probe
+    #: selected from, carried so `--complete` can tell a stride the frame
+    #: cannot hold passes for.
+    block_reach: object = None
+    decision_seconds: int = 0
     #: THE HEAD OF THE FRAME. R269 §2(b). `head_cutoff` is the frame's first row
     #: plus the measured reach; probed cohorts whose second falls before it read
     #: cells from before the frame, and are listed in `head_seconds`. They STAY
@@ -745,7 +753,9 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
                 cohort_offset: int = 0,
                 reach=None,
                 cohort_seconds=None,
-                clean_base=None) -> ProbeAResult:
+                clean_base=None,
+                block_samples=None,
+                block_reach=None) -> ProbeAResult:
     """Corrupt a sparse set of seconds, rebuild once, and read WHICH rows moved.
 
     `cohort_stride` keeps corrupted seconds far apart so a moved row can be
@@ -820,6 +830,33 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
             "makes no measurement of how far a corruption propagates through "
             "the builder. The stride and any padding rest on declaration alone.")
 
+    # THE BLOCK REACH. R271 §2. One corrupted second answers "how far can one
+    # second's corruption push the output", and a feature taking a median, a
+    # rank or a threshold can answer "nowhere" while its window is minutes. A
+    # batched pass puts several corruptions inside that window. So the history
+    # up to a sampled second is corrupted in one rebuild and the forward
+    # movement read: that is the lookback the stride floor has to clear.
+    from .reach import BLOCK_SAMPLES, measure_block_reach
+    kb = BLOCK_SAMPLES if block_samples is None else int(block_samples)
+    if block_reach is not None:
+        res.block_reach = block_reach
+        res.notes.append("[shared across a complete run's passes] "
+                         + block_reach.note())
+    elif clean_base is not None:
+        # An isolated re-probe names its cohorts and uses no stride, and the
+        # batch it re-probes already measured this. A whole-history rebuild per
+        # re-probe would double confirming's cost for a floor nothing here reads.
+        pass
+    elif kb > 0:
+        res.block_reach = measure_block_reach(raw, build, model, base, dcol,
+                                              k=kb, seed=seed)
+        res.notes.append(res.block_reach.note())
+    else:
+        res.notes.append(
+            "BLOCK REACH NOT MEASURED: `block_samples=0` was declared, so the "
+            "stride floor rests on the model and the single-second reach alone, "
+            "and a window one corrupted second cannot move is not in it.")
+
     # The corrupted seconds: sparse, deterministic, derived from the data's own
     # range rather than chosen.
     seconds = pd.Index(sorted(base_floor.unique()))
@@ -869,10 +906,25 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
     # to the other schedule: the model founds a FLOOR, a declared value below it
     # is invalid rather than merely smaller, and clearing the floor is not
     # sufficiency because the builder's own lookback is not in the model.
+    res.decision_seconds = len(seconds)
     # An explicit selection has no stride to derive; see `cohort_seconds` below.
     if (cohort_seconds is None and isinstance(cohort_stride, str)
             and cohort_stride == STRIDE_NOT_DECLARED):
         floor = stride_floor(model, column_modes)
+        # THE BLOCK REACH RAISES THE FLOOR, ON EVERY RUN. R271 §2(c). The
+        # model's floor is availability arithmetic; the block reach is how far
+        # this builder's history actually reaches forward. A stranger's
+        # five-minute feature at stride 97 is D-V30A-114's defect at a default,
+        # so the default stays only where it clears the larger of the two.
+        from .reach import block_floor
+        _bf = block_floor(res.block_reach)
+        if _bf is not None and _bf > floor:
+            res.notes.append(
+                "STRIDE FLOOR FROM THE BLOCK REACH: the model's floor is %s and "
+                "the measured block reach plus one second is %s, which is "
+                "larger, so %s is the floor the stride below has to clear."
+                % (_window_text(floor), _window_text(_bf), _window_text(_bf)))
+            floor = _bf
         # THE FLOOR IS A BOUND, NOT A VALUE. R265 §2, correcting R263 §2(b).
         #
         # R263 resolved an undeclared stride TO the floor, which confused two
@@ -936,6 +988,14 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
     if len(picked) > 1:
         res.min_separation = pd.Timedelta(
             np.diff(pd.DatetimeIndex(picked).to_numpy()).min())
+        # REFUSED BEFORE A CELL IS CORRUPTED. R271 §2(c). A declared stride
+        # whose cohorts sit inside the block reach would spend a rebuild on
+        # findings the refusal then invalidates. Below the MODEL's floor the
+        # derived refusal in `classify_cohorts` keeps precedence, as it does
+        # over the single-second reach: it is the more specific of the two.
+        if res.min_separation >= stride_floor(model, column_modes):
+            from .reach import check_block_separation
+            check_block_separation(res.min_separation, res.block_reach)
 
     # THE HEAD OF THE FRAME. R269 §2(b). The plain-frame slice that masks a leak
     # as silence carries no declaration of what it was cut from, so no slice
@@ -1317,6 +1377,37 @@ class IsolationResult:
     #: in. Carried so the two can be read side by side without a second lookup.
     batched_features: tuple = ()
     batched_moved: int = 0
+    #: THE SPLIT. R271 §3(a). For a cohort that did not persist alone: whether
+    #: it is a finding again with only the batch's LATER cohorts corrupted, and
+    #: with only its EARLIER ones. None means the split was not run.
+    later_finding: object = None
+    earlier_finding: object = None
+    later_seconds: tuple = ()
+    earlier_seconds: tuple = ()
+    #: The nearest later cohort, where corrupting it alone beside this one
+    #: reproduces the finding. None where it was not tried or did not.
+    named_later: object = None
+
+    @property
+    def klass(self) -> str:
+        """The class a confirm run prints. R271 §3(a).
+
+        A finding that did not persist alone has no class until the split has
+        run: isolation removes a real lookahead leak as surely as interference,
+        so calling it BATCHED ONLY without the split would be a guess.
+        """
+        if self.persisted:
+            return "CONFIRMED"
+        if self.later_finding is None or self.earlier_finding is None:
+            raise ValueError(
+                "a finding that did not persist alone is classed only after its "
+                "later/earlier split (R271 section 3(a)); %s was not split"
+                % self.second)
+        if self.later_finding:
+            return "CONFIRMED (lookahead)"
+        if self.earlier_finding:
+            return "INTERFERENCE"
+        return "BATCHED ONLY"
 
     @property
     def cohort(self):
@@ -1345,7 +1436,7 @@ class IsolationResult:
 
 def isolate_cohorts(raw, build, model, seconds, *, reach, batched=None,
                     seed: int = 20260828, column_modes=None,
-                    bar_duration=None) -> list:
+                    bar_duration=None, batch=None, batch_step: int = 1) -> list:
     """Re-probe each named cohort ALONE. One rebuild per cohort. R270 §1(a).
 
     WHAT IT SEPARATES. A batched run corrupts many seconds in one rebuild, and a
@@ -1383,6 +1474,17 @@ def isolate_cohorts(raw, build, model, seconds, *, reach, batched=None,
             "isolated re-probe of it could attribute a moved row to the cohort "
             "it corrupted. Nothing was isolated.")
     batched = batched or {}
+    batch = None if batch is None else [pd.Timestamp(x) for x in batch]
+    where = {} if batch is None else {x: i for i, x in enumerate(batch)}
+
+    def _finding_with(target, neighbours) -> bool:
+        """`target` corrupted beside `neighbours` and nothing else: a finding?"""
+        r = run_probe_a(raw, build, model, side="isolation-split", seed=seed,
+                        column_modes=column_modes, bar_duration=bar_duration,
+                        cohort_seconds=sorted([target] + list(neighbours)),
+                        clean_base=base, reach=reach, reach_samples=0)
+        return bool(next(c for c in r.cohorts if c.second == target).finding())
+
     out = []
     for s in sorted({pd.Timestamp(x) for x in seconds}):
         r = run_probe_a(raw, build, model, side="isolation", seed=seed,
@@ -1390,10 +1492,28 @@ def isolate_cohorts(raw, build, model, seconds, *, reach, batched=None,
                         cohort_seconds=[s], clean_base=base, reach=reach,
                         reach_samples=0)
         b = batched.get(s)
-        out.append(IsolationResult(
+        iso = IsolationResult(
             second=s, result=r,
             batched_features=() if b is None else tuple(b.features_in_second),
-            batched_moved=0 if b is None else int(b.moved_in_second)))
+            batched_moved=0 if b is None else int(b.moved_in_second))
+        # THE SPLIT. R271 §3(a). Only for a cohort that did not persist alone,
+        # and only where the caller named the batch it came from.
+        if not iso.persisted and batch is not None:
+            p = where.get(s)
+            if p is None:
+                raise ProbeError(
+                    "cohort %s is not in the batch it was said to come from, so "
+                    "its later and earlier cohorts cannot be named" % s)
+            step = max(1, int(batch_step))
+            later = [batch[j] for j in range(p + step, len(batch), step)]
+            earlier = [batch[j] for j in range(p - step, -1, -step)][::-1]
+            iso.later_seconds = tuple(later)
+            iso.earlier_seconds = tuple(earlier)
+            iso.later_finding = _finding_with(s, later) if later else False
+            iso.earlier_finding = _finding_with(s, earlier) if earlier else False
+            if iso.later_finding and _finding_with(s, later[:1]):
+                iso.named_later = later[0]
+        out.append(iso)
     return out
 
 

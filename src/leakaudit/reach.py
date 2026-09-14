@@ -53,7 +53,8 @@ from dataclasses import dataclass, field
 import numpy as np
 import pandas as pd
 
-from .availability import ProbeError, _fast_fingerprint, perturb_cells
+from .availability import (ProbeError, _fast_fingerprint, perturb_cells,
+                           to_decision_clock)
 
 #: Why three. Each sample costs one rebuild, and on the acceptance fixture a
 #: rebuild is ~34.6 s, so k=3 is under two minutes once per audit. Below three
@@ -157,8 +158,21 @@ class ReachResult:
                    "; ".join(rows)))
 
 
-def _corrupt_one(raw, model, second, seed) -> tuple:
-    """Perturb every modelled aggregate cell whose key floors to `second`."""
+def _corrupt_one(raw, model, second, seed, decision) -> tuple:
+    """Perturb every modelled aggregate cell whose key floors to `second`.
+
+    ON THE DECISION CLOCK, AND FOR THREE ROUNDS IT WAS NOT. R271. The key was
+    floored and compared to `second` directly. `second` comes off the decision
+    column, and a key in another timezone never equals it: pandas answers an
+    aware-against-naive `==` with all-False and no error. On the acceptance
+    fixture `trades.ts_event` is UTC-aware and the decisions are naive, so this
+    selected ZERO trades rows at every one of R270's ten samples while the
+    probe, which aligns through `to_decision_clock`, selected trades rows at
+    five of them. Every reach this project printed for that fixture -- 14 s,
+    15 s, 15.9997 s -- was the MBO frame's alone; `order_flow_accel` is
+    `event_rate_10s.diff(5)`, fifteen seconds. With the trades corrupted as the
+    probe corrupts them, one second reaches `net_delta_60s`'s full 60 s.
+    """
     rng = np.random.default_rng(seed)
     out = {k: v.copy() for k, v in raw.items()}
     cells = 0
@@ -166,7 +180,8 @@ def _corrupt_one(raw, model, second, seed) -> tuple:
         f = out.get(fname)
         if f is None or keycol not in getattr(f, "columns", ()):
             continue
-        keys = pd.to_datetime(f[keycol], errors="coerce").dt.floor("s")
+        keys = to_decision_clock(pd.to_datetime(f[keycol], errors="coerce"),
+                                 decision).dt.floor("s")
         mask = (keys == second).to_numpy()
         if not mask.any():
             continue
@@ -230,7 +245,7 @@ def measure_reach(raw, build, model, base, dcol, *, k=DEFAULT_SAMPLES,
         chosen = sample_seconds(sorted(d.dt.floor("s").unique()), k)
 
     for i, F in enumerate(chosen):
-        corrupt, cells = _corrupt_one(raw, model, F, seed + i)
+        corrupt, cells = _corrupt_one(raw, model, F, seed + i, d)
         s = ReachSample(second=F, cells=cells, to_frame_end=last - F)
         if cells == 0:
             s.note = "no modelled aggregate cell falls in this second"
@@ -257,6 +272,249 @@ def measure_reach(raw, build, model, base, dcol, *, k=DEFAULT_SAMPLES,
                       "stopped it rather than the builder")
         res.samples.append(s)
     return res
+
+
+#: How many block positions a run samples. R271 §2(c): ONE rebuild per audit on
+#: a default run, a cost ruled and printed in the run's note. A complete run
+#: samples `COMPLETE_SAMPLES` positions, because what it protects is hours.
+BLOCK_SAMPLES = 1
+
+#: When corrupting the whole history breaks the build, the block falls back to
+#: this many seconds before the position, and a lookback longer than it cannot
+#: show. The note says so whenever the fallback was used. R271 §2(a).
+BLOCK_FALLBACK_SECONDS = 3600
+
+
+@dataclass
+class BlockSample:
+    position: pd.Timestamp
+    cells: int = 0
+    reach: object = None            # pd.Timedelta, or None if nothing moved at or after
+    to_frame_end: object = None
+    censored: bool = False
+    bound: object = None            # pd.Timedelta when the fallback block was used
+    note: str = ""
+
+
+@dataclass
+class BlockReachResult:
+    """The block reach: the history before a position corrupted in one rebuild.
+
+    R271 §2. The single-second reach asks how far ONE second's corruption moves
+    the output. A median, a rank or a threshold can answer "nowhere" while its
+    window is minutes, and a batched pass puts several corruptions inside that
+    window. So every modelled cell at or before a sampled position is corrupted
+    at once -- the probe's column set, its perturbation, its clock -- and the
+    largest `d(i) - position` over rows that moved at or after it is read.
+    """
+    k: int
+    samples: list = field(default_factory=list)
+    seed: int = 0
+
+    @property
+    def uncensored(self) -> list:
+        return [s for s in self.samples if s.reach is not None and not s.censored]
+
+    @property
+    def measured(self):
+        """The longest usable block reach, or None when none was seen."""
+        return max((s.reach for s in self.uncensored), default=None)
+
+    @property
+    def all_censored(self) -> bool:
+        """Movement was seen and every instance of it ran to the frame's end."""
+        return (any(s.censored for s in self.samples)
+                and not self.uncensored)
+
+    @property
+    def bounds(self) -> list:
+        return sorted({s.bound for s in self.samples if s.bound is not None})
+
+    def note(self) -> str:
+        n_cens = sum(1 for s in self.samples if s.censored)
+        if self.measured is not None:
+            body = ("BLOCK REACH (measured, not declared): corrupting every "
+                    "modelled cell at or before a sampled second moved rows up "
+                    "to %s later in this builder's output -- the longest "
+                    "lookback any feature showed, and what the stride floor has "
+                    "to clear. %d sampled block position(s), %d usable, %d "
+                    "censored by the frame's end."
+                    % (self.measured, self.k, len(self.uncensored), n_cens))
+        elif self.all_censored:
+            body = ("BLOCK REACH NOT MEASURED: wherever corrupting the history "
+                    "moved anything, the movement ran to the frame's last row, "
+                    "so the data running out stopped it and not the builder's "
+                    "lookback. %d sampled block position(s)." % self.k)
+        else:
+            body = ("BLOCK REACH NOT MEASURED: corrupting the history before %d "
+                    "sampled block position(s) moved no row at or after them, so "
+                    "no lookback showed. That is not a lookback of zero." % self.k)
+        if self.bounds:
+            body += (" THE BLOCK WAS BOUNDED at %s: the whole-history block broke "
+                     "the build at %d position(s), so a lookback longer than %s "
+                     "cannot show here."
+                     % (", ".join(str(b) for b in self.bounds),
+                        sum(1 for s in self.samples if s.bound is not None),
+                        max(self.bounds)))
+        return body + (" THE RESIDUAL: a feature whose response to a "
+                       "whole-history corruption is below resolution, and a "
+                       "lookback that showed at none of %d sampled block "
+                       "position(s)." % self.k)
+
+    def spread(self) -> str:
+        if not self.samples:
+            return "BLOCK REACH SPREAD: no block positions were sampled."
+        pos = [s.position for s in self.samples]
+        good = [s.reach for s in self.uncensored]
+        rows = []
+        for s in self.samples:
+            if s.reach is None:
+                what = s.note or "nothing moved at or after it"
+            elif s.censored:
+                what = "%s, CENSORED by the frame's end" % s.reach
+            else:
+                what = str(s.reach)
+            if s.bound is not None:
+                what += " (block bounded at %s)" % s.bound
+            rows.append("%s -> %s" % (s.position, what))
+        summary = ("usable block reach min %s, max %s" % (min(good), max(good))
+                   if good else "no usable position")
+        return ("BLOCK REACH SPREAD over %d sample(s), from %s to %s: %s. %d "
+                "usable, %d censored, %d with no movement. Positions: %s."
+                % (len(self.samples), min(pos), max(pos), summary, len(good),
+                   sum(1 for s in self.samples if s.censored),
+                   sum(1 for s in self.samples if s.reach is None),
+                   "; ".join(rows)))
+
+
+def _corrupt_block(raw, model, position, seed, decision, after=None) -> tuple:
+    """Perturb every modelled cell whose aligned key floors at or before
+    `position`, and after `after` when the block is bounded."""
+    rng = np.random.default_rng(seed)
+    out = {k: v.copy() for k, v in raw.items()}
+    cells = 0
+    for fname, keycol in sorted(model.aggregate_frames.items()):
+        f = out.get(fname)
+        if f is None or keycol not in getattr(f, "columns", ()):
+            continue
+        keys = to_decision_clock(pd.to_datetime(f[keycol], errors="coerce"),
+                                 decision).dt.floor("s")
+        sel = keys <= position
+        if after is not None:
+            sel = sel & (keys > after)
+        mask = sel.fillna(False).to_numpy(dtype=bool)
+        if not mask.any():
+            continue
+        num = [c for c in f.columns
+               if c != keycol and pd.api.types.is_numeric_dtype(f[c])]
+        n = int(mask.sum())
+        for c in num:
+            perturb_cells(f, c, mask, n, rng)
+            cells += n
+        out[fname] = f
+    return out, cells
+
+
+def measure_block_reach(raw, build, model, base, dcol, *, k=BLOCK_SAMPLES,
+                        seed=20260828, at_seconds=None,
+                        fallback_seconds=BLOCK_FALLBACK_SECONDS) -> BlockReachResult:
+    """Measure the builder's block reach. One rebuild per position. R271 §2(a).
+
+    THE FALLBACK. Corrupting a whole history can break a build that one second
+    never would -- a shape guard, a type check, a validation. Then the block is
+    the `fallback_seconds` before the position instead, the exception is kept
+    in the sample's note, and the result's note states the bound: a lookback
+    longer than it cannot show. If the bounded block breaks the build too, this
+    raises rather than returning a number about nothing.
+    """
+    chosen = (None if at_seconds is None
+              else sorted({pd.Timestamp(s) for s in at_seconds}))
+    if chosen is not None:
+        k = len(chosen)
+    res = BlockReachResult(k=k, seed=seed)
+    if k <= 0:
+        return res
+    d = pd.to_datetime(base[dcol])
+    d_np = d.to_numpy()
+    if len(d_np) == 0:
+        return res
+    last = d.max()
+    fb = _fast_fingerprint(base).to_numpy()
+    if chosen is None:
+        chosen = sample_seconds(sorted(d.dt.floor("s").unique()), k)
+
+    def _shape_ok(after):
+        return (len(after) == len(base)
+                and list(after.columns) == list(base.columns))
+
+    for i, F in enumerate(chosen):
+        F = pd.Timestamp(F)
+        s = BlockSample(position=F, to_frame_end=last - F)
+        try:
+            corrupt, s.cells = _corrupt_block(raw, model, F, seed + i, d)
+            after = build(corrupt)
+            if not _shape_ok(after):
+                raise ReachError(
+                    "the whole-history block changed the output's shape (%s -> "
+                    "%s)" % (base.shape, getattr(after, "shape", None)))
+        except Exception as exc:  # noqa: BLE001 -- kept, bounded, re-raised below
+            s.bound = pd.Timedelta(seconds=fallback_seconds)
+            s.note = ("the whole-history block broke the build (%s: %s), so the "
+                      "block here is the %s before the position"
+                      % (type(exc).__name__, exc, s.bound))
+            corrupt, s.cells = _corrupt_block(raw, model, F, seed + i, d,
+                                              after=F - s.bound)
+            after = build(corrupt)
+            if not _shape_ok(after):
+                raise ReachError(
+                    "the bounded %s block also changed the output's shape, so no "
+                    "block reach can be measured by comparing rows positionally"
+                    % s.bound)
+        if s.cells == 0:
+            s.note = "; ".join(x for x in (s.note, "no modelled cell at or before "
+                                                   "this position") if x)
+            res.samples.append(s)
+            continue
+        moved = fb != _fast_fingerprint(after).to_numpy()
+        fwd = moved & (d >= F).to_numpy()
+        if not fwd.any():
+            s.note = "; ".join(x for x in (s.note, "nothing moved at or after "
+                                                   "the position") if x)
+            res.samples.append(s)
+            continue
+        s.reach = pd.Timestamp(d_np[fwd].max()) - F
+        s.censored = s.reach >= s.to_frame_end
+        if s.censored:
+            s.note = "; ".join(x for x in (s.note, "moved rows right up to the "
+                               "last one, so the frame's end stopped it") if x)
+        res.samples.append(s)
+    return res
+
+
+def block_floor(result):
+    """The block reach plus one second, or None where none was measured."""
+    m = getattr(result, "measured", None)
+    return None if m is None else m + pd.Timedelta(seconds=1)
+
+
+def check_block_separation(separation, result) -> None:
+    """Refuse cohorts closer together than the block floor. R271 §2(c)."""
+    fl = block_floor(result)
+    if fl is None or separation is None:
+        return
+    gap = pd.Timedelta(separation)
+    if gap < fl:
+        raise ReachError(
+            "the smallest gap between corrupted cohorts is %g s and THIS "
+            "BUILDER'S BLOCK REACH IS %s -- corrupting the history before one "
+            "second moved rows that far forward, at %d sampled block "
+            "position(s) -- so cohorts closer than %g s put one cohort's "
+            "corruption inside another's window, and the findings that produces "
+            "cannot be told from real ones (D-V30A-114: 163,143 of them on a "
+            "builder with no leak). Raise the stride so the probed seconds are "
+            "at least %g s apart, or omit it and that floor is used."
+            % (gap.total_seconds(), result.measured, result.k,
+               fl.total_seconds(), fl.total_seconds()))
 
 
 def _too_short(what, declared, result) -> str:

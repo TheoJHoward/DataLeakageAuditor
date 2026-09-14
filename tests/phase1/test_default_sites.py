@@ -142,6 +142,34 @@ CLASSIFICATION = {
         (L, "None spreads k samples across the frame, exactly as before R270"),
     "availability.py::param::__init__(batched_features=)": (NA, "result carrier field"),
     "availability.py::param::__init__(batched_moved=)": (NA, "result carrier field"),
+    # R271 §2. The block reach's two inputs to `run_probe_a`, and its carriers.
+    # `block_samples=None` resolves to BLOCK_SAMPLES, one rebuild per audit,
+    # printed in the run's note; `0` is a declaration the note repeats.
+    # `block_reach=None` measures in this call; a complete run passes its one
+    # shared measurement explicitly, exactly as `reach=` does.
+    "availability.py::param::run_probe_a(block_samples=)":
+        (L, "resolves to a printed default of one block position; 0 is a "
+            "declared refusal to measure and the run says so"),
+    "availability.py::param::run_probe_a(block_reach=)":
+        (L, "None measures the block reach in this call; a complete run passes "
+            "its one shared measurement explicitly"),
+    "availability.py::param::__init__(block_reach=)": (NA, "result carrier field"),
+    "availability.py::param::__init__(decision_seconds=)": (NA, "result carrier field"),
+    # R271 §2(a). The block reach's own defaults. `after=None` is the whole-
+    # history block the ruling specifies, and the bounded block is its stated
+    # fallback; `fallback_seconds` is the 3,600 s that ruling names, printed in
+    # the note whenever it is used; `at_seconds=None` spreads the positions
+    # across the frame exactly as `measure_reach` does.
+    "reach.py::param::__init__(cells=)": (NA, "result carrier field"),
+    "reach.py::param::__init__(bound=)": (NA, "result carrier field"),
+    "reach.py::param::_corrupt_block(after=)":
+        (L, "None is the whole-history block R271 section 2(a) specifies; a "
+            "bound is the stated fallback"),
+    "reach.py::param::measure_block_reach(at_seconds=)":
+        (L, "None spreads k positions across the frame, as measure_reach does"),
+    "reach.py::param::measure_block_reach(fallback_seconds=)":
+        (L, "the 3,600 s bound R271 section 2(a) names, stated in the note "
+            "whenever it is used"),
     # R269 §2(b). Result carriers for the head of the frame.
     "availability.py::param::__init__(head_cutoff=)": (NA, "result carrier field"),
     "availability.py::param::__init__(head_seconds=)": (NA, "result carrier field"),

@@ -6089,3 +6089,147 @@ SAME terms cover both commits.
 **R163 §1's exemption test.** *Would this have surfaced if the triggering question
 had not been asked?* **No.** Nobody runs the acceptance fixture complete, and the
 guard samples it.
+
+## D-V30A-115 — the reach control never corrupted the trades frame, and the block reach now sets the stride floor on every run
+
+**Nothing here is a `PREREG.md` §6.2 result, and no Phase 1 figure moves.** Every
+fixture figure below is a Phase 2 instrument measurement on the acceptance
+fixture's corrected side, except the guard's, which covers both sides.
+
+**THE DEFECT, FOUND ESTABLISHING R271 §1.** `reach._corrupt_one` selected cells
+with `pd.to_datetime(key).dt.floor("s") == second` and never aligned the key to
+the decision clock. `second` comes off the decision column; pandas 3.0.1 answers
+an aware-against-naive `==` with all-False and raises nothing. On the acceptance
+fixture `trades.ts_event` is `datetime64[ns, UTC]` and the decisions are naive.
+Counted at the ten seconds R270's k = 10 reach sampled, without a rebuild:
+
+| selection | magg rows | trades rows |
+|---|---|---|
+| `reach._corrupt_one` | 1 at nine, 0 at one | **0 at all ten** |
+| the probe's, through `to_decision_clock` | the same | 1, 1, 14, 1, 2 at five; 0 at five |
+
+**So every reach this project printed for the acceptance fixture measured the MBO
+frame alone** — 14 s on the contaminated side (R268–R270) and 15 s and
+15.9997 s on the corrected side. The MBO frame's longest feature is
+`order_flow_accel = event_rate_10s.diff(5)`: fifteen seconds. Every stride
+`--complete` derived on the fixture rested on it (R268's 15, R269's and R270's
+16), and so did R269's head-of-frame count there. The probe's own corruption was
+never affected: it has always aligned keys to the decision clock, and since R269
+that rule lives in `to_decision_clock`. Synthetic tests use naive keys and were
+not affected. `_corrupt_one` now takes the decision series and aligns through
+that same function.
+
+**R271 §1(a) — NEITHER OF THE TWO READINGS.** At the five cohorts of
+D-V30A-114, the earlier same-pass neighbour was corrupted ALONE with the probe's
+own corruption, one rebuild each:
+
+| cohort F | neighbour's trades cells | row F moved | columns | reach from the neighbour |
+|---|---|---|---|---|
+| 2025-01-02 14:30:16 | 847 | yes | `net_delta_30s`, `net_delta_60s` | 60 s |
+| 2025-01-10 15:01:58 | 22 | yes | the same | 60 s |
+| 2025-01-17 14:46:17 | **0** | no | — | 15 s |
+| 2025-01-23 17:53:09 | 11 | yes | the same | 60 s |
+| 2025-01-31 18:59:59 | 11 | yes | the same | 16 s, the frame's last row |
+
+Where the neighbour's second holds trades, it moves row F on its own and its
+reach is the full 60 s. The one that did not move had no trades in that second
+— which is also why D-V30A-114 needed eight neighbours there. So the 0.3 ms
+clearance was not the cause, and the finding was not two corruptions combining.
+**It was one second of trades reaching a 60 s window that the reach control
+had never exercised.**
+
+**R271 §1(b).** `net_delta_{w}s = snap["net_delta"].rolling(w, min_periods=1).sum()`
+for w up to 60, `evidence/fixture_spike/f2/phase5_ml_fixture.py` line 256, over
+the trades aggregated per second. The built frame has 338,159 rows, exactly one
+per decision second and never more, so within a session 60 rows is 60 s. **The
+single-second reach under-read it by a factor of four — 15.9997 s against 60 s —
+and the cause was that the trades frame was never perturbed, not that a sum hides
+one corruption.** With trades corrupted, one second reaches the whole window.
+
+**R271 §2(b), ONE ROW.**
+
+| single-second reach as printed through R270 | the source | block reach | single-second reach, clock aligned |
+|---|---|---|---|
+| 15.9997 s | 60 rows = 60 s | **60 s** | 60 s |
+
+The block reach was measured at three positions, `sample_seconds(secs, 3)`:
+55 s at 2025-01-09 15:28:59, 60 s at 2025-01-16 17:02:01, 59 s at 2025-01-24
+18:01:00. The whole-history block did not break the build, so no fallback bound
+applies; none was censored; no moved row fell on a later date; `net_delta_60s`
+was the furthest column at all three.
+
+**WHAT WAS BUILT.**
+
+* **Block reach**, `reach.measure_block_reach`: every modelled cell whose
+  clock-aligned key floors at or before a position is corrupted with
+  `perturb_cells` in one rebuild, and the largest `d(i) − position` over rows
+  that moved at or after it is taken. If the whole-history block raises or
+  changes the output's shape, the block becomes the 3,600 s before the position,
+  the exception is kept, and the note states that a longer lookback cannot show.
+  The note's residual is a response to a whole-history corruption below
+  resolution, and a lookback that showed at none of k positions, with k said.
+* **The floor, on every run**: `max(model floor, block reach + 1 s)`. A default
+  run measures one block position, one rebuild, printed. The default of 97 stays
+  where it clears the floor, which the run states; below it the floor is used
+  and stated. A declared stride below it is refused before any cell is corrupted;
+  below the MODEL's floor the existing derived refusal keeps precedence.
+* **`--complete`** measures ten single-second samples and ten block positions,
+  prints both spreads, and takes its stride as the largest of the model's floor,
+  the single-second reach + 1 s and the block reach + 1 s, rounded up. `int()`
+  had also discarded the 0.9997 s that left R270's stride 0.3 ms above its reach.
+  It refuses when the block reach runs to the frame's end at every position that
+  moved, when a declared stride is below the floor, and when the stride leaves a
+  pass one cohort, each time naming what unbatched would cost. A pass limit,
+  `max_passes`, times one pass through that same code and marks the result as not
+  complete.
+* **`--confirm`'s split**: a finding that does not persist alone is re-probed
+  with only its batch's later cohorts and with only its earlier ones. The classes
+  are CONFIRMED, CONFIRMED (lookahead) naming the later second where the nearest
+  one alone reproduces it, INTERFERENCE, and BATCHED ONLY; `klass` raises for a
+  vanished finding with no split. Any INTERFERENCE makes every silence in the run
+  `none(interference detected at stride N; block reach M)` and exits
+  `EXIT_USAGE`, the class every refusal exits with, with confirmed findings still
+  listed. The cap is `600 // 107.8 = 5`, printed as "default cap 5 (600 s
+  target…)", and the plan with its cost prints before any re-probe runs.
+
+**THE SUITE PAIRS.** Block reach: a rolling median of constants moves nothing for
+one corrupted cell and six seconds for a corrupted history. Floor: 97 kept at a
+7 s floor; the floor used where a 400-row median gives 201 s; a declared 97
+refused there; `block_samples=0` stated. Fallback bound stated. Clock: an aware
+key frame corrupted and a 5 s reach measured. `--complete`: stride 7 from the
+block reach; refused on a cumulative sum, naming 120 rebuilds; one pass under
+`max_passes` marked not complete. `--confirm`: a builder reading three seconds
+back inside a patch gives INTERFERENCE at 51, 54, 57 and exit 2; three seconds
+AHEAD gives CONFIRMED (lookahead) naming 54 and 57 and exit 1; an own-second leak
+gives 5 confirmed of 20 at the derived cap. **R270's isolation negative is now
+refused by the block reach** — three seconds of lookback at stride 3 — and is kept
+with both controls declared off, the refusal pinned beside it.
+
+**THE RESIDUAL THIS DOES NOT CLOSE.** `net_delta_60s` is 60 ROWS. Where decision
+seconds are missing, and across the overnight gap, 60 rows span more than 60 s,
+and a block position mid-session does not show that. Passes separate cohorts in
+positions, and a stride of 61 positions keeps any 60-row window clear of two
+cohorts, so the passes are not exposed; the reach printed in seconds understates
+the row lookback at session boundaries.
+
+**THE GUARD, ONE RUN, OVER EVERY PROBE-PATH EDIT.** All eight terms SAME:
+contaminated `finding`, 250 eligible, 5,220 records, 29 features; corrected
+`observed_silence`, 250, 0, 0. Capture 36 s, contaminated 500 s, corrected 492 s,
+**1,028 s** in total — each side 1.3× its last recorded 379 s, which is the added
+block rebuild and a reach control that now corrupts the trades frame. The reach it
+prints, never compared, moved from 14 s and 15 s to **59 s and 60 s**: the clock
+fix, visible in the one place the guard reports reach. No path-set file changed
+after it started; `cli.py` and tests did, neither in the set.
+
+**TWO THINGS OF THE ROUND'S OWN.** The first full-suite run on this batch ran past
+600 s under a `Select-String` pipe that shows no progress, and was stopped per the
+order-of-magnitude rule. Re-run unpiped it took **51.74 s**, with only the
+default-sites classification failing, so the batch is not a complexity
+regression; what held the piped run was not established. And R271 §6 asks for
+the floor "on the demo": no demo exists in the repository to resolve it against,
+so none is reported.
+
+**R163 §1's exemption test.** *Would this have surfaced if the triggering question
+had not been asked?* **No.** It surfaced because R271 asked which neighbour moved
+the row, and counting cells per frame to answer it showed one frame was never
+selected.

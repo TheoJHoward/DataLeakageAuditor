@@ -237,8 +237,11 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--confirm-cap", type=int, default=None, metavar="N",
                      help="how many finding cohorts --confirm re-probes; above "
                           "it they are chosen by rank and the rest are printed "
-                          "as not re-probed. Each costs a rebuild. Default %d, "
-                          "a cost choice" % DEFAULT_CONFIRM_CAP)
+                          "as not re-probed. Each costs a rebuild. Default %d "
+                          "(%d s target at ~%.1f s a re-probe, measured on the "
+                          "acceptance fixture), a cost choice"
+                          % (DEFAULT_CONFIRM_CAP, BUDGET_TARGET_SECONDS,
+                             FIXTURE_CONFIRM_SECONDS))
     run.add_argument("--accept-partial-coverage", action="store_true",
                      help="treat an INCOMPLETE-and-silent run as clean. Without "
                           "this, a run that probed a subsample and found "
@@ -303,7 +306,8 @@ def _run_checks(frames, build, model_path):
     return EXIT_OK_SILENT
 
 
-def _probe_complete(frames, build, model, config, stride, slice_from, padding):
+def _probe_complete(frames, build, model, config, stride, slice_from, padding,
+                    max_passes=None):
     """A COMPLETE L3.1 run: every eligible cohort, in passes. R268 §3(d).
 
     WHY PASSES. L3.1 is cheap per cohort because one rebuild serves a whole
@@ -345,31 +349,70 @@ def _probe_complete(frames, build, model, config, stride, slice_from, padding):
                          cohort_stride=(STRIDE_NOT_DECLARED if stride is None
                                         else stride),
                          max_cohorts=0, reach_samples=COMPLETE_SAMPLES,
-                         **common)
+                         block_samples=COMPLETE_SAMPLES, **common)
     setup_s = time.time() - t_start
     if not probe0.determinism_ok:
         return probe0, ("COMPLETE RUN NOT MADE: the builder is not "
                         "deterministic across two clean builds, so no pass "
                         "could attribute anything.")
 
-    floor_s = int(math.ceil(
-        stride_floor(model, config.column_modes or None).total_seconds()))
-    measured = getattr(probe0.reach, "measured", None)
+    # THE STRIDE IS THE LARGEST MEASURED FLOOR, ROUNDED UP. R271 §2(c)(d).
+    # R268-R270 took `int(reach) + 1` from the single-second reach, and on the
+    # acceptance fixture that reach had never corrupted the trades frame: 16 s
+    # against a 60 s window, 163,143 false findings on a builder with no leak
+    # (D-V30A-114). The floor is now the largest of the model's floor, the
+    # single-second reach plus one second and the BLOCK reach plus one second,
+    # and it is rounded UP -- `int()` also threw away the 0.9997 s that put the
+    # R270 stride 0.3 ms above its reach.
+    from .availability import ProbeError
+    block = probe0.block_reach
+    n_secs = probe0.decision_seconds
+    per_rebuild = setup_s / float(2 + 2 * COMPLETE_SAMPLES)
+
+    def _unbatched():
+        return ("Unbatched instead -- one rebuild per decision second -- would "
+                "be %d rebuilds, ~%.1f h at the ~%.0f s a rebuild took during "
+                "this run's setup." % (n_secs, n_secs * per_rebuild / 3600.0,
+                                       per_rebuild))
+
+    if block is not None and block.all_censored:
+        raise ProbeError(
+            "COMPLETE RUN REFUSED: the block reach ran to the frame's end at "
+            "every one of %d sampled positions -- corrupting the history before "
+            "a second moved rows right up to the last one -- so no stride this "
+            "frame can hold separates two cohorts, and a batched pass would "
+            "report one cohort's corruption as another's finding (D-V30A-114). "
+            "%s Run without --complete for a sampled audit." % (block.k, _unbatched()))
+    one_s = pd.Timedelta(seconds=1)
+    parts = [("the model's floor",
+              stride_floor(model, config.column_modes or None))]
+    if getattr(probe0.reach, "measured", None) is not None:
+        parts.append(("the single-second reach plus one second",
+                      probe0.reach.measured + one_s))
+    if getattr(block, "measured", None) is not None:
+        parts.append(("the block reach plus one second", block.measured + one_s))
+    governing, floor = max(parts, key=lambda p: p[1])
+    floor_S = int(math.ceil(floor.total_seconds()))
+    listed = "; ".join("%s %s" % (name, val) for name, val in parts)
     if stride is not None:
         S = int(stride)
-        basis = "the DECLARED stride %d" % S
-    elif measured is not None:
-        from_reach = int(measured.total_seconds()) + 1
-        S = max(from_reach, floor_s)
-        basis = ("the MEASURED reach %s plus the one second the selection "
-                 "floors away (%d), not below the derived floor of %d s"
-                 % (measured, from_reach, floor_s))
+        if S < floor_S:
+            raise ProbeError(
+                "COMPLETE RUN REFUSED: the declared stride %d is below the floor "
+                "of %d, %s (%s). Passes that close report one cohort's corruption "
+                "as another's finding. Omit the stride and the floor is used."
+                % (S, floor_S, governing, floor))
+        basis = "the DECLARED stride %d, clearing the floor of %d (%s)" % (
+            S, floor_S, listed)
     else:
-        S = DEFAULT_STRIDE
-        basis = ("the DEFAULT stride %d, because the reach could not be "
-                 "measured on this data (see its note) -- so completeness costs "
-                 "%d passes rather than a number derived from this builder"
-                 % (DEFAULT_STRIDE, DEFAULT_STRIDE))
+        S = floor_S
+        basis = ("%s, %s, rounded UP to %d -- the largest of: %s"
+                 % (governing, floor, S, listed))
+    if n_secs and S >= n_secs:
+        raise ProbeError(
+            "COMPLETE RUN REFUSED: a stride of %d over %d decision seconds leaves "
+            "a pass one cohort, so the frame cannot hold batched passes at the "
+            "floor this builder needs (%s). %s" % (S, n_secs, listed, _unbatched()))
 
     # THE PREDICTION, PRINTED BEFORE THE WAIT. R269 §0(a). A complete run on the
     # acceptance fixture is most of an hour, and nobody should learn that at
@@ -380,18 +423,31 @@ def _probe_complete(frames, build, model, config, stride, slice_from, padding):
     # notes, because the notes arrive after the wait they would have warned of.
     if probe0.reach is not None:
         print(probe0.reach.spread())
+    if block is not None:
+        print(block.spread())
     print("COMPLETE RUN PLANNED: %d pass(es) at stride %d, from %s. Setup -- two "
-          "clean builds and the reach measurement -- took %.1f s. The time the "
-          "passes will take is printed after the first pass, measured from that "
-          "pass." % (S, S, basis, setup_s))
+          "clean builds and the reach measurement -- took %.1f s, with %d "
+          "single-second samples and %d block positions. The time the passes "
+          "will take is printed after the first pass, measured from that pass."
+          % (S, S, basis, setup_s, COMPLETE_SAMPLES, COMPLETE_SAMPLES))
     sys.stdout.flush()
     combined = None
     first_pass_s = None
     for offset in range(S):
+        # A PASS LIMIT, FOR TIMING ONE PASS. R271 §2(d)(f). The plan, the spreads
+        # and the prediction print exactly as a complete run prints them; the
+        # result then says, in its own notes, that it is not one.
+        if max_passes is not None and offset >= max_passes:
+            if combined is not None:
+                combined.notes.append(
+                    "STOPPED AFTER %d of %d pass(es) (max_passes=%d): this is NOT "
+                    "a complete run, and its silence is about the passes that ran."
+                    % (offset, S, max_passes))
+            break
         t_pass = time.time()
         r = run_probe_a(frames, build, model, side="user", cohort_stride=S,
                         max_cohorts=10 ** 9, cohort_offset=offset,
-                        reach=probe0.reach, **common)
+                        reach=probe0.reach, block_reach=block, **common)
         if combined is None:
             combined = r
             first_pass_s = time.time() - t_pass
@@ -432,41 +488,56 @@ def _probe_complete(frames, build, model, config, stride, slice_from, padding):
     return combined, note
 
 
-#: How many batched finding cohorts `--confirm` re-probes alone. R270 §2(b).
-#: A COST CHOICE, printed as one: each is a rebuild and a classification over
-#: the whole output, measured at R270 on the acceptance fixture as 574 s for the
-#: two clean builds and five isolations together.
-DEFAULT_CONFIRM_CAP = 20
+from .coverage import BUDGET_TARGET_SECONDS  # noqa: E402
+
+#: One isolated re-probe on the acceptance fixture, MEASURED: 2,156 s for twenty
+#: at R270, the two clean builds included.
+FIXTURE_CONFIRM_SECONDS = 107.8
+#: How many batched finding cohorts `--confirm` re-probes. R271 §3(c): derived
+#: from the same 600 s cost choice as C's L2a default, at the measured cost of a
+#: re-probe, and printed with that arithmetic. R270 shipped 20 with no target.
+DEFAULT_CONFIRM_CAP = max(1, int(BUDGET_TARGET_SECONDS // FIXTURE_CONFIRM_SECONDS))
 
 
-def _confirm_findings(frames, build, model, config, result, cap):
-    """Re-probe batched findings ALONE and class each one. R270 §2(b).
+def _confirm_findings(frames, build, model, config, result, cap,
+                      complete=False):
+    """Re-probe batched findings ALONE, split what vanishes, class each.
 
-    WHY. A batched pass corrupts many seconds in one rebuild, and its stride is
-    one second above a reach that is only a lower bound, so a finding it reports
-    may depend on a NEIGHBOUR's corruption. `isolate_cohorts` corrupts one
-    cohort and nothing else, so a finding that persists there is the cohort's
-    own by construction and carries no stride residual.
+    R270 §2(b), R271 §3. A batched pass corrupts many seconds in one rebuild,
+    so a finding it reports may depend on another cohort's corruption.
+    `isolate_cohorts` corrupts one cohort and nothing else: a finding that
+    persists there is the cohort's own.
 
-    THE CLASSES. CONFIRMED -- persisted alone. BATCHED ONLY -- NOT CONFIRMED --
-    did not; it is printed and counted, never dropped, because failing isolation
-    shows the finding was not this cohort's own, not that the row is clean.
-    NOT RE-PROBED -- above the cap, and neither confirmed nor disconfirmed.
+    ISOLATION ALONE CANNOT CLASS WHAT VANISHES. A row at F reading a LATER
+    cohort's cells -- unavailable to it, so a real leak -- moves in the batch and
+    not alone, exactly as interference does. So each finding that vanishes is
+    re-probed twice more, with the batch's later cohorts only and with its
+    earlier cohorts only:
 
-    Above the cap the re-probed cohorts are chosen by rank over the findings in
-    time order, `round(i * (n - 1) / (cap - 1))`, so the first and last are
-    always among them and the choice is reproducible.
+      CONFIRMED              -- persisted alone.
+      CONFIRMED (lookahead)  -- returns with the later cohorts: a real leak, and
+                                the later second is named where the nearest one
+                                reproduces it alone.
+      INTERFERENCE           -- returns with the earlier cohorts: available
+                                cells, not a leak. A fact about the run's stride,
+                                so the run's silences are no longer licensed.
+      BATCHED ONLY           -- returns with neither.
+      NOT RE-PROBED          -- above the cap; neither confirmed nor disconfirmed.
+
+    Nothing is dropped. Above the cap, re-probed cohorts are chosen by rank over
+    the findings in time order, `round(i * (n - 1) / (cap - 1))`.
 
     Returns (lines, summary).
     """
     from .availability import isolate_cohorts
     batched = sorted(result.findings, key=lambda c: c.second)
     n = len(batched)
-    summary = {"batched": n, "confirmed": 0, "batched_only": 0,
-               "not_reprobed": 0, "cap": cap}
+    summary = {"batched": n, "confirmed": 0, "lookahead": 0, "interference": 0,
+               "batched_only": 0, "not_reprobed": 0, "cap": cap,
+               "interference_reason": None}
     if n == 0:
-        return (["CONFIRM (R270 section 2(b)): no batched finding to confirm. "
-                 "A silence keeps its residual -- a propagation path the reach "
+        return (["CONFIRM (R271 section 3): no batched finding to confirm. A "
+                 "silence keeps its residual -- a propagation path the reach "
                  "samples did not exercise."], summary)
     if n <= cap:
         ranks = list(range(n))
@@ -479,33 +550,72 @@ def _confirm_findings(frames, build, model, config, result, cap):
                "by rank round(i*(n-1)/(cap-1)) over the findings in time order"
                % (len(ranks), n, cap))
     chosen = [batched[r] for r in ranks]
+    cap_text = ("default cap %d (%d s target at ~%.1f s a re-probe, measured on "
+                "the acceptance fixture)"
+                % (DEFAULT_CONFIRM_CAP, BUDGET_TARGET_SECONDS,
+                   FIXTURE_CONFIRM_SECONDS)
+                if cap == DEFAULT_CONFIRM_CAP else "declared cap %d" % cap)
+    # THE PREDICTION, BEFORE THE RE-PROBES RUN. R271 §3(c).
+    print("CONFIRM PLANNED: %d re-probe(s) -- %s -- at ~%.1f s each measured on "
+          "the acceptance fixture, ~%.0f s against the %d s target, and a "
+          "finding that does not persist alone costs two more for its later and "
+          "earlier split. %s."
+          % (len(chosen), how, FIXTURE_CONFIRM_SECONDS,
+             len(chosen) * FIXTURE_CONFIRM_SECONDS, BUDGET_TARGET_SECONDS,
+             cap_text))
+    sys.stdout.flush()
+    # THE BATCH A FINDING CAME FROM. A default run is one batch; a complete run
+    # is passes, and a cohort's batch is the seconds a whole stride away from it.
+    step = int(result.resolved_stride) if complete else 1
     iso = isolate_cohorts(frames, build, model, [c.second for c in chosen],
                           reach=result.reach,
                           batched={c.second: c for c in batched},
+                          batch=sorted(c.second for c in result.cohorts),
+                          batch_step=max(1, step),
                           column_modes=config.column_modes or None,
                           bar_duration=config.bar_duration)
-    lines = ["CONFIRM (R270 section 2(b)): %s, each re-probed ALONE -- that "
-             "cohort's cells corrupted and nothing else, one rebuild each, the "
-             "same classification rule. The cap is a cost choice "
-             "(--confirm-cap)." % how]
+    lines = ["CONFIRM (R271 section 3): %s, each re-probed ALONE -- that "
+             "cohort's cells corrupted and nothing else -- and, where it does "
+             "not persist, with the batch's later cohorts only and its earlier "
+             "cohorts only. %s." % (how, cap_text)]
     for r in iso:
-        if r.persisted:
+        klass = r.klass
+        feats = ", ".join(r.batched_features) or "-"
+        if klass == "CONFIRMED":
             summary["confirmed"] += 1
             lines.append(
                 "  CONFIRMED  %s: a finding with nothing else corrupted -- %d "
                 "row(s), feature(s) %s. No other cohort was in its rebuild, so "
                 "no stride residual applies to it."
                 % (r.second, r.moved, ", ".join(r.features) or "-"))
+        elif klass == "CONFIRMED (lookahead)":
+            summary["lookahead"] += 1
+            named = ("later second %s, unavailable to the row, reproduces it "
+                     "alone" % r.named_later if r.named_later is not None else
+                     "one or more of the %d later cohort(s) from %s to %s, "
+                     "unavailable to the row; the nearest one alone did not "
+                     "reproduce it" % (len(r.later_seconds), r.later_seconds[0],
+                                       r.later_seconds[-1]))
+            lines.append(
+                "  CONFIRMED (lookahead)  %s: A REAL LEAK. Not a finding alone, "
+                "a finding again with only the batch's LATER cohorts corrupted: "
+                "%s. Batched feature(s) %s." % (r.second, named, feats))
+        elif klass == "INTERFERENCE":
+            summary["interference"] += 1
+            lines.append(
+                "  INTERFERENCE  %s: not a finding alone, a finding again with "
+                "only the batch's %d EARLIER cohort(s) corrupted. Those cells "
+                "are available to the row, so this is not a leak: the run's "
+                "stride put one cohort's corruption inside another's window. "
+                "Batched feature(s) %s." % (r.second, len(r.earlier_seconds), feats))
         else:
             summary["batched_only"] += 1
             lines.append(
                 "  BATCHED ONLY -- NOT CONFIRMED  %s: %d finding row(s) batched "
-                "(feature(s) %s); probed alone: %s. The batched finding depended "
-                "on another cohort's corruption in the same rebuild. It is kept "
-                "and counted: failing isolation shows it was not this cohort's "
-                "own, not that the row is clean."
-                % (r.second, r.batched_moved,
-                   ", ".join(r.batched_features) or "-", r.verdict))
+                "(feature(s) %s); alone %s; neither the later nor the earlier "
+                "cohorts alone reproduce it. Kept and counted: this shows it "
+                "was not this cohort's own, not that the row is clean."
+                % (r.second, r.batched_moved, feats, r.verdict))
     summary["not_reprobed"] = n - len(iso)
     if summary["not_reprobed"]:
         lines.append(
@@ -513,10 +623,23 @@ def _confirm_findings(frames, build, model, config, result, cap):
             "batched findings, neither confirmed nor disconfirmed."
             % summary["not_reprobed"])
     lines.append(
-        "CONFIRM SUMMARY: %d confirmed, %d batched only, %d not re-probed, of %d "
-        "batched finding cohort(s). The exit class counts all %d."
-        % (summary["confirmed"], summary["batched_only"],
-           summary["not_reprobed"], n, n))
+        "CONFIRM SUMMARY: %d confirmed, %d confirmed (lookahead), %d "
+        "interference, %d batched only, %d not re-probed, of %d batched finding "
+        "cohort(s)."
+        % (summary["confirmed"], summary["lookahead"], summary["interference"],
+           summary["batched_only"], summary["not_reprobed"], n))
+    if summary["interference"]:
+        reason = ("interference detected at stride %d; block reach %s"
+                  % (int(result.resolved_stride),
+                     getattr(result.block_reach, "measured", None)))
+        summary["interference_reason"] = reason
+        lines.append(
+            "INTERFERENCE MAKES THIS RUN'S SILENCES UNLICENSED. R271 §3(b). A "
+            "silence here claims no cohort's corruption reached another's "
+            "window, and at least one did. So every silence in this run is "
+            "none(%s), whatever a coverage line or a per-cohort outcome above "
+            "says, and the run exits refused. The CONFIRMED findings above are "
+            "real regardless." % reason)
     return lines, summary
 
 
@@ -702,8 +825,11 @@ def _run_availability(frames, build, model_path, stride, max_cohorts,
     # output and the classes below annotate it rather than replace it.
     if confirm:
         confirm_lines, _summary = _confirm_findings(frames, build, model,
-                                                    config, result, confirm_cap)
+                                                    config, result, confirm_cap,
+                                                    complete=complete)
         result.notes.extend(confirm_lines)
+        # Read where the exit class is decided. R271 §3(b).
+        result.interference_reason = _summary["interference_reason"]
 
     # A FINDING PRODUCED UNDER DRAFTED STRUCTURE CARRIES THAT FACT. R233 §1(d).
     #
@@ -925,6 +1051,20 @@ def _main(argv=None) -> int:
     else:
         print(result)
 
+    # AN INTERFERENCE CLASS REFUSES THE RUN. R271 §3(b). It is a fact about the
+    # run's stride, not about one finding: a cohort's corruption reached another
+    # cohort's window, so no silence in the run is licensed. The findings stay
+    # printed above -- the confirmed ones are real regardless -- and the exit is
+    # the refused class, ahead of the findings exit it would otherwise take.
+    _interference = getattr(getattr(result, "source", None),
+                            "interference_reason", None)
+    if _interference:
+        print("leakaudit: RUN REFUSED -- %s. Every silence in this run is "
+              "none(%s); the CONFIRMED findings printed above are real "
+              "regardless. Re-run without --stride so the floor from the block "
+              "reach is used, or with a stride above it."
+              % (_interference, _interference), file=sys.stderr)
+        return EXIT_USAGE
     if result.findings:
         return EXIT_FINDINGS
     if result.outcome != "observed_silence":

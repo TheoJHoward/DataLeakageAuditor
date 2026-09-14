@@ -214,3 +214,17 @@ def test_the_DEFAULT_run_still_measures_at_THREE(work, capsys):
     whole-frame guard's printed reach, is measured as before."""
     first = run_probe_a(_frames(), _clean, MODEL, side="t", max_cohorts=0)
     assert first.reach.k == 3
+
+
+def test_MAX_PASSES_stops_after_pass_one_and_SAYS_it_is_not_complete(capsys):
+    """R271 §2(d)(f): one pass timed through the complete run's own code, with
+    its plan and prediction, and a result that cannot be read as complete."""
+    import types
+    res, _note = cli._probe_complete(
+        _frames(), _clean, MODEL,
+        types.SimpleNamespace(column_modes=None, bar_duration=None),
+        None, None, None, max_passes=1)
+    out = capsys.readouterr().out
+    assert "COMPLETE RUN PLANNED" in out and "pass(es) remaining" in out
+    assert any(n.startswith("STOPPED AFTER 1 of") for n in res.notes), res.notes
+    assert 0 < res.n_cohorts < N

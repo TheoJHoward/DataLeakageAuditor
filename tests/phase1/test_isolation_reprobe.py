@@ -64,8 +64,22 @@ def _own(raw):
 
 
 def _batched(build):
+    # BOTH controls declared off. Since R271 the block reach measures this
+    # builder's three-second lookback and refuses stride 3 -- the repair working
+    # on the very construction this pair was built from, pinned below -- so the
+    # batched half stands in for a run whose reach and block reach both missed
+    # the path.
     return run_probe_a(_frames(), build, MODEL, side="batch", cohort_stride=3,
-                       max_cohorts=10 ** 6, reach_samples=0)
+                       max_cohorts=10 ** 6, reach_samples=0, block_samples=0)
+
+
+def test_with_the_BLOCK_REACH_on_the_same_batch_is_REFUSED():
+    """R271 §2(c). The interference this pair manufactures is exactly what the
+    block reach exists to refuse: 3 s of lookback, stride 3, floor 4 s."""
+    with pytest.raises(ProbeError) as e:
+        run_probe_a(_frames(), _lag3, MODEL, side="batch", cohort_stride=3,
+                    max_cohorts=10 ** 6, reach_samples=0)
+    assert "BLOCK REACH" in str(e.value), str(e.value)
 
 
 def _shared_reach(build):

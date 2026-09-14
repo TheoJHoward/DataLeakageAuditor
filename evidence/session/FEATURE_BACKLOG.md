@@ -112,6 +112,21 @@ this boundary is the cause is one reading and not established. The shipped
 default (stride 97, 400 cohorts) on the same side reads `observed_silence`, 0
 findings, liveness 328. D-V30A-114. **Phase 2 instrument observations; no
 `PREREG.md` §6.2 result and no Phase 1 figure moves.**
+
+**R271: THE REACH CONTROL NEVER SAW THE TRADES FRAME, AND THE BLOCK REACH NOW
+SETS THE FLOOR.** Counting cells to find which neighbour moved the row showed
+`reach._corrupt_one` compared a UTC-aware trades key against naive decision
+seconds, which pandas answers with all-False: zero trades rows at all ten of
+R270's reach samples. **Every reach printed for the fixture (14 s, 15 s,
+15.9997 s) was the MBO frame's alone, and every `--complete` stride derived there
+(15, 16, 16) rested on it.** With keys aligned, one second of trades reaches
+`net_delta_60s`'s full 60 s. The block reach — the history before a position
+corrupted in one rebuild — reads 55 s, 60 s and 59 s at three positions. The
+stride floor is now `max(model floor, block reach + 1 s)` on every run; a
+complete run takes the largest measured floor rounded up, and refuses where no
+stride the frame can hold would clear it. `--confirm` splits a vanished finding
+by later and earlier cohorts, and an INTERFERENCE class refuses the run.
+D-V30A-115.
 **R270 §0 rulings, recorded.** *"Under an hour" is retired:* it was a
 build-or-stop line and never a specification — the cost is measured, printed
 and predicted, and nothing is held to a figure. *The prediction prints both
