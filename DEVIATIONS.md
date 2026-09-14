@@ -6275,3 +6275,35 @@ extra rebuild, and a complete run moves from 16 passes to 61.
 **R163 §1's exemption test.** *Would this have surfaced if the triggering question
 had not been asked?* **Not applicable** — a measurement the ruling ordered, not a
 defect.
+
+## D-V30A-117 — f96f7f8 was committed without a full suite run, one coverage-assertion entry short, and the closing suite caught it before the push
+
+**WHAT HAPPENED.** R271's fixture pair added an always-on test,
+`test_block_reach_fixture.py::test_the_fixture_pair_HAS_a_recorded_result`. It
+reads its record and its own source and asserts over them, which makes it a
+coverage assertion under the tracked population's criterion. Between writing it
+and committing `f96f7f8`, only that test file was run — one passed, one skipped —
+and not the full suite. The full suite that had passed earlier in the round ran
+before the file existed.
+
+**WHAT CAUGHT IT.** The closing sequence's suite on `f96f7f8`:
+`test_the_TRACKED_population_AGREES_with_the_enumerator` failed, naming the new
+function as present in the code and absent from
+`evidence/session/COVERAGE_ASSERTION_POPULATION.json`. The only other failure was
+the disclosed checker test. **Nothing had been pushed**; the remote stood at
+`951f972`.
+
+**THE ENTRY, MEASURED.** The enumerator counts seven asserts in the function.
+`tools/empty_population_probe.py`'s `probe` returned `unprobed`, "no population
+helper this mechanism can empty" — it reads its files directly — so the status
+is the file's `unprobed_reachable`, taken from the probe and not judged. A first
+script asserted the list was sorted, found it is not, and wrote nothing: entries
+through R255's era are grouped by file and every later round appended its
+additions at the end. The entry was appended there by a checked script, with the
+counts moved to match: `unprobed_reachable` 55 → 56, `functions_total` 108 → 109,
+`assertions_total` 219 → 226, re-tallied from the entries before the write
+completed.
+
+**R163 §1's exemption test.** *Would this have surfaced if the triggering question
+had not been asked?* **Yes** — the closing sequence's suite surfaced it with no
+question asked, which is the step working.

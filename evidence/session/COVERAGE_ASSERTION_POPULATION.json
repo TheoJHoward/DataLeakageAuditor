@@ -21,9 +21,9 @@
   "candidate_legitimate": 1,
   "out_of_scope": 28,
   "probed_healthy": 6,
-  "unprobed_reachable": 55,
-  "functions_total": 108,
-  "assertions_total": 219
+  "unprobed_reachable": 56,
+  "functions_total": 109,
+  "assertions_total": 226
  },
  "functions": [
   {
@@ -781,6 +781,13 @@
    "assertions": 1,
    "status": "out_of_scope",
    "reason": "R255, AND THIS ONE IS OUT OF SCOPE FOR A NARROWER REASON THAN ITS NEIGHBOURS, RECORDED BECAUSE THE STATUS ALONE WOULD MISLEAD. It DOES assert over a collection it derived -- `found`, built by walking src/leakaudit -- so on the docstring's first clause it is a coverage claim. It is out of scope on the SECOND clause, which is what this population exists for: the assertion is `found == {one literal}`, and an emptied population makes it FAIL rather than pass. Equality is not vacuity-prone. It was written as `found <= known` and fixed to equality in the same round, after measuring that `found` is exactly one file. THE GAP THAT LEAVES: `makes_a_coverage_claim` returns False for BOTH forms, so the vacuity-prone `<=` version would also have been filed here. See DEFERRED_ITEMS section 255.2."
+  },
+  {
+   "file": "tests/phase1/test_block_reach_fixture.py",
+   "function": "test_the_fixture_pair_HAS_a_recorded_result",
+   "assertions": 7,
+   "status": "unprobed_reachable",
+   "reason": "added R271 section 2(f). MEASURED, not judged: tools/empty_population_probe.py returns `unprobed`, `no population helper this mechanism can empty` -- it reads its record and its own source directly. It asserts its own population non-empty (`assert opt_in`) before concluding anything from it."
   }
  ]
 }
