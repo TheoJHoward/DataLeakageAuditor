@@ -1,25 +1,26 @@
-"""`--confirm`: every batched finding re-probed alone, split, and classed. R271 §3.
+"""`--confirm`: isolation, then the split, each predicted; interference is its own exit.
 
-Isolation removes a real lookahead leak as surely as it removes interference: a
-row at F reading a LATER cohort's unavailable cells moves in the batch and not
-alone. So a finding that does not persist alone is re-probed twice more -- with
-the batch's later cohorts only, and with its earlier cohorts only -- and that
-split is the instrument.
+R271 §3, R272 §2(d)(e). Isolation removes a real lookahead leak as surely as it
+removes interference: a row at F reading a LATER cohort's unavailable cells moves
+in the batch and not alone. So `--confirm` runs in two stages, each predicted
+before it runs. Stage one isolates up to the cap. Stage two splits every finding
+that vanished -- with the batch's later cohorts only, and with its earlier ones
+only -- up to the same cap, and any vanished finding above it is listed as NOT
+RE-PROBED with the count, never silently left.
 
 THE PAIRS. HELD: the frames, the model, `--stride 3`, `--confirm`. VARIED: the
 builder alone.
 
   * `leaky` reads its own second's cell. Every finding persists alone:
-    CONFIRMED.
+    CONFIRMED, exit 1.
   * `lagpatch` reads the previous second's cell -- available -- except on
     decision seconds 50..58, where it reads three seconds BACK, still available.
     The batch reports false findings at 51, 54 and 57; alone they vanish; with
-    the earlier cohorts they return. INTERFERENCE, and the run's silences stop
-    being licensed: every one is `none`, and the run exits refused.
+    the earlier cohorts they return. INTERFERENCE, every silence `none`, exit 5.
   * `lookahead` reads the previous second except on 50..58, where it reads
     three seconds AHEAD -- unavailable. The batch reports 51 and 54; alone they
-    vanish; with the later cohorts they return. CONFIRMED (lookahead), naming
-    the later second, and the run exits on its findings.
+    vanish; with the later cohorts they return. CONFIRMED (lookahead), naming the
+    later second, exit 1.
 """
 from __future__ import annotations
 
@@ -78,7 +79,7 @@ PIPELINE = (
 
 @pytest.fixture
 def work(tmp_path):
-    name = "r271_confirm_pipe"
+    name = "r272_confirm_pipe"
     (tmp_path / (name + ".py")).write_text(PIPELINE, encoding="utf-8")
     secs = pd.date_range(T0, periods=N, freq="1s")
     pd.DataFrame({"k": secs, "v": [float(i % 17) + 1.0 for i in range(N)]}
@@ -107,8 +108,7 @@ def _run(work, fn, *extra, model=True):
 
 
 #: Notes render as `  - <text>`. A class line is one whose text STARTS with its
-#: tag and then names a second, so CONFIRMED does not also count
-#: "CONFIRMED (lookahead)", and "NOT CONFIRMED" inside another line is not one.
+#: tag and then names a second.
 _LEAD = r"^[ \t]*-?[ \t]*"
 
 
@@ -128,10 +128,12 @@ def test_LEAKY_findings_are_CONFIRMED_within_the_derived_cap(work, capsys):
     assert len(_seconds(out, "CONFIRMED")) == 5, out[-3000:]
     assert "default cap 5 (600 s target" in out, out[-3000:]
     assert ("CONFIRM SUMMARY: 5 confirmed, 0 confirmed (lookahead), 0 "
-            "interference, 0 batched only, 15 not re-probed, of 20") in out
+            "interference, 0 batched only, 0 not split, 15 not re-probed, "
+            "of 20") in out
+    assert "CONFIRM STAGE 2 PLANNED" not in out, "nothing vanished, nothing to split"
 
 
-def test_LAGPATCH_is_INTERFERENCE_and_the_run_is_REFUSED(work, capsys):
+def test_LAGPATCH_is_INTERFERENCE_and_EXITS_INTERFERENCE(work, capsys):
     code = _run(work, "lagpatch", "--stride", "3", "--confirm")
     cap = capsys.readouterr()
     out = cap.out
@@ -139,8 +141,9 @@ def test_LAGPATCH_is_INTERFERENCE_and_the_run_is_REFUSED(work, capsys):
         "2026-01-01 00:00:51", "2026-01-01 00:00:54", "2026-01-01 00:00:57"], out[-3000:]
     assert not _seconds(out, "CONFIRMED")
     assert "every silence in this run is none(interference detected at stride 3" in out
-    assert code == cli.EXIT_USAGE, "an interference class makes the run refused"
-    assert "RUN REFUSED" in cap.err
+    assert code == cli.EXIT_INTERFERENCE == 5, (
+        "interference is its own exit, not a usage error")
+    assert "RUN INTERFERED" in cap.err
 
 
 def test_LOOKAHEAD_is_CONFIRMED_and_names_the_later_second(work, capsys):
@@ -158,6 +161,52 @@ def test_WITHOUT_confirm_the_same_run_prints_no_classes(work, capsys):
     _run(work, "lagpatch", "--stride", "3")
     out = capsys.readouterr().out
     assert "CONFIRM" not in out
+
+
+# --------------------------------------------------------------------------
+# the two stages, each predicted before it runs
+# --------------------------------------------------------------------------
+
+def test_STAGE_ONE_prints_its_prediction_and_arithmetic_before_running(work, capsys):
+    _run(work, "leaky", "--stride", "3", "--confirm")
+    out = capsys.readouterr().out
+    plan = out.index("CONFIRM STAGE 1 PLANNED")
+    assert plan < out.index("CONFIRM SUMMARY")
+    assert "107.8 s" in out[plan:plan + 600], out[plan:plan + 600]
+
+
+def test_STAGE_TWO_prints_N_VANISHED_and_its_cost_before_running(work, capsys):
+    _run(work, "lagpatch", "--stride", "3", "--confirm")
+    out = capsys.readouterr().out
+    m = re.search(r"CONFIRM STAGE 2 PLANNED: (\d+) vanished; split (\d+) of them "
+                  r"\(cap (\d+)\) at two re-probes each, ~([\d.]+) min", out)
+    assert m, out[-3000:]
+    assert (m.group(1), m.group(2), m.group(3)) == ("3", "3", "5")
+    assert out.index("CONFIRM STAGE 1 PLANNED") < m.start() < out.index("CONFIRM SUMMARY")
+
+
+def test_a_vanished_finding_ABOVE_THE_SPLIT_CAP_is_NOT_RE_PROBED_with_the_count(
+        work, capsys):
+    _run(work, "lagpatch", "--stride", "3", "--confirm", "--confirm-cap", "1")
+    out = capsys.readouterr().out
+    assert "split 0 of them" not in out
+    assert re.search(r"CONFIRM STAGE 2 PLANNED: 1 vanished; split 1 of them", out), out[-3000:]
+    # the cap of 1 isolates one finding; with three findings, the two not
+    # isolated are NOT RE-PROBED, and the one isolated is split
+    assert "NOT RE-PROBED: 2 batched finding" in out, out[-3000:]
+    assert len(_seconds(out, "INTERFERENCE")) == 1
+
+
+def test_STAGE_TWO_splits_EVERY_vanished_finding_under_the_shared_cap(work, capsys):
+    """Stage two shares stage one's cap, and stage one isolates at most the cap,
+    so every finding that vanished is split: the `not split` count is zero by
+    construction. The NOT RE-PROBED (split) branch stays in the code as the
+    guard for any future difference between the two caps."""
+    _run(work, "lagpatch", "--stride", "3", "--confirm", "--confirm-cap", "2")
+    out = capsys.readouterr().out
+    assert "CONFIRM STAGE 2 PLANNED: 2 vanished; split 2 of them (cap 2)" in out, out[-3000:]
+    assert ", 0 not split," in out
+    assert len(_seconds(out, "INTERFERENCE")) == 2
 
 
 # --------------------------------------------------------------------------
@@ -190,16 +239,40 @@ def test_a_non_persisting_finding_WITHOUT_the_split_is_not_classed_BATCHED_ONLY(
 
 
 # --------------------------------------------------------------------------
-# the cap, and complete
+# the exit table, and its precedence in --help
 # --------------------------------------------------------------------------
 
-def test_the_cap_prints_its_ARITHMETIC_and_its_PREDICTION_before_running(work, capsys):
-    _run(work, "leaky", "--stride", "3", "--confirm")
-    out = capsys.readouterr().out
-    plan = out.index("CONFIRM PLANNED")
-    assert plan < out.index("CONFIRM SUMMARY")
-    assert "107.8 s" in out[plan:plan + 600], out[plan:plan + 600]
+def test_THE_EXIT_TABLE(work, capsys):
+    rows = [
+        (("leaky", "--stride", "3"), cli.EXIT_FINDINGS),
+        (("lagpatch", "--stride", "3", "--confirm"), cli.EXIT_INTERFERENCE),
+        (("leaky", "--confirm"), None),     # without --model: refused, below
+    ]
+    got = []
+    for args, want in rows[:2]:
+        got.append((args, _run(work, *args), want))
+    assert _run(work, "leaky", "--confirm", model=False) == cli.EXIT_USAGE
+    capsys.readouterr()
+    for args, code, want in got:
+        assert code == want, (args, code, want)
+    assert (cli.EXIT_OK_SILENT, cli.EXIT_FINDINGS, cli.EXIT_USAGE,
+            cli.EXIT_NOTHING_PROBED, cli.EXIT_INCOMPLETE_SILENT,
+            cli.EXIT_INTERFERENCE) == (0, 1, 2, 3, 4, 5)
 
+
+def test_the_PRECEDENCE_is_in_the_run_help():
+    helptext = None
+    for action in cli.build_parser()._subparsers._group_actions:
+        helptext = action.choices["run"].format_help()
+    assert "2 refused" in helptext and "5 interference" in helptext
+    order = [helptext.index(s) for s in ("2 refused", "5 interference",
+                                          "1 findings", "4 incomplete", "0 clean")]
+    assert order == sorted(order), helptext
+
+
+# --------------------------------------------------------------------------
+# the cap, and complete
+# --------------------------------------------------------------------------
 
 def test_ABOVE_THE_CAP_the_rest_are_NOT_RE_PROBED_and_first_and_last_are_in(
         work, capsys):

@@ -937,6 +937,7 @@ d115.md
 d116.md
 d117.md
 d118.md
+d119.md
 d12_negative_test.py
 d14_tests.py
 d15_test.py
@@ -1184,6 +1185,7 @@ msg34.txt
 msg35.txt
 msg36.txt
 msg37.txt
+msg38.txt
 msg4.txt
 msg5.txt
 msg6.txt
@@ -1486,6 +1488,14 @@ r271_default_floor.py
 r271_establish.py
 r271_establish_record.json
 r271_population.py
+r272_availability.py
+r272_cli.py
+r272_demo_floor.py
+r272_entry_positive.py
+r272_entry_positive_record.json
+r272_identity.py
+r272_label.py
+r272_reach.py
 r89.py
 r95_pointer.py
 r95a.py

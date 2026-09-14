@@ -161,6 +161,41 @@ CLASSIFICATION = {
     # the note whenever it is used; `at_seconds=None` spreads the positions
     # across the frame exactly as `measure_reach` does.
     "reach.py::param::__init__(cells=)": (NA, "result carrier field"),
+    # R272 §1. The one corruption entry point. Its result carriers are fields;
+    # each selection keyword is one of the ruled selection kinds, and `None`
+    # means that kind was not asked for -- `select_cells` refuses anything but
+    # exactly one of `seconds` and `through`.
+    "availability.py::param::__init__(masks=)": (NA, "result carrier field"),
+    "availability.py::param::__init__(keys=)": (NA, "result carrier field"),
+    "availability.py::param::__init__(key_floors=)": (NA, "result carrier field"),
+    "availability.py::param::__init__(rows_by_frame=)": (NA, "result carrier field"),
+    "availability.py::param::__init__(absent=)": (NA, "result carrier field"),
+    "availability.py::param::__init__(cells_by_frame=)": (NA, "result carrier field"),
+    "availability.py::param::__init__(label_mask=)": (NA, "result carrier field"),
+    "availability.py::param::__init__(label_instants=)": (NA, "result carrier field"),
+    "availability.py::param::select_cells(through=)":
+        (L, "None: the block kind was not asked for; exactly one kind is required"),
+    "availability.py::param::select_cells(after=)":
+        (L, "None is the whole-history block R271 section 2(a) specifies"),
+    "availability.py::param::corrupt_cells(selection=)":
+        (L, "None makes the selection here; a caller passing one made it already"),
+    "availability.py::param::corrupt_cells(seconds=)":
+        (L, "None: the seconds kind was not asked for"),
+    "availability.py::param::corrupt_cells(through=)":
+        (L, "None: the block kind was not asked for"),
+    "availability.py::param::corrupt_cells(after=)":
+        (L, "None is the whole-history block"),
+    "availability.py::param::corrupt_cells(column_modes=)":
+        (L, "None is the whole-frame path, the same default run_probe_a takes"),
+    "availability.py::param::corrupt_cells(bar_duration=)":
+        (L, "None is undeclared, the same default run_probe_a takes"),
+    "availability.py::param::corrupt_cells(on_batch=)":
+        (L, "None records no batch instants; only the probe's classifier needs them"),
+    "availability.py::param::corrupt_cells(label=)":
+        (L, "None corrupts aggregate cells; L2a passes its label declaration"),
+    "reach.py::param::__init__(rows=)": (NA, "result carrier field"),
+    "reach.py::param::__init__(cells_by_frame=)": (NA, "result carrier field"),
+    "reach.py::param::__init__(frames=)": (NA, "result carrier field"),
     "reach.py::param::__init__(bound=)": (NA, "result carrier field"),
     "reach.py::param::_corrupt_block(after=)":
         (L, "None is the whole-history block R271 section 2(a) specifies; a "

@@ -428,6 +428,9 @@ def test_the_PACKAGE_consumers_are_all_routed_through_the_refusal(scanned):
 LS_FILES_FLOORS = {
     "tests/phase1/test_decision_clock_consumers.py":
         "this file's own `tracked_files()` -- the clock-consumer scan",
+    "tests/phase1/test_one_corruption_entry.py":
+        "`_population()` -- every tracked and untracked module under "
+        "src/leakaudit, the one-corruption-entry totality scan (R272 section 1(d))",
     "tools/coverage_assertion_sweep.py":
         "`tracked_python_files()` -- the sweep's `.py` floor",
     "tools/portability_digest.py":

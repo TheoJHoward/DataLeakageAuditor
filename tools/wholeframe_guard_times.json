@@ -64,6 +64,15 @@
    "contaminated": 500.2,
    "corrected": 491.9,
    "total": 1028.2
+  },
+  {
+   "when": "2026-09-14 11:19",
+   "commit": "bbb14ad",
+   "capture": 29.6,
+   "contaminated": 440.4,
+   "corrected": 442.6,
+   "total": 912.6,
+   "path_set_fingerprint": "29e130aa803edca9fdbb86710ac7b5eda21ac3ffa2779635e62ab50a1d1c14b1"
   }
  ]
 }

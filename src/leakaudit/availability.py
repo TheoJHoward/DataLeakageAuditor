@@ -434,6 +434,8 @@ class ProbeAResult:
     #: cannot hold passes for.
     block_reach: object = None
     decision_seconds: int = 0
+    #: Cells corrupted per declared frame, from the entry point.
+    cells_by_frame: dict = field(default_factory=dict)
     #: THE HEAD OF THE FRAME. R269 §2(b). `head_cutoff` is the frame's first row
     #: plus the measured reach; probed cohorts whose second falls before it read
     #: cells from before the frame, and are listed in `head_seconds`. They STAY
@@ -631,6 +633,8 @@ def eligible_cohorts(frames: Mapping[str, pd.DataFrame],
     pset = set(picked)
     have: set = set()
     res = EligibleCohorts()
+    # THE SELECTION GOES THROUGH THE ONE ENTRY POINT. R272 §1(a).
+    selection = select_cells(frames, model, decision, seconds=pset)
     for fname, keycol in model.aggregate_frames.items():
         f = frames.get(fname)
         if f is None:
@@ -641,9 +645,7 @@ def eligible_cohorts(frames: Mapping[str, pd.DataFrame],
             continue
         if keycol not in f.columns:
             raise ProbeError("frame %r has no key column %r" % (fname, keycol))
-        key = align_key(pd.to_datetime(f[keycol]), decision,
-                        frame=fname, column=keycol)
-        matched = set(key.dt.floor("s").unique()) & pset
+        matched = set(selection.key_floors[fname].unique()) & pset
         res.per_frame[fname] = len(matched)
         have |= matched
     res.eligible = tuple(s for s in picked if s in have)
@@ -736,6 +738,227 @@ def perturb_cells(f, c, cell_mask, n, rng) -> None:
     else:
         vals = f.loc[cell_mask, c].to_numpy(dtype=float, copy=True)
         f.loc[cell_mask, c] = vals + 1.0e6 + rng.standard_normal(n)
+
+
+# ---------------------------------------------------------------------------
+# THE ONE CORRUPTION ENTRY POINT. R272 §1.
+#
+# THE DEFECT IT CLOSES. For three rounds the reach control compared a UTC-aware
+# trades key with naive decision seconds. pandas answers that with all-False and
+# raises nothing, so it corrupted no trades cell, ever, and printed a reach over
+# one frame of two. The probe had the right rule; the reach control had its own
+# copy without it. So every instrument that selects cells by time -- probe A,
+# L2a, the single-second reach, the block reach, isolation and its split, and
+# the identity control's write-back -- now selects through `select_cells`, and
+# every one that perturbs corrupts through `corrupt_cells`. There is no second
+# copy of either rule left to drift, and `tests/phase1/test_one_corruption_entry.py`
+# fails if one appears.
+#
+# ONE ALIGNMENT. Keys and availability instants reach the decision clock through
+# `to_decision_clock` and nothing else -- the rule every Phase 1 figure was
+# produced under. `align_key`, which refused the mixed case instead of converting
+# it, is no longer on any path, so the two rules D-V30A-42 recorded as unresolved
+# are one.
+# ---------------------------------------------------------------------------
+
+def _tz_of(x):
+    if isinstance(x, pd.Series):
+        return getattr(x.dt, "tz", None)
+    if isinstance(x, pd.DatetimeIndex):
+        return x.tz
+    return getattr(pd.Timestamp(x), "tz", None)
+
+
+def same_clock(stamps, reference, *, what: str) -> None:
+    """Refuse a comparison between timezone-aware and naive stamps. R272 §1(b).
+
+    pandas answers `==`, `isin` and `<=` between an aware series and a naive
+    stamp with all-False and no error, which is indistinguishable from "no cell
+    falls there". So the comparison is checked before it is made, and a mismatch
+    RAISES -- never returns an empty selection.
+    """
+    a, b = _tz_of(stamps), _tz_of(reference)
+    if (a is None) != (b is None):
+        raise ProbeError(
+            "REFUSED: %s compares %s stamps against %s ones. pandas answers that "
+            "comparison with all-False and raises nothing, so every cell would "
+            "read as unselected and the run would report a measurement over "
+            "nothing. Bring both to the decision clock first."
+            % (what,
+               "timezone-aware (%s)" % a if a is not None else "naive",
+               "timezone-aware (%s)" % b if b is not None else "naive"))
+
+
+@dataclass
+class CellSelection:
+    """Which rows of each declared aggregate frame a time selection names."""
+    masks: dict = field(default_factory=dict)       # frame -> positional bool mask
+    keys: dict = field(default_factory=dict)        # frame -> key on the decision clock
+    key_floors: dict = field(default_factory=dict)  # frame -> that key, floored to a second
+    rows_by_frame: dict = field(default_factory=dict)
+    absent: tuple = ()
+
+
+def select_cells(raw, model, decision, *, seconds=None, through=None,
+                 after=None) -> CellSelection:
+    """THE ONE TIME SELECTION. R272 §1(a)(b).
+
+    Exactly one of `seconds` -- the rows whose aligned key floors into that set
+    -- or `through` -- the rows whose aligned key floors at or before it, and
+    after `after` when given. Frames in the model's declared order.
+    """
+    if (seconds is None) == (through is None):
+        raise ProbeError("select_cells takes exactly one of `seconds` or `through`")
+    wanted = None if seconds is None else {pd.Timestamp(s) for s in seconds}
+    sel = CellSelection()
+    absent = []
+    for fname, keycol in model.aggregate_frames.items():
+        f = raw.get(fname)
+        if f is None:
+            absent.append(fname)
+            sel.rows_by_frame[fname] = 0
+            continue
+        if keycol not in f.columns:
+            raise ProbeError("frame %r has no key column %r" % (fname, keycol))
+        key = to_decision_clock(pd.to_datetime(f[keycol]), decision)
+        same_clock(key, decision, what="frame %r's aligned key" % fname)
+        kf = key.dt.floor("s")
+        if wanted is not None:
+            if wanted:
+                same_clock(kf, next(iter(wanted)),
+                           what="the cell selection of frame %r" % fname)
+            mask = kf.isin(wanted).to_numpy()
+        else:
+            same_clock(kf, through, what="the block selection of frame %r" % fname)
+            chosen = kf <= pd.Timestamp(through)
+            if after is not None:
+                same_clock(kf, after, what="the block bound of frame %r" % fname)
+                chosen = chosen & (kf > pd.Timestamp(after))
+            mask = chosen.fillna(False).to_numpy(dtype=bool)
+        sel.masks[fname] = mask
+        sel.keys[fname] = key
+        sel.key_floors[fname] = kf
+        sel.rows_by_frame[fname] = int(mask.sum())
+    sel.absent = tuple(absent)
+    return sel
+
+
+@dataclass
+class Corruption:
+    """What `corrupt_cells` did: the frames, and the cells per declared frame."""
+    frames: dict
+    cells_by_frame: dict = field(default_factory=dict)
+    rows_by_frame: dict = field(default_factory=dict)
+    notes: list = field(default_factory=list)
+    label_mask: object = None
+    label_instants: object = None
+
+    @property
+    def cells(self) -> int:
+        return int(sum(self.cells_by_frame.values()))
+
+
+def corrupt_cells(raw, model, decision, *, rng, selection=None, seconds=None,
+                  through=None, after=None, column_modes=None, bar_duration=None,
+                  on_batch=None, label=None) -> Corruption:
+    """THE ONE CORRUPTION ENTRY POINT. R272 §1(a).
+
+    Aggregate cells: the rows `select_cells` names (or `selection`, already
+    made), every numeric non-key column, in the frame's column order, perturbed
+    by `perturb_cells` with one generator. Under `column_modes` a column's own
+    availability instant selects its cells, `floor(a - window)` in `seconds`.
+    `on_batch(seconds_of_cell, instants_of_cell, mask)` receives each column's
+    selection as it is corrupted.
+
+    Label cells, for L2a: `label=(frame, column, instants, at, ties_available)`
+    corrupts the label cells whose aligned availability instant is after `at`
+    (or at-or-after it when ties are unavailable).
+
+    Returns the corrupted frames and the cells written per declared frame.
+    """
+    out = {k: v.copy() for k, v in raw.items()}
+    res = Corruption(frames=out)
+    if label is not None:
+        frame, column, instants, at, ties_available = label
+        inst = to_decision_clock(pd.to_datetime(instants), decision)
+        same_clock(inst, at, what="the label selection of frame %r" % frame)
+        at = pd.Timestamp(at)
+        chosen = (inst > at) if ties_available else (inst >= at)
+        mask = chosen.fillna(False).to_numpy(dtype=bool)
+        n = int(mask.sum())
+        if n:
+            perturb_cells(out[frame], column, mask, n, rng)
+        res.cells_by_frame[frame] = n
+        res.rows_by_frame[frame] = n
+        res.label_mask = mask
+        res.label_instants = inst
+        return res
+    sel = selection if selection is not None else select_cells(
+        raw, model, decision, seconds=seconds, through=through, after=after)
+    wanted = None if seconds is None else {pd.Timestamp(s) for s in seconds}
+    for fname, keycol in model.aggregate_frames.items():
+        if fname in sel.absent:
+            continue
+        mask = sel.masks[fname]
+        res.rows_by_frame[fname] = int(mask.sum())
+        if not mask.any():
+            res.cells_by_frame[fname] = 0
+            continue
+        f = out[fname]
+        kf = sel.key_floors[fname]
+        num = [c for c in f.columns
+               if c != keycol and pd.api.types.is_numeric_dtype(f[c])]
+        cells = 0
+        for c in num:
+            cell_mask = mask
+            spec = None if not column_modes else column_modes.get(c)
+            if spec is not None:
+                if wanted is None:
+                    raise ProbeError("per-column modes select by `seconds` only")
+                from .modes import ROUTE_TAKEN as _routes
+                from .modes import availability as _availability
+                _before = len(_routes)
+                a = _availability(f, c, spec, timestamp_column=keycol,
+                                  declared_bar_duration=bar_duration)
+                # THE ROUTE IS NAMED WHERE THE USER MEETS IT. R223 §2(b).
+                for _r, _v, _info in _routes[_before:]:
+                    if _r == "inferred":
+                        res.notes.append(
+                            "column %r of frame %r declares `at_bar_close`, and "
+                            "its bar duration was INFERRED from successive "
+                            "timestamps because none was declared. PREREG.md "
+                            "line 255 names two routes -- a fixed value or "
+                            "inference -- and names no default between them, "
+                            "so the route was chosen for you and is named "
+                            "here rather than left to be deduced. Declare "
+                            "`bar_duration_seconds` to take the fixed-value "
+                            "route instead. %s"
+                            % (c, fname, _inference_frame(_info)))
+                a = to_decision_clock(pd.to_datetime(a), decision)
+                if wanted:
+                    same_clock(a, next(iter(wanted)),
+                               what="column %r of frame %r" % (c, fname))
+                cell_mask = (a - model.window).dt.floor("s").isin(wanted).to_numpy()
+                if not cell_mask.any():
+                    res.notes.append(
+                        "column %r of frame %r declares mode %r and no cell of it "
+                        "becomes knowable in any selected second, so it was not "
+                        "perturbed. Its silence is `none`, not `observed_silence`."
+                        % (c, fname, getattr(spec, "mode", spec)))
+                if on_batch is not None:
+                    on_batch((a - model.window).dt.floor("s").to_numpy(),
+                             a.to_numpy(), cell_mask)
+            elif on_batch is not None:
+                # The frame rule: the instant is `floor(key) + window`, and the
+                # cohort is that same floor.
+                on_batch(kf.to_numpy(), (kf + model.window).to_numpy(),
+                         np.asarray(cell_mask))
+            n = int(np.asarray(cell_mask).sum())
+            perturb_cells(f, c, cell_mask, n, rng)
+            cells += n
+        out[fname] = f
+        res.cells_by_frame[fname] = cells
+    return res
 
 
 def run_probe_a(raw: Mapping[str, pd.DataFrame],
@@ -907,24 +1130,12 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
     # is invalid rather than merely smaller, and clearing the floor is not
     # sufficiency because the builder's own lookback is not in the model.
     res.decision_seconds = len(seconds)
+    stride_declared = not (isinstance(cohort_stride, str)
+                           and cohort_stride == STRIDE_NOT_DECLARED)
     # An explicit selection has no stride to derive; see `cohort_seconds` below.
     if (cohort_seconds is None and isinstance(cohort_stride, str)
             and cohort_stride == STRIDE_NOT_DECLARED):
         floor = stride_floor(model, column_modes)
-        # THE BLOCK REACH RAISES THE FLOOR, ON EVERY RUN. R271 §2(c). The
-        # model's floor is availability arithmetic; the block reach is how far
-        # this builder's history actually reaches forward. A stranger's
-        # five-minute feature at stride 97 is D-V30A-114's defect at a default,
-        # so the default stays only where it clears the larger of the two.
-        from .reach import block_floor
-        _bf = block_floor(res.block_reach)
-        if _bf is not None and _bf > floor:
-            res.notes.append(
-                "STRIDE FLOOR FROM THE BLOCK REACH: the model's floor is %s and "
-                "the measured block reach plus one second is %s, which is "
-                "larger, so %s is the floor the stride below has to clear."
-                % (_window_text(floor), _window_text(_bf), _window_text(_bf)))
-            floor = _bf
         # THE FLOOR IS A BOUND, NOT A VALUE. R265 §2, correcting R263 §2(b).
         #
         # R263 resolved an undeclared stride TO the floor, which confused two
@@ -956,6 +1167,42 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
                    DEFAULT_STRIDE))
     # Zero under an explicit selection, which used no stride; the CLI's coverage
     # table reads this and must not see the sentinel string as one.
+    # THE BLOCK REACH, IN ROWS, AGAINST THE STRIDE, IN POSITIONS. R272 §2(c).
+    #
+    # WHICH UNIT THE STRIDE USES, stated here because the floor compares against
+    # it: `cohort_stride` counts POSITIONS in the sorted decision seconds -- a
+    # pass probes `seconds[offset::stride]` -- not seconds of clock time. A
+    # 60-row window across an overnight gap spans hours of clock and 60 rows, so
+    # a floor in seconds would let two cohorts sit inside one window. The block
+    # reach is therefore compared in ROWS: a stride of at least `rows + 1`
+    # positions keeps every such window clear of two cohorts. The model's floor
+    # stays a time bound and keeps its exact check against the probed gaps above.
+    if cohort_seconds is None:
+        from .reach import block_floor_rows, check_block_stride, measured_rows
+        _rows_floor = block_floor_rows(res.block_reach)
+        if _rows_floor is not None:
+            if stride_declared:
+                # Below the MODEL's floor the derived refusal in
+                # `classify_cohorts` keeps precedence: it is the more specific.
+                if _smallest_gap(seconds, cohort_stride) >= stride_floor(
+                        model, column_modes):
+                    check_block_stride(cohort_stride, res.block_reach)
+            elif cohort_stride < _rows_floor:
+                res.notes.append(
+                    "STRIDE FLOOR FROM THE BLOCK REACH: the block reach is %d "
+                    "row(s) (%s), so cohorts need to be at least %d positions "
+                    "apart; the stride %d does NOT clear it, so %d is used."
+                    % (measured_rows(res.block_reach),
+                       res.block_reach.measured, _rows_floor, cohort_stride,
+                       _rows_floor))
+                cohort_stride = _rows_floor
+            else:
+                res.notes.append(
+                    "STRIDE FLOOR FROM THE BLOCK REACH: the block reach is %d "
+                    "row(s) (%s), so cohorts need to be at least %d positions "
+                    "apart; the stride %d clears it."
+                    % (measured_rows(res.block_reach),
+                       res.block_reach.measured, _rows_floor, cohort_stride))
     res.resolved_stride = 0 if cohort_seconds is not None else cohort_stride
     # `cohort_offset` shifts the selection within the stride. R268 §3(d): a
     # complete run is `stride` passes at offsets 0..stride-1, which between them
@@ -988,14 +1235,6 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
     if len(picked) > 1:
         res.min_separation = pd.Timedelta(
             np.diff(pd.DatetimeIndex(picked).to_numpy()).min())
-        # REFUSED BEFORE A CELL IS CORRUPTED. R271 §2(c). A declared stride
-        # whose cohorts sit inside the block reach would spend a rebuild on
-        # findings the refusal then invalidates. Below the MODEL's floor the
-        # derived refusal in `classify_cohorts` keeps precedence, as it does
-        # over the single-second reach: it is the more specific of the two.
-        if res.min_separation >= stride_floor(model, column_modes):
-            from .reach import check_block_separation
-            check_block_separation(res.min_separation, res.block_reach)
 
     # THE HEAD OF THE FRAME. R269 §2(b). The plain-frame slice that masks a leak
     # as silence carries no declaration of what it was cut from, so no slice
@@ -1007,8 +1246,10 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
     # unchanged -- which is what keeps the whole-frame guard's eight terms where
     # they were, since its first probed second is a head cohort on both sides.
     from .reach import head_cutoff
+    # THE BLOCK REACH, NOT THE SINGLE-SECOND ONE. R272 §2(b): a robust
+    # statistic can ignore one corrupted second and still read sixty.
     res.head_cutoff, _frame_start, res.head_reason = head_cutoff(
-        raw, model, d, res.reach)
+        raw, model, d, res.block_reach)
     if res.head_cutoff is not None:
         res.head_seconds = tuple(s for s in picked if s < res.head_cutoff)
         if res.head_seconds:
@@ -1040,7 +1281,6 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
             "Every finding below was computed under that branch.")
 
     picked_set = set(picked)
-    corrupt = {k: v.copy() for k, v in raw.items()}
     rng = np.random.default_rng(seed)
 
     res.unmodelled_frames = tuple(
@@ -1100,13 +1340,13 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
                 batch_hi[s] = hi
         for s, cnt in grouped.size().items():
             batch_n[s] = batch_n.get(s, 0) + int(cnt)
+    # THE SELECTION GOES THROUGH THE ONE ENTRY POINT. R272 §1(a)(b).
+    selection = select_cells(raw, model, d, seconds=picked_set)
     for fname, keycol in model.aggregate_frames.items():
-        if fname not in corrupt or corrupt[fname] is None:
+        if fname in selection.absent:
             res.notes.append("aggregate frame %r absent from raw; not corrupted" % fname)
             continue
-        f = corrupt[fname]
-        if keycol not in f.columns:
-            raise ProbeError("frame %r has no key column %r" % (fname, keycol))
+        f = raw[fname]
         # TIMEZONE ALIGNMENT, AND IT IS NOT A DETAIL.
         #
         # `trades.ts_event` is datetime64[ns, UTC] while `snap.timestamp` and
@@ -1117,8 +1357,8 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
         # frame is converted into it, never compared across.
         # The rule lives in `to_decision_clock` since R269, unchanged, so the
         # head-of-frame cutoff reads frame starts on this same clock.
-        key = to_decision_clock(pd.to_datetime(f[keycol]), d)
-        key_floor = key.dt.floor("s")
+        key = selection.keys[fname]
+        key_floor = selection.key_floors[fname]
         # FLOORING IS APPLIED AND REPORTED, NEVER APPLIED SILENTLY. R207 Q1.
         #
         # A key that is already a wall-clock second floors to itself and there is
@@ -1142,7 +1382,7 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
                     "falls in, not one window after the key itself."
                     % (keycol, fname, 100.0 * on_boundary / n_key,
                        keycol, _window_text(model.window)))
-        mask = key_floor.isin(picked_set)
+        mask = selection.masks[fname]
         # PER-FRAME, NOT IN TOTAL. The original guard summed `touched` across
         # frames and raised only if EVERY frame matched nothing -- so magg's 250
         # masked trades' zero. An aggregate guard hides a per-member failure.
@@ -1190,82 +1430,7 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
                     "names the columns so the choice is visible."
                     % (fname, ", ".join(fell_back),
                        "them" if len(fell_back) > 1 else "it"))
-        for c in num:
-            # PER-COLUMN SELECTION, AND THE WHOLE-FRAME PATH IS THE SPECIAL CASE.
-            # R205 §3. Without modes the mask is the frame's, unchanged. With a
-            # mode for this column, the cell's own availability instant decides:
-            # a cell is corrupted when the instant it BECOMES knowable falls in a
-            # selected second, which for the frame rule is key + window and
-            # reduces to exactly the mask above.
-            cell_mask = mask
-            spec = None if not column_modes else column_modes.get(c)
-            if spec is not None:
-                from .modes import ROUTE_TAKEN as _routes
-                from .modes import availability as _availability
-                _before = len(_routes)
-                a = _availability(f, c, spec, timestamp_column=keycol,
-                                  declared_bar_duration=bar_duration)
-                # THE ROUTE IS NAMED WHERE THE USER MEETS IT. R223 §2(b).
-                # `PREREG.md` line 255 offers two routes for `bar_duration` --
-                # a fixed value or inference -- and names no default between
-                # them, while the config file carries no key for the first. So
-                # a user declaring `at_bar_close` gets one of two registered
-                # options chosen for them, and the least this run can do is say
-                # which. Selecting between two registered routes without the
-                # output naming which is the tie comparator's defect again.
-                for _r, _v, _info in _routes[_before:]:
-                    if _r == "inferred":
-                        res.notes.append(
-                            "column %r of frame %r declares `at_bar_close`, and "
-                            "its bar duration was INFERRED from successive "
-                            "timestamps because none was declared. PREREG.md "
-                            "line 255 names two routes -- a fixed value or "
-                            "inference -- and names no default between them, "
-                            "so the route was chosen for you and is named "
-                            "here rather than left to be deduced. Declare "
-                            "`bar_duration_seconds` to take the fixed-value "
-                            "route instead. %s"
-                            % (c, fname, _inference_frame(_info)))
-                a = align_key(pd.to_datetime(a), d, frame=fname, column=c)
-                cell_mask = (a - model.window).dt.floor("s").isin(picked_set).to_numpy()
-                if not cell_mask.any():
-                    res.notes.append(
-                        "column %r of frame %r declares mode %r and no cell of it "
-                        "becomes knowable in any selected second, so it was not "
-                        "perturbed. Its silence is `none`, not `observed_silence`."
-                        % (c, fname, getattr(spec, "mode", spec)))
-                # The instant IS `a`, and the cohort is `floor(a - window)`.
-                _record_batch((a - model.window).dt.floor("s").to_numpy(),
-                              a.to_numpy(), cell_mask)
-            else:
-                # The frame rule: the declared instant is `floor(key) + window`
-                # and the cohort is that same floor, so min and max coincide and
-                # the band is empty. This is the path every published figure was
-                # produced on, and the equality is what lets the guard require
-                # bit-identity.
-                _record_batch(key_floor.to_numpy(),
-                              (key_floor + model.window).to_numpy(),
-                              np.asarray(cell_mask))
-            # A LARGE, DETERMINISTIC PERTURBATION. Not noise: the question is
-            # whether the value is READ, and a perturbation that could coincide
-            # with the original would produce a false silence.
-            #
-            # THE COLUMN'S DTYPE IS PRESERVED. A first version wrote floats into
-            # every numeric column and pandas refused on the int64 ones -- and
-            # casting them to float instead would have been worse than the error:
-            # a dtype change is itself a perturbation, and the builder's
-            # behaviour on a promoted column is a different question from whether
-            # it reads the value. Integers get an integer offset.
-            n = int(cell_mask.sum())
-            # PER COLUMN, NOT PER FRAME. `touched` below sums the frame-level
-            # mask once per frame and is what the "corrupted N aggregate row(s)"
-            # note has always reported; it is a row count, not a cell count, and
-            # under per-column modes the two differ. A `none` verdict rests on
-            # the cell count, so the cell count is what is carried out.
-            res.cells_perturbed += n
-            perturb_cells(f, c, cell_mask, n, rng)
         touched += int(mask.sum())
-        corrupt[fname] = f
     if touched == 0:
         # NAME THE CAUSE, NOT THE SYMPTOM. R210 item 4.
         #
@@ -1297,6 +1462,21 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
             "column holds the window key, and that its seconds overlap the "
             "decision column's."
             % ", ".join(repr(d) for d in declared))
+    # THE CORRUPTION GOES THROUGH THE ONE ENTRY POINT. R272 §1(a). Frames in
+    # declared order, numeric columns in frame order, one generator: the draw
+    # order every Phase 1 figure was produced under, which the whole-frame
+    # guard compares byte for byte.
+    corruption = corrupt_cells(raw, model, d, rng=rng, selection=selection,
+                               seconds=picked_set, column_modes=column_modes,
+                               bar_duration=bar_duration,
+                               on_batch=_record_batch)
+    corrupt = corruption.frames
+    res.notes.extend(corruption.notes)
+    res.cells_perturbed += corruption.cells
+    res.cells_by_frame = dict(corruption.cells_by_frame)
+    res.notes.append("cells corrupted per declared frame: %s."
+                     % ", ".join("%s=%d" % kv for kv in
+                                 corruption.cells_by_frame.items()))
     res.notes.append("corrupted %d aggregate row(s) across %d second(s)" % (touched, res.n_cohorts))
 
     after = build(corrupt)
@@ -1361,7 +1541,13 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
     # rather than about a sampled measurement. This catches what the model
     # cannot see: a builder whose own reach exceeds a separation the model was
     # content with.
-    check_stride_separation(res.min_separation, res.reach)
+    # THE SINGLE-SECOND REACH, IN ROWS, AGAINST THE STRIDE, IN POSITIONS.
+    # R272 §2(c). This compared seconds against seconds until R272, which refused
+    # strides the rows show safe across an overnight gap. An explicit selection
+    # -- isolation and its split -- carries no stride and is not checked here.
+    if cohort_seconds is None:
+        from .reach import check_reach_stride
+        check_reach_stride(res.resolved_stride, res.reach)
     if not res.findings and not res.band_cohorts and res.liveness == 0:
         res.notes.append(silence_note(res.cells_perturbed, batch_lo, batch_hi,
                                       picked))
@@ -1434,87 +1620,97 @@ class IsolationResult:
         return 0 if c is None else int(c.moved_in_second)
 
 
-def isolate_cohorts(raw, build, model, seconds, *, reach, batched=None,
-                    seed: int = 20260828, column_modes=None,
-                    bar_duration=None, batch=None, batch_step: int = 1) -> list:
+def _clean_base(build, raw, *, what: str):
+    """Two clean builds; the baseline if they agree, a refusal if not."""
+    base = build(dict(raw))
+    if not base.equals(build(dict(raw))):
+        raise ProbeError(
+            "the builder is not deterministic across two clean runs, so no %s "
+            "of it could attribute a moved row to the cohort it corrupted. "
+            "Nothing was re-probed." % what)
+    return base
+
+
+def isolate_cohorts(raw, build, model, seconds, *, reach, block_reach=None,
+                    batched=None, seed: int = 20260828, column_modes=None,
+                    bar_duration=None) -> list:
     """Re-probe each named cohort ALONE. One rebuild per cohort. R270 §1(a).
 
-    WHAT IT SEPARATES. A batched run corrupts many seconds in one rebuild, and a
-    cell corrupted for one cohort can move a row inside another's finding
-    region whenever the builder reaches further than the cohorts are apart --
-    D-V30A-105 measured 39 such false findings on a builder with no leak. A
-    finding produced that way depends on its NEIGHBOUR being corrupted. So each
-    cohort here is corrupted with nothing else in its batch, rebuilt once, and
-    classified by `classify_cohorts`, the same rule every probe uses. No
-    neighbour is corrupted, so no interference is possible by construction, and
-    a cohort that is still a finding is a finding about its own cells.
+    STAGE ONE of `--confirm` (R272 §2(d)). A batched run corrupts many seconds in
+    one rebuild, and a cell corrupted for one cohort can move a row inside
+    another's window. Each cohort here is corrupted with nothing else in its
+    batch, rebuilt once, and classified by `classify_cohorts`, the rule every
+    probe uses, so a cohort that is still a finding is a finding about its own
+    cells. A finding that VANISHES is not yet classed: isolation removes a
+    lookahead leak as surely as it removes interference, and `split_isolated`
+    is what tells them apart.
 
-    WHAT IT DOES NOT SEPARATE. A finding that vanishes here was not the cohort's
-    own under the batched perturbation -- it does not say which neighbour caused
-    it, and it does not say the builder is clean. The perturbation values also
-    differ from the batch's: `seed` fixes the generator, and a batch draws for
-    every corrupted cell before this cohort's, so the offsets land differently.
-    Both are large and cannot coincide with the original, which is the property
-    the probe rests on; they are not the same numbers.
-
-    COST. Two clean builds, once, to establish determinism and serve as the
-    shared baseline; then ONE rebuild per cohort. `reach` is the batched run's
-    measurement, used for the head-of-frame rule and not re-measured; `None`
-    declares that none is available and each result says the head was not
-    assessed.
+    COST. Two clean builds once, then ONE rebuild per cohort. `reach` and
+    `block_reach` are the batched run's measurements; the block reach sets the
+    head of the frame (R272 §2(b)), and `None` declares that none is available.
 
     Returns one `IsolationResult` per distinct second, in time order.
-    `batched` optionally maps a second to its batched `CohortResult`.
     """
-    base = build(dict(raw))
-    base2 = build(dict(raw))
-    if not base.equals(base2):
-        raise ProbeError(
-            "the builder is not deterministic across two clean runs, so no "
-            "isolated re-probe of it could attribute a moved row to the cohort "
-            "it corrupted. Nothing was isolated.")
+    base = _clean_base(build, raw, what="isolated re-probe")
     batched = batched or {}
-    batch = None if batch is None else [pd.Timestamp(x) for x in batch]
-    where = {} if batch is None else {x: i for i, x in enumerate(batch)}
-
-    def _finding_with(target, neighbours) -> bool:
-        """`target` corrupted beside `neighbours` and nothing else: a finding?"""
-        r = run_probe_a(raw, build, model, side="isolation-split", seed=seed,
-                        column_modes=column_modes, bar_duration=bar_duration,
-                        cohort_seconds=sorted([target] + list(neighbours)),
-                        clean_base=base, reach=reach, reach_samples=0)
-        return bool(next(c for c in r.cohorts if c.second == target).finding())
-
     out = []
     for s in sorted({pd.Timestamp(x) for x in seconds}):
         r = run_probe_a(raw, build, model, side="isolation", seed=seed,
                         column_modes=column_modes, bar_duration=bar_duration,
                         cohort_seconds=[s], clean_base=base, reach=reach,
-                        reach_samples=0)
+                        reach_samples=0, block_reach=block_reach)
         b = batched.get(s)
-        iso = IsolationResult(
+        out.append(IsolationResult(
             second=s, result=r,
             batched_features=() if b is None else tuple(b.features_in_second),
-            batched_moved=0 if b is None else int(b.moved_in_second))
-        # THE SPLIT. R271 §3(a). Only for a cohort that did not persist alone,
-        # and only where the caller named the batch it came from.
-        if not iso.persisted and batch is not None:
-            p = where.get(s)
-            if p is None:
-                raise ProbeError(
-                    "cohort %s is not in the batch it was said to come from, so "
-                    "its later and earlier cohorts cannot be named" % s)
-            step = max(1, int(batch_step))
-            later = [batch[j] for j in range(p + step, len(batch), step)]
-            earlier = [batch[j] for j in range(p - step, -1, -step)][::-1]
-            iso.later_seconds = tuple(later)
-            iso.earlier_seconds = tuple(earlier)
-            iso.later_finding = _finding_with(s, later) if later else False
-            iso.earlier_finding = _finding_with(s, earlier) if earlier else False
-            if iso.later_finding and _finding_with(s, later[:1]):
-                iso.named_later = later[0]
-        out.append(iso)
+            batched_moved=0 if b is None else int(b.moved_in_second)))
     return out
+
+
+def split_isolated(raw, build, model, results, *, batch, reach,
+                   block_reach=None, batch_step: int = 1,
+                   seed: int = 20260828, column_modes=None,
+                   bar_duration=None) -> list:
+    """STAGE TWO of `--confirm`: split every finding that vanished alone.
+
+    R271 §3(a), R272 §2(d). Each result that did not persist is re-probed beside
+    only its batch's LATER cohorts and beside only its EARLIER ones, a rebuild
+    each on one shared clean base. Where the later cohorts reproduce it, the
+    nearest later one is tried alone and named if it suffices. The results are
+    updated in place and returned; a result that persisted is left as it is.
+    """
+    todo = [r for r in results if not r.persisted]
+    if not todo:
+        return results
+    base = _clean_base(build, raw, what="later/earlier split")
+    batch = [pd.Timestamp(x) for x in batch]
+    where = {x: i for i, x in enumerate(batch)}
+    step = max(1, int(batch_step))
+
+    def _finding_with(target, neighbours) -> bool:
+        r = run_probe_a(raw, build, model, side="isolation-split", seed=seed,
+                        column_modes=column_modes, bar_duration=bar_duration,
+                        cohort_seconds=sorted([target] + list(neighbours)),
+                        clean_base=base, reach=reach, reach_samples=0,
+                        block_reach=block_reach)
+        return bool(next(c for c in r.cohorts if c.second == target).finding())
+
+    for iso in todo:
+        p = where.get(iso.second)
+        if p is None:
+            raise ProbeError(
+                "cohort %s is not in the batch it was said to come from, so its "
+                "later and earlier cohorts cannot be named" % iso.second)
+        later = [batch[j] for j in range(p + step, len(batch), step)]
+        earlier = [batch[j] for j in range(p - step, -1, -step)][::-1]
+        iso.later_seconds = tuple(later)
+        iso.earlier_seconds = tuple(earlier)
+        iso.later_finding = _finding_with(iso.second, later) if later else False
+        iso.earlier_finding = (_finding_with(iso.second, earlier)
+                               if earlier else False)
+        if iso.later_finding and _finding_with(iso.second, later[:1]):
+            iso.named_later = later[0]
+    return results
 
 
 def silence_note(cells_perturbed, batch_lo, batch_hi, picked, extra="") -> str:

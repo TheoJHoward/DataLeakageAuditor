@@ -74,11 +74,20 @@ its population. **A subsampled run is not treated as complete**, the reverse of
 `--accept-partial-coverage`, printed beside the verdict, or `--complete` —
 `stride` passes at different offsets for L3.1, every eligible cohort for L2a.
 `assert_audit_complete` holds the same rule at the library door.
-**What complete costs, measured on the acceptance fixture (R268):** reach 14 s,
+**What complete costs on the acceptance fixture, CURRENT (R271, corrected side):**
+61 passes at stride 61 — the block reach and the single-second reach each 60 rows,
+plus one — setup 1,241.9 s, pass one 175.1 s, **~198.7 min predicted**, not run to
+completion (D-V30A-116).
+
+**SUPERSEDED, 2026-09-14 (R272 §2(f)): the figures in the rest of this paragraph
+and the next two were produced by a reach that corrupted one frame of two.** They
+are kept as the dated record of what was measured, not as costs.
+
+~~What complete costs, measured on the acceptance fixture (R268):~~ reach 14 s,
 so stride 15 and 15 passes; one pass 202.0 s; the run 54.7 min with the reach
-measured once. **That is the contaminated side.** **The corrected side was run
-complete end to end at R269, after the round's commit:** reach 15 s, stride 16,
-16 passes, **3,671 s = 61.2 min**. Pass one took 209.1 s and printed about 52.3 min
+measured once — **SUPERSEDED**. **That is the contaminated side.** **The corrected
+side was run complete end to end at R269, after the round's commit:** reach 15 s,
+stride 16, 16 passes, **3,671 s = 61.2 min** — **SUPERSEDED**. Pass one took 209.1 s and printed about 52.3 min
 for the 15 passes left, so sixteen passes at pass one's cost are 3,346 s; the 325 s
 between that and the whole run holds the baseline, determinism check and reach
 measurement made before pass one, plus any drift in the later passes — **not timed
@@ -98,7 +107,9 @@ comparable to the Phase 1 corrected-side silence without a ruling.**
 
 **R270: THE FINDING IS INTERFERENCE, AND COMPLETE MODE AS SHIPPED PRODUCES IT.**
 Re-run with its records kept (reach at k = 10: 15.9997 s, stride 16, 3,803 s =
-63.4 min), the corrected side reported **163,143 finding cohorts of 338,159**,
+63.4 min — **the reach and the stride SUPERSEDED, 2026-09-14: produced by a reach
+that corrupted one frame of two**; the run's finding count below stands as what
+that stride produced), the corrected side reported **163,143 finding cohorts of 338,159**,
 one row each, almost all on `net_delta_60s`, filling whole sessions (median gap
 1 s). Twenty chosen by rank were re-probed alone and **all twenty vanished**; the
 reach measured at them is 15.9997 s, the run's own. Re-probed beside only their
@@ -134,6 +145,22 @@ measured floors are 61 s, so `--complete` is 61 passes: setup 1,241.9 s, pass on
 probed 5,544 cohorts and found nothing, liveness 4,355; stride 16, R270's, is
 refused against the block reach. A default run there resolves a 61 s floor and
 keeps stride 97. The pair is an opt-in test with its record. D-V30A-116.
+
+**R272: ONE CORRUPTION ENTRY POINT, ROWS AGAINST POSITIONS, AND A COMMIT GATE.**
+Every instrument that selects cells by time — probe A, L2a, both reaches,
+isolation and its split, the identity control — now goes through
+`availability.select_cells`, and every one that perturbs through `corrupt_cells`:
+one alignment (`to_decision_clock`), an aware/naive comparison that RAISES, and
+cells counted per declared frame, with a frame that no sampled position corrupted
+getting no reach at all. A totality test over tracked and untracked `src/` fails
+on any other site. Reach is reported in rows as well as seconds; the stride counts
+positions in the sorted decision seconds, and both reach floors compare rows plus
+one against it, so a 60-row window across an overnight gap cannot hold two
+cohorts. The head of the frame reads the block reach. `--confirm` runs isolation
+and then the split as two predicted stages, and interference exits 5, below
+refused and above findings. The commit route refuses a tree no whole-suite run
+fingerprinted, and a probe-path change no guard run fingerprinted. D-V30A-118,
+D-V30A-119.
 **R270 §0 rulings, recorded.** *"Under an hour" is retired:* it was a
 build-or-stop line and never a specification — the cost is measured, printed
 and predicted, and nothing is held to a figure. *The prediction prints both

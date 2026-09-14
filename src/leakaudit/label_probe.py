@@ -52,7 +52,7 @@ import numpy as np
 import pandas as pd
 
 from .coverage import DEFAULT_L2A_COHORTS
-from .availability import (CohortResult, ProbeError, align_key,
+from .availability import (CohortResult, ProbeError, corrupt_cells,
                            classify_cohorts, require_decision_column,
                            silence_note)
 
@@ -343,8 +343,7 @@ def run_probe_l2a(raw, build, model, *, raw_label=None, label_availability=None,
     d = pd.to_datetime(base[dcol])
 
     a_y = label_availability.instants(lf)
-    a_y = align_key(a_y, d, frame=raw_label.frame,
-                    column=label_availability.base_column)
+    _refuse_unperturbable(lf, raw_label.column)
 
     seconds = pd.Index(sorted(d.dt.floor("s").unique()))
     picked = seconds[::cohort_stride][:max_cohorts]
@@ -385,22 +384,25 @@ def run_probe_l2a(raw, build, model, *, raw_label=None, label_availability=None,
         return res
 
     rng = np.random.default_rng(seed)
-    a_np = a_y.to_numpy()
     probed_any = False
     read_beyond = 0
     for f_sec in picked:
         # §4.2: at cohort d, corrupt only label cells UNAVAILABLE at d.
-        if model.ties_available:
-            unavail = a_np > np.datetime64(f_sec)
-        else:
-            unavail = a_np >= np.datetime64(f_sec)
+        # THE SELECTION AND THE CORRUPTION GO THROUGH THE ONE ENTRY POINT.
+        # R272 §1(a): the label's availability instants reach the decision
+        # clock through `to_decision_clock`, an aware/naive comparison is
+        # refused, and the cells are perturbed by `perturb_cells`.
+        corruption = corrupt_cells(
+            raw, model, d, rng=rng,
+            label=(raw_label.frame, raw_label.column, a_y, f_sec,
+                   model.ties_available))
+        unavail = corruption.label_mask
         if not unavail.any():
             res.cohorts.append(_empty_cohort(f_sec))
             continue
         probed_any = True
-        corrupt = {k: v.copy() for k, v in raw.items()}
-        cf = corrupt[raw_label.frame]
-        _perturb(cf, raw_label.column, unavail, rng)
+        corrupt = corruption.frames
+        a_np = corruption.label_instants.to_numpy()
         after = build(corrupt)
         if len(after) != len(base) or list(after.columns) != list(base.columns):
             raise ProbeError(
@@ -487,29 +489,17 @@ def _empty_cohort(f_sec):
                         moved_next_second=0)
 
 
-def _perturb(frame: pd.DataFrame, column: str, mask, rng) -> None:
-    """A large, deterministic, dtype-preserving perturbation of the label cells.
+def _refuse_unperturbable(frame: pd.DataFrame, column: str) -> None:
+    """Refuse a label column the entry point cannot perturb without inventing.
 
-    The same rule `availability.run_probe_a` applies to an aggregate column, for
-    the same reason: the question is whether the value is READ, and a
-    perturbation that could coincide with the original produces a false silence.
+    The perturbation itself is `availability.perturb_cells` through
+    `corrupt_cells` since R272 §1(a) -- the same draws this module's own copy
+    made. What stays here is the refusal: a label whose dtype is not boolean,
+    integer or numeric would need a value invented for it, and a dtype change
+    is itself a perturbation that would make the finding unattributable.
     """
     col = frame[column]
-    n = int(np.asarray(mask).sum())
-    if pd.api.types.is_bool_dtype(col):
-        frame.loc[mask, column] = ~col[mask].to_numpy()
-    elif pd.api.types.is_integer_dtype(col):
-        info = np.iinfo(col.dtype)
-        lo, hi = int(info.min), int(info.max)
-        headroom = min(1000, max(1, hi - lo))
-        off = 1 + rng.integers(0, headroom, n)
-        vals = col[mask].to_numpy()
-        up = vals <= (hi - headroom)
-        frame.loc[mask, column] = np.where(up, vals + off, vals - off).astype(col.dtype)
-    elif pd.api.types.is_numeric_dtype(col):
-        vals = col[mask].to_numpy(dtype=float, copy=True)
-        frame.loc[mask, column] = vals + 1.0e6 + rng.standard_normal(n)
-    else:
+    if not (pd.api.types.is_bool_dtype(col) or pd.api.types.is_numeric_dtype(col)):
         raise LabelDeclarationError(
             "the label column %r has dtype %s, which this probe cannot perturb "
             "without inventing a value for it. Refused rather than coerced: a "

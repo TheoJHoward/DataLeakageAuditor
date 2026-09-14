@@ -36,6 +36,19 @@ EXIT_USAGE = 2
 # mistake one level up. It maps to EXIT_OK_SILENT only when the user has
 # DECLARED that partial coverage is acceptable, and the acceptance is printed.
 EXIT_INCOMPLETE_SILENT = 4
+# R272 §2(e). The run discovered its own stride was wrong: `--confirm` found a
+# finding that returns only beside EARLIER cohorts, whose cells are available to
+# the row. That is not a usage error and it is not a finding about the pipeline;
+# it is a fact about this run's stride, and every silence in the run is `none`.
+EXIT_INTERFERENCE = 5
+
+#: The exit precedence, printed in `leakaudit run --help`. R272 §2(e).
+EXIT_PRECEDENCE = (
+    "exit codes, highest precedence first: 2 refused (a usage error or a probe "
+    "refusal) > 5 interference (the run's own stride let one cohort's corruption "
+    "into another's window; confirmed findings are still listed, and the run is "
+    "to be re-done at the stride the message names) > 1 findings > 3 nothing "
+    "probed > 4 incomplete and silent > 0 clean.")
 
 
 def _expected_errors() -> tuple:
@@ -164,7 +177,8 @@ def build_parser() -> argparse.ArgumentParser:
     sub = ap.add_subparsers(dest="command")
 
     run = sub.add_parser(
-        "run", help="probe which source columns your pipeline's output reads")
+        "run", help="probe which source columns your pipeline's output reads",
+        epilog=EXIT_PRECEDENCE)
     run.add_argument("--pipeline", required=True, metavar="module:function",
                      help="your build function. It is called with ONE argument "
                           "-- a dict keyed by the --frame names, whose values "
@@ -316,10 +330,13 @@ def _probe_complete(frames, build, model, config, stride, slice_from, padding,
     region. So one pass probes one second in `stride`, and probing every second
     takes `stride` passes at offsets 0..stride-1, each its own rebuild.
 
-    THE STRIDE COMES FROM THE MEASUREMENT when none is declared: the measured
-    reach plus the one second the selection floors away, and never below the
-    derived floor. On the acceptance fixture that is 14 s -> stride 15 -> 15
-    passes, measured at R268 as 202.0 s a pass and 54.7 min for the run.
+    THE STRIDE COMES FROM THE MEASUREMENT when none is declared: since R272
+    §2(c) the largest of the model's floor, the single-second reach in rows plus
+    one, and the block reach in rows plus one, in positions. On the acceptance
+    fixture that is 61 -- 61 passes, pass one 175.1 s, ~198.7 min predicted
+    (R271). SUPERSEDED, 2026-09-14: the R268 figure once given here -- 14 s ->
+    stride 15 -> 15 passes, 202.0 s a pass, 54.7 min -- was produced by a reach
+    that corrupted one frame of two.
 
     ONE REACH MEASUREMENT. The first call corrupts nothing -- `max_cohorts=0`
     returns after the baseline, the determinism check and the reach control,
@@ -383,31 +400,50 @@ def _probe_complete(frames, build, model, config, stride, slice_from, padding,
             "frame can hold separates two cohorts, and a batched pass would "
             "report one cohort's corruption as another's finding (D-V30A-114). "
             "%s Run without --complete for a sampled audit." % (block.k, _unbatched()))
-    one_s = pd.Timedelta(seconds=1)
-    parts = [("the model's floor",
-              stride_floor(model, config.column_modes or None))]
-    if getattr(probe0.reach, "measured", None) is not None:
-        parts.append(("the single-second reach plus one second",
-                      probe0.reach.measured + one_s))
-    if getattr(block, "measured", None) is not None:
-        parts.append(("the block reach plus one second", block.measured + one_s))
-    governing, floor = max(parts, key=lambda p: p[1])
-    floor_S = int(math.ceil(floor.total_seconds()))
-    listed = "; ".join("%s %s" % (name, val) for name, val in parts)
+    # THE STRIDE, IN POSITIONS. R272 §2(c). A pass probes `seconds[offset::S]`,
+    # so S counts positions in the sorted decision seconds. The reach terms are
+    # compared in ROWS, the unit a rolling window reads -- a 60-row window
+    # across an overnight gap spans hours of clock and still 60 rows -- and the
+    # model's floor, a time bound, at one second a position, which never
+    # undercounts because decision seconds are at least a second apart.
+    from .reach import frames_never_corrupted, measured_rows
+    never = frames_never_corrupted(block) if block is not None else ()
+    if never:
+        raise ProbeError(
+            "COMPLETE RUN REFUSED: the block reach corrupted no cell of %s at "
+            "any of its %d position(s), so no measurement exists for %s and no "
+            "stride can be derived that is known to clear %s window (R272 "
+            "section 1(c)). %s"
+            % (", ".join(never), block.k,
+               "it" if len(never) == 1 else "them",
+               "its" if len(never) == 1 else "their", _unbatched()))
+    model_floor = stride_floor(model, config.column_modes or None)
+    parts = [("the model's floor, %s, at one second a position" % model_floor,
+              int(math.ceil(model_floor.total_seconds())))]
+    single_rows = measured_rows(probe0.reach)
+    if single_rows is not None:
+        parts.append(("the single-second reach, %d row(s), plus one"
+                      % single_rows, single_rows + 1))
+    block_rows = measured_rows(block)
+    if block_rows is not None:
+        parts.append(("the block reach, %d row(s) (%s), plus one"
+                      % (block_rows, block.measured), block_rows + 1))
+    governing, floor_S = max(parts, key=lambda p: p[1])
+    listed = "; ".join("%s = %d" % (name, val) for name, val in parts)
     if stride is not None:
         S = int(stride)
         if S < floor_S:
             raise ProbeError(
                 "COMPLETE RUN REFUSED: the declared stride %d is below the floor "
-                "of %d, %s (%s). Passes that close report one cohort's corruption "
-                "as another's finding. Omit the stride and the floor is used."
-                % (S, floor_S, governing, floor))
-        basis = "the DECLARED stride %d, clearing the floor of %d (%s)" % (
-            S, floor_S, listed)
+                "of %d positions, %s. Passes that close report one cohort's "
+                "corruption as another's finding. Omit the stride and the floor "
+                "is used." % (S, floor_S, governing))
+        basis = ("the DECLARED stride %d, clearing the floor of %d positions "
+                 "(%s)" % (S, floor_S, listed))
     else:
         S = floor_S
-        basis = ("%s, %s, rounded UP to %d -- the largest of: %s"
-                 % (governing, floor, S, listed))
+        basis = ("%s, %d positions -- the largest of: %s"
+                 % (governing, S, listed))
     if n_secs and S >= n_secs:
         raise ProbeError(
             "COMPLETE RUN REFUSED: a stride of %d over %d decision seconds leaves "
@@ -529,11 +565,12 @@ def _confirm_findings(frames, build, model, config, result, cap,
 
     Returns (lines, summary).
     """
-    from .availability import isolate_cohorts
+    from .availability import isolate_cohorts, split_isolated
     batched = sorted(result.findings, key=lambda c: c.second)
     n = len(batched)
     summary = {"batched": n, "confirmed": 0, "lookahead": 0, "interference": 0,
-               "batched_only": 0, "not_reprobed": 0, "cap": cap,
+               "batched_only": 0, "not_reprobed": 0, "not_split": 0,
+               "cap": cap,
                "interference_reason": None}
     if n == 0:
         return (["CONFIRM (R271 section 3): no batched finding to confirm. A "
@@ -555,30 +592,50 @@ def _confirm_findings(frames, build, model, config, result, cap,
                 % (DEFAULT_CONFIRM_CAP, BUDGET_TARGET_SECONDS,
                    FIXTURE_CONFIRM_SECONDS)
                 if cap == DEFAULT_CONFIRM_CAP else "declared cap %d" % cap)
-    # THE PREDICTION, BEFORE THE RE-PROBES RUN. R271 §3(c).
-    print("CONFIRM PLANNED: %d re-probe(s) -- %s -- at ~%.1f s each measured on "
-          "the acceptance fixture, ~%.0f s against the %d s target, and a "
-          "finding that does not persist alone costs two more for its later and "
-          "earlier split. %s."
+    # STAGE ONE: ISOLATION, PREDICTED BEFORE IT RUNS. R271 §3(c), R272 §2(d).
+    print("CONFIRM STAGE 1 PLANNED: isolation of %d cohort(s) -- %s -- at "
+          "~%.1f s a re-probe measured on the acceptance fixture, ~%.1f min "
+          "against the %d s target. %s."
           % (len(chosen), how, FIXTURE_CONFIRM_SECONDS,
-             len(chosen) * FIXTURE_CONFIRM_SECONDS, BUDGET_TARGET_SECONDS,
-             cap_text))
+             len(chosen) * FIXTURE_CONFIRM_SECONDS / 60.0,
+             BUDGET_TARGET_SECONDS, cap_text))
     sys.stdout.flush()
-    # THE BATCH A FINDING CAME FROM. A default run is one batch; a complete run
-    # is passes, and a cohort's batch is the seconds a whole stride away from it.
-    step = int(result.resolved_stride) if complete else 1
     iso = isolate_cohorts(frames, build, model, [c.second for c in chosen],
-                          reach=result.reach,
+                          reach=result.reach, block_reach=result.block_reach,
                           batched={c.second: c for c in batched},
-                          batch=sorted(c.second for c in result.cohorts),
-                          batch_step=max(1, step),
                           column_modes=config.column_modes or None,
                           bar_duration=config.bar_duration)
-    lines = ["CONFIRM (R271 section 3): %s, each re-probed ALONE -- that "
-             "cohort's cells corrupted and nothing else -- and, where it does "
-             "not persist, with the batch's later cohorts only and its earlier "
-             "cohorts only. %s." % (how, cap_text)]
+    # STAGE TWO: THE SPLIT, ON EVERY FINDING THAT VANISHED, UP TO THE SAME CAP,
+    # PREDICTED BEFORE IT RUNS AND NEVER SILENTLY SKIPPED. R272 §2(d). A vanished
+    # finding left unsplit is the worst outcome -- it could be a lookahead leak
+    # isolation removed -- so any above the cap are listed with their count.
+    vanished = [r for r in iso if not r.persisted]
+    to_split, unsplit = vanished[:cap], vanished[cap:]
+    if vanished:
+        print("CONFIRM STAGE 2 PLANNED: %d vanished; split %d of them (cap %d) "
+              "at two re-probes each, ~%.1f min at ~%.1f s a re-probe%s."
+              % (len(vanished), len(to_split), cap,
+                 2 * len(to_split) * FIXTURE_CONFIRM_SECONDS / 60.0,
+                 FIXTURE_CONFIRM_SECONDS,
+                 "" if not unsplit else
+                 "; %d above the cap will be NOT RE-PROBED" % len(unsplit)))
+        sys.stdout.flush()
+        # THE BATCH A FINDING CAME FROM. A default run is one batch; a complete
+        # run is passes, and a cohort's batch is the seconds a stride away.
+        step = int(result.resolved_stride) if complete else 1
+        split_isolated(frames, build, model, to_split,
+                       batch=sorted(c.second for c in result.cohorts),
+                       batch_step=max(1, step), reach=result.reach,
+                       block_reach=result.block_reach,
+                       column_modes=config.column_modes or None,
+                       bar_duration=config.bar_duration)
+    lines = ["CONFIRM (R272 section 2(d)): stage one isolated %s; stage two split "
+             "%d of the %d that vanished. %s." % (how, len(to_split),
+                                                  len(vanished), cap_text)]
+    left_unsplit = {r.second for r in unsplit}
     for r in iso:
+        if r.second in left_unsplit:
+            continue
         klass = r.klass
         feats = ", ".join(r.batched_features) or "-"
         if klass == "CONFIRMED":
@@ -617,17 +674,26 @@ def _confirm_findings(frames, build, model, config, result, cap,
                 "was not this cohort's own, not that the row is clean."
                 % (r.second, r.batched_moved, feats, r.verdict))
     summary["not_reprobed"] = n - len(iso)
+    summary["not_split"] = len(unsplit)
     if summary["not_reprobed"]:
         lines.append(
             "  NOT RE-PROBED: %d batched finding cohort(s) above the cap stay "
             "batched findings, neither confirmed nor disconfirmed."
             % summary["not_reprobed"])
+    if unsplit:
+        lines.append(
+            "  NOT RE-PROBED (split): %d finding(s) vanished alone and sat above "
+            "the split cap of %d, so they were not split -- each stays a batched "
+            "finding, neither confirmed nor disconfirmed, and could be a "
+            "lookahead leak isolation removed: %s."
+            % (len(unsplit), cap, ", ".join(str(r.second) for r in unsplit)))
     lines.append(
         "CONFIRM SUMMARY: %d confirmed, %d confirmed (lookahead), %d "
-        "interference, %d batched only, %d not re-probed, of %d batched finding "
-        "cohort(s)."
+        "interference, %d batched only, %d not split, %d not re-probed, of %d "
+        "batched finding cohort(s)."
         % (summary["confirmed"], summary["lookahead"], summary["interference"],
-           summary["batched_only"], summary["not_reprobed"], n))
+           summary["batched_only"], summary["not_split"],
+           summary["not_reprobed"], n))
     if summary["interference"]:
         reason = ("interference detected at stride %d; block reach %s"
                   % (int(result.resolved_stride),
@@ -638,8 +704,9 @@ def _confirm_findings(frames, build, model, config, result, cap,
             "silence here claims no cohort's corruption reached another's "
             "window, and at least one did. So every silence in this run is "
             "none(%s), whatever a coverage line or a per-cohort outcome above "
-            "says, and the run exits refused. The CONFIRMED findings above are "
-            "real regardless." % reason)
+            "says, and the run exits %d, interference (R272 section 2(e)). The "
+            "CONFIRMED findings above are real regardless." % (reason,
+                                                               EXIT_INTERFERENCE))
     return lines, summary
 
 
@@ -1051,20 +1118,21 @@ def _main(argv=None) -> int:
     else:
         print(result)
 
-    # AN INTERFERENCE CLASS REFUSES THE RUN. R271 §3(b). It is a fact about the
-    # run's stride, not about one finding: a cohort's corruption reached another
-    # cohort's window, so no silence in the run is licensed. The findings stay
-    # printed above -- the confirmed ones are real regardless -- and the exit is
-    # the refused class, ahead of the findings exit it would otherwise take.
+    # AN INTERFERENCE CLASS IS ITS OWN EXIT. R272 §2(e). It is a fact about the
+    # run's stride, not about one finding and not a usage error: a cohort's
+    # corruption reached another cohort's window, so no silence in the run is
+    # licensed. The findings stay printed above -- the confirmed ones are real
+    # regardless -- and the exit takes precedence over the findings exit.
     _interference = getattr(getattr(result, "source", None),
                             "interference_reason", None)
     if _interference:
-        print("leakaudit: RUN REFUSED -- %s. Every silence in this run is "
+        print("leakaudit: RUN INTERFERED -- %s. Every silence in this run is "
               "none(%s); the CONFIRMED findings printed above are real "
               "regardless. Re-run without --stride so the floor from the block "
-              "reach is used, or with a stride above it."
-              % (_interference, _interference), file=sys.stderr)
-        return EXIT_USAGE
+              "reach is used, or with a stride above it. Exit %d."
+              % (_interference, _interference, EXIT_INTERFERENCE),
+              file=sys.stderr)
+        return EXIT_INTERFERENCE
     if result.findings:
         return EXIT_FINDINGS
     if result.outcome != "observed_silence":

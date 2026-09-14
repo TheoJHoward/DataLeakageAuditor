@@ -216,6 +216,12 @@ def run_identity_control(
             "write-back path was never exercised on %s and this control says "
             "nothing about it."
             % (", ".join(unmodelled), "them" if len(unmodelled) > 1 else "it"))
+    # THE SELECTION GOES THROUGH THE ONE ENTRY POINT. R272 §1(a)(b). This
+    # control carried its own copy of the probe's timezone rule; the mask
+    # now comes from the probe's own function, positional over the rows,
+    # so a write-back that replaces the index is still measured.
+    from .availability import select_cells
+    selection = select_cells(raw, model, d, seconds=picked_set)
     touched = 0
     for fname, keycol in model.aggregate_frames.items():
         if fname not in control or control[fname] is None:
@@ -224,20 +230,7 @@ def run_identity_control(
         f = control[fname]
         if keycol not in f.columns:
             raise ProbeError("frame %r has no key column %r" % (fname, keycol))
-        key = pd.to_datetime(f[keycol])
-        if getattr(key.dt, "tz", None) is not None:
-            key = key.dt.tz_convert("UTC").dt.tz_localize(None) if d.dt.tz is None \
-                else key.dt.tz_convert(d.dt.tz)
-        elif d.dt.tz is not None:
-            key = key.dt.tz_localize(d.dt.tz)
-        # A POSITIONAL MASK, NOT AN INDEX-ALIGNED ONE. A write-back that
-        # replaces the frame's index -- one of the faults this control exists to
-        # catch -- leaves an index-aligned boolean Series pointing at labels that
-        # no longer exist, and the NEXT column's write raises instead of being
-        # measured. The control would then report a crash where the truth is a
-        # detected fault. The mask is over the frame's rows, so it is carried as
-        # an array over rows.
-        mask = key.dt.floor("s").isin(picked_set).to_numpy()
+        mask = selection.masks[fname]
         if not mask.any():
             raise ProbeError(
                 "frame %r matched NO selected second. A control run over a mask "

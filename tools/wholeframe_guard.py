@@ -386,11 +386,15 @@ def main() -> int:
     print("\nREACH, REPORTED AND NOT COMPARED (R268 section 4) -- printed beside "
           "the eight terms and never one of them. A reach that moves is a "
           "finding about the fixture's builder and a ruling, not a red guard:")
+    # IN BOTH UNITS. R272 §2(c): seconds of clock, and ROWS, the unit the
+    # stride's positions are compared against.
+    from leakaudit.reach import measured_rows
     for _side in ("contaminated", "corrected"):
         _r = REACH_SEEN.get(_side)
-        print("  %-13s measured reach %s"
+        print("  %-13s measured reach %s, %s row(s)"
               % (_side, getattr(_r, "measured", None) if _r is not None
-                 else "not measured"))
+                 else "not measured",
+                 measured_rows(_r) if _r is not None else "not measured"))
     print("\nCOMPARISON, term by term:")
     moved = False
     for side in ("contaminated", "corrected"):

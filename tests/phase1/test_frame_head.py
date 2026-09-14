@@ -110,10 +110,11 @@ def test_THE_PAIR_varies_only_the_cut():
 
 
 def test_the_head_reason_says_the_reach_is_a_LOWER_BOUND():
-    """R269 §2(d): and names the residual that remains."""
+    """R269 §2(d): and names the residual that remains. Since R272 §2(b) the head
+    reads the BLOCK reach, measured at one position on a default run."""
     r = _probe(_frames(C), max_cohorts=1)
-    assert "LOWER BOUND from 3 sample(s)" in r.head_reason
-    assert "a lookback that showed in none of 3 samples" in r.head_reason
+    assert "LOWER BOUND from 1 sample(s)" in r.head_reason
+    assert "a lookback that showed in none of 1 samples" in r.head_reason
     assert "cells before the frame cannot be probed" in r.head_reason
 
 
@@ -142,7 +143,9 @@ def test_a_FINDING_in_the_head_is_STILL_a_finding():
 
 
 def test_an_UNMEASURED_reach_leaves_the_head_NOT_ASSESSED_and_says_so():
-    r = _probe(_frames(C), max_cohorts=1, reach_samples=0)
+    # Since R272 §2(b) the head reads the BLOCK reach, so both controls are
+    # declared off for the head to be unassessed.
+    r = _probe(_frames(C), max_cohorts=1, reach_samples=0, block_samples=0)
     assert r.head_cutoff is None and r.head_seconds == ()
     assert r.head_reason.startswith("HEAD OF FRAME NOT ASSESSED")
     assert any(n.startswith("HEAD OF FRAME NOT ASSESSED") for n in r.notes)

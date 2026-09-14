@@ -1,19 +1,16 @@
-"""Block reach: the window, measured, and it governs every stride. R271 §2.
+"""Block reach: the window, measured, and it governs every stride. R271 §2, R272 §2(c).
 
 The single-second reach corrupts one second and asks how far the output moves.
 A feature that takes a median, a threshold or a rank answers "as far as one
 second's worth of corruption can push it", which can be nothing at all. A
 batched pass puts several corruptions inside the window, and the window is what
 interferes. So the block reach corrupts every modelled cell at or before a
-sampled second, rebuilds once, and reads how far forward the output moved.
+sampled second, rebuilds once, and reads how far forward the output moved -- in
+seconds, and in ROWS, the unit the stride's positions are compared against.
 
 THE PAIR. HELD: frames, model, seed. VARIED: one corrupted second against a
 corrupted history. On a rolling MEDIAN of constant values one perturbed cell
 never moves the median and the history does, for about half the window.
-
-ALSO HERE, because it was found establishing this: the single-second reach
-never aligned its keys to the decision clock, so a timezone-aware key frame was
-never corrupted at all.
 """
 from __future__ import annotations
 
@@ -37,7 +34,7 @@ from leakaudit.availability import (                           # noqa: E402
     DEFAULT_STRIDE, AvailabilityModel, ProbeError, run_probe_a)
 from leakaudit.reach import (                                  # noqa: E402
     BLOCK_SAMPLES, ReachError, _corrupt_one, measure_block_reach,
-    measure_reach)
+    measure_reach, measured_rows)
 
 T0 = pd.Timestamp("2026-01-01 00:00:00")
 SEC = pd.Timedelta(seconds=1)
@@ -83,6 +80,7 @@ def test_THE_PAIR_one_second_moves_NOTHING_and_the_block_moves_HALF_THE_WINDOW()
     # Row F+m reads cells F+m-10 .. F+m-1, of which 11-m are corrupted; the
     # median of ten moves while at least five are, so up to m = 6.
     assert block.measured == 6 * SEC, block.spread()
+    assert measured_rows(block) == 6, block.spread()
     assert "BLOCK REACH" in block.note() and "1 sampled block position" in block.note()
 
 
@@ -96,27 +94,25 @@ def test_the_block_note_carries_its_RESIDUAL_and_says_k():
 
 
 # --------------------------------------------------------------------------
-# the floor, on every run
+# the floor, on every run, in rows against positions
 # --------------------------------------------------------------------------
 
 def test_the_DEFAULT_stride_stays_where_it_CLEARS_the_block_floor():
-    """The floor rises -- 7 s over the model's 2 s -- and the run says so; the
-    shipped default of 97 still clears it, so it is still the stride."""
+    """The block reach is 6 rows, so cohorts need 7 positions; 97 clears it."""
     res = run_probe_a(_frames(600), _median(10), MODEL, side="t", max_cohorts=0)
-    assert res.block_reach is not None and res.block_reach.measured == 6 * SEC
+    assert res.block_reach is not None and measured_rows(res.block_reach) == 6
     assert res.resolved_stride == DEFAULT_STRIDE
     floor = [n for n in res.notes if "STRIDE FLOOR FROM THE BLOCK REACH" in n]
-    assert floor and "7s" in floor[0], res.notes
-    assert not any("does NOT clear" in n for n in res.notes), res.notes
+    assert floor and "at least 7 positions" in floor[0], res.notes
+    assert "clears it" in floor[0], floor[0]
 
 
 def test_a_default_run_BELOW_the_block_floor_uses_the_floor_and_SAYS_SO():
     """A stranger's long window at stride 97 is the same defect."""
     res = run_probe_a(_frames(1200), _median(400), MODEL, side="t", max_cohorts=0)
-    m = res.block_reach.measured
-    assert m is not None and m > DEFAULT_STRIDE * SEC, res.block_reach.spread()
-    assert res.resolved_stride * SEC >= m + SEC
-    assert any("STRIDE FLOOR FROM THE BLOCK REACH" in n for n in res.notes), res.notes
+    rows = measured_rows(res.block_reach)
+    assert rows is not None and rows > DEFAULT_STRIDE, res.block_reach.spread()
+    assert res.resolved_stride >= rows + 1
     assert any("does NOT clear" in n for n in res.notes), res.notes
 
 
@@ -125,7 +121,7 @@ def test_a_DECLARED_stride_below_the_block_floor_is_REFUSED():
         run_probe_a(_frames(1200), _median(400), MODEL, side="t",
                     cohort_stride=DEFAULT_STRIDE, max_cohorts=10)
     msg = str(e.value)
-    assert "BLOCK REACH" in msg and "97" in msg, msg
+    assert "BLOCK REACH" in msg and "97 positions" in msg and "row(s)" in msg, msg
     assert issubclass(ReachError, ProbeError)
 
 
@@ -185,10 +181,11 @@ def test_the_single_second_reach_CORRUPTS_an_aware_key_frame():
     # made it silent: an aware key against a naive second selects nothing.
     unaligned = pd.to_datetime(frames["agg"]["k"]).dt.floor("s") == second
     assert int(unaligned.sum()) == 0
-    _out, cells = _corrupt_one(frames, MODEL, second, 1, d)
-    assert cells == 1, cells
+    corruption = _corrupt_one(frames, MODEL, second, 1, d)
+    assert corruption.cells == 1 and corruption.cells_by_frame == {"agg": 1}
     rr = measure_reach(frames, _aware_build, MODEL, base, "d", k=3)
     assert rr.measured == 5 * SEC, rr.note()
+    assert measured_rows(rr) == 5
 
 
 # --------------------------------------------------------------------------
@@ -207,7 +204,7 @@ def test_COMPLETE_takes_its_stride_from_the_BLOCK_reach():
     out = buf.getvalue()
     assert "BLOCK REACH SPREAD over 10 sample(s)" in out, out
     assert "7 pass(es) at stride 7" in out, out
-    assert "block reach" in note.lower(), note
+    assert "block reach" in note.lower() and "row(s)" in note, note
     # At stride 7 no ten-row window holds more than two corrupted cells, so no
     # median moves anywhere: the honest verdict is `none`, and what matters
     # here is that the passes invented no finding.

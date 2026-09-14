@@ -6359,3 +6359,159 @@ commit, and a guard run before every probe-path commit.
 
 **R163 §1's exemption test.** *Would this have surfaced if the triggering question
 had not been asked?* **Not applicable** — a mechanism built for D-V30A-117.
+
+## D-V30A-119 — one corruption entry point, reach in rows against a stride in positions, the head on the block reach, and interference as its own exit
+
+**Nothing here is a `PREREG.md` §6.2 result, and no Phase 1 figure moves.** The
+whole-frame guard compares Phase 1's path byte for byte after every change below,
+and it came back SAME.
+
+**WHY, R272 §1.** For three rounds the reach control carried its own copy of the
+cell selection, compared a UTC-aware trades key with naive decision seconds, and
+corrupted no trades cell — while printing a reach (D-V30A-115). The probe had the
+right rule; the copy did not. R262 had already given L2a the rule that would have
+caught it: count the cells perturbed and print them, or report `none`. That rule
+now covers every perturbing instrument, through one place.
+
+**THE ENTRY POINT.** `availability.select_cells` is the one time selection and
+`availability.corrupt_cells` the one corruption. Keys and availability instants
+reach the decision clock through `to_decision_clock` alone; `same_clock` RAISES
+before any comparison between aware and naive stamps; frames go in declared order,
+numeric columns in frame order, one generator, `perturb_cells`; and the cells
+written are counted per declared frame. Routed through it: `run_probe_a` (both the
+frame rule and per-column modes), `eligible_cohorts`, the single-second and block
+reach, L2a, isolation and its split (through `run_probe_a`), and the identity
+control, which writes identity values through its own `write_back` and now takes
+its mask from `select_cells`. L2a's private `_perturb` drew exactly as
+`perturb_cells` does, so it is retired to a dtype refusal and L2a's draws are
+unchanged.
+
+**ONE ALIGNMENT, AND WHAT THAT CHANGED.** Per-column modes, L2a and
+`eligible_cohorts` aligned through `align_key`, which REFUSED a mixed-timezone
+case; the probe CONVERTED it. D-V30A-42 recorded the two as unresolved. Through
+the one alignment all of them now convert, as every Phase 1 figure was produced.
+`eligible_cohorts` is exported, so that is a public contract change: its two
+`test_p123_surface.py` tests that pinned the refusal now assert that an aware key
+reaches naive decisions, and the reverse, with every second eligible. The silent
+empty match those tests existed to stop cannot occur; the raw aware/naive
+comparison is refused by `same_clock` instead. `align_key` stays exported and is
+on no path.
+
+**THE TOTALITY, R272 §1(d).** `tests/phase1/test_one_corruption_entry.py` parses
+every tracked and untracked module under `src/leakaudit` — the `ls-files` floor,
+both ways, and named as one in `test_decision_clock_consumers.py` — and finds every
+call to `perturb_cells`, `_perturb`, `to_decision_clock`, `align_key` and `isin`.
+Each has to sit in `select_cells` or `corrupt_cells`, or in an allow-list with its
+reason: `reach.head_cutoff` aligns keys to take a frame's FIRST stamp and selects
+no cell; `cli._run_availability` counts DECISION rows per coverage state. The
+scanner has its own positive, the retired copies are asserted gone, and an
+allow-list entry whose site is gone fails. **Not in scope, and stated rather than
+assumed:** `corruption.corrupt`, the column-dependency probe's corruption, writes
+whole columns by strategy with no time selection, and R272 §1 did not name it.
+
+**THE REFUSAL AND THE PER-FRAME POSITIVE, R272 §1(b)(c)(e).** The old code path
+no longer exists — R271 removed it — so, as the ruling allowed, unit tests
+construct the pair: an aware selector against the naive decision clock raises,
+`same_clock` raises both ways, and the negative beside them shows an aware key
+aligned and selected. Per frame: a frame whose rows sit only in the first three
+seconds gets "trades: 0 cells at 3 of 3 positions" and "NO REACH IS CLAIMED FOR
+trades", and the reach printed covers the other frame. On the fixture:
+
+R270's reach configuration — the ten seconds its k = 10 reach sampled on the
+corrected side — re-run through the entry point with `measure_reach(at_seconds=)`,
+523 s. The selection first: magg rows at nine of the ten, **trades rows at five
+of the ten (1, 1, 14, 1, 2)** where R270's copy had selected zero at all ten. The
+note: "CELLS PER DECLARED FRAME: magg: 0 cells at 1 of 10 positions; trades: 0
+cells at 5 of 10 positions." No frame is zero at every position, so a reach IS
+claimed: **60 s, 60 rows**. The spread shows why the figure is what it is: the
+five seconds that hold trades each reach 60 s and 60 rows, the four that hold
+only MBO cells reach 15 s and 15 rows, and one second holds no modelled cell.
+**So R272 §1(e)'s expected line — "trades: 0 cells at 10 of 10 positions" and no
+reach for trades — does not reproduce through the entry point**, because the entry
+point aligns the key that R270's copy compared unaligned: the defect cannot recur
+there, which is the point. The refusal half is shown by the unit tests and the
+synthetic positive above.
+
+**AND A WORDING DEFECT FOUND IN THE SAME OUTPUT, NOT FIXED THIS ROUND.** The note
+says "10 sample(s), 9 usable, 1 censored by the frame's end", while the spread
+beside it says 0 censored and 1 with no movement. `ReachResult.note()` counts
+every unusable sample as censored, including one where nothing moved. It is in
+`reach.py`, on the probe path, and correcting it after the guard ran would need a
+second guard run inside the round.
+
+**THE HEAD OF THE FRAME, R272 §2(b)**, reads the block reach. Two frame-head tests
+now name one block position, and an unassessed head needs the block control
+declared off as well.
+
+**ROWS AGAINST POSITIONS, R272 §2(c).** Every reach sample records its reach in
+rows beside seconds: the rank distance, in decision-time order, from the first
+row at or after the position to the furthest row that moved. **The stride's unit
+is stated where it is resolved: positions in the sorted decision seconds.** Both
+reach floors now compare rows plus one against it. The block floor applies on
+every run — the default kept where it clears, the floor used and stated where it
+does not, a declared stride below it refused before any cell is corrupted. **The
+single-second separation check was converted too, and the gap test is what showed
+it had to be:** it compared seconds against seconds, and across the gap a sample
+50 rows before it moved rows 9 h 59 m later, so it refused a 61-position stride
+the rows show to be safe. `--complete` takes the largest of the model floor at one
+second a position, the single-second rows plus one and the block rows plus one,
+and refuses when the block reach corrupted no cell of a declared frame. **One
+deviation from the ruling, for your decision:** the model's floor keeps its exact
+check against the probed time gaps (`_stride_for`) rather than a conversion at
+the frame's smallest row spacing; the exact check never gives a stride smaller
+than safe, and converting would have rewritten tests pinning it.
+
+**THE GAP TEST**, `tests/phase1/test_rows_reach.py`: two 100-second sessions ten
+hours apart, a builder summing the previous 60 rows. The block reach at the last
+seconds of the first session is 60 rows and more than nine hours. Two cohorts
+hours apart in clock but five rows apart across the gap interfere — the second
+session's first second is reported as a finding, and it is false. A stride of 61
+positions reports none. A declared 40 is refused, naming 40 positions and 60 rows.
+
+**`--confirm` IN TWO STAGES, R272 §2(d).** Stage one prints "CONFIRM STAGE 1
+PLANNED" with its cost and isolates up to the cap. Stage two prints "CONFIRM STAGE
+2 PLANNED: N vanished; split M of them (cap C)" with its cost and splits them,
+through the new `split_isolated`. Findings that vanished above the split cap are
+printed as NOT RE-PROBED (split) with their count. **That branch cannot be reached
+under the ruling's shared cap:** stage one isolates at most the cap, so no more
+than the cap can vanish. It stays as the guard for any future difference between
+the two caps, and the suite pins that every vanished finding is split.
+
+**INTERFERENCE EXITS 5, R272 §2(e).** Not a usage error. `leakaudit run --help`
+prints the precedence: 2 refused > 5 interference > 1 findings > 3 nothing probed
+> 4 incomplete and silent > 0 clean. The ruling named refused, interference,
+finding, incomplete and clean; where "nothing probed" sits between them is my
+placement, kept where the exit logic already had it.
+
+**"THE DEMO", R272 §2(a).** It survives only as `availdemo/` in this session's
+work root — untracked scratch, not a repository fixture. Measured there with no
+stride declared: the previous-second builder has a 1-row reach, a floor of 2
+positions, stride 97, and reads `observed_silence` over 7 cohorts; the own-second
+builder has a 0-row reach, a floor of 1, stride 97, and finds in 7 of 7.
+
+**SUPERSEDED FIGURES, R272 §2(f).** In `evidence/session/FEATURE_BACKLOG.md` item C
+the R268, R269 and R270 costs and reaches — 54.7 min, 61.2 min, 63.4 min, stride
+15 and 16, reaches of 14 s, 15 s and 15.9997 s — are marked superseded, dated,
+beside the current 61 passes and ~198.7 min, with the sentence that they were
+produced by a reach that corrupted one frame of two. `_probe_complete`'s docstring,
+which gave the R268 figure as its example, is marked the same way. The DEVIATIONS
+entries that recorded those figures are dated records and are not edited.
+
+**THE COMMIT GATE, SHOWN ON THE REPOSITORY.** With this batch staged and before
+the guard ran, `safe_edit.commit_gate()` refused: "PROBE-PATH COMMIT WITHOUT A
+MATCHING GUARD RUN: this commit touches src/leakaudit/availability.py,
+src/leakaudit/reach.py, and no completed run ... recorded the path set's current
+content (29e130aa803e)."
+
+**THE GUARD, ONE RUN, OVER EVERY PROBE-PATH EDIT.** All eight terms SAME:
+contaminated `finding`, 250 eligible, 5,220 records, 29 features; corrected
+`observed_silence`, 250, 0, 0. Capture 30 s, contaminated 440 s, corrected 443 s,
+**913 s** in total. The reach it printed, never compared, was 59 s and 60 s; the
+harness printed seconds only, and the rows print was added to it after this run.
+Its start-of-run path-set fingerprint was 29e130aa803e, the content the gate had
+refused, and no path-set file changed after it started.
+
+**R163 §1's exemption test.** *Would this have surfaced if the triggering question
+had not been asked?* **Not applicable** — the builds R272 ordered. The two
+findings made while building them — the seconds-based separation check across a
+gap, and the unreachable split branch — are recorded above.
