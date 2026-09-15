@@ -158,29 +158,37 @@ MODEL = AvailabilityModel(aggregate_frames={"agg": "ts_floor"},
                           decision_column="timestamp")
 
 
-def test_a_timezone_mismatch_is_ALIGNED_and_never_matches_nothing():
-    """THE CASE THIS EXTRACTION EXISTS FOR, and R272 §1 changed how it is met.
+def test_a_timezone_mismatch_CONVERTS_under_a_declared_zone_and_REFUSES_without():
+    """THE CASE THIS EXTRACTION EXISTS FOR, and R273 §1(a) ruled how it is met.
 
     Aware against naive matches nothing, and nothing is indistinguishable from a
-    frame carrying no row in any selected second. Until R272 this function met
-    that by REFUSING the mixed case through `align_key`, while the probe met it
-    by CONVERTING -- two rules, recorded unresolved at D-V30A-42. R272 §1 made
-    `to_decision_clock` the one alignment, so an aware key now reaches naive
-    decisions and every second it carries matches. The silent empty match this
-    test exists to stop cannot occur; the raw aware/naive comparison is refused
-    by `availability.same_clock`, tested in test_one_corruption_entry.py."""
+    frame carrying no row in any selected second. R272 §1 made
+    `to_decision_clock` the one alignment and converted the mixed case assuming
+    UTC. R273 §1(a): the zone is a declaration. Declared, an aware key reaches
+    naive decisions and every second matches; undeclared, the call refuses and
+    names `decision_timezone`. Neither path is a silent empty match."""
     d = _decision(tz=None)
     secs = list(d.dt.floor("s").unique())
-    res = eligible_cohorts({"agg": _agg(tz="UTC")}, MODEL, secs, d)
+    declared = AvailabilityModel(aggregate_frames={"agg": "ts_floor"},
+                                 decision_column="timestamp", decision_timezone="UTC")
+    res = eligible_cohorts({"agg": _agg(tz="UTC")}, declared, secs, d)
     assert len(res.eligible) == len(secs) == 60
     assert res.ineligible == ()
+    with pytest.raises(ProbeError, match="decision_timezone"):
+        eligible_cohorts({"agg": _agg(tz="UTC")}, MODEL, secs, d)
 
 
-def test_the_mismatch_is_aligned_in_the_other_direction_too():
+def test_the_mismatch_in_the_other_direction_is_REFUSED_declared_or_not():
+    """A naive key against aware decision stamps: the key's zone is what is
+    unknown, and `decision_timezone` does not describe a key, so no declaration
+    in this schema settles it."""
     d = _decision(tz="UTC")
     secs = list(d.dt.floor("s").unique())
-    res = eligible_cohorts({"agg": _agg(tz=None)}, MODEL, secs, d)
-    assert len(res.eligible) == len(secs) == 60
+    declared = AvailabilityModel(aggregate_frames={"agg": "ts_floor"},
+                                 decision_column="timestamp", decision_timezone="UTC")
+    for model in (MODEL, declared):
+        with pytest.raises(ProbeError, match="naive"):
+            eligible_cohorts({"agg": _agg(tz=None)}, model, secs, d)
 
 
 @pytest.mark.parametrize("tz", [None, "UTC"])

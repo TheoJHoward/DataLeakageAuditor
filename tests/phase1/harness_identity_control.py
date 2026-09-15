@@ -82,7 +82,7 @@ DECL = ROOT / "AVAILABILITY_DECLARATION.md"
 PRIOR_RUN = ROOT / "evidence" / "phase1" / "criteria_12_population.json"
 
 MODEL = AvailabilityModel(aggregate_frames={"magg": "ts_floor", "trades": "ts_event"},
-                          decision_column="timestamp")
+                          decision_column="timestamp", decision_timezone="UTC")
 
 # A probe side is 3 builds plus one full compare; a control side is 2 builds
 # plus one compare. At zc 2025-01 a build measured 34 s and a probe side 176.8 s,

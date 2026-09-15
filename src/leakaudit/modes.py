@@ -305,10 +305,10 @@ def bar_duration(ts: pd.Series, declared: pd.Timedelta | None = None) -> pd.Seri
     return _infer_bar_duration(ts)[0]
 
 
-def availability(frame: pd.DataFrame, column: str, spec: ColumnMode, *,
-                 timestamp_column: str,
-                 declared_bar_duration: pd.Timedelta | None = None,
-                 fn: Callable | None = None) -> pd.Series:
+def column_availability(frame: pd.DataFrame, column: str, spec: ColumnMode, *,
+                        timestamp_column: str,
+                        declared_bar_duration: pd.Timedelta | None = None,
+                        fn: Callable | None = None) -> pd.Series:
     """`a(j, c)` for every row of one column, per `AVAILABILITY_MODES.md`."""
     if column not in frame.columns:
         raise ModeError("column %r is not in the frame" % column)
@@ -424,9 +424,10 @@ def availability_matrix(frame: pd.DataFrame, modes: dict, *,
     result, and the caller reports it as undeclared rather than assuming a
     default -- an assumed mode is an availability model the user did not write.
     """
-    return {c: availability(frame, c, spec,
-                            timestamp_column=timestamp_column,
-                            declared_bar_duration=declared_bar_duration, fn=fn)
+    return {c: column_availability(frame, c, spec,
+                                   timestamp_column=timestamp_column,
+                                   declared_bar_duration=declared_bar_duration,
+                                   fn=fn)
             for c, spec in modes.items()}
 
 

@@ -304,7 +304,7 @@ CLASSIFICATION = {
         (L, "a fixed seed is the determinism property; a random one would make "
             "the probe non-reproducible, which the determinism guard would then "
             "report as a pipeline defect"),
-    "modes.py::param::availability(fn=)":
+    "modes.py::param::column_availability(fn=)":
         (L, "availability_fn is library-only by design and a file cannot carry a "
             "function; absent means the mode is not availability_fn"),
 
@@ -325,7 +325,7 @@ CLASSIFICATION = {
     # registered grant -- `ties_available`'s defect inverted. The default is now
     # declared, documented in `leakaudit schema`, selectable, and NAMED IN THE
     # OUTPUT with its frame on every run that takes it.
-    "modes.py::param::availability(declared_bar_duration=)": (
+    "modes.py::param::column_availability(declared_bar_duration=)": (
         L,
         "None means the INFERRED route, which `PREREG.md` line 255 registers "
         "beside the fixed-value route. The key `bar_duration_seconds` exists "
@@ -549,7 +549,7 @@ def test_the_uncomfortable_set_is_PINNED_and_every_departure_is_recorded():
 
     # Both departures are assertions, not prose: a later edit that quietly
     # re-marked either would fail here rather than pass unnoticed.
-    for departed in ("modes.py::param::availability(declared_bar_duration=)",
+    for departed in ("modes.py::param::column_availability(declared_bar_duration=)",
                      "checks.py::param::check_pairwise_label_correlation("
                      "pearson_threshold=)"):
         assert CLASSIFICATION[departed][0] == L, departed

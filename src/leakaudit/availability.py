@@ -221,7 +221,7 @@ def require_column_name(dcol, where: str) -> None:
     it replaced. Measured: with the membership test that sits on the next line
     of each probe removed, those three values reach pandas as `KeyError: None`
     -- a detection arriving as somebody else's exception, which is the failure
-    mode `modes.availability` was hardened against twice.
+    mode `modes.column_availability` (named `availability` until R273) was hardened against twice.
 
     So the completeness of the refusal had been resting on a NEIGHBOURING LINE'S
     POSITION. That is not a property a refusal can have: `cli.py` reads the
@@ -331,6 +331,11 @@ class AvailabilityModel:
     decision_column: str = NOT_SET
     window: pd.Timedelta = SECOND
     ties_available: bool = True                  # §0.3 Claim A, locked
+    #: THE ZONE THE DECISION COLUMN'S NAIVE STAMPS ARE IN, DECLARED. R273
+    #: §1(a). An IANA name such as "UTC". Consulted only where an aware key
+    #: meets naive decision stamps; `None` means undeclared, and that case
+    #: then refuses rather than assuming a zone. See `to_decision_clock`.
+    decision_timezone: str | None = None
 
     def available(self, a: pd.Series, d: pd.Series) -> pd.Series:
         """`a(j,c) <= d(i)` under the locked tie rule."""
@@ -540,28 +545,56 @@ class EligibleCohorts:
     notes: list = field(default_factory=list)
 
 
-def to_decision_clock(key: pd.Series, decision: pd.Series) -> pd.Series:
-    """An aggregate key expressed on the decision stamps' clock -- the PROBE's rule.
+def to_decision_clock(key: pd.Series, decision: pd.Series, *,
+                      decision_timezone=None,
+                      what: str = "an aggregate key") -> pd.Series:
+    """An instant expressed on the decision stamps' clock -- THE one alignment.
 
-    The decision stamps are the frame of reference. An aware key is converted
-    into it: to UTC and then naive when the decisions are naive, or into their
-    zone when they are aware. A naive key meeting aware decisions is localised to
-    their zone.
+    R273 §1(a): CONVERT UNDER A DECLARATION, OTHERWISE REFUSE.
 
-    EXTRACTED AT R269 FROM `run_probe_a`'S CORRUPTION LOOP, unchanged, so the
-    head-of-frame cutoff reads a frame's start on the same clock the perturbation
-    already selects cells on, rather than a second copy of the rule free to
-    drift. It is NOT `align_key`, which refuses aware-against-naive for a caller
-    who has not said which side is right: this is the stance the probe has
-    published since R201, every figure the guard compares was produced under it,
-    and changing it is a separate decision from reusing it.
+      * both aware -> converted into the decision stamps' zone. Nothing assumed.
+      * both naive -> returned as they are. Nothing to convert.
+      * an AWARE key against NAIVE decision stamps -> aligning them means
+        knowing which zone the naive stamps are in, and a zone is a fact about
+        the world, not something readable from the data. Where the model
+        DECLARES it (`decision_timezone`), the key is converted into that zone
+        and made naive: exact. Where it does not, this REFUSES and names the
+        key that would settle it.
+      * a NAIVE key against AWARE decision stamps -> the unknown is the key's
+        own zone, which no declaration this tool reads names. REFUSED.
+
+    WHY NOT CONVERT ON AN ASSUMPTION, which is what this did from R201 to R272:
+    it assumed naive decision stamps were UTC, every Phase 1 figure was produced
+    under that assumption, and it happened to be true of the acceptance fixture.
+    A timezone mismatch is itself a classic leak -- a clock read hours off -- and
+    this tool does not guess one. The fixture's model now declares the zone as
+    the as-built fact it is, and D-V30A-42's two rules settle in the
+    declaration's favour rather than the probe's.
     """
-    if getattr(key.dt, "tz", None) is not None:
-        return (key.dt.tz_convert("UTC").dt.tz_localize(None)
-                if decision.dt.tz is None else key.dt.tz_convert(decision.dt.tz))
-    if decision.dt.tz is not None:
-        return key.dt.tz_localize(decision.dt.tz)
-    return key
+    k_tz = getattr(key.dt, "tz", None)
+    d_tz = getattr(decision.dt, "tz", None)
+    if k_tz is not None and d_tz is not None:
+        return key.dt.tz_convert(d_tz)
+    if k_tz is None and d_tz is None:
+        return key
+    if k_tz is not None:
+        if decision_timezone is None:
+            raise ProbeError(
+                "REFUSED: %s is timezone-aware (%s) and the decision stamps are "
+                "naive. Aligning them means assuming which zone the naive "
+                "decision stamps are in, and a zone is a fact about the world "
+                "this tool cannot read from the data -- a clock read hours off is "
+                "itself a leak. Declare it: `decision_timezone` in the model file "
+                "(schema version 5), or `AvailabilityModel(decision_timezone=...)`,"
+                " naming the zone your decision column's naive stamps are in."
+                % (what, k_tz))
+        return key.dt.tz_convert(decision_timezone).dt.tz_localize(None)
+    raise ProbeError(
+        "REFUSED: %s is naive and the decision stamps are timezone-aware (%s). "
+        "Aligning them means assuming which zone the naive key is in, and no "
+        "declaration this tool reads names a key's zone -- `decision_timezone` "
+        "names the decision clock's. Localise the key in your frames before the "
+        "audit, so its zone is stated rather than guessed." % (what, d_tz))
 
 
 def align_key(key: pd.Series, decision: pd.Series, *, frame: str,
@@ -820,7 +853,9 @@ def select_cells(raw, model, decision, *, seconds=None, through=None,
             continue
         if keycol not in f.columns:
             raise ProbeError("frame %r has no key column %r" % (fname, keycol))
-        key = to_decision_clock(pd.to_datetime(f[keycol]), decision)
+        key = to_decision_clock(pd.to_datetime(f[keycol]), decision,
+                                decision_timezone=model.decision_timezone,
+                                what="frame %r's key %r" % (fname, keycol))
         same_clock(key, decision, what="frame %r's aligned key" % fname)
         kf = key.dt.floor("s")
         if wanted is not None:
@@ -880,7 +915,10 @@ def corrupt_cells(raw, model, decision, *, rng, selection=None, seconds=None,
     res = Corruption(frames=out)
     if label is not None:
         frame, column, instants, at, ties_available = label
-        inst = to_decision_clock(pd.to_datetime(instants), decision)
+        inst = to_decision_clock(pd.to_datetime(instants), decision,
+                                 decision_timezone=model.decision_timezone,
+                                 what="the label availability of frame %r"
+                                      % frame)
         same_clock(inst, at, what="the label selection of frame %r" % frame)
         at = pd.Timestamp(at)
         chosen = (inst > at) if ties_available else (inst >= at)
@@ -916,7 +954,7 @@ def corrupt_cells(raw, model, decision, *, rng, selection=None, seconds=None,
                 if wanted is None:
                     raise ProbeError("per-column modes select by `seconds` only")
                 from .modes import ROUTE_TAKEN as _routes
-                from .modes import availability as _availability
+                from .modes import column_availability as _availability
                 _before = len(_routes)
                 a = _availability(f, c, spec, timestamp_column=keycol,
                                   declared_bar_duration=bar_duration)
@@ -934,7 +972,9 @@ def corrupt_cells(raw, model, decision, *, rng, selection=None, seconds=None,
                             "`bar_duration_seconds` to take the fixed-value "
                             "route instead. %s"
                             % (c, fname, _inference_frame(_info)))
-                a = to_decision_clock(pd.to_datetime(a), decision)
+                a = to_decision_clock(pd.to_datetime(a), decision,
+                                      decision_timezone=model.decision_timezone,
+                                      what="column %r of frame %r" % (c, fname))
                 if wanted:
                     same_clock(a, next(iter(wanted)),
                                what="column %r of frame %r" % (c, fname))

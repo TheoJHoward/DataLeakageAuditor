@@ -96,7 +96,7 @@ MANIFEST = ROOT / "evidence" / "fixture_spike" / "f3" / "fixture_manifest_DRAFT.
 MAP = ROOT / "evidence" / "fixture_spike" / "n1" / "declared_map.csv"
 
 MODEL = AvailabilityModel(aggregate_frames={"magg": "ts_floor", "trades": "ts_event"},
-                          decision_column="timestamp")
+                          decision_column="timestamp", decision_timezone="UTC")
 
 # The dual-ground column and the frame its LEGAL ground lives in. Section C.5 and
 # section C.3: the same-row `mid[t]` read is availability-legal at the boundary;

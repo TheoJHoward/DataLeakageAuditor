@@ -181,9 +181,12 @@ def test_the_single_second_reach_CORRUPTS_an_aware_key_frame():
     # made it silent: an aware key against a naive second selects nothing.
     unaligned = pd.to_datetime(frames["agg"]["k"]).dt.floor("s") == second
     assert int(unaligned.sum()) == 0
-    corruption = _corrupt_one(frames, MODEL, second, 1, d)
+    # R273 §1(a): the builder strips UTC, so the naive stamps are UTC -- declared.
+    utc = AvailabilityModel(aggregate_frames={"agg": "k"}, decision_column="d",
+                            decision_timezone="UTC")
+    corruption = _corrupt_one(frames, utc, second, 1, d)
     assert corruption.cells == 1 and corruption.cells_by_frame == {"agg": 1}
-    rr = measure_reach(frames, _aware_build, MODEL, base, "d", k=3)
+    rr = measure_reach(frames, _aware_build, utc, base, "d", k=3)
     assert rr.measured == 5 * SEC, rr.note()
     assert measured_rows(rr) == 5
 

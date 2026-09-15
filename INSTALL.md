@@ -246,6 +246,23 @@ source tree. From an **installed** copy it resolves to somewhere that does not e
 raises `FixtureUnavailable` naming the path it looked for — which is the correct behaviour for a
 stranger who has no fixture, but is not the same thing as the fixture being found.
 
+## Changes
+
+Changes that alter what an existing caller sees. This section did not exist before R273.
+
+- **R273 — `leakaudit.availability`, the function, is now `leakaudit.column_availability`.** The
+  modes function was re-exported under the same name as the `leakaudit.availability` submodule and
+  shadowed it, so `from leakaudit import availability` returned the function. The function is
+  renamed and there is **no alias** under the old name: an alias would shadow the module again.
+  `from leakaudit import availability` now returns the module. A caller of the old name gets an
+  `ImportError` or `AttributeError` rather than a different object.
+- **R273 — an aware key against naive decision stamps is refused unless the zone is declared.** The
+  model file's schema is at **version 5**, which adds `decision_timezone`: the zone the decision
+  column's naive stamps are in. Declared, a timezone-aware aggregate key converts into that zone.
+  Undeclared, the run refuses and names the key. Until R273 the conversion assumed UTC. A naive key
+  against aware decision stamps is refused either way. Version 1–4 files load unchanged; only a
+  file whose keys are aware and whose decision stamps are naive now needs the one line.
+
 ## Not yet done
 
 - **An install test on a machine other than this one.** Still not done, and narrowed to what it

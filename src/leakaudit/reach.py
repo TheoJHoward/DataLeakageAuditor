@@ -645,7 +645,9 @@ def head_cutoff(raw, model, decision, result) -> tuple:
             continue
         keys = pd.to_datetime(f[keycol], errors="coerce").dropna()
         if len(keys):
-            starts.append(to_decision_clock(keys, decision).min())
+            starts.append(to_decision_clock(
+                keys, decision, decision_timezone=model.decision_timezone,
+                what="frame %r's key %r" % (fname, keycol)).min())
     if not starts:
         return None, None, ("HEAD OF FRAME NOT ASSESSED: no modelled frame has a "
                             "readable key to take its first row from.")

@@ -63,8 +63,8 @@ from .identity_control import IdentityControlResult, run_identity_control
 from .inference import (  # noqa: F401
     Draft, UnfilledAvailability, accept, draft, render_draft)
 from .modes import (
-    ALL_MODES, FILE_MODES, ColumnMode, ModeError, availability,
-    availability_matrix, bar_duration, undeclared_columns)
+    ALL_MODES, FILE_MODES, ColumnMode, ModeError, availability_matrix,
+    bar_duration, column_availability, undeclared_columns)
 from . import fixture_adapter
 
 __all__ = [
@@ -94,7 +94,11 @@ __all__ = [
     "run_identity_control", "IdentityControlResult",
     # P5 -- the per-column availability modes. AVAILABILITY_MODES.md is the
     # arithmetic, written before the parser that reads it.
-    "ColumnMode", "ModeError", "availability", "availability_matrix",
+    # R273 §1(h): the modes function was `availability` until R273, and that
+    # name shadowed the `leakaudit.availability` SUBMODULE. It is now
+    # `column_availability`, with no alias -- an alias under the old name
+    # would shadow the module again.
+    "ColumnMode", "ModeError", "column_availability", "availability_matrix",
     "bar_duration", "undeclared_columns", "FILE_MODES", "ALL_MODES",
     # the slice rule
     "SliceError", "SlicePlan", "NOT_DECLARED", "model_padding_floor",

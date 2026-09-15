@@ -6515,3 +6515,125 @@ refused, and no path-set file changed after it started.
 had not been asked?* **Not applicable** — the builds R272 ordered. The two
 findings made while building them — the seconds-based separation check across a
 gap, and the unreachable split branch — are recorded above.
+
+## D-V30A-120 — the decision clock's zone is declared or refused, the column probe counts its cells, the dead split branch is gone, and the modes function no longer shadows its module
+
+**Nothing here is a `PREREG.md` §6.2 result, and no Phase 1 figure moves.** The
+whole-frame guard compares Phase 1's path byte for byte after every change below.
+It ran once, over every probe-path edit in this batch, and came back SAME on all
+eight terms:
+- contaminated: `finding`, 250 eligible, 5,220 records, 29 features;
+- corrected: `observed_silence`, 250 eligible, 0 records, 0 features.
+
+It took **1,031 s**: capture 39 s, contaminated 497 s, corrected 494 s. That is
+1.1x the recorded times, which is not a phase to stop. The reach, printed beside
+the terms and never compared, was:
+- contaminated: 59 s, 59 rows;
+- corrected: 60 s, 60 rows.
+
+Both sides had 3 of 3 samples usable. The path-set fingerprint at the start was
+0d3783ddc427, and no path-set file changed after the run began.
+
+**THE ZONE, R273 §1(a).** R272 made `to_decision_clock` the one alignment, and it
+converted a timezone-aware key to naive decision stamps by assuming the stamps were
+UTC. A zone is a fact about the world that the data does not carry, so the
+conversion now happens only under a declaration: `decision_timezone`, on
+`AvailabilityModel` and in the model file at **schema version 5**. Without it, the
+alignment refuses, naming the frame, the key and `decision_timezone`. A naive key
+against aware decision stamps is refused whether or not a zone is declared,
+because the zone that is unknown there is the key's, and `decision_timezone` does
+not describe a key. That scope is my reading of the ruling, which named the
+aware-key case, and it is listed for a ruling. Both sides aware still convert with
+nothing declared.
+
+The fixture's declaration gains the key as an as-built fact: the builder strips UTC
+from the trade key with `tz_localize(None)`, and AVAILABILITY_DECLARATION.md line
+296 describes the snapshot file as filtered to UTC hours [14,19). The guard's model
+declares `decision_timezone="UTC"` and cites both. The same declaration was added to
+the six fixture models under `tests/phase1` that pair `trades.ts_event` with naive
+decision stamps: `harness_criteria_12.py`, `harness_criteria_12_population.py`,
+`harness_identity_control.py`, `b7_probe_a_side.py`, `b9_wrapped_side.py` and
+`test_block_reach_fixture.py`. The complement guard's end-to-end model file moved to
+version 5 with the key set, and the trace measures it fetched.
+
+`tests/phase1/v1_silent_cohorts.py` was not edited. It is a dated diagnostic that
+floors `ts_event` itself and intersects the result with naive seconds, outside the
+entry point and outside `src/leakaudit`, so the totality scan does not reach it.
+
+`tests/phase1/test_decision_timezone.py` holds these cases:
+- undeclared refused;
+- declared converted exactly;
+- declared America/Chicago selecting the right row, where UTC declared against the
+  same stamps selects none;
+- naive against aware refused both ways;
+- both aware converting;
+- version 5 loading the key;
+- a version-4 file naming the key refused with the version hint;
+- unresolvable zones refused;
+- the guard's model declaring UTC.
+
+Four existing tests had asserted the R272 conversion and were rewritten to the
+declared/undeclared pair: two in `test_p123_surface.py`, one in
+`test_one_corruption_entry.py` and one in `test_block_reach.py`.
+
+**THE COLUMN PROBE, R273 §1(b).** `probe_columns` now counts the cells each strategy
+changes, per input frame, before anything is built. Two missing values are the same
+cell, not a change. The count is on `ProbeResult.cells_by_frame`. A note names every
+frame's count, and a frame at zero gets `NONE FOR FRAME ...`, which reaches
+`explain()`. The totality scan in `test_one_corruption_entry.py` now watches
+`corrupt`, and its two sites, `probe._run_one` and `probe.probe_columns`, are allowed
+with the reason "selection by column, not time; the alignment half does not apply".
+
+**THE EXACT MODEL-FLOOR CHECK, R273 §1(c).** The line asked for was a claim that no
+input exists which the exact check accepts and the converted one refuses. **It is
+false, and the counterexample is pinned as a test.**
+- **The input:** decision seconds alternately 1 s and 10 s apart, with a 5 s floor.
+- **The exact check:** `_stride_for` (availability.py:191) takes stride 2, because
+  every gap it probes is 11 s.
+- **The conversion:** converting the floor at the smallest spacing demands stride 5.
+
+What holds instead, and what the test asserts: the exact check computes the gaps it
+will probe instead of bounding them, so it accepts a stride only when every probed
+gap clears the floor. It is less conservative than the conversion and no less safe.
+The complete run's passes do not use the exact check; they convert (cli.py:422).
+
+**THE SPLIT, R273 §1(d).** The NOT RE-PROBED (split) branch is removed, with its
+count in the summary line and dictionary. D-V30A-119's paragraph keeping it as a
+guard is a dated record and is superseded here, not edited. The invariant that made
+it dead is now asserted: across caps 1, 2 and 5 on the interference builder, spies
+on `isolate_cohorts` and `split_isolated` check vanished ≤ isolated ≤ cap, and that
+every vanished finding is split. There is no second cap.
+
+**THE CENSORED WORDING, R273 §1(f).** One line in FEATURE_BACKLOG item C, for the
+next probe-path batch.
+
+**THE EXPORT, R273 §1(h).** `modes.availability` is now `column_availability` and is
+exported under that name with no alias, so `from leakaudit import availability`
+returns the module. `tests/phase1/test_export_names.py` imports every submodule and
+asserts each resolves as a module on the package. INSTALL.md had no changes section;
+one was created, carrying the rename and the version-5 refusal. Backlog item G is
+marked done, and item F carries a dated paragraph on the moved zone rule.
+
+**THE TRACKED COVERAGE POPULATION.** The enumerator counts
+`test_the_FIXTURE_model_DECLARES_UTC` as a coverage assertion because it reads a
+repository file. It is entered as `out_of_scope`, judged and not probed: both asserts
+are substring membership in one file's text, so emptied text fails them. The counts
+move to 29 out of scope, 110 functions and 228 assertions.
+
+**A SLIP.** While this round's scripts were being written, a Write call created
+`scratchpad_placeholder_never_used.txt`, containing the word "unused", in the parent
+of this session's scratchpad directory. That is outside the repository and outside
+the session scratchpad. It is still there. Nothing in the repository refers to it,
+and it is not deleted here because file changes go through Write and Edit, and
+neither deletes.
+
+**THE SUITE BEFORE THE CHAIN.** 1,345 passed, 5 skipped, 3 failed.
+- Two failures are the manifest-hash tests. The files this batch changed no longer
+  match their attested hashes, and the commit chain regenerates the manifest.
+- The third is `test_prereg_stage_on_real_repo_exits_zero`, on
+  `hash_set_single_source`, where R252 left it.
+
+**R163 §1's exemption test.** *Would this have surfaced if the triggering question
+had not been asked?* **Not applicable** — these are the builds R273 ordered. The one
+finding made while building them, that §1(c)'s requested line is false, is recorded
+above with its input.

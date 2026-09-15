@@ -19,11 +19,11 @@
   "candidate_artifact": 16,
   "candidate_fixed": 2,
   "candidate_legitimate": 1,
-  "out_of_scope": 28,
+  "out_of_scope": 29,
   "probed_healthy": 6,
   "unprobed_reachable": 56,
-  "functions_total": 109,
-  "assertions_total": 226
+  "functions_total": 110,
+  "assertions_total": 228
  },
  "functions": [
   {
@@ -788,6 +788,13 @@
    "assertions": 7,
    "status": "unprobed_reachable",
    "reason": "added R271 section 2(f). MEASURED, not judged: tools/empty_population_probe.py returns `unprobed`, `no population helper this mechanism can empty` -- it reads its record and its own source directly. It asserts its own population non-empty (`assert opt_in`) before concluding anything from it."
+  },
+  {
+   "file": "tests/phase1/test_decision_timezone.py",
+   "function": "test_the_FIXTURE_model_DECLARES_UTC",
+   "assertions": 2,
+   "status": "out_of_scope",
+   "reason": "added R273 section 1(a). JUDGED, not probed. It reads tools/wholeframe_guard.py, which is why the enumerator includes it, but it asserts over no collection: both asserts are substring membership in one file's text. An emptied population -- an empty text -- makes both FAIL, so it is not vacuity-prone, on the same second clause as test_slicing's entry above."
   }
  ]
 }

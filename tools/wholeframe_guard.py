@@ -249,8 +249,14 @@ REACH_SEEN = {}
 def main() -> int:
     PRIOR = REPO / "evidence" / "phase1" / "criteria_12_population.json"
     SYM, MONTH, STRIDE, SEED, MAXC = "zc", "2025-01", 997, 20260828, 300
+    # THE DECISION CLOCK'S ZONE, DECLARED AS THE AS-BUILT FACT IT IS. R273 §1(a).
+    # `trades.ts_event` is UTC-aware and the decision stamps are naive; the
+    # fixture's builder strips UTC from the trade key (`tz_localize(None)`) and
+    # joins it on the snapshots' `ts_floor`, which AVAILABILITY_DECLARATION.md
+    # (line 296) describes as filtered to UTC hours [14,19). So the naive decision
+    # stamps are UTC. Until R273 the alignment assumed it; now it is declared.
     MODEL = AvailabilityModel(aggregate_frames={"magg": "ts_floor", "trades": "ts_event"},
-                              decision_column="timestamp")
+                              decision_column="timestamp", decision_timezone="UTC")
 
     prior = json.loads(PRIOR.read_text(encoding="utf-8"))
 

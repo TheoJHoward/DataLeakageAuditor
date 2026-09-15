@@ -73,6 +73,15 @@
    "corrected": 442.6,
    "total": 912.6,
    "path_set_fingerprint": "29e130aa803edca9fdbb86710ac7b5eda21ac3ffa2779635e62ab50a1d1c14b1"
+  },
+  {
+   "when": "2026-09-15 11:34",
+   "commit": "6f0e488",
+   "capture": 39.4,
+   "contaminated": 497.4,
+   "corrected": 494.0,
+   "total": 1030.8,
+   "path_set_fingerprint": "0d3783ddc427d4cbfd5f1dce7567a8af63add988d75dfd0856bd676a6da1fa64"
   }
  ]
 }

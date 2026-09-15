@@ -57,7 +57,7 @@ print("read_inputs %s %s in %.1fs" % (a.sym, a.month, time.time() - t0))
 # `snap` is the DECISION frame, not an aggregate, and is not corrupted.
 model = AvailabilityModel(
     aggregate_frames={"magg": "ts_floor", "trades": "ts_event"},
-    decision_column="timestamp")
+    decision_column="timestamp", decision_timezone="UTC")
 
 build = fa.builder_for(inputs, side=a.side)
 print("side=%s stride=%d max_cohorts=%d" % (a.side, a.stride, a.max_cohorts))

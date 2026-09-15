@@ -161,6 +161,10 @@ and then the split as two predicted stages, and interference exits 5, below
 refused and above findings. The commit route refuses a tree no whole-suite run
 fingerprinted, and a probe-path change no guard run fingerprinted. D-V30A-118,
 D-V30A-119.
+
+**NEXT PROBE-PATH BATCH, ruled R273 §1(f):** `ReachResult.note()` counts every
+unusable sample as "censored by the frame's end", including one where nothing
+moved; its spread already reports the two apart.
 **R270 §0 rulings, recorded.** *"Under an hour" is retired:* it was a
 build-or-stop line and never a specification — the cost is measured, printed
 and predicted, and nothing is held to a figure. *The prediction prints both
@@ -241,11 +245,27 @@ mismatch with a message naming both sides. What is missing is the **cases
 document** its siblings have — `LABEL_SCREEN_CASES.md`, `FORK_VOCABULARY_CASES.md`
 — enumerating the zone situations before the vocabulary is fixed.
 **Value:** low-medium; the refusal already prevents the silent-wrong-answer.
+**R273 §1(a) moved the rule, and the status above predates it.**
+- R272 §1 made `to_decision_clock` the one alignment, and it converted the
+  aware-key/naive-decision case on an unstated UTC assumption.
+- R273 ruled the zone a declaration: `decision_timezone`, schema version 5.
+- An aware key against naive stamps now converts under a declared zone and is
+  refused without one, naming the key.
+- A naive key against aware stamps is refused either way.
+
+The cases document is still not written. `tests/phase1/test_decision_timezone.py`
+holds the cases built so far: undeclared, declared, a non-UTC zone and the wrong
+zone, naive against aware, and both aware.
 
 ### G. The export/submodule shadowing repair
-**Status: DESIGNED, PARKED.** `evidence/session/EXPORT_SUBMODULE_COLLISION.md`
-carries three repair shapes with their blast radii. R238 parked it as an API
-decision; probed again at R252 from the import-failure angle without escalating.
+**Status: DONE, R273 §1(h).** The modes function is renamed
+`column_availability`, with no alias, so `from leakaudit import availability`
+returns the module. `tests/phase1/test_export_names.py` checks that every
+submodule resolves as a module on the package. The rename is in INSTALL.md's
+Changes section. The design record stays at
+`evidence/session/EXPORT_SUBMODULE_COLLISION.md`. *Before R273:* designed, and
+parked at R238 as an API decision; probed again at R252 from the import-failure
+angle.
 **Value:** low as a feature, non-zero as a trap.
 
 ### H. `DEFERRED_ITEMS.md` §173 — the fourth direction (untracked, unattested,

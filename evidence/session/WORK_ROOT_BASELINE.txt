@@ -938,6 +938,7 @@ d116.md
 d117.md
 d118.md
 d119.md
+d120.md
 d12_negative_test.py
 d14_tests.py
 d15_test.py
@@ -1192,6 +1193,7 @@ msg6.txt
 msg7.txt
 msg8.txt
 msg9.txt
+msg_r273.txt
 msgback.txt
 new3.txt
 node1.py
@@ -1496,6 +1498,11 @@ r272_entry_positive_record.json
 r272_identity.py
 r272_label.py
 r272_reach.py
+r273_availability.py
+r273_cli.py
+r273_model_file.py
+r273_probe.py
+r273_rename.py
 r89.py
 r95_pointer.py
 r95a.py

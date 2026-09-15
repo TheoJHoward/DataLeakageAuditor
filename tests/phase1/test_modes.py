@@ -31,7 +31,7 @@ for p in (str(ROOT), str(ROOT / "src")):
 from leakaudit.modes import (                                      # noqa: E402
     ALWAYS, AT_BAR_CLOSE, AT_SOURCE_TIMESTAMP, AT_TIMESTAMP, AVAILABILITY_FN,
     EXPLICIT, FILE_MODES, NEVER_UNAVAILABLE, ColumnMode, ModeError,
-    availability, availability_matrix, bar_duration, undeclared_columns)
+    availability_matrix, bar_duration, column_availability, undeclared_columns)
 
 TS = "ts"
 
@@ -47,7 +47,7 @@ def _frame(n=6, freq="1min"):
 
 
 def _a(frame, column, spec, **kw):
-    return availability(frame, column, spec, timestamp_column=TS, **kw)
+    return column_availability(frame, column, spec, timestamp_column=TS, **kw)
 
 
 # ---------------------------------------------------------------------------

@@ -41,8 +41,8 @@ from .modes import (ALL_MODES, AVAILABILITY_FN, FILE_MODES,
                     FRAME_ROLE_TABLE, FRAME_ROLES, MODE_ARITHMETIC,
                     ColumnMode, ModeError)
 
-SCHEMA_VERSION = 4
-SUPPORTED_VERSIONS = (1, 2, 3, 4)
+SCHEMA_VERSION = 5
+SUPPORTED_VERSIONS = (1, 2, 3, 4, 5)
 
 # THE FILE VERSIONS WITH THE TOOL, NEVER WITH A REGISTRATION. R203 §1.
 #
@@ -71,14 +71,18 @@ _V3_KEYS = _V2_KEYS | {"column_modes", "timestamp_column",
 # them, because a key documented by `leakaudit schema` and consumed by nothing is
 # a schema asserting a capability that does not exist.
 _V4_KEYS = _V3_KEYS | {"raw_label", "label_availability"}
-_KEYS_BY_VERSION = {1: _V1_KEYS, 2: _V2_KEYS, 3: _V3_KEYS, 4: _V4_KEYS}
+# Version 5 adds the decision clock's zone. R273 §1(a): arriving with its
+# consumer, the one alignment, which converts under it and refuses without.
+_V5_KEYS = _V4_KEYS | {"decision_timezone"}
+_KEYS_BY_VERSION = {1: _V1_KEYS, 2: _V2_KEYS, 3: _V3_KEYS, 4: _V4_KEYS,
+                    5: _V5_KEYS}
 
 # `aggregate_frames` is required only where an availability model is the point.
 # A version-2 file may declare a label and a split and no aggregate frame at all
 # -- that is a user running the checks of `leakaudit.checks` and nothing else,
 # which is a whole and legitimate use.
 _REQUIRED_BY_VERSION = {1: {"version", "aggregate_frames"}, 2: {"version"},
-                        3: {"version"}, 4: {"version"}}
+                        3: {"version"}, 4: {"version"}, 5: {"version"}}
 
 
 # THE SENTINEL `leakaudit draft` WRITES INTO A SKELETON, AND THIS FILE OWNS IT.
@@ -187,12 +191,13 @@ def _role_lines() -> str:
 
 
 SCHEMA_DOC = """\
-leakaudit config, schema version 4.
+leakaudit config, schema version 5.
 
     {
-      "version": 4,
+      "version": 5,
       "aggregate_frames": {"trades": "ts_event", "book": "ts_floor"},
       "decision_column": "decided_at",
+      "decision_timezone": "UTC",
       "window_seconds": 1.0,
       "ties_available": true,
       "label_column": "target",
@@ -251,6 +256,15 @@ reporting a clean result it did not earn.
                     input the two comparators disagree about. A run under the
                     non-default branch SAYS SO in its own output, on every
                     finding it produces.
+  decision_timezone version 5. The zone your decision column's NAIVE stamps are
+                    in, as an IANA name such as "UTC". Needed only where a frame's
+                    key is timezone-aware and the decision stamps are not: lining
+                    the two up means knowing that zone, and a zone is a fact about
+                    the world the data does not carry. Declared, the key is
+                    converted exactly. NOT declared, the run REFUSES and names
+                    this key -- a clock read hours off is itself a leak, and the
+                    tool does not guess one. A naive key against aware decision
+                    stamps is refused either way: localise that key first.
   label_column      version 2. THE BUILT OUTPUT'S label column, read by the
                     checks that need no availability model. It is not L2a's --
                     see `raw_label` below, and note that the two name different
@@ -391,8 +405,9 @@ def load_model(path) -> AvailabilityModel:
     known = _KEYS_BY_VERSION[version]
     unknown = sorted(set(raw) - known)
     if unknown:
-        later = sorted(k for k in unknown if k in _V4_KEYS)
-        newest = {k: (2 if k in _V2_KEYS else (3 if k in _V3_KEYS else 4))
+        later = sorted(k for k in unknown if k in _V5_KEYS)
+        newest = {k: (2 if k in _V2_KEYS else (3 if k in _V3_KEYS else
+                                             (4 if k in _V4_KEYS else 5)))
                   for k in later}
         hint = ("" if not later else
                 " %s known at version %s; this file declares version %d."
@@ -734,12 +749,30 @@ def load_model(path) -> AvailabilityModel:
         except ProbeError as e:
             _refuse(str(e), path)
 
+    # THE DECISION CLOCK'S ZONE, VERSION 5. R273 §1(a). Consulted only where a
+    # timezone-aware key meets naive decision stamps; there the alignment
+    # converts under this declaration and refuses without it. Checked here, at
+    # the file boundary, so a zone the build cannot resolve is refused before a
+    # frame is read rather than at the first comparison.
+    zone = raw.get("decision_timezone")
+    if zone is not None:
+        if not isinstance(zone, str) or not zone.strip():
+            _refuse("`decision_timezone` is %r; an IANA zone name such as "
+                    "\"UTC\" was expected" % (zone,), path)
+        try:
+            pd.Timestamp("2026-01-01").tz_localize(zone)
+        except Exception:                                   # noqa: BLE001
+            _refuse("`decision_timezone` is %r, which is not a zone this build "
+                    "can resolve. Name an IANA zone such as \"UTC\" or "
+                    "\"America/Chicago\"." % (zone,), path)
+
     return LoadedConfig(
         model=AvailabilityModel(
             aggregate_frames=dict(frames),
             decision_column=decision,
             window=window_td,
-            ties_available=ties),
+            ties_available=ties,
+            decision_timezone=zone),
         label_column=label,
         raw_label=None if raw_label is None else RawLabel(
             frame=raw_label["frame"], column=raw_label["column"]),

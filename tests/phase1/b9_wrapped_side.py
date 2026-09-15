@@ -46,7 +46,7 @@ t0 = time.time()
 inputs = fa.read_inputs("zc", "2025-01")
 model = AvailabilityModel(
     aggregate_frames={"magg": "ts_floor", "trades": "ts_event"},
-    decision_column="timestamp")
+    decision_column="timestamp", decision_timezone="UTC")
 build = fa.builder_for(inputs, side=a.side)
 
 res = run_probe_a(inputs.raw, build, model, side=a.side,

@@ -569,8 +569,7 @@ def _confirm_findings(frames, build, model, config, result, cap,
     batched = sorted(result.findings, key=lambda c: c.second)
     n = len(batched)
     summary = {"batched": n, "confirmed": 0, "lookahead": 0, "interference": 0,
-               "batched_only": 0, "not_reprobed": 0, "not_split": 0,
-               "cap": cap,
+               "batched_only": 0, "not_reprobed": 0, "cap": cap,
                "interference_reason": None}
     if n == 0:
         return (["CONFIRM (R271 section 3): no batched finding to confirm. A "
@@ -608,17 +607,18 @@ def _confirm_findings(frames, build, model, config, result, cap,
     # STAGE TWO: THE SPLIT, ON EVERY FINDING THAT VANISHED, UP TO THE SAME CAP,
     # PREDICTED BEFORE IT RUNS AND NEVER SILENTLY SKIPPED. R272 §2(d). A vanished
     # finding left unsplit is the worst outcome -- it could be a lookahead leak
-    # isolation removed -- so any above the cap are listed with their count.
+    # isolation removed -- and none can be: a finding vanishes only from the
+    # isolated set, which is at most the cap, so every one of them is split.
+    # R273 §1(d) removed the branch that listed them; the invariant
+    # vanished <= isolated <= cap is asserted in the suite instead.
     vanished = [r for r in iso if not r.persisted]
-    to_split, unsplit = vanished[:cap], vanished[cap:]
+    to_split = vanished
     if vanished:
         print("CONFIRM STAGE 2 PLANNED: %d vanished; split %d of them (cap %d) "
-              "at two re-probes each, ~%.1f min at ~%.1f s a re-probe%s."
+              "at two re-probes each, ~%.1f min at ~%.1f s a re-probe."
               % (len(vanished), len(to_split), cap,
                  2 * len(to_split) * FIXTURE_CONFIRM_SECONDS / 60.0,
-                 FIXTURE_CONFIRM_SECONDS,
-                 "" if not unsplit else
-                 "; %d above the cap will be NOT RE-PROBED" % len(unsplit)))
+                 FIXTURE_CONFIRM_SECONDS))
         sys.stdout.flush()
         # THE BATCH A FINDING CAME FROM. A default run is one batch; a complete
         # run is passes, and a cohort's batch is the seconds a stride away.
@@ -632,10 +632,7 @@ def _confirm_findings(frames, build, model, config, result, cap,
     lines = ["CONFIRM (R272 section 2(d)): stage one isolated %s; stage two split "
              "%d of the %d that vanished. %s." % (how, len(to_split),
                                                   len(vanished), cap_text)]
-    left_unsplit = {r.second for r in unsplit}
     for r in iso:
-        if r.second in left_unsplit:
-            continue
         klass = r.klass
         feats = ", ".join(r.batched_features) or "-"
         if klass == "CONFIRMED":
@@ -674,26 +671,17 @@ def _confirm_findings(frames, build, model, config, result, cap,
                 "was not this cohort's own, not that the row is clean."
                 % (r.second, r.batched_moved, feats, r.verdict))
     summary["not_reprobed"] = n - len(iso)
-    summary["not_split"] = len(unsplit)
     if summary["not_reprobed"]:
         lines.append(
             "  NOT RE-PROBED: %d batched finding cohort(s) above the cap stay "
             "batched findings, neither confirmed nor disconfirmed."
             % summary["not_reprobed"])
-    if unsplit:
-        lines.append(
-            "  NOT RE-PROBED (split): %d finding(s) vanished alone and sat above "
-            "the split cap of %d, so they were not split -- each stays a batched "
-            "finding, neither confirmed nor disconfirmed, and could be a "
-            "lookahead leak isolation removed: %s."
-            % (len(unsplit), cap, ", ".join(str(r.second) for r in unsplit)))
     lines.append(
         "CONFIRM SUMMARY: %d confirmed, %d confirmed (lookahead), %d "
-        "interference, %d batched only, %d not split, %d not re-probed, of %d "
-        "batched finding cohort(s)."
+        "interference, %d batched only, %d not re-probed, of %d batched finding "
+        "cohort(s)."
         % (summary["confirmed"], summary["lookahead"], summary["interference"],
-           summary["batched_only"], summary["not_split"],
-           summary["not_reprobed"], n))
+           summary["batched_only"], summary["not_reprobed"], n))
     if summary["interference"]:
         reason = ("interference detected at stride %d; block reach %s"
                   % (int(result.resolved_stride),

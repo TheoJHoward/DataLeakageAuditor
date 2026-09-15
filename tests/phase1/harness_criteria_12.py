@@ -81,7 +81,7 @@ MAP = ROOT / "evidence" / "fixture_spike" / "n1" / "declared_map.csv"
 # `at_source_timestamp` truth section C names and not the `at_bar_close` role it
 # declares an approximation of.
 MODEL = AvailabilityModel(aggregate_frames={"magg": "ts_floor", "trades": "ts_event"},
-                          decision_column="timestamp")
+                          decision_column="timestamp", decision_timezone="UTC")
 
 
 def log(msg: str) -> None:

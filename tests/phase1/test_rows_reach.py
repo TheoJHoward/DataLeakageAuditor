@@ -82,3 +82,31 @@ def test_a_DECLARED_stride_below_the_rows_floor_is_REFUSED():
         run_probe_a(_frames(), _roll60, MODEL, side="rows", cohort_stride=40,
                     max_cohorts=10 ** 6)
     assert "40 positions" in str(e.value) and "60 row(s)" in str(e.value)
+
+
+def test_the_EXACT_model_floor_accepts_a_stride_the_CONVERTED_one_refuses_and_stays_SAFE():
+    """R273 §1(c), measured rather than asserted.
+
+    The line R273 asked for -- that no input exists which the exact check accepts
+    and a conversion at the smallest spacing refuses -- is FALSE, and this is the
+    input. Decision seconds 1 s and 10 s apart, alternately, and a 5 s model
+    floor: `_stride_for` takes stride 2, because every probed gap is 11 s;
+    converting the floor at the smallest spacing, 1 s, demands stride 5.
+
+    What IS true, and what this pins: the exact check accepts a stride only when
+    every gap it actually probes clears the floor, because it computes those gaps
+    rather than bounding them. It is less conservative than the conversion and
+    no less safe."""
+    import math
+
+    from leakaudit.availability import _stride_for
+    spacing = [1, 10] * 20
+    secs = [T0]
+    for s in spacing:
+        secs.append(secs[-1] + s * SEC)
+    floor = 5 * SEC
+    k = _stride_for(secs, floor)
+    converted = math.ceil(floor.total_seconds() / min(spacing))
+    gaps = [secs[i + k] - secs[i] for i in range(0, len(secs) - k, k)]
+    assert (k, converted) == (2, 5)
+    assert min(gaps) >= floor, min(gaps)

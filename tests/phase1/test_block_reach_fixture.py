@@ -47,7 +47,7 @@ from leakaudit.reach import ReachError                        # noqa: E402
 RECORD = Path(__file__).with_name("block_reach_fixture_record.json")
 FIXTURE = os.environ.get("LEAKAUDIT_FIXTURE") == "1"
 MODEL = AvailabilityModel(aggregate_frames={"magg": "ts_floor", "trades": "ts_event"},
-                          decision_column="timestamp")
+                          decision_column="timestamp", decision_timezone="UTC")
 R270_STRIDE, R270_FINDINGS = 16, 163143
 
 

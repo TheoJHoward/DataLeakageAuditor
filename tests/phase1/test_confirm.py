@@ -128,7 +128,7 @@ def test_LEAKY_findings_are_CONFIRMED_within_the_derived_cap(work, capsys):
     assert len(_seconds(out, "CONFIRMED")) == 5, out[-3000:]
     assert "default cap 5 (600 s target" in out, out[-3000:]
     assert ("CONFIRM SUMMARY: 5 confirmed, 0 confirmed (lookahead), 0 "
-            "interference, 0 batched only, 0 not split, 15 not re-probed, "
+            "interference, 0 batched only, 15 not re-probed, "
             "of 20") in out
     assert "CONFIRM STAGE 2 PLANNED" not in out, "nothing vanished, nothing to split"
 
@@ -197,16 +197,34 @@ def test_a_vanished_finding_ABOVE_THE_SPLIT_CAP_is_NOT_RE_PROBED_with_the_count(
     assert len(_seconds(out, "INTERFERENCE")) == 1
 
 
-def test_STAGE_TWO_splits_EVERY_vanished_finding_under_the_shared_cap(work, capsys):
-    """Stage two shares stage one's cap, and stage one isolates at most the cap,
-    so every finding that vanished is split: the `not split` count is zero by
-    construction. The NOT RE-PROBED (split) branch stays in the code as the
-    guard for any future difference between the two caps."""
-    _run(work, "lagpatch", "--stride", "3", "--confirm", "--confirm-cap", "2")
-    out = capsys.readouterr().out
-    assert "CONFIRM STAGE 2 PLANNED: 2 vanished; split 2 of them (cap 2)" in out, out[-3000:]
-    assert ", 0 not split," in out
-    assert len(_seconds(out, "INTERFERENCE")) == 2
+def test_THE_SPLIT_INVARIANT_vanished_LE_isolated_LE_cap(work, capsys, monkeypatch):
+    """R273 §1(d). A finding vanishes only from the isolated set, and stage one
+    isolates at most the cap, so vanished <= isolated <= cap and every vanished
+    finding is split. The branch that listed unsplit ones was dead by
+    construction and is gone; this pins the invariant that made it dead."""
+    import leakaudit.availability as av
+    seen = {}
+    real_iso, real_split = av.isolate_cohorts, av.split_isolated
+
+    def iso_spy(*a, **k):
+        r = real_iso(*a, **k)
+        seen["isolated"] = len(r)
+        return r
+
+    def split_spy(raw, build, model, results, **k):
+        seen["vanished"] = len(results)
+        return real_split(raw, build, model, results, **k)
+
+    monkeypatch.setattr(av, "isolate_cohorts", iso_spy)
+    monkeypatch.setattr(av, "split_isolated", split_spy)
+    for cap in (1, 2, 5):
+        seen.clear()
+        _run(work, "lagpatch", "--stride", "3", "--confirm", "--confirm-cap", str(cap))
+        out = capsys.readouterr().out
+        assert seen["vanished"] <= seen["isolated"] <= cap, (cap, seen)
+        assert ("CONFIRM STAGE 2 PLANNED: %d vanished; split %d of them (cap %d)"
+                % (seen["vanished"], seen["vanished"], cap)) in out, out[-3000:]
+        assert "NOT RE-PROBED (split)" not in out and "not split" not in out
 
 
 # --------------------------------------------------------------------------

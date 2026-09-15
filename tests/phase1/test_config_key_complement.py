@@ -66,6 +66,9 @@ KEY_TO_ATTR = {
     # is what makes them measurable here rather than declared-unconsumed.
     "raw_label":        ("config", "raw_label"),
     "label_availability": ("config", "label_availability"),
+    # R273 §1(a), version 5. It rests on the model and is fetched by the one
+    # alignment, `to_decision_clock`, on every aligned key.
+    "decision_timezone": ("model", "decision_timezone"),
     "note":             (None, None),
 }
 
@@ -130,7 +133,9 @@ def _measure_read_keys(tmp_path) -> set[str]:
         "    o['target'] = (o['x'] > 0).astype(int)\n"
         "    return o[['timestamp', 'x', 'target']]\n", encoding="utf-8")
     (tmp_path / "m.json").write_text(json.dumps({
-        "version": 4, "aggregate_frames": {"agg": "k"},
+        "version": 5, "aggregate_frames": {"agg": "k"},
+        # R273 §1(a). Set so the trace can watch the one alignment fetch it.
+        "decision_timezone": "UTC",
         # L2a's pair, set here because this file's whole method is to run with
         # EVERY key set and watch which are fetched. `w` is a column of the
         # input frame and `k` carries its timestamp; whether the probe finds

@@ -160,6 +160,13 @@ class ProbeResult:
     dependency_map: dict[str, tuple[str, ...]] = field(default_factory=dict)
     determinism: dict[str, DeterminismResult] = field(default_factory=dict)
     baseline_columns: tuple[str, ...] = ()
+    #: CELLS CORRUPTED, PER INPUT FRAME. R273 §1(b). The counting half of the
+    #: one corruption entry point, applied to the column probe: its selection
+    #: is by column rather than by time, so the alignment half does not apply,
+    #: but a frame no strategy changed a cell of has had no probe, and its
+    #: silence is `none`. `notes` says so in the run's own output.
+    cells_by_frame: dict = field(default_factory=dict)
+    notes: list = field(default_factory=list)
     domain: str = ""
     """What was and was not probed (§39). Carried WITH the result so a
     reader cannot receive `observed_silence` without the domain that
@@ -242,6 +249,7 @@ def probe_columns(
     prom_cohorts: list[str] = []
     pres_cohorts: list[str] = []
     depmap: dict[str, tuple[str, ...]] = {}
+    cells: dict[str, int] = {fname: 0 for fname in frames}
 
     for fname, col in targets:
         cid = cohort_id_for(fname, col)
@@ -256,7 +264,8 @@ def probe_columns(
         # ---- preserving strategies: the full product, no early stop ---------
         for strat in PRESERVING_STRATEGIES:
             recs, moved = _run_one(build, frames, bare, baseline, fname, col,
-                                   strat, cid, case_id, PromotionStatus.PRESERVING)
+                                   strat, cid, case_id, PromotionStatus.PRESERVING,
+                                   counts=cells)
             pres_records.extend(recs)
             moved_any |= moved
 
@@ -277,7 +286,8 @@ def probe_columns(
             else:
                 prom_base = _call(build, promoted_frames, bare)
                 recs, moved = _run_one(build, frames, bare, prom_base, fname, col,
-                                       cx.NAN, cid, case_id, PromotionStatus.PROMOTED)
+                                       cx.NAN, cid, case_id, PromotionStatus.PROMOTED,
+                                       counts=cells)
                 prom_records.extend(recs)
                 moved_any |= moved
 
@@ -302,12 +312,23 @@ def probe_columns(
         terminal_decision_occurred=False,
         records=tuple(prom_records))
 
+    notes = ["cells corrupted per input frame by the column probe (R273 section "
+             "1(b)): %s." % (", ".join("%s=%d" % kv for kv in cells.items())
+                            or "no frame supplied")]
+    for fname, n in cells.items():
+        if n == 0:
+            notes.append(
+                "NONE FOR FRAME %r: no strategy changed a single cell of it, so "
+                "nothing downstream of it was probed, and any silence about it "
+                "is `none` -- a probe that did not happen -- never "
+                "`observed_silence`." % fname)
     return ProbeResult(preserving, promoted, depmap, det, baseline_cols,
-                       domain=domain_statement())
+                       domain=domain_statement(), cells_by_frame=dict(cells),
+                       notes=notes)
 
 
 def _run_one(build, frames, bare, baseline, fname, col, strat, cid, case_id, status,
-              detector_id=DETECTOR_ID):
+              detector_id=DETECTOR_ID, counts=None):
     """One (strategy, cohort) execution. Returns (records, moved output columns).
 
     Emits one record per moved output feature, or a single finding-free record
@@ -323,6 +344,12 @@ def _run_one(build, frames, bare, baseline, fname, col, strat, cid, case_id, sta
             detector_id=detector_id, case_id=case_id, strategy_id=strat,
             promotion_status=status, cohort_id=cid, attempted=True, valid=False,
             failure_reason=FailureReason.COMPATIBILITY)], set()
+
+    if counts is not None:
+        # THE CELLS THIS STRATEGY CHANGED, counted before anything is built.
+        # R273 §1(b). Two missing values are the same cell, not a change.
+        changed = ~((bad == series) | (bad.isna() & series.isna()))
+        counts[fname] = counts.get(fname, 0) + int(changed.sum())
 
     if bad.equals(series):
         # A permutation that is the identity perturbs nothing. Reporting silence

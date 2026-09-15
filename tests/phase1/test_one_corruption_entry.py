@@ -39,7 +39,10 @@ from leakaudit.reach import frames_never_corrupted, measure_reach  # noqa: E402
 SRC = ROOT / "src" / "leakaudit"
 
 #: Calls that align a clock, select rows by membership, or perturb cells.
-WATCHED = {"perturb_cells", "_perturb", "to_decision_clock", "align_key", "isin"}
+#: `corrupt` joined at R273 §1(b): the column probe's corruption is in the
+#: counting half, so its sites are enumerated like every other.
+WATCHED = {"perturb_cells", "_perturb", "to_decision_clock", "align_key", "isin",
+           "corrupt"}
 
 #: (module, innermost function) -> why a watched call may sit there.
 ALLOWED = {
@@ -51,6 +54,14 @@ ALLOWED = {
     ("cli", "_run_availability"):
         "counts DECISION rows per coverage state with `isin` over the built "
         "output; no input cell is selected or written",
+    # R273 §1(b). In the counting half: both report cells corrupted per frame
+    # through `ProbeResult.cells_by_frame`, and a frame at zero is `none`.
+    ("probe", "_run_one"):
+        "the column probe: selection by column, not time, so the alignment half "
+        "does not apply; the cells it changes are counted per frame",
+    ("probe", "probe_columns"):
+        "the column probe's promoted frame: selection by column, not time, so "
+        "the alignment half does not apply; its cells are counted by `_run_one`",
 }
 
 
@@ -174,15 +185,22 @@ def test_same_clock_RAISES_both_ways(stamps, reference):
         same_clock(stamps, reference, what="a test comparison")
 
 
-def test_an_AWARE_KEY_is_ALIGNED_not_refused():
-    """The negative: a UTC-aware key reaches naive decisions through the one
-    alignment and IS selected -- the stance every Phase 1 figure rests on."""
+def test_an_AWARE_KEY_is_ALIGNED_under_a_DECLARED_zone_and_REFUSED_without():
+    """The negative, as R273 §1(a) ruled it: a UTC-aware key reaches naive
+    decisions through the one alignment and IS selected -- when the model
+    declares the zone the naive stamps are in. Undeclared, the same call refuses
+    and names the key. The pair in full is test_decision_timezone.py."""
     frames = {"agg": pd.DataFrame({
         "k": pd.to_datetime([T0 + i * SEC for i in range(10)]).tz_localize("UTC"),
         "v": np.arange(10.0)})}
     decision = pd.Series([T0 + i * SEC for i in range(10)])
-    sel = select_cells(frames, MODEL, decision, seconds={T0 + 5 * SEC})
+    declared = AvailabilityModel(aggregate_frames={"agg": "k"}, decision_column="d",
+                                 decision_timezone="UTC")
+    sel = select_cells(frames, declared, decision, seconds={T0 + 5 * SEC})
     assert sel.rows_by_frame == {"agg": 1}
+    with pytest.raises(ProbeError) as e:
+        select_cells(frames, MODEL, decision, seconds={T0 + 5 * SEC})
+    assert "decision_timezone" in str(e.value), str(e.value)
 
 
 # --------------------------------------------------------------------------
@@ -190,7 +208,7 @@ def test_an_AWARE_KEY_is_ALIGNED_not_refused():
 # --------------------------------------------------------------------------
 
 TWO = AvailabilityModel(aggregate_frames={"magg": "ts", "trades": "ts_event"},
-                        decision_column="d")
+                        decision_column="d", decision_timezone="UTC")
 
 
 def _two_frames(n=60):
