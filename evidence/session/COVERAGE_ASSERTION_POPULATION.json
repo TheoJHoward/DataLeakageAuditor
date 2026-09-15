@@ -16,14 +16,14 @@
  },
  "measured_at_commit": "7ae4fd6",
  "counts": {
-  "candidate_artifact": 16,
+  "candidate_artifact": 17,
   "candidate_fixed": 2,
   "candidate_legitimate": 1,
-  "out_of_scope": 29,
-  "probed_healthy": 6,
-  "unprobed_reachable": 56,
-  "functions_total": 110,
-  "assertions_total": 228
+  "out_of_scope": 28,
+  "probed_healthy": 7,
+  "unprobed_reachable": 57,
+  "functions_total": 112,
+  "assertions_total": 234
  },
  "functions": [
   {
@@ -793,8 +793,22 @@
    "file": "tests/phase1/test_decision_timezone.py",
    "function": "test_the_FIXTURE_model_DECLARES_UTC",
    "assertions": 2,
-   "status": "out_of_scope",
-   "reason": "added R273 section 1(a). JUDGED, not probed. It reads tools/wholeframe_guard.py, which is why the enumerator includes it, but it asserts over no collection: both asserts are substring membership in one file's text. An emptied population -- an empty text -- makes both FAIL, so it is not vacuity-prone, on the same second clause as test_slicing's entry above."
+   "status": "unprobed_reachable",
+   "reason": "added R273 section 1(a); MEASURED at R274 section 1(e), replacing R273's judged `out_of_scope`, which that ruling did not accept. tools/empty_population_probe.py returns `unprobed`, `no population helper this mechanism can empty` -- it reads tools/wholeframe_guard.py directly -- the same measured result and status as test_block_reach_fixture's entry above."
+  },
+  {
+   "file": "tests/phase1/test_profile.py",
+   "function": "test_the_TEMPLATE_is_printed_by_leakaudit_schema",
+   "assertions": 3,
+   "status": "candidate_artifact",
+   "reason": "added R274 section 2(e). MEASURED: tools/empty_population_probe.py returns `candidate`, `passed with 1 helper(s) emptied`. The one patch it applied is the test module's `subprocess.run` -- leakaudit.model_file and leakaudit.cli, the other repository modules it holds, carry no emptier name -- and this function never calls subprocess. Its population is the template file's lines, which the mechanism cannot empty, so the pass is not over an empty population: UNVERIFIED, not clean. It asserts that population non-empty (`len(lines) >= 4`) before iterating it."
+  },
+  {
+   "file": "tests/phase1/test_profile.py",
+   "function": "test_the_TEMPLATE_is_the_ONLY_profile_in_the_repository",
+   "assertions": 3,
+   "status": "probed_healthy",
+   "reason": "added R274 section 2(e). MEASURED: tools/empty_population_probe.py returns `reddens`, `asserted with 1 helper(s) emptied` -- with `git ls-files` emptied, `assert len(names) > 10` fails."
   }
  ]
 }

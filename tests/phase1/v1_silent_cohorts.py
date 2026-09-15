@@ -21,6 +21,11 @@ THE SECOND QUESTION IS SET COHERENCE: are the same seconds silent on both sides?
 A matching set is a coherent story -- seconds whose aggregates are never read. A
 MISMATCH would be a finding, because the two sides read the same frames.
 
+R274 §1(d): nothing runs this script, and it carries the pre-R272 raw comparison
+-- it floors the UTC-aware `trades.ts_event` and intersects it with naive seconds,
+outside the one entry point. Its recorded result,
+`evidence/phase1/probe_a/v1_silent_cohorts.json`, stands as dated.
+
     usage: v1_silent_cohorts.py
 """
 from __future__ import annotations

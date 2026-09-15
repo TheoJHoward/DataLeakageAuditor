@@ -82,6 +82,21 @@ CLASSIFICATION = {
     # padding declared -- is carried by `NOT_DECLARED` on the INPUT side, where
     # a caller can be in it.
     "availability.py::param::__init__(slice_plan=)": (NA, "result carrier field"),
+    # R274 §1(b). The seconds a pass selects from, carried so `--complete` can
+    # check every pass exactly; and the pass offset of the one gap check. Offset
+    # 0 is `seconds[::k]`, exactly what a single run selects, and a complete run
+    # passes each pass's offset explicitly.
+    "availability.py::param::__init__(selectable_seconds=)": (NA, "result carrier field"),
+    "availability.py::param::_smallest_gap(offset=)":
+        (L, "0 is the first pass, `seconds[::k]`, which is what every single run "
+            "selects; a complete run's passes pass their own offsets"),
+    # R274 §2. `None` is NO PROFILE NAMED, a state the run is actually in: nothing
+    # is merged and nothing prints. A profile is a declaration the user names on
+    # the command line and is never supplied by default, so there is nothing a
+    # refusal here could ask for.
+    "model_file.py::param::load_model(profile=)":
+        (L, "None is no profile named: nothing merges and nothing prints; a "
+            "profile is never a default (R274 section 2)"),
     # R267 §2. Result carrier fields for the reach control, and the input that
     # chooses how many samples it takes.
     "availability.py::param::__init__(reach=)": (NA, "result carrier field"),

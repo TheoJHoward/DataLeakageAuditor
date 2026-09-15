@@ -95,6 +95,7 @@ DECL = ROOT / "AVAILABILITY_DECLARATION.md"
 MANIFEST = ROOT / "evidence" / "fixture_spike" / "f3" / "fixture_manifest_DRAFT.json"
 MAP = ROOT / "evidence" / "fixture_spike" / "n1" / "declared_map.csv"
 
+# R273 §1(a), accepted R274 §1(d): as-built declaration added -- the naive decision stamps are UTC.
 MODEL = AvailabilityModel(aggregate_frames={"magg": "ts_floor", "trades": "ts_event"},
                           decision_column="timestamp", decision_timezone="UTC")
 

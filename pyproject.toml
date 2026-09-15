@@ -94,3 +94,9 @@ packages = ["leakaudit", "protocol"]
 [tool.setuptools.package-dir]
 leakaudit = "src/leakaudit"
 protocol = "protocol"
+
+# THE PROFILE TEMPLATE SHIPS WITH THE PACKAGE. R274 §2(e). `leakaudit schema`
+# prints it, so an installed copy has to carry the file; it is the only profile
+# in the repository and it is named as a template, not as a domain.
+[tool.setuptools.package-data]
+leakaudit = ["templates/*.json"]

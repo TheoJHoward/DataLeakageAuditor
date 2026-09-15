@@ -262,6 +262,12 @@ Changes that alter what an existing caller sees. This section did not exist befo
   Undeclared, the run refuses and names the key. Until R273 the conversion assumed UTC. A naive key
   against aware decision stamps is refused either way. Version 1–4 files load unchanged; only a
   file whose keys are aware and whose decision stamps are naive now needs the one line.
+- **R274 — `--complete` checks the model's floor exactly on every pass.** The complete run's stride
+  took the model's floor converted at one second a position, `ceil(floor / 1 s)`. It now takes the
+  smallest stride at which every pass clears the floor on its own probed seconds, the check a
+  single run takes. On decision seconds spaced unevenly, a complete run can plan fewer passes than
+  it did, and its plan line names the term "checked exactly on every pass's probed gaps".
+  `--profile` is new in R274 and changes nothing for a run that does not name one.
 
 ## Not yet done
 

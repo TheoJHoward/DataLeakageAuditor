@@ -84,6 +84,26 @@ _KEYS_BY_VERSION = {1: _V1_KEYS, 2: _V2_KEYS, 3: _V3_KEYS, 4: _V4_KEYS,
 _REQUIRED_BY_VERSION = {1: {"version", "aggregate_frames"}, 2: {"version"},
                         3: {"version"}, 4: {"version"}, 5: {"version"}}
 
+# THE USER'S OWN PROFILE. R274 §2, the mechanism R269 §3 ruled.
+#
+# A PROFILE IS A NAMED DECLARATION, NOT A DEFAULT. It is a file the user writes
+# in this format and names on the command line; every value it supplies prints
+# per key in the run's own output, and a key the model file also sets is taken
+# from the model file and printed as overriding it. It carries ONLY world-facing
+# keys with a consumer today -- a key it could carry that nothing reads would be
+# the read-and-ignored defect `test_config_key_complement.py` exists to catch.
+PROFILE_KEYS = ("decision_timezone", "window_seconds", "ties_available",
+                "bar_duration_seconds")
+#: Profiles arrived with version 5, so no profile at another version was ever
+#: written, and one is refused rather than read.
+PROFILE_VERSION = 5
+#: What a profile NEVER supplies, refused with its own message: these describe
+#: the user's data rather than the world it came from.
+PROFILE_NEVER = ("decision_column", "aggregate_frames", "raw_label",
+                 "label_column", "split", "label_availability")
+#: The one profile in the repository, named as a template and not as a domain.
+TEMPLATE_PATH = Path(__file__).resolve().parent / "templates" / "TEMPLATE.json"
+
 
 # THE SENTINEL `leakaudit draft` WRITES INTO A SKELETON, AND THIS FILE OWNS IT.
 # R234 section 1.
@@ -135,6 +155,13 @@ class LoadedConfig:
     # Present only on a file `leakaudit draft` wrote. R233 §1(d): a
     # finding produced under structure nobody edited should say so.
     draft_provenance: dict | None = None
+    #: THE PROFILE THIS CONFIG WAS MERGED WITH, when one was named. R274 §2(b).
+    #: `profile_filled` holds every key the profile supplied, as declared;
+    #: `profile_overridden` every key the model file also set, as (the model
+    #: file's value, the profile's value). `profile_lines` prints both.
+    profile_name: str | None = None
+    profile_filled: dict | None = None
+    profile_overridden: dict | None = None
     version: int = SCHEMA_VERSION
 
     @property
@@ -188,6 +215,15 @@ def _role_lines() -> str:
         out.append("  %s -> %s" % (r.token, r.lands_in))
         out.append(_wrap(r.prose, " " * 6))
     return "\n".join(out)
+
+
+def _template_text() -> str:
+    """The shipped profile template, indented for the schema text."""
+    try:
+        text = TEMPLATE_PATH.read_text(encoding="utf-8").rstrip()
+    except OSError:
+        return "    (the template was not found at %s)" % TEMPLATE_PATH
+    return "\n".join("    " + line for line in text.splitlines())
 
 
 SCHEMA_DOC = """\
@@ -318,6 +354,22 @@ __MODE_LINES__
                     an availability model you did not write.
   note              ignored by the tool; kept for the reader.
 
+PROFILES, `leakaudit run --model m.json --profile p.json`. A profile is a file
+YOU write, in this format at version 5, carrying only the world-facing keys
+something reads today: decision_timezone, window_seconds, ties_available and
+bar_duration_seconds, each described above. It is a named declaration, not a
+default. Every value it supplies prints in ABOUT THIS RUN as
+"<key>: <value> from profile <name>", the name being the file's name without
+`.json`; a key your model file also sets is taken from the model file and
+printed as "<key>: <value> from the model file, overriding profile <name>
+(<its value>)". A profile never supplies decision_column, aggregate_frames,
+raw_label, label_column, split or label_availability -- those describe your
+data -- and one naming any of them is refused. No domain profile ships: this
+project's own data yielded none a stranger would want. The one template, which
+ships with the package:
+
+__PROFILE_TEMPLATE__
+
 WHICH KEYS CORRESPOND TO REGISTERED VOCABULARY, for a reader who needs to know:
 
   aggregate_frames, decision_column, window_seconds, ties_available,
@@ -368,15 +420,105 @@ not version coupling.
    .replace("__LIBRARY_ONLY__", _library_only()) \
    .replace("__IS_ARE__",
             "is" if len(ALL_MODES) - len(FILE_MODES) == 1 else "are") \
-   .replace("__ROLE_LINES__", _role_lines())
+   .replace("__ROLE_LINES__", _role_lines()) \
+   .replace("__PROFILE_TEMPLATE__", _template_text())
 
 
 def _refuse(msg: str, path: Path) -> None:
     raise ModelFileError("%s: %s" % (path, msg))
 
 
-def load_model(path) -> AvailabilityModel:
-    """Read an availability model, refusing anything it does not fully understand."""
+@dataclass(frozen=True)
+class Profile:
+    """A profile as read: its name, its path, and the values it declares."""
+    name: str
+    path: Path
+    values: dict
+
+
+def load_profile(path) -> Profile:
+    """Read a user's profile, refusing anything a profile may not carry. R274 §2.
+
+    ITS VALUES TAKE THE MODEL FILE'S OWN CHECKS, by running them: the four keys
+    are handed to the loader as a version-5 file of their own, so a value refused
+    in a model file is refused in a profile, in the same words, naming the
+    profile.
+    """
+    path = Path(path)
+    if not path.is_file():
+        raise ModelFileError(
+            "%s: REFUSED: --profile names no file that exists. A profile that "
+            "does not resolve fills nothing, and a run that went ahead would print "
+            "the model file's values as though the profile had been read." % path)
+    try:
+        raw = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as e:
+        _refuse("the profile is not valid JSON (%s)" % e, path)
+    if not isinstance(raw, dict):
+        _refuse("the profile's top level is %s; an object was expected"
+                % type(raw).__name__, path)
+    if raw.get("version") != PROFILE_VERSION:
+        _refuse("REFUSED: a profile is read at schema version %d, the version "
+                "profiles arrived with, and this one declares %s. No profile at "
+                "another version was ever written, so none is read best-effort."
+                % (PROFILE_VERSION,
+                   "no `version`" if "version" not in raw
+                   else "version %r" % (raw["version"],)), path)
+    never = [k for k in PROFILE_NEVER if k in raw]
+    if never:
+        _refuse("REFUSED: a profile never supplies %s. The decision column, the "
+                "frames, the label and the split describe YOUR data rather than "
+                "the world it came from, so they stay in the model file you wrote, "
+                "where the run reads them as yours (R269 section 3). Remove %s "
+                "from the profile."
+                % (", ".join("`%s`" % k for k in never),
+                   "it" if len(never) == 1 else "them"), path)
+    outside = sorted(set(raw) - {"version"} - set(PROFILE_KEYS))
+    if outside:
+        _refuse("REFUSED: %s %s not a key a profile may carry. A profile carries "
+                "only the world-facing keys something reads today -- %s -- and "
+                "`version`. Anything else would be loaded and ignored."
+                % (", ".join("`%s`" % k for k in outside),
+                   "is" if len(outside) == 1 else "are",
+                   ", ".join("`%s`" % k for k in PROFILE_KEYS)), path)
+    values = {k: raw[k] for k in PROFILE_KEYS if k in raw}
+    if not values:
+        _refuse("REFUSED: the profile carries none of %s, so it would fill "
+                "nothing." % ", ".join("`%s`" % k for k in PROFILE_KEYS), path)
+    _config_from_raw(dict({"version": PROFILE_VERSION}, **values), path)
+    return Profile(name=path.stem, path=path, values=values)
+
+
+def profile_lines(config) -> list:
+    """Every value a profile supplied, or was overridden on, one line per key.
+
+    R274 §2(b). The lines go into ABOUT THIS RUN, so nothing a profile filled is
+    silent and an override shows both values.
+    """
+    name = getattr(config, "profile_name", None)
+    if name is None:
+        return []
+    filled = config.profile_filled or {}
+    over = config.profile_overridden or {}
+    out = []
+    for k in PROFILE_KEYS:
+        if k in filled:
+            out.append("%s: %s from profile %s" % (k, json.dumps(filled[k]), name))
+        elif k in over:
+            file_value, profile_value = over[k]
+            out.append("%s: %s from the model file, overriding profile %s (%s)"
+                       % (k, json.dumps(file_value), name,
+                          json.dumps(profile_value)))
+    return out
+
+
+def load_model(path, profile=None) -> AvailabilityModel:
+    """Read an availability model, refusing anything it does not fully understand.
+
+    `profile` is a path, or a `Profile`, merged key by key: a value the model file
+    declares wins, and every key either way is carried on the config for
+    `profile_lines` to print. R274 §2(b).
+    """
     path = Path(path)
     if not path.exists():
         raise ModelFileError("%s: no such file" % path)
@@ -389,7 +531,11 @@ def load_model(path) -> AvailabilityModel:
     if not isinstance(raw, dict):
         _refuse("the top level is %s; an object was expected"
                 % type(raw).__name__, path)
+    return _config_from_raw(raw, path, profile)
 
+
+def _config_from_raw(raw: dict, path: Path, profile=None) -> LoadedConfig:
+    """Everything after the JSON is read, for a model file or a profile's values."""
     if "version" not in raw:
         _refuse("no `version` field. Refused rather than assumed: a model read "
                 "under the wrong schema is a probe that looks like it ran and "
@@ -419,6 +565,26 @@ def load_model(path) -> AvailabilityModel:
     missing = sorted(_REQUIRED_BY_VERSION[version] - set(raw))
     if missing:
         _refuse("missing required key(s) %s at version %d" % (missing, version), path)
+
+    # THE PROFILE, MERGED KEY BY KEY. R274 §2(b). EXPLICIT WINS: a key the model
+    # file declares is taken from it and recorded as overriding the profile, both
+    # values kept. Every other key the profile carries fills in and is recorded as
+    # filled. `eff` is where the four world-facing keys are read from below;
+    # everything else is read from the model file alone.
+    prof = None
+    if profile is not None:
+        prof = profile if isinstance(profile, Profile) else load_profile(profile)
+    filled, overridden = {}, {}
+    eff = raw
+    if prof is not None:
+        for k in PROFILE_KEYS:
+            if k not in prof.values:
+                continue
+            if k in raw:
+                overridden[k] = (raw[k], prof.values[k])
+            else:
+                filled[k] = prof.values[k]
+        eff = dict(raw, **filled)
 
     frames = raw.get("aggregate_frames")
     if frames is None:
@@ -607,7 +773,7 @@ def load_model(path) -> AvailabilityModel:
     # without the number is unfalsifiable by the reader; "inferred 60s" can be
     # seen to be wrong at a glance, and a wrong inference is what the naming
     # exists to catch.
-    bar_duration_seconds = raw.get("bar_duration_seconds")
+    bar_duration_seconds = eff.get("bar_duration_seconds")
     if bar_duration_seconds is not None:
         if not isinstance(bar_duration_seconds, (int, float)) or                 isinstance(bar_duration_seconds, bool) or                 bar_duration_seconds <= 0:
             _refuse("`bar_duration_seconds` is %r; a positive number of seconds "
@@ -664,7 +830,7 @@ def load_model(path) -> AvailabilityModel:
                 _refuse("`split.%s` must be a list of integer row positions"
                         % side, path)
 
-    window = raw.get("window_seconds", 1.0)
+    window = eff.get("window_seconds", 1.0)
     try:
         window_td = pd.Timedelta(seconds=float(window))
     except Exception:                                       # noqa: BLE001
@@ -674,7 +840,7 @@ def load_model(path) -> AvailabilityModel:
                 "describes no span and would mark nothing unavailable"
                 % (window,), path)
 
-    ties = raw.get("ties_available", True)
+    ties = eff.get("ties_available", True)
     if not isinstance(ties, bool):
         _refuse("`ties_available` is %r; true or false was expected" % (ties,), path)
 
@@ -754,7 +920,7 @@ def load_model(path) -> AvailabilityModel:
     # converts under this declaration and refuses without it. Checked here, at
     # the file boundary, so a zone the build cannot resolve is refused before a
     # frame is read rather than at the first comparison.
-    zone = raw.get("decision_timezone")
+    zone = eff.get("decision_timezone")
     if zone is not None:
         if not isinstance(zone, str) or not zone.strip():
             _refuse("`decision_timezone` is %r; an IANA zone name such as "
@@ -787,4 +953,7 @@ def load_model(path) -> AvailabilityModel:
         bar_duration=bar_duration_seconds,
         timestamp_column=timestamp_column,
         draft_provenance=prov,
+        profile_name=None if prof is None else prof.name,
+        profile_filled=None if prof is None else dict(filled),
+        profile_overridden=None if prof is None else dict(overridden),
         version=version)

@@ -87,6 +87,8 @@ def test_a_NAIVE_key_against_AWARE_decisions_is_REFUSED_either_way():
             select_cells(frames, model, aware,
                          seconds={pd.Timestamp(T0 + 5 * SEC).tz_localize("UTC")})
         assert "Localise the key" in str(e.value), str(e.value)
+        # R274 §1(a): the refusal names what would lift it.
+        assert "per-frame key zone" in str(e.value), str(e.value)
 
 
 def test_BOTH_AWARE_convert_with_no_declaration():

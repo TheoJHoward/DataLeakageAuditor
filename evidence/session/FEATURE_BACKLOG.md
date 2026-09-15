@@ -165,6 +165,10 @@ D-V30A-119.
 **NEXT PROBE-PATH BATCH, ruled R273 §1(f):** `ReachResult.note()` counts every
 unusable sample as "censored by the frame's end", including one where nothing
 moved; its spread already reports the two apart.
+**NEXT PROBE-PATH BATCH, found R274:** `select_cells`' `same_clock` text,
+"frame %r's aligned key", at availability.py:891, prints a doubled apostrophe:
+the shape R274 §1(k) fixed in the key's refusal message. It was found after
+the round's guard had taken its path-set fingerprint.
 **R270 §0 rulings, recorded.** *"Under an hour" is retired:* it was a
 build-or-stop line and never a specification — the cost is measured, printed
 and predicted, and nothing is held to a figure. *The prediction prints both
@@ -239,6 +243,24 @@ names, whose every filled value is printed, is not silent — and the two values
 that decide what a silence even refers to cannot come from one.
 **Value:** high for §139's adoption surface, on the terms above.
 
+**R274 §2: BUILT, as a mechanism for the user's own profiles.**
+- **How it's used:** `leakaudit run --model m.json --profile p.json`.
+- **What a profile carries:** `decision_timezone`, `window_seconds`,
+  `ties_available` and `bar_duration_seconds`, nothing else.
+- **What prints:** every value it supplies prints per key in ABOUT THIS RUN as
+  `from profile <name>`, even under `--quiet`. A model-file value wins, and both
+  values print.
+- **What it never supplies:** the decision column, a frame, `raw_label`,
+  `label_column`, `split` or `label_availability`.
+- **What ships:** no domain profile, because the establish found none in this
+  project's data. One template, `src/leakaudit/templates/TEMPLATE.json`.
+
+**Not in this cut:**
+- intervals to skip, which have no consumer;
+- `column_modes` by role. **R274 §1(j), backlog:** that needs a role vocabulary
+  that does not exist, since `column_modes` is keyed by the user's column names
+  and a profile cannot know them.
+
 ### F. `align_key`'s timezone cases, enumerated
 **Status: PARTIALLY BUILT.** The function ships and refuses the aware/naive
 mismatch with a message naming both sides. What is missing is the **cases
@@ -256,6 +278,13 @@ document** its siblings have — `LABEL_SCREEN_CASES.md`, `FORK_VOCABULARY_CASES
 The cases document is still not written. `tests/phase1/test_decision_timezone.py`
 holds the cases built so far: undeclared, declared, a non-UTC zone and the wrong
 zone, naive against aware, and both aware.
+
+**R274 §1(a), backlog: a per-frame key zone.** A naive key against aware
+decision stamps stays refused, whether or not `decision_timezone` is declared,
+because the unknown zone there belongs to the key. The declaration that would
+lift the refusal is not built: a per-frame key zone, the counterpart of
+`decision_timezone`. The refusal message names it. A user with naive keys can
+localise them; the tool does not.
 
 ### G. The export/submodule shadowing repair
 **Status: DONE, R273 §1(h).** The modes function is renamed

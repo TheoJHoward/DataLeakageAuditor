@@ -367,3 +367,40 @@ and read and asserts nothing about whether it belongs.
 the log noise and puts the 49 work files back outside the population, which is
 the defect this widening fixed. The infrastructure is the thing to exclude, not
 the work.
+
+---
+
+## Profiles: the registration says they supply, the tool says name and print
+
+*Recorded at R274 §1(g). A posture tension between the two documents, not a
+defect in either.*
+
+`PREREG.md` line 263 says "Profiles supply defaults (`DESIGN.md`)". It excludes
+two things: `label_availability` and the non-temporal policy.
+
+The tool does something narrower, under R269 §3 and as built at R274 §2:
+- a profile is a file the user writes and names on the command line;
+- it carries only `decision_timezone`, `window_seconds`, `ties_available` and
+  `bar_duration_seconds`;
+- every value it supplies prints per key, with the profile's name;
+- a value the model file declares overrides it, and both values print;
+- it never supplies the decision column or a frame.
+
+**These are two postures, not a stricter and a looser version of one.**
+- **Supply** makes a profile part of the declaration a finding depends on,
+  unseen unless someone looks. A silently supplied value is what R236 removed a
+  default for: that default had turned a real leak into `observed_silence`.
+- **Name and print** makes every filled value a visible part of the run's
+  output, traceable to a file the user chose.
+
+**What the next registration is asked to decide:**
+1. Is a profile part of the registered declaration? If it is, must a finding
+   print where each value it rests on came from? Or is a profile a tool
+   convenience outside the declaration?
+2. What data were its profile rows derived from? This registration's `DESIGN.md`
+   describes `futures` and `generic` profiles. R273 §2's establish wrote this
+   project's own data out as a profile and it generalised to nothing: its UTC
+   comes from the export, its one second from the snapshot emitter, and
+   ties-available is already the default.
+
+*`PREREG.md` is not touched. `DESIGN.md` §10.9 carries the tool-side note.*

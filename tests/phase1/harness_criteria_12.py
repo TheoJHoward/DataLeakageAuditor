@@ -80,6 +80,7 @@ MAP = ROOT / "evidence" / "fixture_spike" / "n1" / "declared_map.csv"
 # declared availability instant is the key plus one second, which is the
 # `at_source_timestamp` truth section C names and not the `at_bar_close` role it
 # declares an approximation of.
+# R273 §1(a), accepted R274 §1(d): as-built declaration added -- the naive decision stamps are UTC.
 MODEL = AvailabilityModel(aggregate_frames={"magg": "ts_floor", "trades": "ts_event"},
                           decision_column="timestamp", decision_timezone="UTC")
 

@@ -758,3 +758,40 @@ one shade from a pass (R220 §4); an exit code is not. §5.2's sentence made the
 CI default and a complete audit indistinguishable to the thing a CI system reads.
 This file is revisable and the ruling governs; the sentence stands with this note
 against it, as §10.7's does.
+
+### 10.9 §1.2's profiles as "defaults", and `futures`' `decision_time`, overridden
+
+**PLACED HERE FOR §10's REASON AGAIN.** §1.2 sits above the registered line-pinned
+citation at line 546, so a note beside it would move that line.
+
+**§1.2 calls a profile a set of defaults, and its `futures` row gives
+`decision_time` a value, bar open.** Both are overridden under this tool:
+
+* **R269 §3, built at R274 §2: a profile is a named declaration, not a default.**
+  The user writes it and names it -- `leakaudit run --model m.json --profile
+  p.json` -- and every value it supplies prints in the run's own output as
+  `<key>: <value> from profile <name>`. A key the model file also sets is taken
+  from the model file and printed as overriding the profile, with both values.
+  Nothing fills silently.
+* **A profile never supplies `decision_time`.** Nor the decision column, any
+  frame, `raw_label`, `label_column`, `split` or `label_availability`: those
+  describe the user's own data, and a profile carrying one is refused with its
+  own message. The `futures` row is superseded on that point.
+* **A profile carries only world-facing keys with a consumer today:**
+  `decision_timezone`, `window_seconds`, `ties_available` and
+  `bar_duration_seconds`. §1.2's intervals to skip and expected column roles have
+  no consumer and are not profile keys, and `column_modes` by role waits on a
+  role vocabulary that does not exist.
+* **No domain profile ships, R274 §1(h).** The establish wrote the acceptance
+  fixture's declaration out as a profile and it generalised to nothing: its UTC
+  is the export's, its one second the snapshot emitter's, and ties-available is
+  already the default. One template ships, `src/leakaudit/templates/TEMPLATE.json`,
+  named as a template.
+
+**`PREREG.md` line 263's "Profiles supply defaults" is not touched.** The tension
+between the registration's posture and the tool's -- supply, against name and
+print -- is recorded for the next registration in
+`NEXT_REGISTRATION_REQUIREMENTS.md`.
+
+This file is revisable and the ruling governs; §1.2 stands with this note against
+it, as §5.2 stands with §10.8's.

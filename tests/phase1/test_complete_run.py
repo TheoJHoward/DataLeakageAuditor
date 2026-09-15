@@ -228,3 +228,52 @@ def test_MAX_PASSES_stops_after_pass_one_and_SAYS_it_is_not_complete(capsys):
     assert "COMPLETE RUN PLANNED" in out and "pass(es) remaining" in out
     assert any(n.startswith("STOPPED AFTER 1 of") for n in res.notes), res.notes
     assert 0 < res.n_cohorts < N
+
+
+# --------------------------------------------------------------------------
+# the model's floor, exact on every pass. R274 §1(b)
+# --------------------------------------------------------------------------
+
+def test_COMPLETE_takes_the_MODEL_FLOOR_exactly_PER_PASS_not_converted(capsys):
+    """R273 §1(c)'s counterexample, run as a complete run.
+
+    Decision seconds alternately 1 s and 10 s apart, a 4 s window so a 5 s model
+    floor, and a builder that reads only its own row, deciding at that row's
+    key second, so every cohort has a cell and both reach floors are one
+    position. (The row reads a cell four seconds before it is available, so the
+    passes find; the verdict is not this test's subject, the stride is.) Converted at one second a position the floor demanded stride
+    5; checked on every pass's own probed gaps it is 2, every pass clears it, and
+    the passes still probe every second exactly once."""
+    import types
+
+    from leakaudit.availability import (_smallest_gap,
+                                        stride_clearing_every_pass)
+    spacing = [1, 10] * 20
+    keys = [T0]
+    for g in spacing[:-1]:
+        keys.append(keys[-1] + pd.Timedelta(seconds=g))
+    frames = {"agg": pd.DataFrame({"k": keys, "v": [float(i % 7) + 1.0
+                                                    for i in range(len(keys))]})}
+
+    def own_row(raw):
+        agg = raw["agg"]
+        return pd.DataFrame({"d": pd.to_datetime(agg["k"]),
+                             "x": agg["v"].to_numpy()})
+
+    model = AvailabilityModel(aggregate_frames={"agg": "k"}, decision_column="d",
+                              window=pd.Timedelta(seconds=4))
+    secs = list(pd.to_datetime(own_row(frames)["d"]))
+    floor = pd.Timedelta(seconds=5)
+    assert stride_clearing_every_pass(secs, floor) == 2
+    assert all(_smallest_gap(secs, 2, o) >= floor for o in range(2))
+    assert _smallest_gap(secs, 1) < floor
+    res, _note = cli._probe_complete(
+        frames, own_row, model,
+        types.SimpleNamespace(column_modes=None, bar_duration=None),
+        None, None, None)
+    out = capsys.readouterr().out
+    assert "COMPLETE RUN PLANNED: 2 pass(es) at stride 2" in out, out[-3000:]
+    assert "checked exactly on every pass's probed gaps = 2" in out, out[-3000:]
+    assert "at one second a position" not in out
+    assert sorted(c.second for c in res.cohorts) == sorted(
+        pd.DatetimeIndex(secs).floor("s")), "every second, exactly once"

@@ -55,6 +55,7 @@ print("read_inputs %s %s in %.1fs" % (a.sym, a.month, time.time() - t0))
 # `magg` is already keyed by ts_floor. `trades` carries raw event stamps that the
 # builder floors the same way, so its key is ts_event and the probe floors it.
 # `snap` is the DECISION frame, not an aggregate, and is not corrupted.
+# R273 §1(a), accepted R274 §1(d): as-built declaration added -- the naive decision stamps are UTC.
 model = AvailabilityModel(
     aggregate_frames={"magg": "ts_floor", "trades": "ts_event"},
     decision_column="timestamp", decision_timezone="UTC")

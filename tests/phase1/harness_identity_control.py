@@ -81,6 +81,7 @@ OUT = pathlib.Path(os.environ.get(
 DECL = ROOT / "AVAILABILITY_DECLARATION.md"
 PRIOR_RUN = ROOT / "evidence" / "phase1" / "criteria_12_population.json"
 
+# R273 §1(a), accepted R274 §1(d): as-built declaration added -- the naive decision stamps are UTC.
 MODEL = AvailabilityModel(aggregate_frames={"magg": "ts_floor", "trades": "ts_event"},
                           decision_column="timestamp", decision_timezone="UTC")
 

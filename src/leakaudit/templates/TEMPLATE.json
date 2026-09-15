@@ -1,0 +1,7 @@
+{
+  "version": 5,
+  "decision_timezone": "UTC",
+  "window_seconds": 1.0,
+  "ties_available": true,
+  "bar_duration_seconds": 60.0
+}

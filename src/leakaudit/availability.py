@@ -178,14 +178,21 @@ def stride_floor(model, column_modes=None):
     return model.window + (2 * SECOND if column_modes else SECOND)
 
 
-def _smallest_gap(seconds, k: int):
-    """The narrowest gap between consecutive probed seconds at stride `k`."""
-    seconds = list(seconds)
-    if len(seconds) < 2 or k >= len(seconds):
+def _smallest_gap(seconds, k: int, offset: int = 0):
+    """The narrowest gap between consecutive probed seconds of ONE pass.
+
+    The pass probes `seconds[offset::k]`. R274 §1(b): a single run's selection
+    and every pass of a complete run are checked here, each on its own probed
+    seconds, so the two share one exact check rather than one of them bounding it.
+    """
+    idx = (seconds if isinstance(seconds, pd.DatetimeIndex)
+           else pd.DatetimeIndex(list(seconds)))
+    # IN NANOSECONDS, SAID: pandas keeps a stamp's own resolution, often
+    # seconds, and `asi8` counts in whatever unit the index carries.
+    picked = idx.as_unit("ns").asi8[int(offset)::int(k)]
+    if len(picked) < 2:
         return pd.Timedelta.max
-    gaps = [seconds[i + k] - seconds[i]
-            for i in range(0, len(seconds) - k, k)]
-    return min(gaps) if gaps else pd.Timedelta.max
+    return pd.Timedelta(int(np.diff(picked).min()), unit="ns")
 
 
 def _stride_for(seconds, floor) -> int:
@@ -204,6 +211,25 @@ def _stride_for(seconds, floor) -> int:
         if not gaps or min(gaps) >= floor:
             return k
     return len(seconds)
+
+
+def stride_clearing_every_pass(seconds, floor, start: int = 1) -> int:
+    """The smallest stride, at least `start`, at which EVERY pass clears `floor`.
+
+    A complete run is passes at offsets 0..S-1. R274 §1(b): each pass is checked
+    by `_smallest_gap` on its own probed seconds -- the check a single run's
+    selection takes -- in place of converting the floor at one second a
+    position, which R273 §1(c) measured refusing strides this accepts. The
+    passes' consecutive pairs are every pair S positions apart, and on sorted
+    distinct seconds that gap only grows with S, so the first S that clears is
+    the floor and every larger one clears too.
+    """
+    idx = pd.DatetimeIndex(list(seconds))
+    n = len(idx)
+    for S in range(max(1, int(start)), max(n, 1) + 1):
+        if all(_smallest_gap(idx, S, o) >= floor for o in range(min(S, n))):
+            return S
+    return max(n, 1)
 
 
 def require_column_name(dcol, where: str) -> None:
@@ -439,6 +465,9 @@ class ProbeAResult:
     #: cannot hold passes for.
     block_reach: object = None
     decision_seconds: int = 0
+    #: THE SECONDS A PASS SELECTS FROM, sorted, after any slice. R274 §1(b):
+    #: `--complete` checks each of its passes on these, exactly.
+    selectable_seconds: object = None
     #: Cells corrupted per declared frame, from the entry point.
     cells_by_frame: dict = field(default_factory=dict)
     #: THE HEAD OF THE FRAME. R269 §2(b). `head_cutoff` is the frame's first row
@@ -593,8 +622,11 @@ def to_decision_clock(key: pd.Series, decision: pd.Series, *,
         "REFUSED: %s is naive and the decision stamps are timezone-aware (%s). "
         "Aligning them means assuming which zone the naive key is in, and no "
         "declaration this tool reads names a key's zone -- `decision_timezone` "
-        "names the decision clock's. Localise the key in your frames before the "
-        "audit, so its zone is stated rather than guessed." % (what, d_tz))
+        "names the decision clock's. What would lift this refusal is a "
+        "per-frame key zone, the symmetric declaration naming each naive key's "
+        "zone, and it is not built (R274 section 1(a)). Localise the key in your "
+        "frames before the audit, so its zone is stated rather than guessed."
+        % (what, d_tz))
 
 
 def align_key(key: pd.Series, decision: pd.Series, *, frame: str,
@@ -855,7 +887,7 @@ def select_cells(raw, model, decision, *, seconds=None, through=None,
             raise ProbeError("frame %r has no key column %r" % (fname, keycol))
         key = to_decision_clock(pd.to_datetime(f[keycol]), decision,
                                 decision_timezone=model.decision_timezone,
-                                what="frame %r's key %r" % (fname, keycol))
+                                what="frame %r, key %r" % (fname, keycol))
         same_clock(key, decision, what="frame %r's aligned key" % fname)
         kf = key.dt.floor("s")
         if wanted is not None:
@@ -1170,6 +1202,7 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
     # is invalid rather than merely smaller, and clearing the floor is not
     # sufficiency because the builder's own lookback is not in the model.
     res.decision_seconds = len(seconds)
+    res.selectable_seconds = pd.DatetimeIndex(seconds)
     stride_declared = not (isinstance(cohort_stride, str)
                            and cohort_stride == STRIDE_NOT_DECLARED)
     # An explicit selection has no stride to derive; see `cohort_seconds` below.
@@ -1224,7 +1257,9 @@ def run_probe_a(raw: Mapping[str, pd.DataFrame],
             if stride_declared:
                 # Below the MODEL's floor the derived refusal in
                 # `classify_cohorts` keeps precedence: it is the more specific.
-                if _smallest_gap(seconds, cohort_stride) >= stride_floor(
+                # THIS PASS's gaps, at its own offset. R274 §1(b).
+                if _smallest_gap(seconds, cohort_stride,
+                                 cohort_offset) >= stride_floor(
                         model, column_modes):
                     check_block_stride(cohort_stride, res.block_reach)
             elif cohort_stride < _rows_floor:

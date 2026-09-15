@@ -195,6 +195,14 @@ def build_parser() -> argparse.ArgumentParser:
                           "before the model says they had arrived. Without it, "
                           "the run is the column dependency probe, which needs "
                           "no model. `leakaudit schema` prints the format")
+    run.add_argument("--profile", metavar="path.json",
+                     help="a profile FILE you wrote: world-facing values -- "
+                          "decision_timezone, window_seconds, ties_available, "
+                          "bar_duration_seconds -- merged under --model's own. "
+                          "Every value it supplies is printed with the "
+                          "profile's name, and a key the model file also sets "
+                          "is taken from the model file and printed as "
+                          "overriding it. Needs --model")
     # THE SENTINEL, NOT 97, SO BOTH ENTRY POINTS RESOLVE THROUGH ONE RULE.
     # R265 §2. The value is still 97 when the flag is omitted -- the rule lives
     # in `run_probe_a` and applies the floor to it -- but omitting the flag and
@@ -332,7 +340,9 @@ def _probe_complete(frames, build, model, config, stride, slice_from, padding,
 
     THE STRIDE COMES FROM THE MEASUREMENT when none is declared: since R272
     §2(c) the largest of the model's floor, the single-second reach in rows plus
-    one, and the block reach in rows plus one, in positions. On the acceptance
+    one, and the block reach in rows plus one, in positions -- and since R274
+    §1(b) the model's floor is the smallest stride at which every pass clears it
+    on its own probed seconds, not the floor converted. On the acceptance
     fixture that is 61 -- 61 passes, pass one 175.1 s, ~198.7 min predicted
     (R271). SUPERSEDED, 2026-09-14: the R268 figure once given here -- 14 s ->
     stride 15 -> 15 passes, 202.0 s a pass, 54.7 min -- was produced by a reach
@@ -350,7 +360,6 @@ def _probe_complete(frames, build, model, config, stride, slice_from, padding,
     """
     from .availability import (DEFAULT_STRIDE, NOT_DECLARED,
                                STRIDE_NOT_DECLARED, run_probe_a, stride_floor)
-    import math
 
     from .reach import COMPLETE_SAMPLES
     import time
@@ -417,9 +426,19 @@ def _probe_complete(frames, build, model, config, stride, slice_from, padding,
             % (", ".join(never), block.k,
                "it" if len(never) == 1 else "them",
                "its" if len(never) == 1 else "their", _unbatched()))
+    # THE MODEL'S FLOOR, CHECKED EXACTLY ON EVERY PASS. R274 §1(b). Until R274
+    # this term converted the floor at one second a position, ceil(floor / 1 s),
+    # a bound that R273 §1(c) measured refusing a stride the exact check accepts
+    # and a single run would take. Each pass 0..S-1 is now checked on its own
+    # probed seconds by the check a single run's selection takes, and every pass
+    # at the stride below is checked again inside `run_probe_a` at its offset.
+    from .availability import stride_clearing_every_pass
     model_floor = stride_floor(model, config.column_modes or None)
-    parts = [("the model's floor, %s, at one second a position" % model_floor,
-              int(math.ceil(model_floor.total_seconds())))]
+    _selectable = (probe0.selectable_seconds
+                   if probe0.selectable_seconds is not None else [])
+    parts = [("the model's floor, %s, checked exactly on every pass's probed "
+              "gaps" % model_floor,
+              stride_clearing_every_pass(_selectable, model_floor))]
     single_rows = measured_rows(probe0.reach)
     if single_rows is not None:
         parts.append(("the single-second reach, %d row(s), plus one"
@@ -701,7 +720,7 @@ def _confirm_findings(frames, build, model, config, result, cap,
 def _run_availability(frames, build, model_path, stride, max_cohorts,
                       slice_from=None, padding=None, label_cohorts=None,
                       complete=False, confirm=False,
-                      confirm_cap=DEFAULT_CONFIRM_CAP):
+                      confirm_cap=DEFAULT_CONFIRM_CAP, profile=None):
     """The availability probe, end to end, from a declared model file."""
     from .coverage import DEFAULT_L2A_COHORTS, budget_arithmetic
     label_cohorts = (DEFAULT_L2A_COHORTS if label_cohorts is None
@@ -713,7 +732,7 @@ def _run_availability(frames, build, model_path, stride, max_cohorts,
     from .model_file import ModelFileError, load_model
 
     try:
-        config = load_model(model_path)
+        config = load_model(model_path, profile=profile)
     except ModelFileError as e:
         raise SystemExit(str(e))
     model = config.model
@@ -763,6 +782,12 @@ def _run_availability(frames, build, model_path, stride, max_cohorts,
                              bar_duration=config.bar_duration,
                              slice_from=slice_from,
                              padding=NOT_DECLARED if padding is None else padding)
+    # EVERY VALUE A PROFILE SUPPLIED, FIRST IN ABOUT THIS RUN. R274 §2(b). One
+    # line per key it filled and per key the model file overrode, so nothing a
+    # profile put into this run is silent.
+    from .model_file import profile_lines
+    _profile_lines = profile_lines(config)
+    result.notes[0:0] = _profile_lines
     # L2a RUNS ON THIS PATH TOO, AND IT JOINS THE LIBRARY ENTRY AT
     # `run_probe_l2a`. R261 §4. The refusal for a partial or malformed
     # declaration lives in `resolve_label_declaration`, which both entries
@@ -948,6 +973,8 @@ def _run_availability(frames, build, model_path, stride, max_cohorts,
     # Carried on the result so the exit-class decision reads the same numbers
     # the run printed, rather than recomputing them and being free to disagree.
     out.coverage = coverage
+    # And for `--quiet`, which prints no ABOUT THIS RUN. R274 §2(b).
+    out.profile_lines = tuple(_profile_lines)
     return out
 
 
@@ -1014,6 +1041,14 @@ def _main(argv=None) -> int:
               "eligible cohort of the availability probe, in passes at "
               "different offsets, and without an availability model there are "
               "no cohorts to complete.", file=sys.stderr)
+        return EXIT_USAGE
+    # R274 §2(b). A profile fills world-facing keys of a model file. Without one
+    # there is nothing for it to fill, and the column dependency probe reads none
+    # of its keys, so accepting it would be the read-and-ignored defect.
+    if getattr(args, "profile", None) is not None and not getattr(args, "model", None):
+        print("leakaudit: --profile needs --model. A profile fills world-facing "
+              "keys of a model file, and without one the column dependency probe "
+              "reads none of them.", file=sys.stderr)
         return EXIT_USAGE
     # R270 §2(b). `--confirm` re-probes the availability probe's findings, so
     # it needs the model for the same reason `--complete` does; a cap with
@@ -1094,6 +1129,7 @@ def _main(argv=None) -> int:
                                    label_cohorts=args.label_cohorts,
                                    complete=args.complete,
                                    confirm=args.confirm,
+                                   profile=args.profile,
                                    confirm_cap=(DEFAULT_CONFIRM_CAP
                                                 if args.confirm_cap is None
                                                 else args.confirm_cap))
@@ -1101,6 +1137,9 @@ def _main(argv=None) -> int:
         result = audit(frames, build)
 
     if args.quiet:
+        # A profile's values print here too. R274 §2(b): nothing fills silently.
+        for line in getattr(result, "profile_lines", ()):
+            print(line)
         for f in result.findings:
             print(f)
     else:

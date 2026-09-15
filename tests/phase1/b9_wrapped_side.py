@@ -44,6 +44,7 @@ a = ap.parse_args()
 
 t0 = time.time()
 inputs = fa.read_inputs("zc", "2025-01")
+# R273 §1(a), accepted R274 §1(d): as-built declaration added -- the naive decision stamps are UTC.
 model = AvailabilityModel(
     aggregate_frames={"magg": "ts_floor", "trades": "ts_event"},
     decision_column="timestamp", decision_timezone="UTC")

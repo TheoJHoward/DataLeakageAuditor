@@ -6637,3 +6637,170 @@ neither deletes.
 had not been asked?* **Not applicable** — these are the builds R273 ordered. The one
 finding made while building them, that §1(c)'s requested line is false, is recorded
 above with its input.
+
+## D-V30A-121 — a profile is the user's own declaration, printed key by key, and a complete run checks the model's floor exactly on every pass
+
+**Nothing here is a `PREREG.md` §6.2 result, and no Phase 1 figure moves.** The
+whole-frame guard compares Phase 1's path byte for byte after every change below.
+It ran once, over every probe-path edit in this batch, and came back SAME on all
+eight terms:
+- contaminated: `finding`, 250 eligible, 5,220 records, 29 features;
+- corrected: `observed_silence`, 250 eligible, 0 records, 0 features.
+
+It took **1,056 s**: capture 37 s, contaminated 505 s, corrected 514 s. The reach,
+printed beside the terms and never compared, was:
+- contaminated: 59 s, 59 rows;
+- corrected: 60 s, 60 rows.
+
+Both sides had 3 of 3 samples usable. The path-set fingerprint at the start was
+b083dd1f572b.
+
+**THE COMPLETE RUN'S MODEL FLOOR, R274 §1(b).** `_probe_complete` took the model's
+floor converted at one second a position, `ceil(floor / 1 s)`, at what was
+cli.py:422. R273 §1(c) measured that conversion refusing a stride the exact check
+accepts.
+
+**The conversion is gone.** Its value was read in three places, all inside
+`_probe_complete`, and all three now read the exact term instead:
+- the maximum that picks the governing floor;
+- the printed plan's list of terms;
+- the refusal of a declared stride.
+
+Nothing outside that function read it. `tests/phase1/block_reach_fixture_record.json`
+quotes "the model's floor 2 s" as text in a dated record; it does not read code.
+
+The term is now `availability.stride_clearing_every_pass`: the smallest stride at
+which every pass 0..S-1 clears the floor, each pass checked on its own probed
+seconds by `_smallest_gap`, the check a single run's selection takes.
+- **Monotone.** On sorted distinct seconds, the gap between seconds S positions
+  apart only grows with S, so the first stride that clears is the floor.
+- **Offset-aware.** `_smallest_gap` gained an `offset`.
+- **A defect found while building.** `run_probe_a`'s gate for a declared stride
+  used offset 0 for every pass, so pass o > 0 was checked on pass 0's gaps. It now
+  uses the pass's own offset.
+- **A slip, caught by the suite.** The first numpy version of `_smallest_gap` read
+  `asi8` in the index's own unit and treated it as nanoseconds. pandas 3 keeps a
+  seconds resolution, so 11 s read as 11 ns. Ten tests failed, including
+  `test_the_DEFAULT_stride_stays_where_it_CLEARS_the_block_floor` and the refusal
+  of a declared stride below the block floor. `as_unit("ns")` fixed it before any
+  guard ran.
+
+`test_COMPLETE_takes_the_MODEL_FLOOR_exactly_PER_PASS_not_converted` runs R273's
+counterexample as a complete run: decision seconds alternately 1 s and 10 s apart,
+a 5 s floor. It plans 2 passes at stride 2 where the conversion demanded 5, every
+pass clears, and every second is probed exactly once. The acceptance fixture's
+complete-run stride was not re-measured. Its governing term there was the reach,
+61 positions.
+
+**THE HARNESSES, R274 §1(d).** The six fixture models declaring UTC each carry a
+one-line comment naming R273 §1(a), R274 §1(d) and the reason. `v1_silent_cohorts.py`
+is run by nothing: a search of the repository finds only its own usage line and
+D-V30A-120. So it gains one header line saying it carries the pre-R272 raw
+comparison, and that its recorded result stands as dated.
+
+**THE MEASURED STATUS, R274 §1(e).** `tools/empty_population_probe.py` on
+`test_the_FIXTURE_model_DECLARES_UTC` returns `unprobed`, "no population helper
+this mechanism can empty". Its entry moves from R273's judged `out_of_scope` to
+`unprobed_reachable`, the status that measured result carries elsewhere in the file.
+
+This round's two new coverage assertions are measured the same way, both in
+`tests/phase1/test_profile.py`:
+- **`test_the_TEMPLATE_is_the_ONLY_profile_in_the_repository`:** `reddens`, so
+  `probed_healthy`.
+- **`test_the_TEMPLATE_is_printed_by_leakaudit_schema`:** `candidate`, with one
+  helper emptied, so `candidate_artifact`. The one patch the probe applied is the
+  test module's `subprocess.run`, which this function never calls, and its real
+  population, the template's lines, cannot be emptied by the mechanism.
+
+The counts move to 17 candidate_artifact, 7 probed_healthy, 57 unprobed_reachable
+and 28 out_of_scope, over 112 functions and 234 assertions.
+
+**THE APOSTROPHE, R274 §1(k).** The refusal message R273 quoted is fixed at both
+of its sites: the key's `what` text in `select_cells` and in `reach.head_cutoff`
+now reads "frame %r, key %r". **One more instance is not fixed.** It is
+`select_cells`' `same_clock` text, "frame %r's aligned key", at availability.py:891.
+It was found by a search made after the guard had taken its path-set fingerprint.
+Editing it would have needed a second guard run, so it is a line for the next
+probe-path batch. The message fires only on an aware/naive pair left after
+alignment, which the alignment above it refuses first.
+
+**DESIGN, R274 §1(g).** §10.9 is added at the end of `DESIGN.md`, in §10.8's pattern:
+- placed there because §1.2 sits above the registered line-pinned citation at
+  line 546;
+- profiles are named declarations under this tool, not defaults;
+- `decision_time` is never profile-supplied, and the `futures` row is superseded
+  on that point;
+- the four keys, and what is not a key;
+- no domain profile ships.
+
+`PREREG.md` is not touched. Line 263's "Profiles supply defaults" goes to
+`NEXT_REGISTRATION_REQUIREMENTS.md` as a posture tension: the registration says
+supply, the tool says name and print.
+
+**THE PROFILE, R274 §2.** `leakaudit run --model m.json --profile p.json`.
+- **What a profile is:** a version-5 file in the model file's own format, carrying
+  only `decision_timezone`, `window_seconds`, `ties_available` and
+  `bar_duration_seconds`.
+- **How it's loaded:** `model_file.load_profile` reads it, and its values take the
+  model file's own checks by running them. `load_model`'s body after the JSON read
+  became `_config_from_raw`, which both call.
+- **The merge:** explicit wins. `LoadedConfig` carries `profile_name`,
+  `profile_filled` and `profile_overridden`. `profile_lines` prints one line per
+  key, first in ABOUT THIS RUN, and under `--quiet` as well:
+  - `<key>: <value> from profile <name>`;
+  - `<key>: <file value> from the model file, overriding profile <name> (<its value>)`.
+- **The refusals.** Each is shown to fire:
+  - a key outside the four, where the message lists the four;
+  - each of `decision_column`, `aggregate_frames`, `raw_label`, `label_column`,
+    `split` and `label_availability`, each with its own "never supplies" message;
+  - a path that does not resolve, from the library and from the command line;
+  - versions 4, 6, "5" and none.
+
+  Beyond the four:
+  - a profile carrying none of the keys;
+  - a value the model file's check refuses, which is refused naming the profile;
+  - `--profile` without `--model`, which exits 2.
+- **The print cases:**
+  - no overrides gives four "from profile" lines;
+  - one explicit key gives three lines and one "overriding", and the probe gets
+    the model file's value;
+  - no `--profile` gives none.
+- **The complement:** `test_profile_complement.py` gives the population as
+  `--profile` plus every key a model file accepts.
+  - Five are **measured as read**: the flag and the four keys, fetched on a run
+    whose model file sets none of them, and carrying the profile's values.
+  - `version` is **declared unconsumed**, because the loader consumes it.
+  - The other eleven are **declared refused**, each shown refused by name.
+  - Totality: filled keys equal the keys printed "from profile", and overridden
+    keys equal those printed "overriding", with zero, one, two and all four keys
+    explicit.
+- **The template:** one, `src/leakaudit/templates/TEMPLATE.json`, named as a
+  template. `leakaudit schema` prints it, and `pyproject.toml` gains the package
+  data that ships it. A scan of every tracked and untracked JSON file finds it the
+  only profile in the repository. **An install from a built wheel was not run**,
+  so the package data is attested by the configuration, not by an install.
+
+**REGISTERS.**
+- `FEATURE_BACKLOG.md` item E marks the mechanism built, with the §1(j) line on
+  `column_modes` by role.
+- Item F carries the §1(a) line on a per-frame key zone, which the naive-key
+  refusal now names as what would lift it.
+- INSTALL.md's Changes section gains the `--complete` entry.
+- `test_default_sites.py` classifies three new defaults:
+  - `ProbeAResult.selectable_seconds`, a result carrier field;
+  - `_smallest_gap(offset=)`, legitimate, because 0 is the single run's selection;
+  - `load_model(profile=)`, legitimate, because None means no profile was named.
+- `test_decision_clock_consumers.py` gains the only-profile scan as a
+  `git ls-files` floor that sees untracked files.
+
+**THE SUITE BEFORE THE CHAIN.** 1,395 passed, 5 skipped, 3 failed.
+- Two failures are the manifest-hash tests. The two session files this batch
+  changed no longer match their attested hashes, and the commit chain re-attests
+  them.
+- The third is `test_prereg_stage_on_real_repo_exits_zero`, on
+  `hash_set_single_source`, where R252 left it.
+
+**R163 §1's exemption test.** *Would this have surfaced if the triggering question
+had not been asked?* **Not applicable** — these are the builds R274 ordered. Three
+findings made while building them are recorded above: the offset-0 gate, the unit
+slip, and the second apostrophe instance.
