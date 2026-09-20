@@ -6905,3 +6905,27 @@ had not been asked?* **No, and that is the point of §1.** The template had ship
 through a configuration line for a round; nobody would have found the stale build
 tree by reading either the line or the file it names. It took an install and a
 positive that was required to fail.
+
+## D-V30A-123 — the correction D-V30A-121 is owed, and where it landed
+
+**A correction, not a result.** Nothing here is a `PREREG.md` §6.2 result and no
+figure moves.
+
+**D-V30A-121 says "The other eleven are declared refused". It is TEN.** The profile
+population is `--profile` plus the fifteen keys a model file accepts, sixteen in
+all: five measured as read (the flag and the four profile keys), one declared
+unconsumed (`version`), and **ten** declared refused. The arithmetic is
+15 - 4 - 1 = 10, and `tests/phase1/test_profile_complement.py` builds the refused
+set by that subtraction, so the file has always been right and the sentence
+describing it was not. The refused ten are `aggregate_frames`, `decision_column`,
+`raw_label`, `label_column`, `split`, `label_availability`, `column_modes`,
+`timestamp_column`, `draft_provenance` and `note`.
+
+**Where it landed.** The error was reported to the author at R274's close and ruled
+at R275 §0(g) into "the next disclosure". The next disclosure was D-V30A-122, and
+the correction is not in it: that entry carries the wheel and the walk. So it lands
+here, one entry later than the ruling named, and the delay is recorded with it --
+an append-only ledger takes a correction only as a new entry, and this one was
+written after the entry it was aimed at had already been appended and pushed.
+
+D-V30A-121 is not edited. It is a dated record and it stands with this against it.
