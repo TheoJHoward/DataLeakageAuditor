@@ -87,6 +87,13 @@ CLASSIFICATION = {
     # 0 is `seconds[::k]`, exactly what a single run selects, and a complete run
     # passes each pass's offset explicitly.
     "availability.py::param::__init__(selectable_seconds=)": (NA, "result carrier field"),
+    # R276 §1(7). The remedy prices `--complete` from this run's own
+    # measurements, and asks for the stride the same way `_probe_complete` does.
+    # `start=1` searches from the smallest stride; a caller with a floor already
+    # in hand passes it.
+    "availability.py::param::stride_clearing_every_pass(start=)":
+        (L, "1 searches from the smallest stride, which is the whole question "
+            "when no other floor is in hand"),
     "availability.py::param::_smallest_gap(offset=)":
         (L, "0 is the first pass, `seconds[::k]`, which is what every single run "
             "selects; a complete run's passes pass their own offsets"),

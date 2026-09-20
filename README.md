@@ -39,6 +39,26 @@ class C amendment route it registers for itself, and has been changed once —
 instructions, verified by execution rather than by reading, are in
 [`INSTALL.md`](INSTALL.md).
 
+**The one command sequence, and every line of it was run.** Five lines from a built
+wheel to a finding, on your own pandas pipeline — this is the R276 §1(3) walk, executed
+in a fresh virtual environment with the working directory outside this repository:
+
+```bash
+python -m pip install dist/leakaudit-0.1.0.dev0-py3-none-any.whl          # 1 install the wheel
+leakaudit draft --frame snap=snap.csv --frame agg=agg.csv --out model.json # 2 draft the model
+# 3 open model.json and replace each "<FILL IN ...>": the decision column, and each column's mode
+PYTHONPATH=. leakaudit run --pipeline mypipe:build \
+    --frame snap=snap.csv --frame agg=agg.csv --model model.json           # 4 audit
+echo $?   # 5 the class: 0 clean · 1 findings · 2 refused · 3 nothing probed · 4 incomplete, silent
+```
+
+`leakaudit draft` writes the structure it can read from your frames and leaves blank
+what only you know — when each value became knowable. The audit **refuses** a draft
+whose blanks are still blank, and names them. `PYTHONPATH=.` is there because a console
+script does not put the working directory on `sys.path`; the tool says so itself if you
+leave it out. Build the wheel with `py -3.12 tools/build_wheel.py`, which builds through
+an sdist — an in-tree build can ship a file the configuration does not (D-V30A-122).
+
 **The API is unstable before 1.0.** The version is `0.1.0.dev0`, and shapes may
 change without deprecation — `audit()`'s return type already has. This is written
 here rather than discovered: the first external user should learn the API is

@@ -129,6 +129,15 @@ class Coverage:
     cohorts_head: int = 0
     rows_head: int = 0
     head_reason: str = ""
+    #: THE TABLE RECONCILES WITH THE FINDINGS ABOVE IT. R276 §1(6). A head cohort
+    #: is PROBED and counted ineligible -- its corruption ran, and what is
+    #: withheld for it is the silence, not the finding -- so a run could print two
+    #: findings over a table saying one cohort was probed, and a reader had no way
+    #: to place the difference. These two carry it: how many probed cohorts were
+    #: head cohorts, and how many finding cohorts the run listed. `verify` refuses
+    #: a table claiming fewer probed cohorts than the findings it sits under.
+    cohorts_head_probed: int = 0
+    findings_listed: int = 0
     #: L2a's two numbers. Its eligible set is every decision second it could
     #: probe, independent of stride and budget -- the same rule as L3.1's.
     l2a_probed: int = 0
@@ -173,6 +182,17 @@ class Coverage:
         Raised rather than asserted: `python -O` strips asserts, and this is a
         claim the run prints, not a debugging aid.
         """
+        # R276 §1(6). Findings come from cohorts that were probed, head cohorts
+        # included, so a table whose probed counts cannot hold them is describing
+        # a different run from the one printed above it.
+        if self.findings_listed > self.cohorts_probed + self.cohorts_head_probed:
+            raise ValueError(
+                "the coverage table says %d cohort(s) were probed (%d of them "
+                "head cohorts) and the run listed %d finding cohort(s): a "
+                "finding can only come from a cohort that was probed, so this "
+                "table does not describe the result it sits under"
+                % (self.cohorts_probed, self.cohorts_head_probed,
+                   self.findings_listed))
         placed = (self.cohorts_probed + self.cohorts_unprobed
                   + self.cohorts_ineligible)
         if placed != n_seconds or self.rows_total != n_rows:
@@ -209,6 +229,21 @@ class Coverage:
                    self.rows_ineligible - self.rows_head))
         elif self.head_reason:
             lines.append("  " + self.head_reason)
+        if self.cohorts_head_probed:
+            lines.append(
+                "  of those ineligible head cohorts, %d WAS PROBED (its "
+                "corruption ran; only the silence is withheld for it), so this "
+                "run's %d finding cohort(s) sit over %d probed cohort(s) in "
+                "total -- the `probed` column above counts the eligible ones."
+                % (self.cohorts_head_probed, self.findings_listed,
+                   self.cohorts_probed + self.cohorts_head_probed)
+                if self.cohorts_head_probed == 1 else
+                "  of those ineligible head cohorts, %d WERE PROBED (their "
+                "corruption ran; only the silence is withheld for them), so "
+                "this run's %d finding cohort(s) sit over %d probed cohort(s) "
+                "in total -- the `probed` column above counts the eligible ones."
+                % (self.cohorts_head_probed, self.findings_listed,
+                   self.cohorts_probed + self.cohorts_head_probed))
         if self.context_rows:
             lines.append(
                 "  %d row(s) sit in a slice's padding: context the builder "

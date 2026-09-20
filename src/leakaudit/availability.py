@@ -289,7 +289,11 @@ def require_decision_column(dcol, where: str) -> str:
     # equal to it.
     if isinstance(dcol, str) and dcol == NOT_SET:
         raise ProbeError(
-            "no decision column is declared, and there is no default for it. %s\n"
+            # R276 §1(2). `where` used to be dropped in as its own sentence --
+            # "...no default for it. the model file m.json" -- which reads as a
+            # fragment because it is one. It is the asker, so it is named as one.
+            "no decision column is declared, and there is no default for it "
+            "(asked by %s).\n"
             "`decision_column` names the column of your BUILT OUTPUT holding "
             "each row's decision instant -- the moment that row's prediction was "
             "made, against which every availability instant is compared.\n"

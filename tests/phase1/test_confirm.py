@@ -143,7 +143,8 @@ def test_LAGPATCH_is_INTERFERENCE_and_EXITS_INTERFERENCE(work, capsys):
     assert "every silence in this run is none(interference detected at stride 3" in out
     assert code == cli.EXIT_INTERFERENCE == 5, (
         "interference is its own exit, not a usage error")
-    assert "RUN INTERFERED" in cap.err
+    # R276 §1(10): the report is on ONE stream, and this line is report.
+    assert "RUN INTERFERED" in cap.out and "RUN INTERFERED" not in cap.err
 
 
 def test_LOOKAHEAD_is_CONFIRMED_and_names_the_later_second(work, capsys):

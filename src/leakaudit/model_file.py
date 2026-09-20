@@ -365,8 +365,12 @@ printed as "<key>: <value> from the model file, overriding profile <name>
 (<its value>)". A profile never supplies decision_column, aggregate_frames,
 raw_label, label_column, split or label_availability -- those describe your
 data -- and one naming any of them is refused. No domain profile ships: this
-project's own data yielded none a stranger would want. The one template, which
-ships with the package:
+project's own data yielded none a stranger would want. The one template ships
+with the package, and this build's copy of it is at
+
+__PROFILE_PATH__
+
+which is a path you can pass straight to --profile. It reads:
 
 __PROFILE_TEMPLATE__
 
@@ -421,7 +425,8 @@ not version coupling.
    .replace("__IS_ARE__",
             "is" if len(ALL_MODES) - len(FILE_MODES) == 1 else "are") \
    .replace("__ROLE_LINES__", _role_lines()) \
-   .replace("__PROFILE_TEMPLATE__", _template_text())
+   .replace("__PROFILE_TEMPLATE__", _template_text()) \
+   .replace("__PROFILE_PATH__", "    %s" % TEMPLATE_PATH)
 
 
 def _refuse(msg: str, path: Path) -> None:

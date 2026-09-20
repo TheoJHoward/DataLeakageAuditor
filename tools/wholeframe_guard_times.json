@@ -2,14 +2,6 @@
  "what": "Wall times of completed whole-frame guard runs. Written by tools/wholeframe_guard.py, never by hand (R263 section 4). The last entry is what the next run prints its comparison against.",
  "runs": [
   {
-   "when": "2026-09-09 19:06",
-   "commit": "5c0ed72",
-   "capture": 42.4,
-   "contaminated": 229.6,
-   "corrected": 222.9,
-   "total": 494.9
-  },
-  {
    "when": "2026-09-10 17:44",
    "commit": "3232931",
    "capture": 42.4,
@@ -84,6 +76,15 @@
    "corrected": 461.5,
    "total": 979.9,
    "path_set_fingerprint": "cb0cadd3c9e9cf16ab3e00c35a09d70f60cef361b46ad345f77b4d2a4ccf0077"
+  },
+  {
+   "when": "2026-09-20 11:07",
+   "commit": "d1817f3",
+   "capture": 38.9,
+   "contaminated": 556.1,
+   "corrected": 515.3,
+   "total": 1110.3,
+   "path_set_fingerprint": "2114304d5f0d51e6f5a3870f8993ae1d8b8cfe7c1d40cc7963c504e212fce039"
   }
  ]
 }

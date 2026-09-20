@@ -404,3 +404,35 @@ The tool does something narrower, under R269 §3 and as built at R274 §2:
    ties-available is already the default.
 
 *`PREREG.md` is not touched. `DESIGN.md` §10.9 carries the tool-side note.*
+
+---
+
+## L1.2's confirmation needs two declarations this registration does not have
+
+*Recorded at R276 §2(a), from the R275 §3 establish. The row is parked behind
+these two; neither is a defect in the specification, and both are things a
+reader of §2.8 would assume exist.*
+
+`DESIGN.md` §2.8 and `PREREG.md` §4.4 specify the intervention in five steps:
+hold the training population byte-identical, perturb only test observations,
+re-run the flagged preprocessing path, check whether fitted state or transformed
+training output changed, and attribute the change to the flagged source location.
+
+**1. A flagged-site producer, and it is a registration event.** Steps 3 and 5
+need a SITE — the wrapped static analyser's location, and a component that can
+be stubbed. Nothing in this tool produces one. `PREREG.md` line 1292 also states
+that nothing about L1.2's confirmation may be published before `prereg-static`
+is registered, so the first prerequisite is not code at all.
+
+**2. An input-side split declaration.** The intervention perturbs test rows in
+the INPUT, before the preprocessing runs. This registration's split is row
+positions into the built output (§2.3's `split`, read as `frame.iloc[...]`).
+Those are different sets whenever a builder filters, reorders or reshapes rows,
+and nothing declares the correspondence.
+
+**What the next registration is asked to decide:** whether the split declaration
+is over input rows, output rows, or both with a stated correspondence — and
+whether a confirmation that names NO site (steps 1, 2 and 4 alone, answering
+"does anything fit on test data?") is a reportable result in its own right, or
+only an input to the sited form. This tool can build the site-less form; it
+cannot call the answer an L1.2 result under this registration.

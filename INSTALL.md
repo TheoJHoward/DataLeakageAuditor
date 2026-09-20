@@ -56,16 +56,27 @@ command below was executed on 2026-09-20; the working directory was outside this
 the interpreter was a fresh virtual environment, never an editable install.
 
 ```bash
-python -m pip install build
-python -m build --outdir /tmp/dist          # sdist, then the wheel FROM the sdist
+py -3.12 tools/build_wheel.py --out /tmp/dist   # clears build/, sdist, wheel FROM the sdist
 python -m venv /tmp/venv
 /tmp/venv/Scripts/python -m pip install /tmp/dist/leakaudit-0.1.0.dev0-py3-none-any.whl
 cd /tmp/walk                                 # outside the checkout
-leakaudit schema                             # prints the profile template
+leakaudit schema                             # prints the profile template and its path
 PYTHONPATH=. leakaudit run --pipeline mypipe:build --frame snap=snap.csv --frame agg=agg.csv \
     --model m.json --profile /tmp/venv/Lib/site-packages/leakaudit/templates/TEMPLATE.json
 PYTHONPATH=. leakaudit run --pipeline mypipe:build --frame snap=snap.csv --frame agg=agg.csv
 ```
+
+**The paths above are placeholders; the verification ran on Windows 11 under PowerShell with
+CPython 3.12**, so the real ones were a session scratch directory and `…\venv\Scripts\`. The
+build tool is new at R276 §1(5): `pip wheel .` builds in-tree, and an in-tree build inherits
+whatever an earlier one left in `build/lib` — which is how R275's first known positive failed
+to fail.
+
+**Which environment was which.** The PASSING checks were run in a **full fresh virtual
+environment**, with `numpy`, `pandas` and `pyarrow` installed into it by pip — that is the one
+the result rests on. The FAILING known positive used a `--system-site-packages` venv with
+`--no-deps`, so only `leakaudit` came from the wheel under test; that is sound for what it
+shows, which is a file missing from a wheel.
 
 | check | result |
 |---|---|

@@ -308,30 +308,32 @@ def _importable(tmp_path):
         sys.modules.pop("userpipe", None)
 
 
-def test_a_missing_frame_file_is_refused_not_skipped(tmp_path):
-    with _importable(tmp_path), pytest.raises(SystemExit, match="no such file"):
-        cli_main(["run", "--pipeline", "userpipe:build",
-                  "--frame", "raw=%s" % (tmp_path / "absent.csv")])
+def test_a_missing_frame_file_is_refused_not_skipped(tmp_path, capsys):
+    with _importable(tmp_path):
+        assert cli_main(["run", "--pipeline", "userpipe:build",
+                         "--frame", "raw=%s" % (tmp_path / "absent.csv")]) == 2
+    assert "no such file" in capsys.readouterr().err
 
 
-def test_an_unreadable_extension_is_refused_not_skipped(tmp_path):
+def test_an_unreadable_extension_is_refused_not_skipped(tmp_path, capsys):
     bad = tmp_path / "data.xlsx"
     bad.write_text("not really", encoding="utf-8")
-    with _importable(tmp_path), pytest.raises(SystemExit) as e:
-        cli_main(["run", "--pipeline", "userpipe:build",
-                  "--frame", "raw=%s" % bad])
-    assert "skipping it would probe less than you asked" in str(e.value)
+    with _importable(tmp_path):
+        assert cli_main(["run", "--pipeline", "userpipe:build",
+                         "--frame", "raw=%s" % bad]) == 2
+    assert "skipping it would probe less than you asked" in capsys.readouterr().err
 
 
-def test_a_pipeline_spec_without_a_function_is_refused(tmp_path):
-    with pytest.raises(SystemExit, match="names no function"):
-        cli_main(["run", "--pipeline", "userpipe", "--frame", "raw=x.csv"])
+def test_a_pipeline_spec_without_a_function_is_refused(tmp_path, capsys):
+    assert cli_main(["run", "--pipeline", "userpipe",
+                     "--frame", "raw=x.csv"]) == 2
+    assert "names no function" in capsys.readouterr().err
 
 
-def test_no_frames_is_refused(tmp_path):
-    with _importable(tmp_path), pytest.raises(SystemExit,
-                                              match="nothing to probe"):
-        cli_main(["run", "--pipeline", "userpipe:build"])
+def test_no_frames_is_refused(tmp_path, capsys):
+    with _importable(tmp_path):
+        assert cli_main(["run", "--pipeline", "userpipe:build"]) == 2
+    assert "nothing to probe" in capsys.readouterr().err
 
 
 def test_the_console_script_is_declared():

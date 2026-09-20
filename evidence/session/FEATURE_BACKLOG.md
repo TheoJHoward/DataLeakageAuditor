@@ -51,12 +51,28 @@ the temporal corruption case. The cost model already reserves its `C × S` term.
 the tool currently cannot probe it.
 
 ### B. `DESIGN.md` §2.8 — L1.2's split-specific confirmation
-**Status: NOT STARTED.** Needs the split, not the availability model, so it sits
-beside `checks.py` rather than the probe.
-**What it would take:** hold the declared training population byte-identical and
-confirm the split-specific claim. Reuses the split the checks already parse.
+**Status: PARKED at R276 §2(a), behind two prerequisites.** The establish
+(R275 §3) found both, and neither is a round's work:
+
+1. **A flagged-site producer.** §2.8's steps 3 and 5 re-run "the flagged
+   preprocessing path" and stub "that component". This package wraps no static
+   analyser, so nothing produces a site. And `PREREG.md` line 1292 bars
+   publishing anything about L1.2's confirmation until `prereg-static` is
+   registered, which makes the first prerequisite a **registration event**.
+2. **An input-side split declaration.** The confirmation perturbs test
+   observations in the INPUT, before the preprocessing runs. The model file's
+   `split` is row positions into the BUILT output, read as `frame.iloc[...]`.
+   Which input rows are test is a fact about the world: declared, never
+   inferred from positions.
+
+**What it would take, once those exist:** hold the declared training population
+byte-identical, perturb only test observations, re-run the flagged path, and
+attribute the change.
 **Value:** medium — model-free, so it costs a stranger nothing, which is the
 argument `checks.py` was built on.
+**Next round, read only (R276 §2(b)):** establish the SITE-LESS form — steps 1,
+2 and 4 of DESIGN's five, which answer "does anything fit on test data?" without
+saying where. It is never quoted as an L1.2 result.
 
 ### C. `DESIGN.md` §5.2 — `quick` mode as a first-class CI default
 **Status: BUILT (R267, R268) — and ruled other than §5.2 wrote it.** `quick`
@@ -335,6 +351,34 @@ every one is a Phase 2 observation rather than a `PREREG.md` §6.2 result.
 10. The incomplete-and-silent remedy prints on **stderr** while the coverage table
     it refers to prints on stdout, so a stranger piping stdout keeps the number and
     loses the instruction.
+
+**R276 §1 ranked them by who is hurt -- an automated reader, then a stranger at
+the terminal, then a maintainer -- and fixed all ten. Each was re-checked from a
+wheel built by `tools/build_wheel.py`:**
+
+1. `cli.Refusal` -> `main` -> `EXIT_USAGE`: every refusal exits **2**.
+   `tests/phase1/test_refusal_exit_class.py` holds both halves of the totality --
+   no module raises `SystemExit` but the console entry point, and 25 live
+   refusals each come back 2.
+10. The report, the coverage table and the remedy are all on **stdout**; stderr
+    carries refusals and diagnostics. `cli.STREAMS` states it and `run --help`
+    prints it.
+2. The decision-column refusal names its asker inside the sentence: "(asked by
+   the model file m.json)".
+3. README's first screen carries the five-line sequence, every line executed
+   this round from the wheel.
+4. Done at R275; INSTALL carries the route.
+5. `tools/build_wheel.py` clears `build/`, builds through an sdist and prints the
+   wheel's file list.
+6. The coverage table reconciles: a probed head cohort is named, and
+   `Coverage.verify` refuses a table whose probed counts cannot hold the findings
+   printed over it.
+7. The remedy prices `--complete` from this run's own stride and clean build,
+   in the unit the number is legible in.
+8. `leakaudit schema` prints the installed template's PATH beside its content.
+9. `draft` is in README's sequence, which is where a scaffold belongs.
+(i) `draft --profile` writes the four keys in with `from profile <name>` per key
+    in `draft_provenance`, and leaves every other blank blank.
 
 ---
 

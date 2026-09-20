@@ -77,16 +77,19 @@ def _model(work, name, obj):
 def test_item2_a_module_beside_you_names_the_route_out(work):
     """The wrong turn: run from the module's own directory with no PYTHONPATH.
 
-    `SystemExit(message)` is this module's existing idiom for a usage error and
-    Python prints it as one clean line with no traceback, which is the observable
-    behaviour under test. What is asserted is the CONTENT.
+    `cli.Refusal` is this module's idiom for a usage error since R276 §1(1):
+    `main` prints it as one clean line on stderr with no traceback and returns
+    exit 2. What is asserted is the CONTENT.
     """
+    import contextlib
+    import io
     for p in (str(work), ""):
         while p in sys.path:
             sys.path.remove(p)
-    with pytest.raises(SystemExit) as e:
-        cli.main(_args(work))
-    text = str(e.value)
+    err = io.StringIO()
+    with contextlib.redirect_stderr(err):
+        assert cli.main(_args(work)) == cli.EXIT_USAGE
+    text = err.getvalue()
     assert "Traceback" not in text
     assert "PYTHONPATH" in text, (
         "the message names the failure and not the route out, which is the "
@@ -101,14 +104,18 @@ def test_item2_an_import_that_RAISES_is_not_called_a_path_problem(work):
     """A module that IS found and blows up must not be blamed on the path."""
     (work / "boom.py").write_text("raise RuntimeError('inside my module')\n",
                                   encoding="utf-8")
+    import contextlib
+    import io
     sys.path.insert(0, str(work))
+    err = io.StringIO()
     try:
-        with pytest.raises(SystemExit) as e:
-            cli.main(["run", "--pipeline", "boom:build",
-                      "--frame", "stations=%s" % (work / "stations.csv")])
+        with contextlib.redirect_stderr(err):
+            assert cli.main(["run", "--pipeline", "boom:build",
+                             "--frame",
+                             "stations=%s" % (work / "stations.csv")]) == cli.EXIT_USAGE
     finally:
         sys.path.remove(str(work))
-    text = str(e.value)
+    text = err.getvalue()
     assert "inside your own code" in text and "RuntimeError" in text
     assert "PYTHONPATH" not in text, (
         "a module that was found and raised is being offered a path fix:\n%s"

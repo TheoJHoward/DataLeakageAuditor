@@ -84,12 +84,19 @@ def _frames(work):
 
 
 def _run(argv):
-    """Invoke the CLI and return (exit code, everything it printed)."""
-    try:
+    """Invoke the CLI and return (exit code, what it printed on stderr).
+
+    R276 §1(1): a refusal is `cli.Refusal`, caught in `main`, which prints the
+    message on stderr and returns `EXIT_USAGE`. It is no longer a `SystemExit`
+    carrying its own text, because `SystemExit(message)` exits **1** -- the
+    findings class.
+    """
+    import contextlib
+    import io
+    err = io.StringIO()
+    with contextlib.redirect_stderr(err):
         rc = cli.main(argv)
-    except SystemExit as e:
-        return (e.code if isinstance(e.code, int) else 2), str(e)
-    return rc, ""
+    return rc, err.getvalue()
 
 
 # ---------------------------------------------------------------------------

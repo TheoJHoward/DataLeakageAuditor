@@ -90,10 +90,14 @@ def _run(work, model):
     argv = ["run", "--pipeline", PIPE + ":build",
             "--frame", "agg=%s" % (work / "agg.csv"),
             "--frame", "dec=%s" % (work / "dec.csv"), "--model", model]
-    try:
-        return cli.main(argv), ""
-    except SystemExit as e:
-        return (e.code if isinstance(e.code, int) else 2), str(e)
+    # R276 §1(1). A refusal exits 2 with its message on stderr, rather than
+    # raising SystemExit(message), which Python exits 1 on.
+    import contextlib
+    import io
+    err = io.StringIO()
+    with contextlib.redirect_stderr(err):
+        rc = cli.main(argv)
+    return rc, err.getvalue()
 
 
 BASE = {"version": 3, "aggregate_frames": {"agg": "k"}, "window_seconds": 1.0}

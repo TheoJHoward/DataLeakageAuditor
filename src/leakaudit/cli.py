@@ -50,6 +50,33 @@ EXIT_PRECEDENCE = (
     "to be re-done at the stride the message names) > 1 findings > 3 nothing "
     "probed > 4 incomplete and silent > 0 clean.")
 
+#: Which stream carries what. R276 §1(10). A reader capturing stdout gets the
+#: whole report -- findings, the coverage table, and the line that says what to
+#: do next -- and nothing it needs is on stderr. Until R276 the remedy for an
+#: incomplete run printed on stderr while the coverage table it referred to
+#: printed on stdout, so a `> report.txt` kept the number and lost the
+#: instruction.
+STREAMS = (
+    "streams: stdout carries the report -- findings, notes, the coverage table "
+    "and the line saying what to do next. stderr carries refusals and "
+    "diagnostics only, so capturing stdout captures everything the result "
+    "rests on.")
+
+
+class Refusal(Exception):
+    """A usage refusal: the run was not made, and the reason is the message.
+
+    R276 §1(1). EVERY refusal exits 2, and this is how. Until R276 the argument
+    and loader refusals raised `SystemExit(message)`, which Python exits **1**
+    on -- the FINDINGS class. A continuous-integration reader that treats 1 as
+    "leaks found" was told a misspelt key was a finding, which is the worst
+    misread this tool can produce: it turns a configuration error into a
+    result. `main` catches this with the library's own deliberate errors and
+    returns `EXIT_USAGE`, so the mapping from refusal to exit class lives in
+    exactly one place and `tests/phase1/test_refusal_exit_class.py` enumerates
+    the sites that reach it.
+    """
+
 
 def _expected_errors() -> tuple:
     """The exceptions this package raises ON PURPOSE, as a tuple to catch.
@@ -63,12 +90,13 @@ def _expected_errors() -> tuple:
     from .contract import ContractError
     from .model_file import ModelFileError
     from .modes import ModeError
-    return (ProbeError, ContractError, ModelFileError, ModeError)
+    return (ProbeError, ContractError, ModelFileError, ModeError,
+            Refusal)
 
 
 def _load_callable(spec: str):
     if ":" not in spec:
-        raise SystemExit(
+        raise Refusal(
             "--pipeline takes module:function, e.g. mypkg.features:build. "
             "Got %r, which names no function." % spec)
     mod_name, func_name = spec.rsplit(":", 1)
@@ -85,7 +113,7 @@ def _load_callable(spec: str):
         if missing and missing.split(".")[0] == mod_name.split(".")[0]:
             here = Path.cwd()
             local = here / (mod_name.split(".")[0] + ".py")
-            raise SystemExit(
+            raise Refusal(
                 "could not import %r: no module of that name is on the import "
                 "path.%s\n"
                 "A console script does not add the working directory to "
@@ -102,20 +130,20 @@ def _load_callable(spec: str):
                     "almost certainly the one you meant." % local.name)
                    if local.is_file() else "",
                    here, func_name))
-        raise SystemExit(
+        raise Refusal(
             "could not import %r: %s: %s\nThe module was found and failed while "
             "importing, so this is an error inside your own code rather than a "
             "path problem." % (mod_name, type(e).__name__, e))
     except Exception as e:                                  # noqa: BLE001
-        raise SystemExit(
+        raise Refusal(
             "could not import %r: %s: %s\nThe module was found and raised while "
             "importing, so this is an error inside your own code rather than a "
             "path problem." % (mod_name, type(e).__name__, e))
     fn = getattr(mod, func_name, None)
     if fn is None:
-        raise SystemExit("%r has no attribute %r" % (mod_name, func_name))
+        raise Refusal("%r has no attribute %r" % (mod_name, func_name))
     if not callable(fn):
-        raise SystemExit("%s:%s is not callable" % (mod_name, func_name))
+        raise Refusal("%s:%s is not callable" % (mod_name, func_name))
     return fn
 
 
@@ -146,7 +174,7 @@ def _load_frame(path: Path):
         return pd.read_csv(path)
     if suffix in (".json",):
         return pd.read_json(path)
-    raise SystemExit(
+    raise Refusal(
         "%s: unsupported extension %r. Readable: .parquet, .csv, .json. "
         "A frame this command cannot read is refused rather than skipped -- "
         "skipping it would probe less than you asked and say nothing about it."
@@ -157,15 +185,15 @@ def _parse_frames(pairs) -> dict:
     frames = {}
     for pair in pairs or ():
         if "=" not in pair:
-            raise SystemExit(
+            raise Refusal(
                 "--frame takes name=path, e.g. raw=data.parquet. Got %r." % pair)
         name, path = pair.split("=", 1)
         p = Path(path)
         if not p.exists():
-            raise SystemExit("%s: no such file (for frame %r)" % (p, name))
+            raise Refusal("%s: no such file (for frame %r)" % (p, name))
         frames[name] = _load_frame(p)
     if not frames:
-        raise SystemExit("no --frame given; there is nothing to probe")
+        raise Refusal("no --frame given; there is nothing to probe")
     return frames
 
 
@@ -178,7 +206,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     run = sub.add_parser(
         "run", help="probe which source columns your pipeline's output reads",
-        epilog=EXIT_PRECEDENCE)
+        epilog=EXIT_PRECEDENCE + "\n" + STREAMS)
     run.add_argument("--pipeline", required=True, metavar="module:function",
                      help="your build function. It is called with ONE argument "
                           "-- a dict keyed by the --frame names, whose values "
@@ -295,6 +323,13 @@ def build_parser() -> argparse.ArgumentParser:
     dft.add_argument("--frame", action="append", metavar="name=path",
                      help="an input frame; repeat for several. .parquet, .csv "
                           "or .json")
+    dft.add_argument("--profile", metavar="path.json",
+                     help="a profile FILE you wrote: its world-facing values "
+                          "are written into the draft, each recorded in "
+                          "`draft_provenance` as `from profile <name>`. The "
+                          "draft still leaves the decision column and the "
+                          "column modes blank, and the audit still refuses a "
+                          "required field you have not filled")
     dft.add_argument("--out", metavar="path.json",
                      help="write the draft here instead of printing it. REFUSES "
                           "if the file exists: a hand-written model's "
@@ -315,7 +350,7 @@ def _run_checks(frames, build, model_path):
         try:
             config = load_model(model_path)
         except ModelFileError as e:
-            raise SystemExit(str(e))
+            raise Refusal(str(e))
         label, train, test = config.label_column, config.train_idx, config.test_idx
 
     built = build(dict(frames))
@@ -734,10 +769,10 @@ def _run_availability(frames, build, model_path, stride, max_cohorts,
     try:
         config = load_model(model_path, profile=profile)
     except ModelFileError as e:
-        raise SystemExit(str(e))
+        raise Refusal(str(e))
     model = config.model
     if not config.has_availability_model:
-        raise SystemExit(
+        raise Refusal(
             "%s declares no `aggregate_frames`, so there is no availability "
             "model to probe with. Declare one, or drop --model and run the "
             "column dependency probe, or use `leakaudit check` for the checks "
@@ -813,12 +848,18 @@ def _run_availability(frames, build, model_path, stride, max_cohorts,
     # Eligibility is derived, not assumed: a second no aggregate frame carries a
     # row in has nothing to corrupt, and scheduling it would report a dead
     # process where the truth is an empty probe surface.
-    built = build(dict(frames))
     # THE THIRD CONSUMER, AND IT HAD NO REFUSAL OF ITS OWN. R238 §1. These two
     # lines read the clock directly and were covered only because `run_probe_a`
     # above calls the shared refusal first -- ordering again, in the one
     # consumer with no membership test beside it. Asking here makes the cover
     # a call rather than a line number.
+    # TIMED, BECAUSE THE REMEDY QUOTES IT. R276 §1(7). A run that tells a user to
+    # re-run with --complete prices it from this run's own clean build rather
+    # than from a figure measured on another machine or another builder.
+    import time as _time
+    _t_build = _time.time()
+    built = build(dict(frames))
+    _build_seconds = _time.time() - _t_build
     dcol = require_decision_column(model.decision_column,
                                    "the CLI's cohort selection")
     # THE SECOND COHORT SELECTION, AND THE SLICE HAS TO REACH IT. R255 §5.
@@ -896,7 +937,12 @@ def _run_availability(frames, build, model_path, stride, max_cohorts,
         head_reason=(getattr(result, "head_reason", "")
                      if (_cutoff is None or _H) else ""),
         l2a_probed=label_result.n_cohorts,
-        l2a_eligible=label_result.n_eligible)
+        l2a_eligible=label_result.n_eligible,
+        # R276 §1(6). A head cohort the stride picked WAS probed, and a finding
+        # in it is listed above, so the table carries both and `verify` refuses
+        # a probed count that cannot hold the findings printed over it.
+        cohorts_head_probed=len(set(picked) & _H),
+        findings_listed=len({c.second for c in result.findings}))
     coverage.verify(len(_universe), len(built))
     traces = traces_for(result, elig.eligible, case_id="user")
     for note in elig.notes:
@@ -973,6 +1019,32 @@ def _run_availability(frames, build, model_path, stride, max_cohorts,
     # Carried on the result so the exit-class decision reads the same numbers
     # the run printed, rather than recomputing them and being free to disagree.
     out.coverage = coverage
+    # WHAT `--complete` WOULD COST ON THIS DATA. R276 §1(7). The remedy for an
+    # incomplete run used to name the flag and no number, so a user had to
+    # discover the cost by paying it. Both terms are measurements this run
+    # already made: the passes are the stride its own reach and model floor
+    # give, and the seconds are its own clean build. It is a FLOOR -- a pass
+    # corrupts, rebuilds and compares, so it costs more than a clean build --
+    # and it says so rather than presenting a floor as an estimate.
+    out.complete_cost = None
+    if not complete:
+        from .availability import stride_clearing_every_pass, stride_floor
+        from .reach import measured_rows
+        _floor = stride_floor(model, config.column_modes or None)
+        _secs = getattr(result, "selectable_seconds", None)
+        _terms = [("the model's floor, %s, on every pass's probed gaps" % _floor,
+                   stride_clearing_every_pass(
+                       _secs if _secs is not None else [], _floor))]
+        for _name, _r in (("the single-second reach", result.reach),
+                          ("the block reach", result.block_reach)):
+            _rows = measured_rows(_r)
+            if _rows is not None:
+                _terms.append(("%s, %d row(s), plus one" % (_name, _rows),
+                               _rows + 1))
+        _basis, _passes = max(_terms, key=lambda t: t[1])
+        out.complete_cost = {"passes": _passes, "basis": _basis,
+                             "build_seconds": _build_seconds,
+                             "minutes": _passes * _build_seconds / 60.0}
     # And for `--quiet`, which prints no ABOUT THIS RUN. R274 §2(b).
     out.profile_lines = tuple(_profile_lines)
     return out
@@ -1045,7 +1117,11 @@ def _main(argv=None) -> int:
     # R274 §2(b). A profile fills world-facing keys of a model file. Without one
     # there is nothing for it to fill, and the column dependency probe reads none
     # of its keys, so accepting it would be the read-and-ignored defect.
-    if getattr(args, "profile", None) is not None and not getattr(args, "model", None):
+    # R276 §1(i): `draft` takes a profile too, and writes its keys in with their
+    # provenance. This guard is about `run`, where a profile with no model file
+    # would fill nothing.
+    if (args.command == "run" and getattr(args, "profile", None) is not None
+            and not getattr(args, "model", None)):
         print("leakaudit: --profile needs --model. A profile fills world-facing "
               "keys of a model file, and without one the column dependency probe "
               "reads none of them.", file=sys.stderr)
@@ -1083,10 +1159,17 @@ def _main(argv=None) -> int:
         from .inference import DraftTargetExists
         from .inference import draft as make_draft
         from .inference import render_draft, write_draft
+        # R276 §1(i). The profile is read BEFORE the frames: a profile that does
+        # not resolve refuses here rather than after megabytes are read for a
+        # draft that was never going to be written.
+        prof = None
+        if getattr(args, "profile", None) is not None:
+            from .model_file import load_profile
+            prof = load_profile(args.profile)
         frames = _parse_frames(args.frame)
         d = make_draft(frames)
         if not args.out:
-            print(render_draft(d))
+            print(render_draft(d, profile=prof))
             return EXIT_OK_SILENT
         # WRITING IS THE DEFAULT PATH A USER TAKES. R233 §1(a). Printing only
         # means the user hand-copies the output into a file, which is the
@@ -1099,10 +1182,11 @@ def _main(argv=None) -> int:
                 generated_by="leakaudit draft",
                 commit=_head_commit(),
                 source_frames={k: (int(v.shape[0]), int(v.shape[1]))
-                               for k, v in frames.items()})
+                               for k, v in frames.items()},
+                profile=prof)
         except DraftTargetExists as e:
-            raise SystemExit(str(e))
-        print(render_draft(d))
+            raise Refusal(str(e))
+        print(render_draft(d, profile=prof))
         print()
         print("WRITTEN: %s" % p)
         print("It is a DRAFT: its structure is determined and its availability "
@@ -1157,8 +1241,7 @@ def _main(argv=None) -> int:
               "none(%s); the CONFIRMED findings printed above are real "
               "regardless. Re-run without --stride so the floor from the block "
               "reach is used, or with a stride above it. Exit %d."
-              % (_interference, _interference, EXIT_INTERFERENCE),
-              file=sys.stderr)
+              % (_interference, _interference, EXIT_INTERFERENCE))
         return EXIT_INTERFERENCE
     if result.findings:
         return EXIT_FINDINGS
@@ -1176,14 +1259,31 @@ def _main(argv=None) -> int:
               "%d of %d cohorts probed, and the acceptance is yours."
               % (cov.cohorts_probed, cov.cohorts_eligible))
         return EXIT_OK_SILENT
+    # THE COST, FOR THIS DATA, FROM THIS RUN'S OWN MEASUREMENTS. R276 §1(7).
+    cost = getattr(result, "complete_cost", None)
+    priced = ""
+    if cost:
+        # In the unit the number is legible in: a 120-row frame costs seconds
+        # and the acceptance fixture costs hours, and "~0.00 min" tells nobody
+        # anything.
+        total = cost["passes"] * cost["build_seconds"]
+        spent = ("~%.3f s" % total if total < 1 else
+                 "~%.1f s" % total if total < 60 else
+                 "~%.1f min" % (total / 60.0) if total < 3600 else
+                 "~%.1f h" % (total / 3600.0))
+        priced = (" FOR THIS DATA that is %d pass(es) at stride %d, one rebuild "
+                  "each, from %s: at least %s at the %.3f s this run's own "
+                  "clean build took, and more than that, since a pass corrupts "
+                  "and compares as well as building."
+                  % (cost["passes"], cost["passes"], cost["basis"], spent,
+                     cost["build_seconds"]))
     print("INCOMPLETE AND SILENT: nothing moved in the %d of %d eligible "
           "cohorts this run probed, which is not the same claim as nothing "
           "moving. Run it with --complete to probe every eligible cohort -- for "
           "L3.1 that is passes at different offsets, and a larger budget alone "
-          "cannot do it, since one pass covers one second in the stride -- or "
+          "cannot do it, since one pass covers one second in the stride.%s Or "
           "pass --accept-partial-coverage to declare that a subsample is enough "
-          "for your purpose." % (cov.cohorts_probed, cov.cohorts_eligible),
-          file=sys.stderr)
+          "for your purpose." % (cov.cohorts_probed, cov.cohorts_eligible, priced))
     return EXIT_INCOMPLETE_SILENT
 
 

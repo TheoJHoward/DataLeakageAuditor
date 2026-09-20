@@ -433,6 +433,9 @@ LS_FILES_FLOORS = {
         "src/leakaudit, the one-corruption-entry totality scan (R272 section 1(d))",
     "tools/coverage_assertion_sweep.py":
         "`tracked_python_files()` -- the sweep's `.py` floor",
+    "tests/phase1/test_refusal_exit_class.py":
+        "`_population()` -- every tracked and untracked module under "
+        "src/leakaudit, the SystemExit totality (R276 section 1(1))",
     "tests/phase1/test_profile.py":
         "`test_the_TEMPLATE_is_the_ONLY_profile_in_the_repository` -- every "
         "tracked and untracked JSON file, the only-profile scan (R274 section 2(e))",

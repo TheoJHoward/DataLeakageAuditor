@@ -156,9 +156,14 @@ def test_a_profile_path_that_DOES_NOT_RESOLVE_is_REFUSED(work):
     with pytest.raises(mf.ModelFileError) as e:
         mf.load_profile(work / "absent.json")
     assert "names no file that exists" in str(e.value)
-    with pytest.raises(SystemExit) as e:
-        _run(work, _model(work), "--profile", str(work / "absent.json"))
-    assert "names no file that exists" in str(e.value)
+    # R276 §1(1): the refusal exits 2, with its message on stderr.
+    import contextlib
+    import io
+    err = io.StringIO()
+    with contextlib.redirect_stderr(err):
+        assert _run(work, _model(work), "--profile",
+                    str(work / "absent.json")) == cli.EXIT_USAGE
+    assert "names no file that exists" in err.getvalue()
 
 
 @pytest.mark.parametrize("version", [4, 6, "5", None])
@@ -200,6 +205,54 @@ def test_PROFILE_without_MODEL_is_REFUSED(work, capsys):
 def test_a_config_WITHOUT_a_profile_carries_no_profile_state(work):
     cfg = mf.load_model(_model(work))
     assert cfg.profile_name is None and mf.profile_lines(cfg) == []
+
+
+# --------------------------------------------------------------------------
+# the draft fills from a profile, with provenance per key. R276 §1(i)
+# --------------------------------------------------------------------------
+
+def test_DRAFT_writes_the_PROFILE_keys_with_PROVENANCE(work, capsys):
+    prof = _profile(work, dict({"version": 5}, **FOUR))
+    out_path = work / "drafted.json"
+    code = cli.main(["draft", "--frame", "agg=%s" % (work / "agg.csv"),
+                     "--profile", str(prof), "--out", str(out_path)])
+    assert code == 0
+    doc = json.loads(out_path.read_text(encoding="utf-8"))
+    assert doc["version"] == 5, "the keys are known at 5"
+    for key, value in FOUR.items():
+        assert doc[key] == value, key
+    assert doc["draft_provenance"]["from_profile"] == {
+        key: "from profile mine" for key in FOUR}
+    text = capsys.readouterr().out
+    assert "FILLED FROM THE PROFILE YOU NAMED" in text
+    for key in FOUR:
+        assert "%s: " % key in text and "from profile mine" in text
+
+
+def test_a_DRAFT_from_a_profile_still_LEAVES_THE_REST_BLANK(work):
+    prof = _profile(work, dict({"version": 5}, **FOUR))
+    out_path = work / "drafted2.json"
+    cli.main(["draft", "--frame", "agg=%s" % (work / "agg.csv"),
+              "--profile", str(prof), "--out", str(out_path)])
+    doc = json.loads(out_path.read_text(encoding="utf-8"))
+    assert doc["decision_column"] == mf.FILL_ME
+    assert doc["draft_provenance"]["unfilled_other"] == ["decision_column"]
+    # AND THE AUDIT STILL REFUSES IT. A profile fills what is a fact about the
+    # world; what is a fact about the user's own output is still theirs.
+    with pytest.raises(mf.ModelFileError) as e:
+        mf.load_model(out_path)
+    assert "fill-me sentinel" in str(e.value) or "DRAFT" in str(e.value)
+
+
+def test_a_draft_WITHOUT_a_profile_carries_NO_profile_provenance(work, capsys):
+    out_path = work / "plain.json"
+    cli.main(["draft", "--frame", "agg=%s" % (work / "agg.csv"),
+              "--out", str(out_path)])
+    doc = json.loads(out_path.read_text(encoding="utf-8"))
+    assert "from_profile" not in doc["draft_provenance"]
+    assert doc["version"] == 3
+    assert not set(mf.PROFILE_KEYS) & set(doc)
+    assert "FILLED FROM THE PROFILE" not in capsys.readouterr().out
 
 
 # --------------------------------------------------------------------------

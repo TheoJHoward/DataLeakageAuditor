@@ -16,14 +16,14 @@
  },
  "measured_at_commit": "7ae4fd6",
  "counts": {
-  "candidate_artifact": 17,
+  "candidate_artifact": 19,
   "candidate_fixed": 2,
   "candidate_legitimate": 1,
   "out_of_scope": 28,
-  "probed_healthy": 7,
-  "unprobed_reachable": 57,
-  "functions_total": 112,
-  "assertions_total": 234
+  "probed_healthy": 8,
+  "unprobed_reachable": 65,
+  "functions_total": 123,
+  "assertions_total": 263
  },
  "functions": [
   {
@@ -809,6 +809,83 @@
    "assertions": 3,
    "status": "probed_healthy",
    "reason": "added R274 section 2(e). MEASURED: tools/empty_population_probe.py returns `reddens`, `asserted with 1 helper(s) emptied` -- with `git ls-files` emptied, `assert len(names) > 10` fails."
+  },
+  {
+   "file": "tests/phase1/test_refusal_exit_class.py",
+   "function": "test_NO_module_raises_SystemExit_except_the_console_ENTRY_POINT",
+   "assertions": 2,
+   "status": "probed_healthy",
+   "reason": "added R276 section 1(1). MEASURED: `reddens`, `asserted with 1 helper(s) emptied` -- with `git ls-files` emptied the function's own `assert len(pop) > 5` fails, which is why that assert is in it."
+  },
+  {
+   "file": "tests/phase1/test_refusal_exit_class.py",
+   "function": "test_the_ENTRY_POINT_is_still_there",
+   "assertions": 2,
+   "status": "candidate_artifact",
+   "reason": "added R276 section 1(1). MEASURED: `candidate`, `passed with 1 helper(s) emptied`. The one patch applied is the test module's `subprocess.run`, which this function never calls; its population is cli.py's own text, which the mechanism cannot empty. UNVERIFIED rather than clean."
+  },
+  {
+   "file": "tests/phase1/test_refusal_exit_class.py",
+   "function": "test_EVERY_refusal_the_CLI_reaches_EXITS_TWO",
+   "assertions": 1,
+   "status": "unprobed_reachable",
+   "reason": "added R276 section 1(1). MEASURED: `unprobed`, `takes fixture(s): work` -- its population is the case list built inside the fixture, and this mechanism empties module-level helpers only. `test_the_case_list_is_not_SILENTLY_SHORT` asserts that population non-empty beside it."
+  },
+  {
+   "file": "tests/phase1/test_refusal_exit_class.py",
+   "function": "test_THE_TWO_THE_WALK_FOUND_exit_two_and_say_why",
+   "assertions": 6,
+   "status": "unprobed_reachable",
+   "reason": "added R276 section 1(1). MEASURED: `unprobed`, `takes fixture(s): work,label`. It asserts over two named cases rather than a derived population, and the mechanism cannot reach a parametrised fixture."
+  },
+  {
+   "file": "tests/phase1/test_refusal_exit_class.py",
+   "function": "test_a_CLEAN_run_is_not_a_refusal",
+   "assertions": 1,
+   "status": "unprobed_reachable",
+   "reason": "added R276 section 1(1). MEASURED: `unprobed`, `takes fixture(s): work`. The negative control for the exit-class totality."
+  },
+  {
+   "file": "tests/phase1/test_refusal_exit_class.py",
+   "function": "test_the_case_list_is_not_SILENTLY_SHORT",
+   "assertions": 1,
+   "status": "unprobed_reachable",
+   "reason": "added R276 section 1(1). MEASURED: `unprobed`, `takes fixture(s): work`. It is itself the non-emptiness guard for the live half's population."
+  },
+  {
+   "file": "tests/phase1/test_report_surface.py",
+   "function": "test_VERIFY_REFUSES_a_table_that_cannot_hold_its_findings",
+   "assertions": 1,
+   "status": "unprobed_reachable",
+   "reason": "added R276 section 1(6). MEASURED: `unprobed`, `no population helper this mechanism can empty` -- it constructs two Coverage tables and asserts one raises. The enumerator includes it because the module reads the repository elsewhere."
+  },
+  {
+   "file": "tests/phase1/test_profile.py",
+   "function": "test_DRAFT_writes_the_PROFILE_keys_with_PROVENANCE",
+   "assertions": 6,
+   "status": "unprobed_reachable",
+   "reason": "added R276 section 1(i). MEASURED: `unprobed`, `takes fixture(s): work,capsys`. Its population is the four profile keys, read from `model_file.PROFILE_KEYS` through the fixture's own file."
+  },
+  {
+   "file": "tests/phase1/test_profile.py",
+   "function": "test_a_DRAFT_from_a_profile_still_LEAVES_THE_REST_BLANK",
+   "assertions": 3,
+   "status": "unprobed_reachable",
+   "reason": "added R276 section 1(i). MEASURED: `unprobed`, `takes fixture(s): work`."
+  },
+  {
+   "file": "tests/phase1/test_profile.py",
+   "function": "test_a_draft_WITHOUT_a_profile_carries_NO_profile_provenance",
+   "assertions": 4,
+   "status": "unprobed_reachable",
+   "reason": "added R276 section 1(i). MEASURED: `unprobed`, `takes fixture(s): work,capsys`. The negative control: no profile named, no profile provenance, and none of the four keys in the draft."
+  },
+  {
+   "file": "tests/phase1/test_build_wheel.py",
+   "function": "test_the_ROUTE_is_the_sdist_one_and_NOT_an_in_tree_wheel",
+   "assertions": 2,
+   "status": "candidate_artifact",
+   "reason": "added R276 section 1(5). MEASURED: `candidate`, `passed with 1 helper(s) emptied`. The one patch applied is build_wheel's own `subprocess.run`, which this function never calls; its population is tools/build_wheel.py's text, read directly, which the mechanism cannot empty. UNVERIFIED rather than clean."
   }
  ]
 }

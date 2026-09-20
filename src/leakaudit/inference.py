@@ -352,7 +352,7 @@ def draft(frames: dict) -> Draft:
     return d
 
 
-def render_draft(d: Draft) -> str:
+def render_draft(d: Draft, profile=None) -> str:
     """The draft as a user reads it, with the header first.
 
     THE HEADER IS THE FEATURE, not decoration. Without it a reader meets a file
@@ -364,6 +364,17 @@ def render_draft(d: Draft) -> str:
     out = [HEADER, ""]
     for note in d.notes[1:]:
         out += [note, ""]
+
+    # WHAT A PROFILE FILLED, SAID BEFORE THE BLANKS. R276 §1(i). One line per
+    # key, in the same words the run prints, so a value that arrived from a file
+    # the user named is never mistaken for one this draft determined.
+    if profile is not None:
+        import json as _json
+        out.append("FILLED FROM THE PROFILE YOU NAMED -- one line per key")
+        for key, value in profile.values.items():
+            out.append("  %s: %s from profile %s"
+                       % (key, _json.dumps(value), profile.name))
+        out.append("")
 
     out.append("OBSERVED IN YOUR DATA -- and NOT turned into a mode")
     for fname, fork in sorted(d.forks.items()):
@@ -512,7 +523,7 @@ class DraftTargetExists(FileExistsError):
 
 
 def as_model_dict(d: Draft, *, generated_by: str, commit: str,
-                  source_frames: dict) -> dict:
+                  source_frames: dict, profile=None) -> dict:
     """The draft as a config file, with its provenance and its blanks marked.
 
     THE FRAME TRAVELS WITH THE FIGURE, applied to a model file. Every field the
@@ -579,11 +590,26 @@ def as_model_dict(d: Draft, *, generated_by: str, commit: str,
     }
     if skeleton:
         body["column_modes"] = skeleton
+    # A PROFILE THE USER NAMED, WRITTEN IN WITH ITS PROVENANCE. R276 §1(i).
+    #
+    # The draft fills what is a shape in the frames and leaves what is a fact
+    # about the world blank. A profile is that fact, declared -- so a key it
+    # supplies is written here, and every one carries "from profile <name>" in
+    # `draft_provenance`. The version moves to 5 because that is where these
+    # keys are known. Nothing else the draft leaves blank is filled: the
+    # decision column and the column modes are still the user's, and the audit
+    # still refuses a required field left unfilled.
+    if profile is not None:
+        body["version"] = 5
+        for key, value in profile.values.items():
+            body[key] = value
+        body["draft_provenance"]["from_profile"] = {
+            key: "from profile %s" % profile.name for key in profile.values}
     return body
 
 
 def write_draft(d: Draft, path, *, generated_by: str, commit: str,
-                source_frames: dict) -> pathlib.Path:
+                source_frames: dict, profile=None) -> pathlib.Path:
     """Write the draft as JSON. REFUSES if the target exists."""
     p = pathlib.Path(path)
     if p.exists():
@@ -593,7 +619,7 @@ def write_draft(d: Draft, path, *, generated_by: str, commit: str,
             "reconstruct -- they were never in your data. Move it aside, or "
             "name a different target." % p)
     body = as_model_dict(d, generated_by=generated_by, commit=commit,
-                         source_frames=source_frames)
+                         source_frames=source_frames, profile=profile)
     p.write_text(json.dumps(body, indent=2, sort_keys=True) + "\n",
                  encoding="utf-8", newline="\n")
     return p
