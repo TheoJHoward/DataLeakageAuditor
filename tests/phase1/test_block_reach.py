@@ -33,8 +33,8 @@ from leakaudit import cli                                      # noqa: E402
 from leakaudit.availability import (                           # noqa: E402
     DEFAULT_STRIDE, AvailabilityModel, ProbeError, run_probe_a)
 from leakaudit.reach import (                                  # noqa: E402
-    BLOCK_SAMPLES, ReachError, _corrupt_one, measure_block_reach,
-    measure_reach, measured_rows)
+    BLOCK_SAMPLES, ReachError, ReachResult, ReachSample, _corrupt_one,
+    measure_block_reach, measure_reach, measured_rows)
 
 T0 = pd.Timestamp("2026-01-01 00:00:00")
 SEC = pd.Timedelta(seconds=1)
@@ -91,6 +91,47 @@ def test_the_block_note_carries_its_RESIDUAL_and_says_k():
     note = block.note()
     assert "below resolution" in note, note
     assert "none of 3 sampled block position" in note, note
+
+
+# --------------------------------------------------------------------------
+# CENSORED and MOVED NOTHING are different samples. R273 §1(f), fixed R275 §0(b)
+# --------------------------------------------------------------------------
+
+def _sample(i, reach=None, end=None, censored=False):
+    return ReachSample(second=T0 + i * SEC, cells=1, reach=reach,
+                       to_frame_end=end, censored=censored,
+                       rows=None if reach is None else 5)
+
+
+def test_the_NOTE_counts_CENSORED_and_MOVED_NOTHING_APART():
+    """`note()` called every unusable sample censored by the frame's end, so a
+    sample where nothing moved was reported as one that ran out of data.
+    `spread()` always had the three apart; now the two lines agree."""
+    rr = ReachResult(k=3, samples=[_sample(0, 5 * SEC, 50 * SEC),
+                                   _sample(1, 9 * SEC, 9 * SEC, censored=True),
+                                   _sample(2)])
+    note = rr.note()
+    assert "1 usable" in note and "1 censored by the frame's end" in note, note
+    assert "1 that moved nothing" in note, note
+    assert (rr.n_censored, rr.n_no_movement) == (1, 1)
+    assert "1 usable, 1 censored, 1 with no movement" in rr.spread(), rr.spread()
+
+
+def test_with_NO_USABLE_SAMPLE_the_note_says_WHICH_KIND_each_was():
+    mixed = ReachResult(k=2, samples=[_sample(0, 9 * SEC, 9 * SEC, censored=True),
+                                      _sample(1)])
+    assert "no sample is usable" in mixed.note(), mixed.note()
+    assert "1 that moved nothing" in mixed.note(), mixed.note()
+
+    censored = ReachResult(k=1, samples=[_sample(0, 9 * SEC, 9 * SEC, censored=True)])
+    assert "all 1 sample(s) were censored" in censored.note(), censored.note()
+    assert censored.all_censored is True
+
+    nothing = ReachResult(k=2, samples=[_sample(0), _sample(1)])
+    assert "no sampled second moved any row" in nothing.note(), nothing.note()
+    assert nothing.all_censored is False, (
+        "a builder that moved nothing did not run out of data, and the refusal "
+        "`--complete` takes on an all-censored block reach must not fire here")
 
 
 # --------------------------------------------------------------------------

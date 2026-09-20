@@ -6804,3 +6804,104 @@ supply, the tool says name and print.
 had not been asked?* **Not applicable** — these are the builds R274 ordered. Three
 findings made while building them are recorded above: the offset-0 gate, the unit
 slip, and the second apostrophe instance.
+
+## D-V30A-122 — the wheel is run rather than configured, and a stale build tree was shipping the template
+
+**Nothing here is a `PREREG.md` §6.2 result, and no Phase 1 figure moves.** The
+whole-frame guard compares Phase 1's path byte for byte after every change below.
+It ran once, over both probe-path edits, and came back SAME on all eight terms:
+- contaminated: `finding`, 250 eligible, 5,220 records, 29 features;
+- corrected: `observed_silence`, 250 eligible, 0 records, 0 features.
+
+It took **980 s**: capture 37 s, contaminated 482 s, corrected 462 s. The reach,
+printed beside the terms and never compared, was:
+- contaminated: 59 s, 59 rows;
+- corrected: 60 s, 60 rows.
+
+Its reach line now prints the three classes this round separated: "3 usable, 0
+censored, 0 moved nothing", on both sides. The path-set fingerprint at the start
+was cb0cadd3c9e9.
+
+**THE APOSTROPHE AND THE CENSORED COUNT, R275 §0(a)(b).**
+- `select_cells`' `same_clock` text now reads "the aligned key of frame %r", so no
+  message prints a doubled apostrophe. That was the instance R274 found after its
+  guard had fingerprinted the path set.
+- `ReachResult.note()` called every unusable sample "censored by the frame's end",
+  including samples where nothing moved. `spread()` had always printed the three
+  classes apart, so one result told a reader two different stories.
+
+The three classes -- usable, censored, moved nothing -- now partition the samples
+in `note()` as they already did in `spread()`, and a run with no usable sample says
+which kind each was. `all_censored` now requires at least one censored sample, so a
+builder that simply moved nothing is no longer reported as having run out of data.
+`tools/wholeframe_guard.py`'s own reach line carried the same miscount and now
+prints the three. Two tests pin the wording and the property.
+
+**THE WHEEL, R275 §1.** The profile template shipped through a `package-data` line
+that no install had ever exercised. It has now been run, from a wheel, in a fresh
+virtual environment, with the working directory outside the checkout:
+- `leakaudit schema` prints the template from the installed copy;
+- a `--profile` run against the installed template prints its four
+  `from profile TEMPLATE` lines;
+- the one-command audit on a CSV pair prints 4 findings over 3 named features and
+  exits 1.
+
+INSTALL.md carries the commands and the table.
+
+**THE FINDING IS IN THE BUILD, NOT THE PACKAGING. R275 §1(b).** The known positive
+would not fail. With `[tool.setuptools.package-data]` deleted and `pip wheel .`
+re-run, the template was still in the wheel; with `include-package-data = false`
+as well, still in it. The cause is a stale `build/lib/leakaudit/templates/TEMPLATE.json`
+in this checkout: setuptools copies into `build/lib` and never clears it, so every
+in-tree build inherited the file whatever the configuration said.
+
+**So an in-tree wheel build here can ship a file the configuration does not ship,
+and a check built that way proves nothing.** Building through an sdist --
+`python -m build`, which builds the wheel from the sdist rather than from the
+working tree -- is what the verification uses, and it is recorded in INSTALL.md as
+the route.
+
+**THE KNOWN POSITIVE, ONCE THE BUILD WAS SOUND.** With the package-data section
+removed and `include-package-data = false`, the wheel carries no `templates/` entry,
+the installed `leakaudit schema` prints "(the template was not found at ...)", and a
+`--profile` run against that path refuses with "names no file that exists". The
+configuration was restored, rebuilt through the sdist, and the four checks re-run
+against that wheel. The `package-data` section now records in its own comment that
+it is load-bearing and how that was measured.
+
+**THE STRANGER'S WALK, R275 §2. MEASURED, NOT FIXED.** Ten gaps are listed in the
+report and none is fixed this round. Three of them are worth recording here because
+they are about what an automated reader sees:
+- **A refused model file exits 1, the FINDINGS code.** A misspelt key and a missing
+  decision column are both refused, correctly and by name, and both exit 1. A probe
+  refusal exits 2. `EXIT_PRECEDENCE` says a refusal is 2, so a script reading the
+  status cannot tell a configuration error from findings on two of the three paths.
+- **The decision-column refusal ends in a dangling fragment**, "...and there is no
+  default for it. the model file m_nodecision.json", where the `where` string is
+  appended as a sentence.
+- **The remedy for an incomplete run prints on stderr** while the coverage table it
+  refers to prints on stdout.
+
+Nothing in `README.md`'s first screen is false at HEAD. It carries no command.
+
+**THE B ESTABLISH, R275 §3, A READ.** L1.2's split-specific confirmation is
+specified in `DESIGN.md` §2.8 and `PREREG.md` §4.4, and the registration's row gives
+its declaration requirement as "source and/or callable + split". What it needs that
+nothing declares today is the flagged preprocessing SITE -- the wrapped static
+analyser's location, and a way to stub that component -- and a split over the INPUT
+rows, where the model file's `split` is row positions into the BUILT output.
+`PREREG.md` line 1292 also states that nothing about L1.2's confirmation may be
+published before `prereg-static` is registered, which is a publication bar rather
+than a build bar. The establish is in the report.
+
+**THE SUITE BEFORE THE CHAIN.** 1,397 passed, 5 skipped, 3 failed.
+- Two failures are the manifest-hash tests: `FEATURE_BACKLOG.md` changed and the
+  commit chain re-attests it.
+- The third is `test_prereg_stage_on_real_repo_exits_zero`, on
+  `hash_set_single_source`, where R252 left it.
+
+**R163 §1's exemption test.** *Would this have surfaced if the triggering question
+had not been asked?* **No, and that is the point of §1.** The template had shipped
+through a configuration line for a round; nobody would have found the stale build
+tree by reading either the line or the file it names. It took an install and a
+positive that was required to fail.

@@ -48,6 +48,57 @@ Commits pass through a commit-msg hook — enable it with `git config core.hooks
 is one of the twenty registered paths whose hashes the `prereg-v30a` tag message carries, and
 relocating it would alter a registered path while the tree is frozen.
 
+## The wheel, verified by execution — R275 §1
+
+**The template shipped through a `package-data` line no install had ever exercised.** The
+definition of done is a stranger installing from a wheel, so the wheel is what was run. Every
+command below was executed on 2026-09-20; the working directory was outside this repository and
+the interpreter was a fresh virtual environment, never an editable install.
+
+```bash
+python -m pip install build
+python -m build --outdir /tmp/dist          # sdist, then the wheel FROM the sdist
+python -m venv /tmp/venv
+/tmp/venv/Scripts/python -m pip install /tmp/dist/leakaudit-0.1.0.dev0-py3-none-any.whl
+cd /tmp/walk                                 # outside the checkout
+leakaudit schema                             # prints the profile template
+PYTHONPATH=. leakaudit run --pipeline mypipe:build --frame snap=snap.csv --frame agg=agg.csv \
+    --model m.json --profile /tmp/venv/Lib/site-packages/leakaudit/templates/TEMPLATE.json
+PYTHONPATH=. leakaudit run --pipeline mypipe:build --frame snap=snap.csv --frame agg=agg.csv
+```
+
+| check | result |
+|---|---|
+| the wheel carries `leakaudit/templates/TEMPLATE.json` | **OK** — one entry, 132 bytes |
+| `leakaudit schema` prints the template | **OK** — the four keys, from the installed copy |
+| `--profile` against the installed template | **OK** — four `from profile TEMPLATE` lines |
+| the one-command audit on a CSV pair | **OK** — 4 findings over 3 features, named, exit 1 |
+
+**BUILD FROM AN SDIST, NOT IN-TREE, AND THIS IS THE FINDING.** The first attempt at the known
+positive did not fail. With the `package-data` line deleted and the file rebuilt with
+`pip wheel .`, the template was **still in the wheel** — and with `include-package-data = false`
+as well, still in it. The cause is a stale `build/lib/leakaudit/templates/TEMPLATE.json` left in
+this checkout by an earlier build: setuptools copies into `build/lib` and does not clear it, so
+every in-tree wheel build inherited the file whatever the configuration said. **An in-tree build
+here can ship a file the configuration does not ship**, which also means a wheel check built that
+way proves nothing.
+
+**The known positive, once the build went through an sdist.** `[tool.setuptools.package-data]`
+removed and `include-package-data = false`, `python -m build`:
+
+```
+=== wheel contents, templates ===
+NO templates/ ENTRY IN THE WHEEL
+=== installed schema, template section ===
+    (the template was not found at ...\site-packages\leakaudit\templates\TEMPLATE.json)
+=== --profile against the missing template ===
+...TEMPLATE.json: REFUSED: --profile names no file that exists.
+```
+
+The configuration was restored and rebuilt, and the four checks above were re-run against that
+wheel. **What is still not verified:** a machine other than this one, and an install from an index
+rather than from a local file.
+
 ## The environments this package was actually measured in
 
 **Read the dependency bounds below as a list of measured points, not as a

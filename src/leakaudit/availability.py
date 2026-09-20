@@ -888,7 +888,7 @@ def select_cells(raw, model, decision, *, seconds=None, through=None,
         key = to_decision_clock(pd.to_datetime(f[keycol]), decision,
                                 decision_timezone=model.decision_timezone,
                                 what="frame %r, key %r" % (fname, keycol))
-        same_clock(key, decision, what="frame %r's aligned key" % fname)
+        same_clock(key, decision, what="the aligned key of frame %r" % fname)
         kf = key.dt.floor("s")
         if wanted is not None:
             if wanted:

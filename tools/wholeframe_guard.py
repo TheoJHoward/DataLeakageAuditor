@@ -371,13 +371,17 @@ def main() -> int:
         # the fixture's builder and a ruling, not a red guard.
         REACH_SEEN[side] = res.reach
         _r = res.reach
-        print("  %-13s reach=%s  (k=%d, %d usable, %d censored) -- REPORTED, "
+        # THE SAME THREE CLASSES THE NOTE PRINTS. R275 §0(b): a sample that
+        # moved nothing was counted here as censored by the frame's end too.
+        print("  %-13s reach=%s  (k=%d, %d usable, %d censored, %d moved "
+              "nothing) -- REPORTED, "
               "not a compared term"
               % (side,
                  getattr(_r, "measured", None) if _r is not None else "not measured",
                  getattr(_r, "k", 0) if _r is not None else 0,
                  len(_r.uncensored) if _r is not None else 0,
-                 (len(_r.samples) - len(_r.uncensored)) if _r is not None else 0))
+                 _r.n_censored if _r is not None else 0,
+                 _r.n_no_movement if _r is not None else 0))
 
     _watch.__exit__(None, None, None)
 

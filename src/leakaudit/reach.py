@@ -106,22 +106,52 @@ class ReachResult:
         good = self.uncensored
         return max((s.reach for s in good), default=None)
 
+    # THREE CLASSES OF SAMPLE, AND TWO OF THEM WERE COUNTED AS ONE. R273 §1(f),
+    # fixed R275 §0(b). `note()` took its censored count as "every sample that
+    # is not usable", so a sample where NOTHING MOVED was reported as censored
+    # by the frame's end. Those are different measurements: a censored sample
+    # found the data running out, and one that moved nothing found no
+    # propagation at all. `spread()` had always printed the two apart, so the
+    # same result told a reader two different stories depending on which line
+    # they read. A sample is censored only where its reach ran to the last row,
+    # so `reach is None` and `censored` cannot both hold, and the three classes
+    # partition the samples.
+    @property
+    def n_censored(self) -> int:
+        return sum(1 for s in self.samples if s.censored)
+
+    @property
+    def n_no_movement(self) -> int:
+        return sum(1 for s in self.samples if s.reach is None)
+
     @property
     def all_censored(self) -> bool:
-        return bool(self.samples) and not self.uncensored
+        """No usable sample AND at least one that was censored.
+
+        A run where every sample simply moved nothing is NOT this: it measured
+        no propagation rather than the data running out.
+        """
+        return bool(self.n_censored) and not self.uncensored
 
     def note(self) -> str:
+        counted = ("%d sample(s): %d usable, %d censored by the frame's end, %d "
+                   "that moved nothing"
+                   % (len(self.samples), len(self.uncensored), self.n_censored,
+                      self.n_no_movement))
         if self.measured is not None:
             body = ("REACH (measured, not declared): a corruption of one second "
-                    "moves rows up to %s later in this builder's output. "
-                    "%d sample(s), %d usable, %d censored by the frame's end."
-                    % (self.measured, self.k, len(self.uncensored),
-                       len(self.samples) - len(self.uncensored)))
-        elif self.all_censored:
+                    "moves rows up to %s later in this builder's output. %s."
+                    % (self.measured, counted))
+        elif self.all_censored and not self.n_no_movement:
             body = ("REACH NOT MEASURED: all %d sample(s) were censored by the "
                     "frame's end -- each moved rows right up to the last one, so "
                     "what stopped the propagation was the data running out and "
-                    "not the builder. No reach is claimed." % self.k)
+                    "not the builder. No reach is claimed." % len(self.samples))
+        elif self.n_censored:
+            body = ("REACH NOT MEASURED: no sample is usable -- %s. The two "
+                    "kinds are not the same finding: a censored sample measured "
+                    "the data running out, and one that moved nothing measured "
+                    "no propagation. Neither is a reach of zero." % counted)
         else:
             body = ("REACH NOT MEASURED: no sampled second moved any row, so "
                     "this builder showed no propagation at all on the sampled "

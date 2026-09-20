@@ -98,5 +98,12 @@ protocol = "protocol"
 # THE PROFILE TEMPLATE SHIPS WITH THE PACKAGE. R274 §2(e). `leakaudit schema`
 # prints it, so an installed copy has to carry the file; it is the only profile
 # in the repository and it is named as a template, not as a domain.
+#
+# IT IS LOAD-BEARING, MEASURED AT R275 §1(c). With this section removed AND
+# `include-package-data` turned off, a wheel built through an sdist carries no
+# `templates/` entry and the installed `leakaudit schema` prints "(the template
+# was not found at ...)". The first attempt at that positive did NOT fail, and
+# the reason is recorded in INSTALL.md: a stale `build/lib` in the checkout was
+# feeding the file to every in-tree wheel build regardless of configuration.
 [tool.setuptools.package-data]
 leakaudit = ["templates/*.json"]

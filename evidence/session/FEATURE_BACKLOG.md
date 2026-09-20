@@ -305,6 +305,39 @@ on no ephemeral list. The entry notes a known positive available today.
 
 ---
 
+## The stranger's walk, R275 §2 — ten gaps, measured, none fixed
+
+Walked from a WHEEL in a fresh virtual environment, working directory outside the
+checkout, with `README.md` and `INSTALL.md` as the only guidance. Unranked, and
+every one is a Phase 2 observation rather than a `PREREG.md` §6.2 result.
+
+1. A refused model file exits **1**, the findings code, on both the misspelt-key
+   and missing-decision-column paths; `EXIT_PRECEDENCE` says a refusal is 2, and
+   the aware-key probe refusal does exit 2.
+2. The `decision_column` refusal ends in a dangling fragment: "...and there is no
+   default for it. the model file m_nodecision.json".
+3. `README.md` shows no command at all: the stranger's "one command" is in neither
+   README nor INSTALL, only in `--help`.
+4. Neither file said how to obtain or install a wheel until R275 §1 put it in
+   INSTALL.
+5. An in-tree wheel build inherits a stale `build/lib`, so a wheel can carry a file
+   the configuration does not ship (R275 §1(b); INSTALL records the sdist route).
+6. A default run prints two finding seconds and a coverage table saying one cohort
+   was probed, because the head-of-frame cohort is ineligible and still produced a
+   finding.
+7. The shipped default stride 97 over a 120-second frame probes one eligible cohort
+   -- 0.8% coverage -- and the remedy line names `--complete` without a cost for the
+   user's own data.
+8. `--profile` takes a path, and `leakaudit schema` prints the template's CONTENT
+   but not where the installed copy of it is.
+9. A first availability finding takes two hand-written files, the pipeline module
+   and the model file; there is no scaffold command for either.
+10. The incomplete-and-silent remedy prints on **stderr** while the coverage table
+    it refers to prints on stdout, so a stranger piping stdout keeps the number and
+    loses the instruction.
+
+---
+
 ## Banked, visible, not worked
 
 Theo ruled the sweep banked at R254. These stay in the map and are not worked:
